@@ -2,5580 +2,3839 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
-
 <meta
   name="viewport"
-  content="
-    width=device-width,
-    initial-scale=1,
-    maximum-scale=1,
-    viewport-fit=cover,
-    user-scalable=no
-  "
+  content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
 >
 
-<meta name="theme-color" content="#cbe7b4">
-
-<title>Taman Pixel — Kenali Tumbuhan</title>
+<title>Puzzle Tumbuhan — Set 2</title>
 
 <style>
-:root {
-  --ink: #203e35;
-  --cream: #fff7d9;
-  --gold: #ffce69;
-  --green: #63a65a;
-
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-right: env(safe-area-inset-right, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-left: env(safe-area-inset-left, 0px);
+:root{
+  --ink:#244235;
+  --cream:#fff8df;
+  --cream2:#fffdf4;
+  --green:#5cab70;
+  --green-dark:#367b50;
+  --pink:#f6a6bb;
+  --pink-dark:#dc708f;
+  --yellow:#ffd866;
+  --brown:#80553c;
 }
 
-* {
-  box-sizing: border-box;
+*{
+  box-sizing:border-box;
 }
 
-html {
-  width: 100%;
-  min-height: 100%;
-  -webkit-text-size-adjust: 100%;
+html,
+body{
+  width:100%;
+  height:100%;
+  margin:0;
 }
 
-body {
-  width: 100%;
-  min-height: 100vh;
-  min-height: 100dvh;
+body{
+  min-height:100dvh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:12px;
 
-  margin: 0;
-
-  color: var(--ink);
+  overflow:hidden;
 
   font-family:
     "Trebuchet MS",
     Arial,
     sans-serif;
 
-  background-color: #cbe7b4;
-
-  background-image:
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(255,255,255,.55) 0 4px,
+      transparent 5px
+    ) 0 0 / 45px 45px,
     linear-gradient(
-      45deg,
-      #c1dfa8 25%,
-      transparent 25%,
-      transparent 75%,
-      #c1dfa8 75%
-    ),
-    linear-gradient(
-      45deg,
-      #c1dfa8 25%,
-      transparent 25%,
-      transparent 75%,
-      #c1dfa8 75%
+      135deg,
+      #bfe7c1,
+      #f9e5ac
     );
 
-  background-size: 48px 48px;
-  background-position: 0 0, 24px 24px;
-
-  overflow-x: hidden;
+  color:var(--ink);
 }
 
-button,
-a {
-  -webkit-tap-highlight-color: transparent;
+/* ======================================================
+   GAME SHELL
+====================================================== */
+
+#game-shell{
+  position:relative;
+
+  width:min(1120px, calc(100vw - 24px));
+  height:min(820px, calc(100dvh - 24px));
+  min-height:560px;
+
+  overflow:hidden;
+
+  border:6px solid #fff5dc;
+  border-radius:26px;
+
+  background:#d8f0c8;
+
+  box-shadow:
+    0 18px 50px rgba(49,69,45,.24),
+    inset 0 0 0 3px rgba(98,126,73,.18);
 }
 
-button {
-  font: inherit;
-  cursor: pointer;
-}
+/* ======================================================
+   TOP BAR
+====================================================== */
 
-button,
-.btn,
-.option {
-  touch-action: manipulation;
-}
+#topbar{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
 
-button:focus-visible,
-a:focus-visible {
-  outline: 3px solid #e78628;
-  outline-offset: 3px;
-}
+  height:64px;
 
-[hidden] {
-  display: none !important;
-}
+  z-index:10;
 
-/* =========================================================
-   APP
-   ========================================================= */
-
-.app {
-  width: 100%;
-  max-width: 1080px;
-
-  margin: 0 auto;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:10px;
 
   padding:
-    max(18px, var(--safe-top))
-    max(18px, var(--safe-right))
-    max(24px, var(--safe-bottom))
-    max(18px, var(--safe-left));
+    8px max(10px, env(safe-area-inset-right))
+    8px max(10px, env(safe-area-inset-left));
+
+  background:
+    linear-gradient(
+      180deg,
+      #fff9e9,
+      #f7e6b7
+    );
+
+  border-bottom:3px solid rgba(97,115,65,.18);
 }
 
-/* =========================================================
-   HEADER
-   ========================================================= */
-
-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 12px;
-
-  margin-bottom: 20px;
+.top-left{
+  display:flex;
+  align-items:center;
+  gap:8px;
 }
 
-.brand {
-  min-width: 0;
-
-  font-weight: 900;
-  font-size: 17px;
-
-  letter-spacing: 2px;
-
-  line-height: 1.1;
+.top-center{
+  min-width:0;
+  text-align:center;
 }
 
-.brand small {
-  display: block;
+.game-title{
+  margin:0;
 
-  margin-top: 6px;
+  font-size:clamp(16px,2vw,24px);
+  font-weight:900;
 
-  font-size: 10px;
-  letter-spacing: 3px;
+  line-height:1;
+
+  color:#335b42;
+
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-.nav {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+.game-subtitle{
+  margin-top:4px;
 
-  gap: 8px;
+  font-size:11px;
+  font-weight:700;
 
-  flex-shrink: 0;
+  color:#729077;
 }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  min-height: 44px;
-
-  border: 2px solid var(--ink);
-
-  background: var(--cream);
-
-  box-shadow: 0 3px 0 var(--ink);
-
-  color: var(--ink);
-
-  padding: 9px 14px;
-
-  text-decoration: none;
-
-  font-weight: 800;
-  font-size: 13px;
-
-  line-height: 1;
-
-  border-radius: 0;
+.top-right{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
 }
 
-.btn:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 var(--ink);
+.ui-btn{
+  min-width:43px;
+  min-height:43px;
+
+  border:0;
+  border-radius:13px;
+
+  padding:8px 12px;
+
+  font-family:inherit;
+  font-size:14px;
+  font-weight:900;
+
+  cursor:pointer;
+
+  color:#3c503e;
+
+  background:#fffdf5;
+
+  box-shadow:
+    0 3px 0 #d6c8a4,
+    0 4px 10px rgba(55,62,37,.08);
+
+  -webkit-tap-highlight-color:transparent;
 }
 
-.btn:disabled {
-  opacity: 0.45;
-  cursor: default;
-  transform: none;
+.ui-btn:active{
+  transform:translateY(2px);
+  box-shadow:
+    0 1px 0 #d6c8a4;
 }
 
-/* =========================================================
-   MAIN LAYOUT
-   ========================================================= */
+#stage-pill{
+  padding:10px 15px;
 
-.layout {
-  display: grid;
+  border-radius:999px;
 
-  grid-template-columns:
-    minmax(0, 620px)
-    minmax(260px, 1fr);
+  font-size:13px;
+  font-weight:900;
 
-  gap: 28px;
+  color:#fff;
 
-  align-items: start;
+  background:
+    linear-gradient(
+      180deg,
+      #65b579,
+      #438e5c
+    );
+
+  box-shadow:
+    inset 0 -3px 0 rgba(0,0,0,.10),
+    0 3px 9px rgba(43,86,54,.18);
+
+  white-space:nowrap;
 }
 
-/* =========================================================
-   HERO
-   ========================================================= */
+/* ======================================================
+   PHASER CONTAINER
+====================================================== */
 
-.eyebrow {
-  color: #3f7752;
+#phaser-game{
+  position:absolute;
 
-  font-size: 11px;
-  letter-spacing: 2px;
-  font-weight: 900;
+  top:64px;
+  left:0;
+  right:0;
+  bottom:0;
+
+  overflow:hidden;
 }
 
-.hero h1 {
-  margin: 9px 0 10px;
+#phaser-game canvas{
+  display:block;
 
-  font-size: clamp(30px, 5vw, 48px);
-  line-height: 0.98;
+  width:100% !important;
+  height:100% !important;
 
-  letter-spacing: -2px;
+  touch-action:none;
 }
 
-.hero p {
-  margin: 0 0 20px;
-
-  max-width: 500px;
-
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-/* =========================================================
-   GAME
-   ========================================================= */
-
-.game-shell {
-  position: relative;
-
-  width: 100%;
-
-  margin-inline: auto;
-
-  background: #244c3b;
-
-  border: 3px solid var(--ink);
-
-  box-shadow: 7px 7px 0 #8eaf7d;
-
-  overflow: hidden;
-}
-
-.game-label {
-  display: grid;
-
-  grid-template-columns:
-    minmax(0, 1fr)
-    auto
-    auto;
-
-  align-items: center;
-
-  gap: 8px;
-
-  min-height: 46px;
-
-  padding: 10px 14px;
-
-  background: #fff4d7;
-
-  border-bottom: 3px solid var(--ink);
-
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.game-label span {
-  white-space: nowrap;
-}
-
-#game {
-  position: relative;
-
-  width: 100%;
-
-  aspect-ratio: 560 / 640;
-
-  background: #aed5a4;
-
-  overflow: hidden;
-
-  touch-action: none;
-
-  overscroll-behavior: contain;
-
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-#game canvas {
-  display: block !important;
-
-  width: 100% !important;
-  height: 100% !important;
-
-  max-width: 100%;
-  max-height: 100%;
-
-  margin: 0 auto;
-
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-
-  touch-action: none;
-
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.status {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  min-height: 48px;
-
-  padding: 10px 12px;
-
-  color: #ffefb1;
-
-  text-align: center;
-
-  font-size: 12px;
-  font-weight: 700;
-
-  line-height: 1.4;
-}
-
-/* =========================================================
-   GAME TOOLS
-   ========================================================= */
-
-.tools {
-  display: grid;
-
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
-
-  gap: 10px;
-
-  margin: 14px 0;
-}
-
-.tools .btn {
-  width: 100%;
-}
-
-/* =========================================================
-   PANELS
-   ========================================================= */
-
-.panel {
-  margin-top: 18px;
-
-  padding: 20px;
-
-  background: var(--cream);
-
-  border: 2px solid var(--ink);
-
-  box-shadow: 5px 5px 0 #8eaf7d;
-}
-
-.panel h2 {
-  margin: 0 0 8px;
-
-  font-size: 18px;
-}
-
-.panel p {
-  margin: 8px 0;
-
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.progress-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 10px;
-
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.bar {
-  width: 100%;
-  height: 12px;
-
-  margin: 10px 0 17px;
-
-  background: #d9dfb9;
-
-  border: 2px solid var(--ink);
-
-  overflow: hidden;
-}
-
-.bar div {
-  width: 0;
-  height: 100%;
-
-  background: #63a65a;
-
-  transition: width 0.3s ease;
-}
-
-.garden {
-  display: grid;
-
-  grid-template-columns:
-    repeat(5, minmax(0, 1fr));
-
-  gap: 6px;
-}
-
-.seed {
-  display: grid;
-  place-items: center;
-
-  min-width: 0;
-  height: 34px;
-
-  background: #dfd7b0;
-
-  border-bottom: 4px solid #c1ad7c;
-
-  color: #8a835f;
-
-  font-size: 11px;
-  font-weight: 900;
-}
-
-.seed.grown {
-  background: #b9d793;
-
-  border-color: #739656;
-
-  color: #275c45;
-
-  font-size: 21px;
-}
-
-/* =========================================================
-   GUIDE
-   ========================================================= */
-
-.steps {
-  padding: 0;
-
-  list-style: none;
-
-  counter-reset: steps;
-}
-
-.steps li {
-  position: relative;
-
-  margin-top: 12px;
-
-  padding-left: 30px;
-
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.steps li::before {
-  counter-increment: steps;
-
-  content: counter(steps);
-
-  position: absolute;
-
-  left: 0;
-  top: 0;
-
-  display: grid;
-  place-items: center;
-
-  width: 21px;
-  height: 21px;
-
-  background: #dfb96c;
-
-  text-align: center;
-
-  font-weight: 900;
-}
-
-.note {
-  margin: 24px 10px 0;
-
-  color: #40664a;
-
-  text-align: center;
-
-  font-size: 11px;
-  line-height: 1.5;
-}
-
-/* =========================================================
-   MODAL
-   ========================================================= */
-
-.overlay {
-  position: fixed;
-
-  inset: 0;
-
-  z-index: 999;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* ======================================================
+   OVERLAYS
+====================================================== */
+
+.overlay{
+  position:absolute;
+  inset:0;
+
+  z-index:30;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
 
   padding:
-    max(16px, var(--safe-top))
-    max(16px, var(--safe-right))
-    max(16px, var(--safe-bottom))
-    max(16px, var(--safe-left));
+    max(20px, env(safe-area-inset-top))
+    max(16px, env(safe-area-inset-right))
+    max(20px, env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left));
 
-  background: #173e34e8;
+  overflow:auto;
 
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background:
+    rgba(41,66,48,.52);
 
-  overscroll-behavior: contain;
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
 }
 
-.dialog {
-  width: min(100%, 560px);
+.overlay.hidden{
+  display:none;
+}
 
-  max-height:
-    calc(
-      100vh -
-      32px -
-      var(--safe-top) -
-      var(--safe-bottom)
+.card{
+  position:relative;
+
+  width:min(680px, 100%);
+
+  padding:28px;
+
+  border:5px solid #fff4d6;
+  border-radius:26px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fffdf2,
+      #fff4d5
     );
 
-  max-height:
-    calc(
-      100dvh -
-      32px -
-      var(--safe-top) -
-      var(--safe-bottom)
+  box-shadow:
+    0 20px 50px rgba(35,55,38,.25),
+    inset 0 0 0 3px rgba(227,192,107,.18);
+
+  text-align:center;
+}
+
+.card::before{
+  content:"";
+
+  position:absolute;
+  inset:8px;
+
+  border:2px dashed rgba(90,130,86,.18);
+  border-radius:18px;
+
+  pointer-events:none;
+}
+
+.card > *{
+  position:relative;
+  z-index:2;
+}
+
+/* ======================================================
+   START
+====================================================== */
+
+.start-badge{
+  display:inline-block;
+
+  padding:8px 15px;
+
+  border-radius:999px;
+
+  font-size:13px;
+  font-weight:900;
+
+  color:#8a4d64;
+
+  background:#ffd4df;
+}
+
+.start-title{
+  margin:
+    15px 0 10px;
+
+  font-size:clamp(30px,6vw,54px);
+  font-weight:1000;
+
+  line-height:.95;
+
+  color:#3b714d;
+
+  text-shadow:
+    0 3px 0 #d8edbd;
+}
+
+.start-title span{
+  color:#e26f91;
+}
+
+.start-description{
+  max-width:520px;
+
+  margin:15px auto 22px;
+
+  font-size:15px;
+  line-height:1.55;
+  font-weight:700;
+
+  color:#617265;
+}
+
+.howto{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+
+  margin:20px 0;
+}
+
+.how-item{
+  padding:13px 8px;
+
+  border:2px solid rgba(103,136,88,.13);
+  border-radius:15px;
+
+  background:#fffdf8;
+
+  font-size:13px;
+  line-height:1.35;
+  font-weight:800;
+
+  color:#5f735d;
+}
+
+.how-num{
+  width:30px;
+  height:30px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  margin:0 auto 7px;
+
+  border-radius:50%;
+
+  color:white;
+  background:#65aa74;
+
+  font-size:15px;
+  font-weight:1000;
+}
+
+.main-btn{
+  min-height:52px;
+
+  border:0;
+  border-radius:17px;
+
+  padding:12px 25px;
+
+  font-family:inherit;
+  font-size:17px;
+  font-weight:1000;
+
+  cursor:pointer;
+
+  color:white;
+
+  background:
+    linear-gradient(
+      180deg,
+      #67bb7c,
+      #3c8855
     );
 
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  box-shadow:
+    0 5px 0 #2b6940,
+    0 9px 18px rgba(39,91,54,.18);
 
-  -webkit-overflow-scrolling: touch;
-
-  padding: 26px;
-
-  background: var(--cream);
-
-  border: 4px solid var(--ink);
-
-  box-shadow: 8px 8px 0 #122d26;
+  -webkit-tap-highlight-color:transparent;
 }
 
-.tag {
-  color: #52704a;
+.main-btn:active{
+  transform:translateY(3px);
 
-  font-size: 11px;
-  letter-spacing: 1px;
-
-  font-weight: 900;
+  box-shadow:
+    0 2px 0 #2b6940,
+    0 4px 8px rgba(39,91,54,.15);
 }
 
-.dialog h2 {
-  margin: 12px 0 18px;
+/* ======================================================
+   QUIZ
+====================================================== */
 
-  font-size: 25px;
-  line-height: 1.3;
+#quiz-card{
+  text-align:left;
 }
 
-.dialog p {
-  font-size: 14px;
-  line-height: 1.6;
+.quiz-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+
+  margin-bottom:14px;
 }
 
-.options {
-  display: grid;
+#quiz-topic{
+  display:inline-block;
 
-  gap: 9px;
+  padding:7px 12px;
+
+  border-radius:999px;
+
+  font-size:11px;
+  line-height:1.2;
+  font-weight:1000;
+
+  color:#6d4960;
+
+  background:#ffd4e0;
 }
 
-.option {
-  display: flex;
-  align-items: center;
+#quiz-stage{
+  font-size:13px;
+  font-weight:900;
 
-  gap: 12px;
-
-  width: 100%;
-
-  min-height: 54px;
-
-  padding: 11px 12px;
-
-  background: #fffef3;
-
-  border: 2px solid #abc49b;
-
-  color: var(--ink);
-
-  text-align: left;
-
-  font-size: 15px;
-
-  line-height: 1.35;
+  color:#73806b;
 }
 
-.option b {
-  display: grid;
-  place-items: center;
+.quiz-complete{
+  margin-bottom:5px;
 
-  flex: 0 0 30px;
+  font-size:14px;
+  font-weight:1000;
 
-  width: 30px;
-  height: 30px;
-
-  background: #e5eccb;
+  color:#4d9664;
 }
 
-.option span {
-  min-width: 0;
+#question-text{
+  margin:
+    5px 0 20px;
+
+  font-size:clamp(19px,3.2vw,28px);
+  line-height:1.3;
+  font-weight:1000;
+
+  color:#304839;
 }
 
-@media (hover: hover) {
-  .option:hover:not(:disabled) {
-    background: #f1f4d5;
-    border-color: #356b49;
-  }
+#answer-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+
+  gap:11px;
 }
 
-.option.wrong {
-  background: #ffe1d9;
-  border-color: #bd5343;
+.answer-btn{
+  min-height:66px;
+
+  display:flex;
+  align-items:center;
+
+  border:3px solid #eadfbf;
+  border-radius:16px;
+
+  padding:12px 15px;
+
+  font-family:inherit;
+  font-size:15px;
+  line-height:1.3;
+  font-weight:900;
+  text-align:left;
+
+  color:#425744;
+
+  background:#fffefa;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 4px 0 #ddcca3;
+
+  transition:
+    transform .12s ease,
+    background .12s ease,
+    border-color .12s ease;
+
+  -webkit-tap-highlight-color:transparent;
 }
 
-.option.correct {
-  background: #d5edb8;
-  border-color: #3c804b;
+.answer-btn:active{
+  transform:translateY(2px);
 }
 
-.feedback {
-  display: flex;
-  align-items: center;
+.answer-letter{
+  flex:0 0 auto;
 
-  min-height: 48px;
+  width:34px;
+  height:34px;
 
-  margin: 12px 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 
-  font-size: 14px;
-  line-height: 1.5;
-  font-weight: 800;
+  margin-right:10px;
+
+  border-radius:10px;
+
+  color:#fff;
+  background:#80ae73;
+
+  font-size:16px;
+  font-weight:1000;
 }
 
-.primary {
-  width: 100%;
+.answer-btn.correct{
+  color:#176336;
 
-  min-height: 50px;
+  border-color:#5dbb75;
+  background:#dff6df;
 
-  padding: 13px;
-
-  background: #ffcf73;
-
-  font-size: 15px;
+  box-shadow:
+    0 4px 0 #72ac7d;
 }
 
-.intro-art {
-  margin: 5px;
-
-  text-align: center;
-
-  font-size: 48px;
+.answer-btn.correct .answer-letter{
+  background:#399c59;
 }
 
-.center {
-  text-align: center;
+.answer-btn.wrong{
+  color:#93434f;
+
+  border-color:#e78590;
+  background:#ffe1e4;
+
+  box-shadow:
+    0 4px 0 #d47e86;
+
+  animation:shake .28s linear;
 }
 
-.muted {
-  color: #56704d;
+.answer-btn.wrong .answer-letter{
+  background:#d95769;
 }
 
-#timer {
-  font-variant-numeric: tabular-nums;
+@keyframes shake{
+  0%{transform:translateX(0)}
+  25%{transform:translateX(-5px)}
+  50%{transform:translateX(5px)}
+  75%{transform:translateX(-3px)}
+  100%{transform:translateX(0)}
 }
 
-/* =========================================================
-   TABLET
-   ========================================================= */
+#feedback{
+  min-height:27px;
 
-@media
-  (min-width: 741px)
-  and (max-width: 980px) {
+  margin-top:15px;
 
-  .app {
-    padding-inline: 16px;
-  }
+  font-size:14px;
+  font-weight:1000;
 
-  .layout {
-    grid-template-columns:
-      minmax(0, 58%)
-      minmax(250px, 42%);
+  text-align:center;
 
-    gap: 20px;
-  }
-
-  .panel {
-    padding: 16px;
-  }
-
-  .hero h1 {
-    font-size: 36px;
-  }
-
-  .hero p {
-    font-size: 13px;
-  }
+  color:#6a7668;
 }
 
-/* =========================================================
-   MOBILE / PORTRAIT TABLET
-   ========================================================= */
+#feedback.good{
+  color:#2b8c50;
+}
 
-@media (max-width: 740px) {
-  .app {
-    max-width: 600px;
+#feedback.bad{
+  color:#c25361;
+}
 
-    padding:
-      max(12px, var(--safe-top))
-      max(10px, var(--safe-right))
-      max(20px, var(--safe-bottom))
-      max(10px, var(--safe-left));
+/* ======================================================
+   FINISH
+====================================================== */
+
+.finish-icon{
+  font-size:64px;
+}
+
+.finish-title{
+  margin:
+    4px 0 8px;
+
+  font-size:clamp(30px,6vw,52px);
+  line-height:1;
+
+  font-weight:1000;
+
+  color:#3e8f5b;
+}
+
+.finish-text{
+  max-width:520px;
+
+  margin:12px auto 22px;
+
+  font-size:16px;
+  line-height:1.5;
+  font-weight:800;
+
+  color:#667666;
+}
+
+.finish-actions{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+/* ======================================================
+   MOBILE
+====================================================== */
+
+@media(max-width:650px){
+
+  body{
+    padding:0;
   }
 
-  header {
-    margin-bottom: 12px;
+  #game-shell{
+    width:100vw;
+    height:100dvh;
+    min-height:100dvh;
+
+    border:0;
+    border-radius:0;
   }
 
-  .brand {
-    font-size: 14px;
+  #topbar{
+    height:61px;
   }
 
-  .brand small {
-    margin-top: 4px;
-
-    font-size: 8px;
-    letter-spacing: 1.5px;
+  #phaser-game{
+    top:61px;
   }
 
-  .nav {
-    gap: 5px;
+  .game-subtitle{
+    display:none;
   }
 
-  .nav .btn {
-    min-height: 42px;
+  .ui-btn{
+    min-width:40px;
+    min-height:40px;
 
-    padding: 8px 9px;
-
-    font-size: 11px;
+    padding:7px 9px;
   }
 
-  .layout {
-    display: flex;
+  #stage-pill{
+    padding:9px 11px;
 
-    flex-direction: column;
-
-    gap: 0;
+    font-size:11px;
   }
 
-  .layout > section {
-    width: 100%;
+  .card{
+    padding:22px 15px;
+
+    border-width:4px;
   }
 
-  .side {
-    width: 100%;
+  .howto{
+    grid-template-columns:1fr;
   }
 
-  .hero {
-    margin-top: 18px;
+  .how-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    text-align:left;
   }
 
-  .hero h1 {
-    margin-top: 7px;
+  .how-num{
+    flex:0 0 auto;
 
-    font-size: 34px;
+    margin:0;
   }
 
-  .hero p {
-    margin-bottom: 10px;
-
-    font-size: 13px;
+  #answer-grid{
+    grid-template-columns:1fr;
   }
 
-  .game-shell {
-    border-width: 2px;
+  .answer-btn{
+    min-height:58px;
 
-    box-shadow: 4px 4px 0 #8eaf7d;
-  }
-
-  .game-label {
-    min-height: 42px;
-
-    padding: 8px;
-
-    font-size: 10px;
-
-    border-bottom-width: 2px;
-  }
-
-  .status {
-    min-height: 44px;
-
-    padding: 8px;
-
-    font-size: 11px;
-  }
-
-  .tools {
-    margin: 11px 0;
-  }
-
-  .tools .btn {
-    min-height: 46px;
-
-    padding: 8px;
-
-    font-size: 12px;
-  }
-
-  .panel {
-    margin-top: 12px;
-
-    padding: 16px;
-
-    box-shadow: 4px 4px 0 #8eaf7d;
-  }
-
-  .guide {
-    display: none;
-  }
-
-  .garden {
-    grid-template-columns:
-      repeat(5, minmax(0, 1fr));
-
-    gap: 5px;
-  }
-
-  .seed {
-    height: 30px;
-  }
-
-  .dialog {
-    padding: 18px;
-
-    border-width: 3px;
-
-    box-shadow: 5px 5px 0 #122d26;
-  }
-
-  .dialog h2 {
-    margin: 10px 0 14px;
-
-    font-size: 20px;
-  }
-
-  .dialog p {
-    margin: 10px 0;
-
-    font-size: 13px;
-  }
-
-  .option {
-    min-height: 50px;
-
-    padding: 9px 10px;
-
-    font-size: 13px;
-  }
-
-  .option b {
-    flex-basis: 28px;
-
-    width: 28px;
-    height: 28px;
-  }
-
-  .intro-art {
-    font-size: 40px;
+    font-size:14px;
   }
 }
 
-/* =========================================================
-   SMALL PHONES
-   ========================================================= */
+@media(max-height:620px) and (orientation:landscape){
 
-@media (max-width: 390px) {
-  .brand {
-    font-size: 12px;
-    letter-spacing: 1px;
+  #game-shell{
+    min-height:100dvh;
+    height:100dvh;
   }
 
-  .brand small {
-    font-size: 7px;
+  .card{
+    padding:18px;
   }
 
-  .nav .btn {
-    padding-inline: 7px;
-
-    font-size: 10px;
+  .start-title{
+    margin:8px 0;
+    font-size:34px;
   }
 
-  .game-label {
-    gap: 4px;
-
-    font-size: 9px;
+  .start-description{
+    margin:7px auto 10px;
   }
 
-  .game-label span:first-child {
-    overflow: hidden;
-
-    text-overflow: ellipsis;
+  .howto{
+    margin:10px 0;
   }
 
-  .hero h1 {
-    font-size: 31px;
+  .quiz-top{
+    margin-bottom:6px;
   }
 
-  .dialog {
-    padding: 15px;
+  #question-text{
+    margin-bottom:10px;
+    font-size:19px;
   }
 
-  .dialog h2 {
-    font-size: 18px;
-  }
-
-  .option {
-    font-size: 12px;
+  .answer-btn{
+    min-height:49px;
+    padding:8px 12px;
   }
 }
 
-/* =========================================================
-   SANGAT KECIL
-   ========================================================= */
-
-@media (max-width: 340px) {
-  .brand small {
-    display: none;
-  }
-
-  .nav #sound {
-    width: 44px;
-
-    overflow: hidden;
-
-    font-size: 0;
-  }
-
-  .nav #sound::after {
-    content: "🔊";
-
-    font-size: 17px;
-  }
-
-  .nav #sound[data-muted="true"]::after {
-    content: "🔇";
-  }
-
-  .game-label span:first-child {
-    display: none;
-  }
-
-  .game-label {
-    grid-template-columns: 1fr auto;
-
-    justify-content: space-between;
-  }
-}
-
-/* =========================================================
-   LANDSCAPE PHONE
-   ========================================================= */
-
-@media
-  (orientation: landscape)
-  and (max-height: 600px)
-  and (min-width: 600px) {
-
-  .app {
-    max-width: 1000px;
-
-    padding-top: max(8px, var(--safe-top));
-    padding-bottom: max(10px, var(--safe-bottom));
-  }
-
-  header {
-    margin-bottom: 8px;
-  }
-
-  .layout {
-    display: grid;
-
-    grid-template-columns:
-      minmax(0, 1fr)
-      minmax(230px, 0.7fr);
-
-    gap: 18px;
-  }
-
-  .game-shell {
-    width:
-      min(
-        100%,
-        calc((100dvh - 155px) * 0.875)
-      );
-  }
-
-  .hero h1 {
-    font-size: 28px;
-  }
-
-  .hero p {
-    font-size: 12px;
-  }
-
-  .panel {
-    padding: 13px;
-  }
-
-  .guide {
-    display: none;
-  }
-
-  .note {
-    display: none;
-  }
-}
-
-/* =========================================================
-   LARGE DESKTOP
-   ========================================================= */
-
-@media (min-width: 1200px) {
-  .app {
-    max-width: 1120px;
-  }
-
-  .layout {
-    grid-template-columns:
-      minmax(0, 620px)
-      minmax(300px, 1fr);
-
-    gap: 34px;
-  }
-}
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-  * {
-    transition: none !important;
-  }
-}
 </style>
 </head>
 
 <body>
 
-<main class="app">
+<div id="game-shell">
 
-<header>
+  <!-- ==================================================
+       TOP BAR
+  =================================================== -->
+  <header id="topbar">
 
-  <div class="brand">
-    TAMAN PIXEL
-    <small>PADAN • BELAJAR • MEKAR</small>
-  </div>
+    <div class="top-left">
+      <button
+        id="home-btn"
+        class="ui-btn"
+        aria-label="Home"
+        title="Home"
+      >
+        🏠
+      </button>
+    </div>
 
-  <nav class="nav">
+    <div class="top-center">
+      <h1 class="game-title">
+        Puzzle Tumbuhan
+      </h1>
 
-    <a
-      class="btn"
-      href="index.html"
-      aria-label="Kembali ke halaman utama"
-    >
-      ⌂ Home
-    </a>
+      <div class="game-subtitle">
+        Susun puzzle • Jawab soalan • Lengkapkan 25 stage
+      </div>
+    </div>
 
-    <button
-      id="sound"
-      class="btn"
-      aria-pressed="true"
-      data-muted="false"
-    >
-      Bunyi: ON
-    </button>
+    <div class="top-right">
 
-    <button
-      id="help"
-      class="btn"
-      aria-label="Cara bermain"
-    >
-      ?
-    </button>
+      <div id="stage-pill">
+        Stage 1 / 25
+      </div>
 
-  </nav>
-
-</header>
-
-
-<div class="layout">
-
-<section>
-
-  <div class="game-shell">
-
-    <div class="game-label">
-
-      <span>KEBUN PADANAN</span>
-
-      <span id="counter">
-        0 / 25 SOALAN
-      </span>
-
-      <span id="timer">
-        00:00
-      </span>
+      <button
+        id="sound-btn"
+        class="ui-btn"
+        aria-label="Bunyi"
+        title="Bunyi"
+      >
+        🔊
+      </button>
 
     </div>
+
+  </header>
+
+
+  <!-- ==================================================
+       PHASER GAME
+  =================================================== -->
+  <div id="phaser-game"></div>
+
+
+  <!-- ==================================================
+       START OVERLAY
+  =================================================== -->
+  <div
+    id="start-overlay"
+    class="overlay"
+  >
+
+    <div class="card">
+
+      <div class="start-badge">
+        SAINS TAHUN 1 • UNIT 6
+      </div>
+
+      <div class="start-title">
+        Puzzle <span>Tumbuhan</span>
+      </div>
+
+      <div class="start-description">
+        Susun kepingan gambar sehingga menjadi gambar tumbuhan
+        yang betul. Selepas puzzle siap, jawab satu soalan
+        untuk membuka stage seterusnya.
+      </div>
+
+      <div class="howto">
+
+        <div class="how-item">
+          <div class="how-num">1</div>
+          Tekan kepingan yang berada di sebelah ruang kosong.
+        </div>
+
+        <div class="how-item">
+          <div class="how-num">2</div>
+          Susun gambar sehingga semua kepingan berada di tempat asal.
+        </div>
+
+        <div class="how-item">
+          <div class="how-num">3</div>
+          Puzzle siap dahulu, kemudian jawab soalan.
+        </div>
+
+      </div>
+
+      <button
+        id="start-btn"
+        class="main-btn"
+      >
+        MULA BERMAIN
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ==================================================
+       QUIZ OVERLAY
+  =================================================== -->
+  <div
+    id="quiz-overlay"
+    class="overlay hidden"
+  >
 
     <div
-      id="game"
-      role="application"
-      aria-label="
-        Papan padanan tumbuhan.
-        Leret tumbuhan atau ketik
-        dua petak bersebelahan.
-      "
-    ></div>
-
-    <div
-      class="status"
-      id="status"
-      aria-live="polite"
+      id="quiz-card"
+      class="card"
     >
-      Memuatkan taman…
+
+      <div class="quiz-top">
+
+        <div id="quiz-topic">
+          KENALI BAHAGIAN TUMBUHAN
+        </div>
+
+        <div id="quiz-stage">
+          Stage 1 / 25
+        </div>
+
+      </div>
+
+      <div class="quiz-complete">
+        ✓ Puzzle siap!
+      </div>
+
+      <div id="question-text">
+        Soalan
+      </div>
+
+      <div id="answer-grid"></div>
+
+      <div id="feedback"></div>
+
     </div>
 
   </div>
 
 
-  <div class="tools">
+  <!-- ==================================================
+       FINISH OVERLAY
+  =================================================== -->
+  <div
+    id="finish-overlay"
+    class="overlay hidden"
+  >
 
-    <button
-      class="btn"
-      id="hint"
-      disabled
-    >
-      ✦ Petunjuk
-    </button>
+    <div class="card">
 
-    <button
-      class="btn"
-      id="shuffle"
-      disabled
-    >
-      ↻ Susun semula
-    </button>
+      <div class="finish-icon">
+        🌱🏆
+      </div>
+
+      <div class="finish-title">
+        Tahniah!
+      </div>
+
+      <div class="finish-text">
+        Anda berjaya menyelesaikan kesemua
+        <strong>25 puzzle tumbuhan</strong>
+        dan menjawab semua soalan Set 2.
+      </div>
+
+      <div class="finish-actions">
+
+        <button
+          id="replay-btn"
+          class="main-btn"
+        >
+          MAIN SEMULA
+        </button>
+
+        <button
+          id="finish-home-btn"
+          class="ui-btn"
+        >
+          🏠 HOME
+        </button>
+
+      </div>
+
+    </div>
 
   </div>
-
-</section>
-
-
-<aside class="side">
-
-  <div class="hero">
-
-    <div class="eyebrow">
-      SAINS TAHUN 1 · SET 1
-    </div>
-
-    <h1>
-      Padankan.<br>
-      Belajar.<br>
-      Mekarkan!
-    </h1>
-
-    <p>
-      Temui sahabat tumbuhan pixel.
-      Padankan 3 yang sama dan
-      suburkan taman ilmu kamu.
-    </p>
-
-  </div>
-
-
-  <section class="panel">
-
-    <div class="progress-top">
-
-      <span>
-        TAMAN ILMU KAMU
-      </span>
-
-      <span id="percent">
-        0%
-      </span>
-
-    </div>
-
-    <div class="bar">
-      <div id="fill"></div>
-    </div>
-
-    <div
-      class="garden"
-      id="garden"
-    ></div>
-
-    <p id="garden-text">
-      25 petak menanti untuk berbunga.
-    </p>
-
-  </section>
-
-
-  <section class="panel guide">
-
-    <h2>
-      Cara bermain
-    </h2>
-
-    <ol class="steps">
-
-      <li>
-        Leret atau ketik dua tumbuhan
-        bersebelahan untuk menukar tempat.
-      </li>
-
-      <li>
-        Padankan sekurang-kurangnya
-        3 tumbuhan sama secara mendatar
-        atau menegak.
-      </li>
-
-      <li>
-        Jawab soalan dengan betul
-        untuk menanam satu bunga.
-        Cuba lagi jika tersilap!
-      </li>
-
-    </ol>
-
-    <p class="muted">
-      Tiada had langkah.
-      Tamat selepas semua 25 soalan
-      dijawab dengan betul.
-    </p>
-
-  </section>
-
-</aside>
 
 </div>
 
 
-<p class="note">
-  Kenali bahagian tumbuhan ·
-  Ciri tumbuhan ·
-  Kepentingan bahagian ·
-  Persamaan tumbuhan
-</p>
-
-</main>
-
-
-<div
-  id="overlay"
-  class="overlay"
-  hidden
->
-
-  <section
-    class="dialog"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="modal-title"
-    id="dialog"
-  ></section>
-
-</div>
-
-
-<script
-  src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"
-  onerror="
-    document.getElementById('status').textContent =
-    'Phaser gagal dimuatkan. Semak internet dan muat semula halaman.';
-  "
-></script>
+<!-- ====================================================
+     PHASER 3
+===================================================== -->
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 
 <script>
-"use strict";
 
-
-/* =========================================================
-   SOALAN
-
-   Format:
-   [
-     TP,
-     soalan,
-     pilihan jawapan,
-     indeks jawapan betul
-   ]
-
-   A = 0
-   B = 1
-   C = 2
-   D = 3
-   ========================================================= */
+/* ======================================================
+   QUESTIONS — SET 2
+====================================================== */
 
 const QUESTIONS = [
 
-  [
-    1,
-
-    "Bahagian manakah terdapat pada pokok bunga raya dan pokok keembung?",
-
-    [
-      "Akar",
-      "Sirip",
-      "Tanduk",
-      "Paruh"
-    ],
-
-    0
-  ],
-
-  [
-    1,
-
-    "Pokok keembung mempunyai bunga, daun, batang dan ____.",
-
-    [
-      "Sayap",
-      "Tanduk",
-      "Sirip",
+  {
+    tp: "TP2",
+    q: "Apakah bahagian yang boleh dilabel pada pokok bunga raya di bahagian tengah yang tegak?",
+    choices: [
+      "Daun",
+      "Batang",
+      "Bunga",
       "Akar"
     ],
+    answer: 1
+  },
 
-    3
-  ],
-
-  [
-    2,
-
-    "Empat label yang sesuai untuk gambar pokok lengkap ialah ____.",
-
-    [
-      "Sirip, paruh, tanduk dan sumbu",
-
-      "Bunga, daun, batang dan akar",
-
-      "Mata, hidung, telinga dan kulit",
-
-      "Roda, pintu, bumbung dan tingkap"
-    ],
-
-    1
-  ],
-
-  [
-    2,
-
-    "Jika bahagian tumbuhan ditunjukkan berada di dalam tanah, apakah label yang sesuai?",
-
-    [
-      "Akar",
-      "Bunga",
+  {
+    tp: "TP1",
+    q: "Apakah bahagian tumbuhan yang menyambungkan akar dengan daun?",
+    choices: [
       "Batang",
-      "Daun"
-    ],
-
-    0
-  ],
-
-  [
-    1,
-
-    "Apakah bahagian tumbuhan yang terletak paling bawah?",
-
-    [
-      "Bunga",
-      "Buah",
       "Akar",
-      "Daun"
+      "Daun",
+      "Bunga"
     ],
+    answer: 0
+  },
 
-    2
-  ],
-
-  [
-    2,
-
-    "Apabila melihat pokok berbunga, bahagian yang paling mudah dikenal sebagai bunga ialah bahagian yang ____.",
-
-    [
-      "Berada dalam tanah",
-
-      "Menjadi batang utama",
-
-      "Berbentuk akar",
-
-      "Mempunyai kelopak"
-    ],
-
-    3
-  ],
-
-  [
-    1,
-
-    "Urat daun selari terdapat pada daun pokok ____.",
-
-    [
-      "Durian",
-      "Teratai",
-      "Pandan",
-      "Bunga ros"
-    ],
-
-    2
-  ],
-
-  [
-    2,
-
-    "Apabila mengelaskan tumbuhan mengikut akar, dua kumpulan yang sesuai ialah ____.",
-
-    [
-      "Tunjang dan serabut",
-
-      "Berkayu dan tidak berkayu",
-
-      "Jejala dan selari",
-
-      "Berbunga dan tidak berbunga"
-    ],
-
-    0
-  ],
-
-  [
-    2,
-
-    "Apabila mengelaskan tumbuhan mengikut bunga, dua kumpulan yang sesuai ialah ____.",
-
-    [
-      "Besar dan kecil",
-
-      "Berbunga dan tidak berbunga",
-
-      "Keras dan lembut",
-
-      "Masam dan manis"
-    ],
-
-    1
-  ],
-
-  [
-    1,
-
-    "Pokok bunga ros dan pokok pandan berbeza dari segi jenis ____.",
-
-    [
+  {
+    tp: "TP1",
+    q: "Apakah bahagian tumbuhan yang biasanya kelihatan memanjang dan tegak?",
+    choices: [
       "Akar",
-      "Sirip",
-      "Sayap",
-      "Paruh"
-    ],
-
-    0
-  ],
-
-  [
-    2,
-
-    "Antara pasangan berikut, yang manakah sepadan dengan betul?",
-
-    [
-      "Betik – batang berkayu",
-
-      "Pandan – akar tunjang",
-
-      "Durian – batang berkayu",
-
-      "Bunga ros – urat daun selari"
-    ],
-
-    2
-  ],
-
-  [
-    1,
-
-    "Pokok teratai ialah tumbuhan yang ____.",
-
-    [
-      "Berakar serabut sahaja",
-
-      "Berbunga",
-
-      "Tidak berbunga",
-
-      "Tidak berdaun"
-    ],
-
-    1
-  ],
-
-  [
-    1,
-
-    "Batang penting kerana batang ____.",
-
-    [
-      "Menjadi akar",
-
-      "Menghasilkan bunyi",
-
-      "Menjadi tanah",
-
-      "Mengangkut bahan dalam tumbuhan"
-    ],
-
-    3
-  ],
-
-  [
-    1,
-
-    "Bahagian yang mengangkut air dan nutrien daripada akar ke daun ialah ____.",
-
-    [
-      "Bunga",
       "Batang",
-      "Buah",
+      "Bunga",
       "Daun"
     ],
+    answer: 1
+  },
 
-    1
-  ],
-
-  [
-    1,
-
-    "Bunga akan bertukar menjadi ____.",
-
-    [
-      "Air dan nutrien",
-
-      "Akar dan tanah",
-
-      "Buah dan biji benih",
-
-      "Daun dan batang"
-    ],
-
-    2
-  ],
-
-  [
-    2,
-
-    "Jika tumbuhan memerlukan air dari tanah, bahagian pertama yang berperanan ialah ____.",
-
-    [
+  {
+    tp: "TP2",
+    q: "Jika akar berada di bawah tanah, bahagian yang membawa daun ke atas ialah ____.",
+    choices: [
+      "Bunga",
+      "Buah",
       "Akar",
-      "Buah",
-      "Bunga",
-      "Daun"
-    ],
-
-    0
-  ],
-
-  [
-    2,
-
-    "Jika daun tidak dapat menjalankan fungsinya, tumbuhan sukar untuk ____.",
-
-    [
-      "Mendengar",
-      "Bergerak",
-      "Bercakap",
-      "Membuat makanan"
-    ],
-
-    3
-  ],
-
-  [
-    1,
-
-    "Bahagian yang mengangkut makanan yang dihasilkan oleh daun ialah ____.",
-
-    [
-      "Akar",
-      "Bunga",
-      "Batang",
-      "Daun"
-    ],
-
-    2
-  ],
-
-  [
-    2,
-
-    "Akar menyerap air daripada tanah. Selepas itu, bahagian yang mengangkut air ke daun ialah ____.",
-
-    [
-      "Biji benih",
-      "Bunga",
-      "Buah",
       "Batang"
     ],
+    answer: 3
+  },
 
-    3
-  ],
-
-  [
-    2,
-
-    "Antara berikut, yang manakah satu lagi persamaan bunga raya dan bunga ros?",
-
-    [
-      "Kedua-duanya tidak berbunga",
-
-      "Kedua-duanya berbatang berkayu",
-
-      "Kedua-duanya berurat selari",
-
-      "Kedua-duanya tidak berkayu"
+  {
+    tp: "TP1",
+    q: "Antara berikut, yang manakah BUKAN bahagian tumbuhan yang dinyatakan dalam Unit 6?",
+    choices: [
+      "Daun",
+      "Bunga",
+      "Sayap",
+      "Akar"
     ],
+    answer: 2
+  },
 
-    1
-  ],
-
-  [
-    2,
-
-    "Dua tumbuhan berbeza boleh sama-sama berbunga tetapi masih merupakan ____.",
-
-    [
-      "Tumbuhan yang berlainan",
-
-      "Objek bukan hidup",
-
-      "Haiwan yang sama",
-
-      "Bahagian badan manusia"
+  {
+    tp: "TP2",
+    q: "Apakah bahagian yang boleh dilabel pada pokok keembung di bahagian paling bawah?",
+    choices: [
+      "Batang",
+      "Bunga",
+      "Daun",
+      "Akar"
     ],
+    answer: 3
+  },
 
-    0
-  ],
-
-  [
-    1,
-
-    "Apakah persamaan pokok bunga raya dengan pokok bunga ros dari segi bunga?",
-
-    [
-      "Hanya bunga raya berbunga",
-
-      "Hanya bunga ros berbunga",
-
-      "Kedua-duanya tidak berbunga",
-
-      "Kedua-duanya berbunga"
+  {
+    tp: "TP1",
+    q: "Antara berikut, yang manakah ciri bunga?",
+    choices: [
+      "Berkayu atau tidak berkayu",
+      "Berbunga atau tidak berbunga",
+      "Jejala atau selari",
+      "Tunjang atau serabut"
     ],
+    answer: 1
+  },
 
-    3
-  ],
-
-  [
-    1,
-
-    "Apakah persamaan kedua-dua pokok bunga raya dan bunga ros dari segi batang?",
-
-    [
-      "Urat selari",
-
-      "Batang berkayu",
-
-      "Batang tidak berkayu",
-
-      "Akar serabut"
+  {
+    tp: "TP2",
+    q: "Pokok A berbunga dan pokok B tidak berbunga. Apakah bahagian yang dibandingkan?",
+    choices: [
+      "Akar",
+      "Batang",
+      "Bunga",
+      "Daun"
     ],
+    answer: 2
+  },
 
-    1
-  ],
-
-  [
-    2,
-
-    "Apabila membandingkan dua tumbuhan, 'serupa' bermaksud mempunyai ____.",
-
-    [
-      "Saiz yang mesti sama",
-
-      "Tempat tumbuh yang sama",
-
-      "Ciri yang sama",
-
-      "Nama yang sama sahaja"
+  {
+    tp: "TP1",
+    q: "Pokok pandan berbeza daripada pokok bunga ros dari segi akar. Pandan berakar ____.",
+    choices: [
+      "Serabut",
+      "Jejala",
+      "Selari",
+      "Tunjang"
     ],
+    answer: 0
+  },
 
-    2
-  ],
-
-  [
-    1,
-
-    "Apakah persamaan kedua-dua pokok bunga raya dan bunga ros dari segi daun?",
-
-    [
-      "Urat daun jejala",
-
-      "Akar serabut",
-
-      "Urat daun selari",
-
-      "Tiada urat daun"
+  {
+    tp: "TP1",
+    q: "Antara berikut, yang manakah ciri akar?",
+    choices: [
+      "Berbunga atau tidak berbunga",
+      "Jejala atau selari",
+      "Berkayu atau tidak berkayu",
+      "Tunjang atau serabut"
     ],
+    answer: 3
+  },
 
-    0
-  ]
+  {
+    tp: "TP2",
+    q: "Apakah ciri yang digunakan untuk membezakan akar bunga ros dengan akar pandan?",
+    choices: [
+      "Tunjang atau serabut",
+      "Jejala atau selari",
+      "Berkayu atau tidak berkayu",
+      "Berbunga atau tidak berbunga"
+    ],
+    answer: 0
+  },
+
+  {
+    tp: "TP2",
+    q: "Jika satu tumbuhan mempunyai batang keras seperti pokok durian, batang itu dikelaskan sebagai ____.",
+    choices: [
+      "Selari",
+      "Serabut",
+      "Berkayu",
+      "Tidak berkayu"
+    ],
+    answer: 2
+  },
+
+  {
+    tp: "TP2",
+    q: "Jika akar menyerap air tetapi air perlu sampai ke daun, bahagian yang membantu ialah ____.",
+    choices: [
+      "Biji benih",
+      "Batang",
+      "Bunga",
+      "Buah"
+    ],
+    answer: 1
+  },
+
+  {
+    tp: "TP1",
+    q: "Air dan nutrien diserap daripada tanah oleh ____.",
+    choices: [
+      "Bunga",
+      "Daun",
+      "Akar",
+      "Batang"
+    ],
+    answer: 2
+  },
+
+  {
+    tp: "TP2",
+    q: "Jika batang tidak berfungsi dengan baik, pengangkutan air dan nutrien ke daun akan ____.",
+    choices: [
+      "Terganggu",
+      "Menjadi lebih kuat",
+      "Bertukar menjadi bunga",
+      "Bertukar menjadi tanah"
+    ],
+    answer: 0
+  },
+
+  {
+    tp: "TP1",
+    q: "Bahagian yang membantu menyokong pokok ialah ____.",
+    choices: [
+      "Bunga",
+      "Daun",
+      "Buah",
+      "Akar"
+    ],
+    answer: 3
+  },
+
+  {
+    tp: "TP1",
+    q: "Akar membantu pokok supaya tidak mudah ____.",
+    choices: [
+      "Terbang",
+      "Tumbang",
+      "Bergerak",
+      "Berbunyi"
+    ],
+    answer: 1
+  },
+
+  {
+    tp: "TP1",
+    q: "Apakah dua bahan yang diangkut oleh batang daripada akar ke daun?",
+    choices: [
+      "Cahaya dan bunyi",
+      "Buah dan biji benih",
+      "Air dan nutrien",
+      "Tanah dan batu"
+    ],
+    answer: 2
+  },
+
+  {
+    tp: "TP2",
+    q: "Mengapakah daun penting kepada tumbuhan?",
+    choices: [
+      "Daun membuat makanan",
+      "Daun menjadi akar",
+      "Daun menyerap air dari tanah",
+      "Daun menyokong tanah"
+    ],
+    answer: 0
+  },
+
+  {
+    tp: "TP1",
+    q: "Dua tumbuhan yang berlainan boleh mempunyai ciri bahagian yang ____.",
+    choices: [
+      "Sentiasa berbeza",
+      "Serupa",
+      "Tiada",
+      "Mustahil sama"
+    ],
+    answer: 1
+  },
+
+  {
+    tp: "TP2",
+    q: "Untuk mencari persamaan dua tumbuhan, kita boleh membandingkan ____.",
+    choices: [
+      "Rasa minuman",
+      "Warna pakaian",
+      "Bunyi haiwan",
+      "Ciri bahagian tumbuhan"
+    ],
+    answer: 3
+  },
+
+  {
+    tp: "TP1",
+    q: "Akar pokok bunga raya dan bunga ros sama-sama jenis ____.",
+    choices: [
+      "Selari",
+      "Serabut",
+      "Tunjang",
+      "Jejala"
+    ],
+    answer: 2
+  },
+
+  {
+    tp: "TP2",
+    q: "Bunga raya dan bunga ros mempunyai urat daun jejala. Pernyataan ini menunjukkan ____.",
+    choices: [
+      "Tiada persamaan",
+      "Perbezaan jenis akar",
+      "Perbezaan jenis batang",
+      "Persamaan ciri daun"
+    ],
+    answer: 3
+  },
+
+  {
+    tp: "TP2",
+    q: "Pokok A dan pokok B kedua-duanya berbunga. Apakah persamaan mereka?",
+    choices: [
+      "Kedua-duanya tidak berdaun",
+      "Kedua-duanya mempunyai ciri berbunga",
+      "Kedua-duanya berakar serabut",
+      "Kedua-duanya tidak berbunga"
+    ],
+    answer: 1
+  },
+
+  {
+    tp: "TP1",
+    q: "Pokok bunga raya dan pokok bunga ros sama-sama ____.",
+    choices: [
+      "Berbunga",
+      "Berakar serabut",
+      "Tidak berbunga",
+      "Berdaun selari"
+    ],
+    answer: 0
+  }
 
 ];
 
 
-/* =========================================================
-   DOM
-   ========================================================= */
+/* ======================================================
+   STAGE VISUAL NAMES
+====================================================== */
 
-const $ = id =>
-  document.getElementById(id);
+const STAGE_NAMES = [
 
-const overlay =
-  $("overlay");
+  "Bunga Raya",
+  "Pokok Keembung",
+  "Batang Tegak",
+  "Bahagian Pokok",
+  "Kenali Tumbuhan",
 
-const dialog =
-  $("dialog");
+  "Akar & Batang",
+  "Bunga Berwarna",
+  "Banding Dua Pokok",
+  "Pandan Hijau",
+  "Jenis Akar",
 
+  "Akar Tumbuhan",
+  "Batang Berkayu",
+  "Laluan Air",
+  "Akar Menyerap",
+  "Batang Mengangkut",
 
-/* =========================================================
-   GAME SETTINGS
-   ========================================================= */
+  "Akar Menyokong",
+  "Pokok Kukuh",
+  "Air & Nutrien",
+  "Daun Hijau",
+  "Ciri Serupa",
 
-const BOARD_SIZE = 7;
+  "Banding Tumbuhan",
+  "Akar Tunjang",
+  "Urat Daun",
+  "Pokok Berbunga",
+  "Bunga Raya & Ros"
 
-const TILE_SIZE = 68;
-
-const BOARD_X = 42;
-
-const BOARD_Y = 105;
-
-
-/* =========================================================
-   STATUS PERMAINAN
-   ========================================================= */
-
-let scene = null;
-
-let phaserGame = null;
-
-let started = false;
-
-let finished = false;
-
-let answered = 0;
-
-let muted = false;
-
-let audioContext = null;
-
-let elapsed = 0;
-
-let clockStart = 0;
-
-let modal = false;
-
-let previousFocus = null;
+];
 
 
-/* =========================================================
-   UTILITY
-   ========================================================= */
+/* ======================================================
+   GLOBAL STATE
+====================================================== */
 
-function stamp(ms) {
+let currentStage = 0;
 
-  const seconds =
-    Math.floor(ms / 1000);
+let gameScene = null;
 
-  const minutes =
-    Math.floor(seconds / 60);
+let pendingStart = false;
 
-  return (
-    String(minutes)
-      .padStart(2, "0") +
-
-    ":" +
-
-    String(seconds % 60)
-      .padStart(2, "0")
-  );
-}
+let quizLocked = false;
 
 
-function status(message) {
+/* ======================================================
+   SIMPLE SOUND EFFECTS
+   - No audio file required
+====================================================== */
 
-  $("status").textContent =
-    message;
+class SimpleSFX{
 
-}
+  constructor(){
 
-
-/* =========================================================
-   AUDIO
-   ========================================================= */
-
-function sound(
-  frequency = 520,
-  duration = 0.1
-) {
-
-  if (muted) {
-    return;
-  }
-
-  try {
-
-    audioContext ||= new (
-      window.AudioContext ||
-      window.webkitAudioContext
-    )();
-
-    audioContext.resume();
-
-    const oscillator =
-      audioContext.createOscillator();
-
-    const gain =
-      audioContext.createGain();
-
-
-    oscillator.type =
-      "triangle";
-
-    oscillator.frequency.value =
-      frequency;
-
-
-    gain.gain.setValueAtTime(
-      0.055,
-      audioContext.currentTime
-    );
-
-
-    gain.gain.exponentialRampToValueAtTime(
-      0.001,
-      audioContext.currentTime + duration
-    );
-
-
-    oscillator.connect(gain);
-
-    gain.connect(
-      audioContext.destination
-    );
-
-
-    oscillator.start();
-
-    oscillator.stop(
-      audioContext.currentTime + duration
-    );
-
-  } catch (error) {
-
-    /*
-      Jika telefon atau browser
-      tidak menyokong Web Audio,
-      game tetap boleh dimainkan.
-    */
+    this.ctx = null;
+    this.enabled = true;
 
   }
 
-}
+  unlock(){
 
+    if(!this.enabled) return;
 
-/* =========================================================
-   MODAL
-   ========================================================= */
+    if(!this.ctx){
 
-function openModal(html) {
+      const AudioContext =
+        window.AudioContext ||
+        window.webkitAudioContext;
 
-  previousFocus =
-    document.activeElement;
+      if(AudioContext){
 
-  modal = true;
+        this.ctx =
+          new AudioContext();
 
-  dialog.innerHTML =
-    html;
-
-  overlay.hidden =
-    false;
-
-
-  document.body.style.overflow =
-    "hidden";
-
-
-  setTimeout(() => {
-
-    dialog
-      .querySelector(
-        "button:not([hidden]):not(:disabled)"
-      )
-      ?.focus();
-
-  }, 30);
-
-}
-
-
-function closeModal() {
-
-  overlay.hidden =
-    true;
-
-  modal =
-    false;
-
-  document.body.style.overflow =
-    "";
-
-  previousFocus
-    ?.focus?.();
-
-}
-
-
-/* =========================================================
-   MODAL KEYBOARD ACCESSIBILITY
-   ========================================================= */
-
-overlay.addEventListener(
-  "keydown",
-  event => {
-
-    if (event.key !== "Tab") {
-      return;
-    }
-
-
-    const elements = [
-      ...dialog.querySelectorAll(
-        `
-        button:not(:disabled):not([hidden]),
-        a[href]
-        `
-      )
-    ];
-
-
-    if (!elements.length) {
-      return;
-    }
-
-
-    const first =
-      elements[0];
-
-    const last =
-      elements[elements.length - 1];
-
-
-    if (
-      event.shiftKey &&
-      document.activeElement === first
-    ) {
-
-      event.preventDefault();
-
-      last.focus();
-
-    } else if (
-      !event.shiftKey &&
-      document.activeElement === last
-    ) {
-
-      event.preventDefault();
-
-      first.focus();
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   PROGRESS
-   ========================================================= */
-
-function progress() {
-
-  const total =
-    QUESTIONS.length;
-
-  const percentage =
-    Math.round(
-      answered / total * 100
-    );
-
-
-  $("counter").textContent =
-    answered +
-    " / " +
-    total +
-    " SOALAN";
-
-
-  $("percent").textContent =
-    percentage + "%";
-
-
-  $("fill").style.width =
-    percentage + "%";
-
-
-  $("garden").innerHTML =
-    Array.from(
-      {
-        length: total
-      },
-      (_, index) => `
-
-        <div
-          class="
-            seed
-            ${
-              index < answered
-                ? "grown"
-                : ""
-            }
-          "
-
-          aria-label="
-            Soalan ${index + 1}
-            ${
-              index < answered
-                ? " selesai"
-                : ""
-            }
-          "
-        >
-
-          ${
-            index < answered
-              ? "✿"
-              : index + 1
-          }
-
-        </div>
-
-      `
-    ).join("");
-
-
-  if (answered === total) {
-
-    $("garden-text").textContent =
-      "Taman kamu sudah mekar sepenuhnya!";
-
-  } else {
-
-    $("garden-text").textContent =
-      answered +
-      " bunga ditanam. " +
-      (total - answered) +
-      " lagi untuk mekar!";
-
-  }
-
-}
-
-
-/* =========================================================
-   INTRO
-   ========================================================= */
-
-function intro(help = false) {
-
-  openModal(`
-
-    <div class="intro-art">
-      ✿
-    </div>
-
-    <div class="tag center">
-      SELAMAT DATANG, PEKEBUN CILIK!
-    </div>
-
-    <h2
-      id="modal-title"
-      class="center"
-    >
-      Taman kecil, ilmu besar.
-    </h2>
-
-    <p>
-
-      Padankan
-      <b>
-        3 atau lebih tumbuhan sama
-      </b>
-
-      dalam satu baris atau lajur.
-
-      Leret satu petak atau
-      ketik dua petak bersebelahan.
-
-    </p>
-
-    <p>
-
-      Setiap pertukaran yang
-      menghasilkan padanan membuka
-
-      <b>
-        satu soalan
-      </b>.
-
-      Jawab dengan betul untuk
-      menanam bunga.
-
-      Jawapan salah?
-      Cuba lagi tanpa had!
-
-    </p>
-
-    <p class="muted">
-
-      Lengkapkan semua
-      ${QUESTIONS.length} soalan.
-
-      Petunjuk dan susun semula
-      tersedia ketika papan sedia.
-
-    </p>
-
-    <button
-      class="btn primary"
-      id="begin"
-    >
-
-      ${
-        help
-          ? "Sambung bermain"
-          : "Jom berkebun!"
       }
 
-      →
+    }
 
-    </button>
+    if(
+      this.ctx &&
+      this.ctx.state === "suspended"
+    ){
 
-  `);
-
-
-  $("begin").onclick = () => {
-
-    closeModal();
-
-
-    if (!started) {
-
-      started =
-        true;
-
-      clockStart =
-        performance.now();
+      this.ctx.resume();
 
     }
 
+  }
 
-    sound();
+  tone(
+    frequency = 440,
+    duration = .08,
+    volume = .035,
+    type = "sine",
+    delay = 0
+  ){
 
+    if(
+      !this.enabled ||
+      !this.ctx
+    ) return;
 
-    status(
-      "Padankan 3 tumbuhan sama untuk buka soalan."
+    const start =
+      this.ctx.currentTime + delay;
+
+    const osc =
+      this.ctx.createOscillator();
+
+    const gain =
+      this.ctx.createGain();
+
+    osc.type = type;
+
+    osc.frequency.setValueAtTime(
+      frequency,
+      start
     );
+
+    gain.gain.setValueAtTime(
+      0.0001,
+      start
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      volume,
+      start + .01
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      start + duration
+    );
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(start);
+    osc.stop(start + duration + .03);
+
+  }
+
+  move(){
+
+    this.tone(
+      320,
+      .055,
+      .022,
+      "triangle"
+    );
+
+  }
+
+  wrong(){
+
+    this.tone(
+      175,
+      .15,
+      .035,
+      "sawtooth"
+    );
+
+    this.tone(
+      135,
+      .17,
+      .025,
+      "sawtooth",
+      .08
+    );
+
+  }
+
+  correct(){
+
+    this.tone(
+      480,
+      .10,
+      .035,
+      "sine"
+    );
+
+    this.tone(
+      650,
+      .12,
+      .035,
+      "sine",
+      .09
+    );
+
+    this.tone(
+      820,
+      .15,
+      .03,
+      "sine",
+      .18
+    );
+
+  }
+
+  puzzleDone(){
+
+    this.tone(
+      390,
+      .09,
+      .03,
+      "triangle"
+    );
+
+    this.tone(
+      520,
+      .10,
+      .03,
+      "triangle",
+      .08
+    );
+
+    this.tone(
+      720,
+      .17,
+      .035,
+      "triangle",
+      .16
+    );
+
+  }
+
+}
+
+const SFX =
+  new SimpleSFX();
+
+
+/* ======================================================
+   SEEDED RANDOM
+====================================================== */
+
+function mulberry32(seed){
+
+  return function(){
+
+    let t =
+      seed += 0x6D2B79F5;
+
+    t =
+      Math.imul(
+        t ^ t >>> 15,
+        t | 1
+      );
+
+    t ^=
+      t +
+      Math.imul(
+        t ^ t >>> 7,
+        t | 61
+      );
+
+    return (
+      (
+        t ^ t >>> 14
+      ) >>> 0
+    ) / 4294967296;
 
   };
 
 }
 
+function randomRange(
+  rng,
+  min,
+  max
+){
 
-/* =========================================================
-   QUIZ
-   ========================================================= */
+  return (
+    min +
+    (max - min) *
+    rng()
+  );
 
-function quiz() {
-
-  const question =
-    QUESTIONS[answered];
-
-
-  const number =
-    answered + 1;
-
-
-  openModal(`
-
-    <div class="tag">
-
-      SOALAN
-      ${number}
-      /
-      ${QUESTIONS.length}
-
-      ·
-
-      TP${question[0]}
-
-    </div>
+}
 
 
-    <h2 id="modal-title">
+/* ======================================================
+   PLANT ILLUSTRATION HELPERS
+====================================================== */
 
-      ${question[1]}
+function drawLeaf(
+  ctx,
+  x,
+  y,
+  width,
+  height,
+  angle,
+  fill
+){
 
-    </h2>
+  ctx.save();
+
+  ctx.translate(
+    x,
+    y
+  );
+
+  ctx.rotate(angle);
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    -width / 2,
+    0
+  );
+
+  ctx.quadraticCurveTo(
+    0,
+    -height / 2,
+    width / 2,
+    0
+  );
+
+  ctx.quadraticCurveTo(
+    0,
+    height / 2,
+    -width / 2,
+    0
+  );
+
+  ctx.closePath();
+
+  ctx.fillStyle =
+    fill;
+
+  ctx.fill();
+
+  ctx.strokeStyle =
+    "#356a43";
+
+  ctx.lineWidth = 5;
+
+  ctx.stroke();
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    -width * .32,
+    0
+  );
+
+  ctx.lineTo(
+    width * .33,
+    0
+  );
+
+  ctx.strokeStyle =
+    "rgba(40,95,55,.55)";
+
+  ctx.lineWidth = 3;
+
+  ctx.stroke();
+
+  ctx.restore();
+
+}
 
 
-    <div class="options">
+function drawFlower(
+  ctx,
+  x,
+  y,
+  size,
+  color,
+  centre,
+  petals = 6
+){
 
-      ${
+  ctx.save();
 
-        question[2]
-          .map(
-            (answer, index) => `
+  ctx.translate(
+    x,
+    y
+  );
 
-              <button
-                class="option"
-                data-answer="${index}"
-              >
+  ctx.shadowColor =
+    "rgba(83,65,44,.15)";
 
-                <b>
-                  ${"ABCD"[index]}
-                </b>
+  ctx.shadowBlur = 8;
+  ctx.shadowOffsetY = 5;
 
-                <span>
-                  ${answer}
-                </span>
+  for(
+    let i = 0;
+    i < petals;
+    i++
+  ){
 
-              </button>
+    const angle =
+      (Math.PI * 2 / petals) *
+      i;
 
-            `
-          )
-          .join("")
+    ctx.save();
 
+    ctx.rotate(angle);
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+      0,
+      -size * .45,
+      size * .27,
+      size * .52,
+      0,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fillStyle =
+      color;
+
+    ctx.fill();
+
+    ctx.strokeStyle =
+      "rgba(127,66,72,.55)";
+
+    ctx.lineWidth = 3;
+
+    ctx.stroke();
+
+    ctx.restore();
+
+  }
+
+  ctx.shadowColor =
+    "transparent";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    0,
+    0,
+    size * .30,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fillStyle =
+    centre;
+
+  ctx.fill();
+
+  ctx.strokeStyle =
+    "#9b6b2a";
+
+  ctx.lineWidth = 3;
+
+  ctx.stroke();
+
+  ctx.restore();
+
+}
+
+
+function drawRoots(
+  ctx,
+  x,
+  topY,
+  scale,
+  rootColor
+){
+
+  ctx.save();
+
+  ctx.strokeStyle =
+    rootColor;
+
+  ctx.lineWidth =
+    11 * scale;
+
+  ctx.lineCap =
+    "round";
+
+  const branches = [
+
+    [-115,95],
+    [-75,120],
+    [-30,105],
+    [0,135],
+    [35,115],
+    [78,125],
+    [112,92]
+
+  ];
+
+  branches.forEach(
+    ([dx,dy], index) => {
+
+      ctx.beginPath();
+
+      ctx.moveTo(
+        x,
+        topY
+      );
+
+      const bend =
+        index % 2 === 0
+          ? -18
+          : 18;
+
+      ctx.bezierCurveTo(
+        x + dx * .28,
+        topY + 35,
+        x + dx * .65 + bend,
+        topY + dy * .72,
+        x + dx,
+        topY + dy
+      );
+
+      ctx.stroke();
+
+    }
+  );
+
+  ctx.restore();
+
+}
+
+
+function drawPlant(
+  ctx,
+  options
+){
+
+  const {
+    x,
+    baseY,
+    scale,
+    stemColor,
+    leafA,
+    leafB,
+    flowerColor,
+    centreColor,
+    rootsVisible = true,
+    flowers = 1,
+    wooden = false
+  } = options;
+
+  const stemWidth =
+    (wooden ? 24 : 17) *
+    scale;
+
+  const topY =
+    baseY - 280 * scale;
+
+  ctx.save();
+
+  ctx.lineCap =
+    "round";
+
+  ctx.shadowColor =
+    "rgba(49,66,42,.12)";
+
+  ctx.shadowBlur = 8;
+  ctx.shadowOffsetY = 5;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    x,
+    baseY
+  );
+
+  ctx.lineTo(
+    x,
+    topY
+  );
+
+  ctx.strokeStyle =
+    wooden
+      ? "#845936"
+      : stemColor;
+
+  ctx.lineWidth =
+    stemWidth;
+
+  ctx.stroke();
+
+  ctx.shadowColor =
+    "transparent";
+
+  const leaves = [
+
+    [-58,-78,-.35],
+    [57,-112,.35],
+    [-66,-148,-.42],
+    [67,-185,.38],
+    [-49,-218,-.34],
+    [50,-242,.32]
+
+  ];
+
+  leaves.forEach(
+    (leaf,index) => {
+
+      drawLeaf(
+        ctx,
+        x + leaf[0] * scale,
+        baseY + leaf[1] * scale,
+        102 * scale,
+        50 * scale,
+        leaf[2],
+        index % 2 === 0
+          ? leafA
+          : leafB
+      );
+
+    }
+  );
+
+  if(flowers > 0){
+
+    drawFlower(
+      ctx,
+      x,
+      topY - 10 * scale,
+      68 * scale,
+      flowerColor,
+      centreColor,
+      6 + (
+        Math.round(x) % 3
+      )
+    );
+
+  }
+
+  if(flowers > 1){
+
+    drawFlower(
+      ctx,
+      x - 69 * scale,
+      topY + 78 * scale,
+      44 * scale,
+      flowerColor,
+      centreColor,
+      6
+    );
+
+    drawFlower(
+      ctx,
+      x + 66 * scale,
+      topY + 102 * scale,
+      41 * scale,
+      flowerColor,
+      centreColor,
+      6
+    );
+
+  }
+
+  if(rootsVisible){
+
+    drawRoots(
+      ctx,
+      x,
+      baseY + 5,
+      scale,
+      "#835734"
+    );
+
+  }
+
+  ctx.restore();
+
+}
+
+
+/* ======================================================
+   CREATE UNIQUE PLANT ART FOR EACH STAGE
+====================================================== */
+
+function createPlantArtwork(stageIndex){
+
+  const canvas =
+    document.createElement("canvas");
+
+  canvas.width = 600;
+  canvas.height = 600;
+
+  const ctx =
+    canvas.getContext("2d");
+
+  const rng =
+    mulberry32(
+      1789 +
+      stageIndex * 733
+    );
+
+  const palettes = [
+
+    {
+      sky:"#bee9ef",
+      soil:"#bd8258",
+      soil2:"#9d6948",
+      leaf1:"#5bae58",
+      leaf2:"#78c76b",
+      flower:"#ed6687",
+      centre:"#ffd65c"
+    },
+
+    {
+      sky:"#d8ecbd",
+      soil:"#bd8056",
+      soil2:"#976344",
+      leaf1:"#57a95f",
+      leaf2:"#87cc69",
+      flower:"#f5a5cc",
+      centre:"#ffd35d"
+    },
+
+    {
+      sky:"#ffe8a9",
+      soil:"#b97e52",
+      soil2:"#925e3f",
+      leaf1:"#4fa970",
+      leaf2:"#79c47d",
+      flower:"#ff805e",
+      centre:"#ffe56e"
+    },
+
+    {
+      sky:"#cbdafa",
+      soil:"#b37c55",
+      soil2:"#8f6040",
+      leaf1:"#57a765",
+      leaf2:"#76bc65",
+      flower:"#be80de",
+      centre:"#ffe06d"
+    },
+
+    {
+      sky:"#f5cecf",
+      soil:"#bd8057",
+      soil2:"#976144",
+      leaf1:"#4c9e62",
+      leaf2:"#76bd6a",
+      flower:"#ef668c",
+      centre:"#ffd869"
+    }
+
+  ];
+
+  const palette =
+    palettes[
+      stageIndex %
+      palettes.length
+    ];
+
+  /* sky */
+  ctx.fillStyle =
+    palette.sky;
+
+  ctx.fillRect(
+    0,
+    0,
+    600,
+    600
+  );
+
+  /* paper texture */
+  for(
+    let i = 0;
+    i < 90;
+    i++
+  ){
+
+    ctx.beginPath();
+
+    ctx.arc(
+      rng() * 600,
+      rng() * 600,
+      randomRange(
+        rng,
+        1,
+        4
+      ),
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fillStyle =
+      `rgba(255,255,255,${
+        randomRange(
+          rng,
+          .04,
+          .13
+        )
+      })`;
+
+    ctx.fill();
+
+  }
+
+  /* sun */
+  ctx.beginPath();
+
+  ctx.arc(
+    82,
+    84,
+    40,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fillStyle =
+    "#ffe06b";
+
+  ctx.fill();
+
+  ctx.strokeStyle =
+    "rgba(178,126,33,.30)";
+
+  ctx.lineWidth = 5;
+
+  ctx.stroke();
+
+  /* cloud */
+  ctx.fillStyle =
+    "rgba(255,255,255,.78)";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    465,
+    98,
+    31,
+    Math.PI,
+    0
+  );
+
+  ctx.arc(
+    503,
+    93,
+    42,
+    Math.PI,
+    0
+  );
+
+  ctx.arc(
+    544,
+    102,
+    28,
+    Math.PI,
+    0
+  );
+
+  ctx.lineTo(
+    570,
+    125
+  );
+
+  ctx.lineTo(
+    435,
+    125
+  );
+
+  ctx.closePath();
+
+  ctx.fill();
+
+  /* grass */
+  ctx.fillStyle =
+    "#78bd63";
+
+  ctx.fillRect(
+    0,
+    430,
+    600,
+    35
+  );
+
+  for(
+    let x = 0;
+    x <= 600;
+    x += 20
+  ){
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      x,
+      442
+    );
+
+    ctx.lineTo(
+      x + 9,
+      418 - rng() * 15
+    );
+
+    ctx.lineTo(
+      x + 15,
+      442
+    );
+
+    ctx.fillStyle =
+      x % 40 === 0
+        ? "#5da454"
+        : "#70b95e";
+
+    ctx.fill();
+
+  }
+
+  /* soil */
+  ctx.fillStyle =
+    palette.soil;
+
+  ctx.fillRect(
+    0,
+    460,
+    600,
+    140
+  );
+
+  ctx.fillStyle =
+    palette.soil2;
+
+  for(
+    let i = 0;
+    i < 34;
+    i++
+  ){
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+      rng() * 600,
+      475 + rng() * 110,
+      5 + rng() * 12,
+      3 + rng() * 6,
+      rng() * Math.PI,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+
+  }
+
+  const comparison =
+    stageIndex === 7 ||
+    stageIndex >= 19;
+
+  const rootsFocus =
+    stageIndex >= 8 &&
+    stageIndex <= 11;
+
+  const transportFocus =
+    stageIndex >= 12 &&
+    stageIndex <= 18;
+
+  if(comparison){
+
+    drawPlant(
+      ctx,
+      {
+        x:205,
+        baseY:465,
+        scale:.77,
+        stemColor:"#4f9653",
+        leafA:palette.leaf1,
+        leafB:palette.leaf2,
+        flowerColor:palette.flower,
+        centreColor:palette.centre,
+        rootsVisible:true,
+        flowers:
+          stageIndex === 19
+            ? 1
+            : 2
       }
+    );
 
-    </div>
-
-
-    <div
-      class="feedback"
-      id="feedback"
-      aria-live="polite"
-    >
-
-      Pilih jawapan yang paling tepat.
-
-    </div>
-
-
-    <button
-      hidden
-      class="btn primary"
-      id="next"
-    >
-
-      ${
-        number === QUESTIONS.length
-          ? "Lihat taman saya"
-          : "Tanam bunga & sambung"
+    drawPlant(
+      ctx,
+      {
+        x:405,
+        baseY:465,
+        scale:.78,
+        stemColor:"#548c4c",
+        leafA:
+          stageIndex % 2
+            ? "#6fad64"
+            : "#48995d",
+        leafB:"#8ac772",
+        flowerColor:
+          stageIndex % 2
+            ? "#f4a84b"
+            : "#d65ca3",
+        centreColor:"#ffe36c",
+        rootsVisible:true,
+        flowers:
+          stageIndex === 19
+            ? 0
+            : 1,
+        wooden:
+          stageIndex === 20
       }
+    );
 
-      →
+  }else{
 
-    </button>
+    drawPlant(
+      ctx,
+      {
+        x:300,
+        baseY:
+          rootsFocus
+            ? 445
+            : 465,
+        scale:
+          rootsFocus
+            ? .91
+            : 1,
+        stemColor:"#539850",
+        leafA:palette.leaf1,
+        leafB:palette.leaf2,
+        flowerColor:palette.flower,
+        centreColor:palette.centre,
+        rootsVisible:true,
+        flowers:
+          stageIndex === 8
+            ? 0
+            : (
+              stageIndex % 4 === 0
+                ? 3
+                : 1
+            ),
+        wooden:
+          stageIndex === 11
+      }
+    );
 
-  `);
+  }
+
+  /* Water / nutrient dots */
+  if(transportFocus){
+
+    ctx.fillStyle =
+      "#4d9ee8";
+
+    for(
+      let i = 0;
+      i < 7;
+      i++
+    ){
+
+      const y =
+        430 -
+        i * 38;
+
+      ctx.beginPath();
+
+      ctx.arc(
+        300 +
+        Math.sin(i) * 8,
+        y,
+        9,
+        0,
+        Math.PI * 2
+      );
+
+      ctx.fill();
+
+      ctx.strokeStyle =
+        "#ffffff";
+
+      ctx.lineWidth = 3;
+
+      ctx.stroke();
+
+    }
+
+    /* up arrow */
+    ctx.strokeStyle =
+      "rgba(53,124,196,.8)";
+
+    ctx.lineWidth = 8;
+    ctx.lineCap = "round";
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      352,
+      400
+    );
+
+    ctx.lineTo(
+      352,
+      245
+    );
+
+    ctx.stroke();
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      330,
+      270
+    );
+
+    ctx.lineTo(
+      352,
+      244
+    );
+
+    ctx.lineTo(
+      374,
+      270
+    );
+
+    ctx.stroke();
+
+  }
+
+  /* outer paper edge */
+  ctx.strokeStyle =
+    "rgba(86,67,48,.22)";
+
+  ctx.lineWidth = 8;
+
+  ctx.strokeRect(
+    4,
+    4,
+    592,
+    592
+  );
+
+  return canvas;
+
+}
 
 
-  let questionSolved =
-    false;
+/* ======================================================
+   PUZZLE SCENE
+====================================================== */
+
+class PuzzleScene extends Phaser.Scene{
+
+  constructor(){
+
+    super(
+      "PuzzleScene"
+    );
+
+    this.stageIndex = 0;
+
+    this.state =
+      [
+        0,1,2,
+        3,4,5,
+        6,7,8
+      ];
+
+    this.tiles = [];
+
+    this.activeTextureKeys = [];
+
+    this.stageReady = false;
+
+    this.locked = false;
+
+    this.isAnimating = false;
+
+    this.completionTile = null;
+
+  }
 
 
-  dialog
-    .querySelectorAll(".option")
-    .forEach(button => {
+  create(){
 
-      button.onclick = () => {
+    gameScene = this;
 
-        if (questionSolved) {
-          return;
-        }
+    this.background =
+      this.add.graphics();
 
+    this.frames =
+      this.add.graphics();
 
-        const choice =
-          Number(
-            button.dataset.answer
-          );
-
-
-        /* ===============================
-           SALAH
-           =============================== */
-
-        if (
-          choice !== question[3]
-        ) {
-
-          button.classList.add(
-            "wrong"
-          );
-
-          button.disabled =
-            true;
-
-
-          $("feedback").textContent =
-            "Belum tepat. Cuba jawapan lain, kamu boleh!";
-
-
-          sound(
-            170,
-            0.16
-          );
-
-
-          dialog
-            .querySelector(
-              ".option:not(:disabled)"
-            )
-            ?.focus();
-
-
-          return;
-
-        }
-
-
-        /* ===============================
-           BETUL
-           =============================== */
-
-        questionSolved =
-          true;
-
-
-        button.classList.add(
-          "correct"
-        );
-
-
-        dialog
-          .querySelectorAll(".option")
-          .forEach(option => {
-
-            option.disabled =
-              true;
-
-          });
-
-
-        $("feedback").textContent =
-          "Betul! " +
-          question[2][choice] +
-          ". Satu bunga untuk taman kamu!";
-
-
-        answered++;
-
-
-        progress();
-
-
-        sound(
-          780,
-          0.22
-        );
-
-
-        $("next").hidden =
-          false;
-
-
-        $("next").focus();
-
-
-        $("next").onclick = () => {
-
-          closeModal();
-
-
-          if (
-            answered ===
-            QUESTIONS.length
-          ) {
-
-            win();
-
-          } else {
-
-            scene.busy =
-              false;
-
-
-            status(
-              "Bunga baharu ditanam! Cari padanan seterusnya."
-            );
-
+    this.instructionText =
+      this.add.text(
+        0,
+        0,
+        "",
+        {
+          fontFamily:
+            "Trebuchet MS, Arial",
+          fontSize:"18px",
+          fontStyle:"bold",
+          color:"#315d43",
+          align:"left",
+          lineSpacing:4,
+          wordWrap:{
+            width:400
           }
+        }
+      );
 
-        };
+    this.exampleTitle =
+      this.add.text(
+        0,
+        0,
+        "CONTOH",
+        {
+          fontFamily:
+            "Trebuchet MS, Arial",
+          fontSize:"13px",
+          fontStyle:"bold",
+          color:"#965272"
+        }
+      )
+      .setOrigin(.5);
+
+    this.plantName =
+      this.add.text(
+        0,
+        0,
+        "",
+        {
+          fontFamily:
+            "Trebuchet MS, Arial",
+          fontSize:"15px",
+          fontStyle:"bold",
+          color:"#41694c",
+          align:"center"
+        }
+      )
+      .setOrigin(.5);
+
+    this.waitText =
+      this.add.text(
+        0,
+        0,
+        "🌱\nTekan MULA BERMAIN",
+        {
+          fontFamily:
+            "Trebuchet MS, Arial",
+          fontSize:"26px",
+          fontStyle:"bold",
+          color:"#4b825b",
+          align:"center",
+          lineSpacing:14
+        }
+      )
+      .setOrigin(.5);
+
+    this.scale.on(
+      "resize",
+      () => {
+
+        this.layoutScene();
+
+      }
+    );
+
+    this.layoutScene();
+
+    if(pendingStart){
+
+      pendingStart = false;
+
+      this.startGame();
+
+    }
+
+  }
+
+
+  startGame(){
+
+    currentStage = 0;
+
+    this.waitText
+      .setVisible(false);
+
+    this.loadStage(
+      currentStage
+    );
+
+  }
+
+
+  cleanupStage(){
+
+    this.tweens.killAll();
+
+    if(this.preview){
+
+      this.preview.destroy();
+
+      this.preview = null;
+
+    }
+
+    if(this.completionTile){
+
+      this.completionTile.destroy();
+
+      this.completionTile = null;
+
+    }
+
+    this.tiles.forEach(
+      tile => {
+
+        if(tile){
+
+          tile.container.destroy(
+            true
+          );
+
+        }
+
+      }
+    );
+
+    this.tiles = [];
+
+    this.activeTextureKeys.forEach(
+      key => {
+
+        if(
+          this.textures.exists(
+            key
+          )
+        ){
+
+          this.textures.remove(
+            key
+          );
+
+        }
+
+      }
+    );
+
+    this.activeTextureKeys = [];
+
+  }
+
+
+  loadStage(stageIndex){
+
+    this.cleanupStage();
+
+    this.stageIndex =
+      stageIndex;
+
+    this.stageReady = true;
+
+    this.locked = false;
+    this.isAnimating = false;
+
+    document.getElementById(
+      "stage-pill"
+    ).textContent =
+      `Stage ${stageIndex + 1} / 25`;
+
+    /* ================================================
+       CREATE FULL ART
+    ================================================= */
+
+    const sourceCanvas =
+      createPlantArtwork(
+        stageIndex
+      );
+
+    const previewKey =
+      `preview_${stageIndex}`;
+
+    this.textures.addCanvas(
+      previewKey,
+      sourceCanvas
+    );
+
+    this.activeTextureKeys.push(
+      previewKey
+    );
+
+    /* ================================================
+       SLICE INTO 9 PIECES
+    ================================================= */
+
+    const sourcePieceSize =
+      200;
+
+    for(
+      let id = 0;
+      id < 9;
+      id++
+    ){
+
+      const col =
+        id % 3;
+
+      const row =
+        Math.floor(
+          id / 3
+        );
+
+      const pieceCanvas =
+        document.createElement(
+          "canvas"
+        );
+
+      pieceCanvas.width =
+        sourcePieceSize;
+
+      pieceCanvas.height =
+        sourcePieceSize;
+
+      const pctx =
+        pieceCanvas.getContext(
+          "2d"
+        );
+
+      pctx.drawImage(
+        sourceCanvas,
+
+        col * sourcePieceSize,
+        row * sourcePieceSize,
+
+        sourcePieceSize,
+        sourcePieceSize,
+
+        0,
+        0,
+
+        sourcePieceSize,
+        sourcePieceSize
+      );
+
+      const pieceKey =
+        `stage_${stageIndex}_piece_${id}`;
+
+      this.textures.addCanvas(
+        pieceKey,
+        pieceCanvas
+      );
+
+      this.activeTextureKeys.push(
+        pieceKey
+      );
+
+    }
+
+    /* ================================================
+       PREVIEW
+    ================================================= */
+
+    this.preview =
+      this.add.image(
+        0,
+        0,
+        previewKey
+      )
+      .setOrigin(
+        .5
+      );
+
+    /* ================================================
+       SHUFFLE
+    ================================================= */
+
+    this.state =
+      this.generateSolvableShuffle(
+        stageIndex
+      );
+
+    /* ================================================
+       CREATE 8 MOVABLE TILES
+       Piece 8 is the missing piece.
+    ================================================= */
+
+    for(
+      let id = 0;
+      id < 8;
+      id++
+    ){
+
+      const slotIndex =
+        this.state.indexOf(
+          id
+        );
+
+      const shadow =
+        this.add.rectangle(
+          5,
+          6,
+          196,
+          196,
+          0x604b38,
+          .23
+        );
+
+      const backing =
+        this.add.rectangle(
+          0,
+          0,
+          195,
+          195,
+          0xfffaeb,
+          1
+        )
+        .setStrokeStyle(
+          3,
+          0x90694f,
+          .42
+        );
+
+      const image =
+        this.add.image(
+          0,
+          0,
+          `stage_${stageIndex}_piece_${id}`
+        );
+
+      const container =
+        this.add.container(
+          0,
+          0,
+          [
+            shadow,
+            backing,
+            image
+          ]
+        );
+
+      container.setDepth(
+        5
+      );
+
+      image.setInteractive({
+        useHandCursor:true
+      });
+
+      image.on(
+        "pointerdown",
+        () => {
+
+          this.tryMoveTile(
+            id
+          );
+
+        }
+      );
+
+      this.tiles[id] = {
+
+        id,
+        slotIndex,
+        container,
+        shadow,
+        backing,
+        image
 
       };
 
-    });
-
-}
-
-
-/* =========================================================
-   WIN
-   ========================================================= */
-
-function win() {
-
-  finished =
-    true;
-
-
-  elapsed =
-    performance.now() -
-    clockStart;
-
-
-  $("timer").textContent =
-    stamp(elapsed);
-
-
-  scene?.celebrate();
-
-
-  openModal(`
-
-    <div class="intro-art">
-      ✿ ✦ ✿
-    </div>
-
-
-    <div class="tag center">
-
-      ${QUESTIONS.length}
-      /
-      ${QUESTIONS.length}
-
-      SOALAN SELESAI
-
-    </div>
-
-
-    <h2
-      id="modal-title"
-      class="center"
-    >
-
-      Taman ilmu sudah mekar!
-
-    </h2>
-
-
-    <p class="center">
-
-      Hebat!
-
-      Kamu telah mengenali
-      bahagian tumbuhan,
-      ciri, kepentingan dan
-      persamaannya.
-
-    </p>
-
-
-    <p class="center">
-
-      <b>
-        Masa bermain:
-        ${stamp(elapsed)}
-      </b>
-
-    </p>
-
-
-    <button
-      class="btn primary"
-      id="again"
-    >
-
-      Main sekali lagi ↻
-
-    </button>
-
-
-    <p class="center">
-
-      <a href="index.html">
-        Kembali ke Home
-      </a>
-
-    </p>
-
-  `);
-
-
-  $("again").onclick = () => {
-
-    closeModal();
-
-
-    answered =
-      0;
-
-
-    finished =
-      false;
-
-
-    started =
-      true;
-
-
-    clockStart =
-      performance.now();
-
-
-    progress();
-
-
-    scene.newBoard();
-
-
-    scene.busy =
-      false;
-
-
-    status(
-      "Taman baharu! Padankan tumbuhan untuk bermula."
-    );
-
-  };
-
-}
-
-
-/* =========================================================
-   BUTTONS
-   ========================================================= */
-
-$("sound").onclick = () => {
-
-  muted =
-    !muted;
-
-
-  $("sound").textContent =
-    "Bunyi: " +
-    (
-      muted
-        ? "OFF"
-        : "ON"
-    );
-
-
-  $("sound").dataset.muted =
-    String(muted);
-
-
-  $("sound").setAttribute(
-    "aria-pressed",
-    String(!muted)
-  );
-
-
-  if (!muted) {
-    sound();
-  }
-
-};
-
-
-$("help").onclick = () => {
-
-  if (
-    scene &&
-    !scene.busy &&
-    !modal &&
-    !finished
-  ) {
-
-    intro(true);
-
-  }
-
-};
-
-
-$("hint").onclick = () => {
-
-  if (
-    scene?.ready()
-  ) {
-
-    scene.hint();
-
-  }
-
-};
-
-
-$("shuffle").onclick = () => {
-
-  if (
-    scene?.ready()
-  ) {
-
-    scene.newBoard();
-
-
-    status(
-      "Papan disusun semula. Jom cari padanan!"
-    );
-
-
-    sound(400);
-
-  }
-
-};
-
-
-/* =========================================================
-   TIMER / BUTTON STATE
-   ========================================================= */
-
-setInterval(() => {
-
-  if (
-    started &&
-    !finished
-  ) {
-
-    $("timer").textContent =
-      stamp(
-        performance.now() -
-        clockStart
+      container.setAlpha(
+        0
       );
 
-  }
+      this.tweens.add({
 
+        targets:
+          container,
 
-  const disabled =
-    !scene ||
-    !started ||
-    scene.busy ||
-    modal ||
-    finished;
+        alpha:1,
 
+        duration:200,
 
-  $("hint").disabled =
-    disabled;
+        delay:
+          id * 30
 
-
-  $("shuffle").disabled =
-    disabled;
-
-
-  $("help").disabled =
-    (
-      !scene ||
-      scene.busy ||
-      modal ||
-      finished
-    );
-
-}, 150);
-
-
-/* =========================================================
-   MATCH LOGIC
-   ========================================================= */
-
-function matches(board) {
-
-  const hit =
-    new Set();
-
-
-  for (
-    let row = 0;
-    row < BOARD_SIZE;
-    row++
-  ) {
-
-    for (
-      let column = 0;
-      column < BOARD_SIZE;
-      column++
-    ) {
-
-      const kind =
-        board[row][column]?.kind;
-
-
-      if (
-        kind == null
-      ) {
-
-        continue;
-
-      }
-
-
-      /* ===============================
-         HORIZONTAL
-         =============================== */
-
-      if (
-
-        column <=
-        BOARD_SIZE - 3
-
-        &&
-
-        board[row][column + 1]
-          ?.kind === kind
-
-        &&
-
-        board[row][column + 2]
-          ?.kind === kind
-
-      ) {
-
-        let position =
-          column;
-
-
-        while (
-
-          position <
-          BOARD_SIZE
-
-          &&
-
-          board[row][position]
-            ?.kind === kind
-
-        ) {
-
-          hit.add(
-            row *
-            BOARD_SIZE +
-            position
-          );
-
-
-          position++;
-
-        }
-
-      }
-
-
-      /* ===============================
-         VERTICAL
-         =============================== */
-
-      if (
-
-        row <=
-        BOARD_SIZE - 3
-
-        &&
-
-        board[row + 1][column]
-          ?.kind === kind
-
-        &&
-
-        board[row + 2][column]
-          ?.kind === kind
-
-      ) {
-
-        let position =
-          row;
-
-
-        while (
-
-          position <
-          BOARD_SIZE
-
-          &&
-
-          board[position][column]
-            ?.kind === kind
-
-        ) {
-
-          hit.add(
-            position *
-            BOARD_SIZE +
-            column
-          );
-
-
-          position++;
-
-        }
-
-      }
+      });
 
     }
 
-  }
+    this.instructionText
+      .setText(
+        "Susun gambar tumbuhan.\nTekan kepingan di sebelah ruang kosong."
+      );
 
+    this.exampleTitle
+      .setVisible(true);
 
-  return [
-    ...hit
-  ].map(index => ({
-
-    r:
-      Math.floor(
-        index / BOARD_SIZE
-      ),
-
-    c:
-      index % BOARD_SIZE
-
-  }));
-
-}
-
-
-/* =========================================================
-   LEGAL MOVE
-   ========================================================= */
-
-function legalMove(board) {
-
-  for (
-    let row = 0;
-    row < BOARD_SIZE;
-    row++
-  ) {
-
-    for (
-      let column = 0;
-      column < BOARD_SIZE;
-      column++
-    ) {
-
-      for (
-        const [dr, dc]
-        of [
-          [0, 1],
-          [1, 0]
+    this.plantName
+      .setText(
+        STAGE_NAMES[
+          stageIndex
         ]
-      ) {
+      )
+      .setVisible(true);
 
-        const nextRow =
-          row + dr;
+    this.layoutScene();
 
-
-        const nextColumn =
-          column + dc;
+  }
 
 
-        if (
-          nextRow >= BOARD_SIZE ||
-          nextColumn >= BOARD_SIZE
-        ) {
+  /* ====================================================
+     ALWAYS SOLVABLE:
+     Start from completed puzzle and apply valid moves.
+  ==================================================== */
 
-          continue;
+  generateSolvableShuffle(
+    stageIndex
+  ){
 
-        }
+    const arr = [
+      0,1,2,
+      3,4,5,
+      6,7,8
+    ];
 
+    let blank = 8;
+    let previousBlank = -1;
 
-        /* ===============================
-           TEMPORARY SWAP
-           =============================== */
+    const rng =
+      mulberry32(
+        7069 +
+        stageIndex * 997
+      );
 
-        [
-          board[row][column],
-          board[nextRow][nextColumn]
-        ] = [
+    const steps =
+      18 +
+      stageIndex * 2;
 
-          board[nextRow][nextColumn],
-          board[row][column]
+    for(
+      let move = 0;
+      move < steps;
+      move++
+    ){
 
+      const neighbours =
+        this.getNeighbourIndices(
+          blank
+        )
+        .filter(
+          index =>
+            index !==
+            previousBlank
+        );
+
+      const choice =
+        neighbours[
+          Math.floor(
+            rng() *
+            neighbours.length
+          )
         ];
 
+      previousBlank =
+        blank;
 
-        const valid =
-          matches(board)
-            .length > 0;
+      [
+        arr[blank],
+        arr[choice]
+      ] = [
+        arr[choice],
+        arr[blank]
+      ];
 
-
-        /* ===============================
-           RESTORE
-           =============================== */
-
-        [
-          board[row][column],
-          board[nextRow][nextColumn]
-        ] = [
-
-          board[nextRow][nextColumn],
-          board[row][column]
-
-        ];
-
-
-        if (valid) {
-
-          return [
-
-            {
-              r: row,
-              c: column
-            },
-
-            {
-              r: nextRow,
-              c: nextColumn
-            }
-
-          ];
-
-        }
-
-      }
+      blank =
+        choice;
 
     }
 
-  }
+    /* Extremely unlikely, but ensure it is not solved */
+    if(
+      arr.every(
+        (value,index) =>
+          value === index
+      )
+    ){
 
+      const n =
+        this.getNeighbourIndices(
+          8
+        )[0];
 
-  return null;
+      [
+        arr[8],
+        arr[n]
+      ] = [
+        arr[n],
+        arr[8]
+      ];
 
-}
+    }
 
-
-/* =========================================================
-   PHASER SCENE
-   ========================================================= */
-
-if (
-  typeof Phaser !== "undefined"
-) {
-
-
-class Garden extends Phaser.Scene {
-
-  constructor() {
-
-    super("Garden");
-
-
-    this.busy =
-      false;
-
-
-    this.selected =
-      null;
-
-
-    this.board =
-      [];
-
-
-    this.down =
-      null;
+    return arr;
 
   }
 
 
-  /* =======================================================
-     CREATE
-     ======================================================= */
-
-  create() {
-
-    scene =
-      this;
-
-
-    this.makeTextures();
-
-
-    this.drawWorld();
-
-
-    /* ===============================
-       SELECTION RECTANGLE
-       =============================== */
-
-    this.selection =
-      this.add
-
-        .rectangle(
-          0,
-          0,
-          64,
-          64
-        )
-
-        .setStrokeStyle(
-          4,
-          0xffe184
-        )
-
-        .setFillStyle(
-          0,
-          0
-        )
-
-        .setDepth(8)
-
-        .setVisible(false);
-
-
-    /* ===============================
-       HINT GRAPHICS
-       =============================== */
-
-    this.hints =
-      this.add
-
-        .graphics()
-
-        .setDepth(8);
-
-
-    this.newBoard();
-
-
-    /* ===============================
-       POINTER DOWN
-       =============================== */
-
-    this.input.on(
-      "pointerdown",
-      pointer => {
-
-        if (
-          !this.ready()
-        ) {
-
-          return;
-
-        }
-
-
-        this.down = {
-
-          x:
-            pointer.x,
-
-          y:
-            pointer.y,
-
-          cell:
-            this.cell(pointer)
-
-        };
-
-      }
-    );
-
-
-    /* ===============================
-       POINTER UP
-       =============================== */
-
-    this.input.on(
-      "pointerup",
-      pointer => {
-
-        if (
-          !this.ready() ||
-          !this.down
-        ) {
-
-          this.down =
-            null;
-
-          return;
-
-        }
-
-
-        const down =
-          this.down;
-
-
-        this.down =
-          null;
-
-
-        if (
-          !down.cell
-        ) {
-
-          return;
-
-        }
-
-
-        const dx =
-          pointer.x -
-          down.x;
-
-
-        const dy =
-          pointer.y -
-          down.y;
-
-
-        /*
-          Ambang swipe disesuaikan
-          supaya telefon tidak terlalu
-          sensitif apabila ditekan.
-        */
-
-        if (
-          Math.max(
-            Math.abs(dx),
-            Math.abs(dy)
-          ) > 20
-        ) {
-
-          const destination = {
-
-            r:
-              down.cell.r,
-
-            c:
-              down.cell.c
-
-          };
-
-
-          if (
-            Math.abs(dx) >
-            Math.abs(dy)
-          ) {
-
-            destination.c +=
-              Math.sign(dx);
-
-          } else {
-
-            destination.r +=
-              Math.sign(dy);
-
-          }
-
-
-          if (
-
-            destination.r >= 0 &&
-
-            destination.r <
-              BOARD_SIZE &&
-
-            destination.c >= 0 &&
-
-            destination.c <
-              BOARD_SIZE
-
-          ) {
-
-            this.swap(
-              down.cell,
-              destination
-            );
-
-          }
-
-        } else {
-
-          const cell =
-            this.cell(pointer);
-
-
-          if (cell) {
-
-            this.select(cell);
-
-          }
-
-        }
-
-      }
-    );
-
-
-    this.input.on(
-      "pointerupoutside",
-      () => {
-
-        this.down =
-          null;
-
-      }
-    );
-
-
-    this.input.on(
-      "pointercancel",
-      () => {
-
-        this.down =
-          null;
-
-      }
-    );
-
-
-    progress();
-
-
-    status(
-      "Selamat datang ke Taman Pixel!"
-    );
-
-
-    intro();
-
-  }
-
-
-  /* =======================================================
-     READY
-     ======================================================= */
-
-  ready() {
-
-    return (
-
-      started &&
-
-      !finished &&
-
-      !modal &&
-
-      !this.busy
-
-    );
-
-  }
-
-
-  /* =======================================================
-     POINTER → BOARD CELL
-     ======================================================= */
-
-  cell(pointer) {
-
-    const column =
-      Math.floor(
-        (
-          pointer.x -
-          BOARD_X
-        ) /
-        TILE_SIZE
-      );
-
+  getNeighbourIndices(
+    index
+  ){
+
+    const col =
+      index % 3;
 
     const row =
       Math.floor(
-        (
-          pointer.y -
-          BOARD_Y
-        ) /
-        TILE_SIZE
+        index / 3
       );
 
+    const result = [];
 
-    if (
+    if(col > 0)
+      result.push(
+        index - 1
+      );
 
-      row >= 0 &&
+    if(col < 2)
+      result.push(
+        index + 1
+      );
 
-      row <
-        BOARD_SIZE &&
+    if(row > 0)
+      result.push(
+        index - 3
+      );
 
-      column >= 0 &&
+    if(row < 2)
+      result.push(
+        index + 3
+      );
 
-      column <
-        BOARD_SIZE
-
-    ) {
-
-      return {
-
-        r: row,
-
-        c: column
-
-      };
-
-    }
-
-
-    return null;
+    return result;
 
   }
 
 
-  /* =======================================================
-     BOARD POSITION
-     ======================================================= */
+  tryMoveTile(
+    tileId
+  ){
 
-  pos(
-    row,
-    column
-  ) {
+    if(
+      this.locked ||
+      this.isAnimating
+    ) return;
+
+    SFX.unlock();
+
+    const tileIndex =
+      this.state.indexOf(
+        tileId
+      );
+
+    const blankIndex =
+      this.state.indexOf(
+        8
+      );
+
+    const valid =
+      this.getNeighbourIndices(
+        blankIndex
+      )
+      .includes(
+        tileIndex
+      );
+
+    if(!valid){
+
+      const tile =
+        this.tiles[
+          tileId
+        ];
+
+      this.tweens.add({
+
+        targets:
+          tile.container,
+
+        x:
+          tile.container.x + 5,
+
+        duration:45,
+
+        yoyo:true,
+
+        repeat:1
+
+      });
+
+      return;
+
+    }
+
+    this.isAnimating = true;
+
+    /* swap logical positions */
+    [
+      this.state[tileIndex],
+      this.state[blankIndex]
+    ] = [
+      this.state[blankIndex],
+      this.state[tileIndex]
+    ];
+
+    this.tiles[
+      tileId
+    ].slotIndex =
+      blankIndex;
+
+    const newPosition =
+      this.getSlotPosition(
+        blankIndex
+      );
+
+    SFX.move();
+
+    this.tweens.add({
+
+      targets:
+        this.tiles[
+          tileId
+        ].container,
+
+      x:
+        newPosition.x,
+
+      y:
+        newPosition.y,
+
+      duration:125,
+
+      ease:
+        "Sine.Out",
+
+      onComplete:
+        () => {
+
+          this.isAnimating = false;
+
+          if(
+            this.isSolved()
+          ){
+
+            this.finishPuzzle();
+
+          }
+
+        }
+
+    });
+
+  }
+
+
+  isSolved(){
+
+    return this.state.every(
+      (value,index) =>
+        value === index
+    );
+
+  }
+
+
+  finishPuzzle(){
+
+    if(this.locked)
+      return;
+
+    this.locked = true;
+
+    SFX.puzzleDone();
+
+    /* show missing 9th tile */
+    const position =
+      this.getSlotPosition(
+        8
+      );
+
+    this.completionTile =
+      this.add.image(
+        position.x,
+        position.y,
+        `stage_${this.stageIndex}_piece_8`
+      )
+      .setDepth(7)
+      .setAlpha(0);
+
+    const finalSize =
+      this.tileSize - 12;
+
+    this.completionTile
+      .setDisplaySize(
+        finalSize,
+        finalSize
+      );
+
+    this.tweens.add({
+
+      targets:
+        this.completionTile,
+
+      alpha:1,
+
+      duration:260,
+
+      ease:"Sine.Out"
+
+    });
+
+    this.createLeafCelebration();
+
+    this.time.delayedCall(
+      750,
+      () => {
+
+        showQuestion(
+          this.stageIndex
+        );
+
+      }
+    );
+
+  }
+
+
+  createLeafCelebration(){
+
+    const centerX =
+      this.boardX +
+      this.boardSize / 2;
+
+    const centerY =
+      this.boardY +
+      this.boardSize / 2;
+
+    for(
+      let i = 0;
+      i < 18;
+      i++
+    ){
+
+      const leaf =
+        this.add.ellipse(
+          centerX,
+          centerY,
+          Phaser.Math.Between(
+            8,
+            15
+          ),
+          Phaser.Math.Between(
+            16,
+            27
+          ),
+          Phaser.Math.RND.pick(
+            [
+              0x5cae68,
+              0x8ccf71,
+              0xf6c95e,
+              0xef92a8
+            ]
+          ),
+          1
+        )
+        .setDepth(
+          20
+        );
+
+      leaf.setAngle(
+        Phaser.Math.Between(
+          0,
+          360
+        )
+      );
+
+      const angle =
+        Math.random() *
+        Math.PI *
+        2;
+
+      const distance =
+        Phaser.Math.Between(
+          80,
+          230
+        );
+
+      this.tweens.add({
+
+        targets:
+          leaf,
+
+        x:
+          centerX +
+          Math.cos(angle) *
+          distance,
+
+        y:
+          centerY +
+          Math.sin(angle) *
+          distance,
+
+        angle:
+          leaf.angle +
+          Phaser.Math.Between(
+            100,
+            360
+          ),
+
+        alpha:0,
+
+        duration:
+          Phaser.Math.Between(
+            500,
+            850
+          ),
+
+        ease:
+          "Cubic.Out",
+
+        onComplete:
+          () =>
+            leaf.destroy()
+
+      });
+
+    }
+
+  }
+
+
+  getSlotPosition(
+    index
+  ){
+
+    const col =
+      index % 3;
+
+    const row =
+      Math.floor(
+        index / 3
+      );
 
     return {
 
       x:
-        BOARD_X +
-        column *
-        TILE_SIZE +
-        TILE_SIZE / 2,
-
+        this.boardX +
+        col *
+        this.tileSize +
+        this.tileSize / 2,
 
       y:
-        BOARD_Y +
+        this.boardY +
         row *
-        TILE_SIZE +
-        TILE_SIZE / 2
+        this.tileSize +
+        this.tileSize / 2
 
     };
 
   }
 
 
-  /* =======================================================
-     PIXEL TEXTURES
-     ======================================================= */
+  /* ====================================================
+     RESPONSIVE LAYOUT
+  ==================================================== */
 
-  makeTextures() {
+  layoutScene(){
 
-    const palettes = [
+    const width =
+      this.scale.width;
 
-      [
-        "#ffd36c",
-        "#e9a83c"
-      ],
+    const height =
+      this.scale.height;
 
-      [
-        "#ff8f9c",
-        "#d34e77"
-      ],
+    this.background.clear();
 
-      [
-        "#87ca69",
-        "#488751"
-      ],
+    this.background
+      .fillGradientStyle(
+        0xc8edd5,
+        0xc8edd5,
+        0xf8e9b9,
+        0xf8e9b9,
+        1
+      );
 
-      [
-        "#c4a1ed",
-        "#8462b1"
-      ],
+    this.background.fillRect(
+      0,
+      0,
+      width,
+      height
+    );
 
-      [
-        "#70cfc1",
-        "#399788"
-      ],
+    /* decorative circles */
+    this.background.fillStyle(
+      0xffffff,
+      .18
+    );
 
-      [
-        "#ffac66",
-        "#d17042"
-      ]
+    for(
+      let x = 25;
+      x < width;
+      x += 70
+    ){
 
-    ];
+      for(
+        let y = 28;
+        y < height;
+        y += 70
+      ){
 
-
-    for (
-      let kind = 0;
-      kind < 6;
-      kind++
-    ) {
-
-      const texture =
-        this.textures.createCanvas(
-          "plant" + kind,
-          28,
-          30
-        );
-
-
-      const context =
-        texture.context;
-
-
-      context.imageSmoothingEnabled =
-        false;
-
-
-      const rect = (
-        x,
-        y,
-        width,
-        height,
-        color
-      ) => {
-
-        context.fillStyle =
-          color;
-
-
-        context.fillRect(
-          x,
+        this.background.fillCircle(
+          x +
+          (
+            Math.floor(
+              y / 70
+            ) % 2
+              ? 20
+              : 0
+          ),
           y,
-          width,
-          height
-        );
-
-      };
-
-
-      const [
-        light,
-        dark
-      ] = palettes[kind];
-
-
-      /* ===============================
-         SHADOW
-         =============================== */
-
-      rect(
-        5,
-        27,
-        18,
-        2,
-        "#9eac7d"
-      );
-
-
-      /* ===============================
-         STEM
-         =============================== */
-
-      rect(
-        13,
-        15,
-        3,
-        12,
-        "#3e7150"
-      );
-
-
-      /* ===============================
-         LEAVES
-         =============================== */
-
-      rect(
-        8,
-        20,
-        5,
-        3,
-        "#539950"
-      );
-
-
-      rect(
-        6,
-        18,
-        5,
-        3,
-        "#78bc65"
-      );
-
-
-      rect(
-        16,
-        22,
-        5,
-        3,
-        "#539950"
-      );
-
-
-      rect(
-        18,
-        20,
-        4,
-        3,
-        "#87c970"
-      );
-
-
-      /* ===============================
-         SUNFLOWER
-         =============================== */
-
-      if (
-        kind === 0
-      ) {
-
-        rect(
-          9,
-          2,
-          10,
-          4,
-          dark
-        );
-
-
-        rect(
-          5,
-          6,
-          18,
-          12,
-          dark
-        );
-
-
-        rect(
-          9,
-          18,
-          10,
-          3,
-          dark
-        );
-
-
-        rect(
-          9,
-          3,
-          10,
-          4,
-          light
-        );
-
-
-        rect(
-          4,
-          8,
-          6,
-          6,
-          light
-        );
-
-
-        rect(
-          19,
-          8,
-          6,
-          6,
-          light
-        );
-
-
-        rect(
-          10,
-          16,
-          8,
-          5,
-          light
-        );
-
-
-        rect(
-          9,
-          7,
-          11,
-          10,
-          "#9d643e"
-        );
-
-
-        rect(
-          11,
-          8,
-          7,
-          6,
-          "#e9b663"
-        );
-
-      }
-
-
-      /* ===============================
-         PINK FLOWER
-         =============================== */
-
-      if (
-        kind === 1
-      ) {
-
-        rect(
-          5,
-          7,
-          18,
-          11,
-          dark
-        );
-
-
-        rect(
-          8,
-          4,
-          12,
-          16,
-          dark
-        );
-
-
-        rect(
-          6,
-          6,
-          7,
-          8,
-          light
-        );
-
-
-        rect(
-          15,
-          5,
-          7,
-          8,
-          light
-        );
-
-
-        rect(
-          9,
-          12,
-          12,
-          6,
-          light
-        );
-
-
-        rect(
-          11,
-          9,
-          7,
-          7,
-          "#ffd887"
-        );
-
-      }
-
-
-      /* ===============================
-         GREEN LEAF
-         =============================== */
-
-      if (
-        kind === 2
-      ) {
-
-        rect(
-          6,
-          7,
-          16,
-          14,
-          dark
-        );
-
-
-        rect(
-          9,
-          3,
-          11,
-          18,
-          dark
-        );
-
-
-        rect(
-          7,
-          7,
-          13,
-          11,
-          light
-        );
-
-
-        rect(
-          10,
-          4,
-          8,
-          7,
-          light
-        );
-
-
-        rect(
-          8,
-          8,
-          3,
-          4,
-          "#c0e88c"
-        );
-
-
-        rect(
-          20,
-          14,
-          4,
-          3,
-          dark
-        );
-
-      }
-
-
-      /* ===============================
-         PURPLE FRUIT
-         =============================== */
-
-      if (
-        kind === 3
-      ) {
-
-        rect(
-          6,
-          10,
-          18,
-          11,
-          dark
-        );
-
-
-        rect(
-          8,
-          7,
-          14,
-          15,
-          dark
-        );
-
-
-        rect(
-          9,
-          8,
-          12,
-          11,
-          light
-        );
-
-
-        rect(
-          12,
-          3,
-          3,
-          6,
-          "#47714b"
-        );
-
-
-        rect(
-          15,
-          3,
-          6,
-          3,
-          "#78ad5b"
-        );
-
-
-        rect(
-          8,
-          12,
-          3,
-          4,
-          "#e2c8fc"
-        );
-
-      }
-
-
-      /* ===============================
-         BLUE GREEN SHOOT
-         =============================== */
-
-      if (
-        kind === 4
-      ) {
-
-        rect(
-          12,
-          4,
-          5,
-          17,
-          dark
-        );
-
-
-        rect(
-          5,
-          7,
-          9,
-          5,
-          light
-        );
-
-
-        rect(
-          3,
-          5,
-          8,
-          4,
-          light
-        );
-
-
-        rect(
-          16,
-          11,
-          9,
-          5,
-          light
-        );
-
-
-        rect(
-          19,
-          8,
-          7,
-          5,
-          light
-        );
-
-
-        rect(
-          6,
-          15,
-          8,
-          5,
-          light
-        );
-
-
-        rect(
-          5,
-          13,
-          5,
-          4,
-          light
-        );
-
-
-        rect(
-          12,
-          3,
-          4,
-          6,
-          light
-        );
-
-      }
-
-
-      /* ===============================
-         CARROT
-         =============================== */
-
-      if (
-        kind === 5
-      ) {
-
-        rect(
-          6,
-          8,
-          16,
-          12,
-          dark
-        );
-
-
-        rect(
-          9,
-          5,
-          10,
-          18,
-          dark
-        );
-
-
-        rect(
-          8,
-          8,
-          12,
-          11,
-          light
-        );
-
-
-        rect(
-          10,
-          19,
-          8,
-          4,
-          light
-        );
-
-
-        rect(
-          12,
-          2,
-          3,
-          6,
-          "#60944a"
-        );
-
-
-        rect(
-          7,
-          2,
-          5,
-          3,
-          "#91c765"
-        );
-
-
-        rect(
-          15,
-          1,
-          6,
-          4,
-          "#6dac55"
-        );
-
-
-        rect(
-          9,
-          9,
-          3,
-          4,
-          "#ffd899"
-        );
-
-      }
-
-
-      /* ===============================
-         FACE
-         =============================== */
-
-      const eyeY =
-        kind === 0
-          ? 11
-          : 13;
-
-
-      rect(
-        10,
-        eyeY,
-        2,
-        3,
-        "#253c39"
-      );
-
-
-      rect(
-        17,
-        eyeY,
-        2,
-        3,
-        "#253c39"
-      );
-
-
-      rect(
-        13,
-        eyeY + 4,
-        3,
-        1,
-        "#694746"
-      );
-
-
-      rect(
-        8,
-        eyeY + 3,
-        2,
-        1,
-        "#ef8c83"
-      );
-
-
-      rect(
-        19,
-        eyeY + 3,
-        2,
-        1,
-        "#ef8c83"
-      );
-
-
-      texture.refresh();
-
-    }
-
-  }
-
-
-  /* =======================================================
-     WORLD
-     ======================================================= */
-
-  drawWorld() {
-
-    const graphics =
-      this.add.graphics();
-
-
-    /* ===============================
-       BACKGROUND
-       =============================== */
-
-    graphics
-      .fillStyle(
-        0xaed5a4
-      )
-      .fillRect(
-        0,
-        0,
-        560,
-        640
-      );
-
-
-    graphics
-      .fillStyle(
-        0xd8edbc
-      )
-      .fillRect(
-        0,
-        0,
-        560,
-        70
-      );
-
-
-    /* ===============================
-       SUN
-       =============================== */
-
-    graphics
-      .fillStyle(
-        0xffe5a0
-      )
-      .fillRect(
-        451,
-        12,
-        34,
-        34
-      );
-
-
-    graphics
-      .fillStyle(
-        0xfff5cf
-      )
-      .fillRect(
-        447,
-        18,
-        42,
-        22
-      );
-
-
-    /* ===============================
-       BACKGROUND TREES
-       =============================== */
-
-    for (
-      let index = 0;
-      index < 14;
-      index++
-    ) {
-
-      const x =
-        index * 44;
-
-
-      graphics
-
-        .fillStyle(
-          index % 2
-            ? 0x5c9666
-            : 0x79ac71
-        )
-
-        .fillRect(
-          x,
-          48 +
-            (index % 3) *
-            9,
-          44,
-          42
-        );
-
-
-      graphics
-
-        .fillStyle(
-          0x477655
-        )
-
-        .fillRect(
-          x + 8,
-          75,
-          24,
-          12
-        );
-
-    }
-
-
-    /* ===============================
-       WOOD FRAME
-       =============================== */
-
-    graphics
-      .fillStyle(
-        0x684e3c
-      )
-      .fillRect(
-        25,
-        98,
-        510,
-        502
-      );
-
-
-    graphics
-      .fillStyle(
-        0x97724d
-      )
-      .fillRect(
-        25,
-        94,
-        510,
-        495
-      );
-
-
-    graphics
-      .fillStyle(
-        0xf5e7b0
-      )
-      .fillRect(
-        33,
-        98,
-        494,
-        488
-      );
-
-
-    graphics
-      .fillStyle(
-        0x739564
-      )
-      .fillRect(
-        37,
-        102,
-        486,
-        480
-      );
-
-
-    /* ===============================
-       BOARD CELLS
-       =============================== */
-
-    for (
-      let row = 0;
-      row < BOARD_SIZE;
-      row++
-    ) {
-
-      for (
-        let column = 0;
-        column < BOARD_SIZE;
-        column++
-      ) {
-
-        graphics
-
-          .fillStyle(
-            (row + column) % 2
-              ? 0xd3dfb1
-              : 0xe5ebc3
-          )
-
-          .fillRect(
-
-            BOARD_X +
-              column *
-              TILE_SIZE,
-
-            BOARD_Y +
-              row *
-              TILE_SIZE,
-
-            TILE_SIZE,
-
-            TILE_SIZE
-
-          );
-
-
-        graphics
-
-          .fillStyle(
-            (row + column) % 2
-              ? 0xc1d0a0
-              : 0xd1dcb0
-          )
-
-          .fillRect(
-
-            BOARD_X +
-              column *
-              TILE_SIZE,
-
-            BOARD_Y +
-              row *
-              TILE_SIZE +
-              TILE_SIZE -
-              5,
-
-            TILE_SIZE,
-
-            5
-
-          );
-
-      }
-
-    }
-
-
-    /* ===============================
-       GRASS
-       =============================== */
-
-    graphics
-      .fillStyle(
-        0x44684c
-      )
-      .fillRect(
-        0,
-        609,
-        560,
-        31
-      );
-
-
-    for (
-      let index = 0;
-      index < 40;
-      index++
-    ) {
-
-      const x =
-        (
-          index *
-          83
-        ) %
-        560;
-
-
-      const y =
-        594 +
-        (
-          index %
-          4
-        ) *
-        7;
-
-
-      graphics
-
-        .fillStyle(
-          index % 2
-            ? 0x74a66a
-            : 0x8fb679
-        )
-
-        .fillRect(
-          x,
-          y,
-          5,
-          19
-        );
-
-
-      graphics
-        .fillRect(
-          x - 4,
-          y + 5,
-          13,
           4
         );
 
+      }
+
     }
 
+    if(
+      !this.stageReady
+    ){
 
-    /* ===============================
-       TITLE
-       =============================== */
-
-    this.add
-
-      .text(
-        280,
-        24,
-        "THE LITTLE BOTANICAL GARDEN",
-        {
-
-          fontFamily:
-            "monospace",
-
-          fontSize:
-            "12px",
-
-          color:
-            "#345947",
-
-          fontStyle:
-            "bold"
-
-        }
-      )
-
-      .setOrigin(
-        0.5
-      );
-
-
-    /* ===============================
-       BOTTOM PLANTS
-       =============================== */
-
-    for (
-      let index = 0;
-      index < 5;
-      index++
-    ) {
-
-      this.add
-
-        .image(
-          75 +
-            index *
-            101,
-          618,
-          "plant" + index
-        )
-
-        .setScale(
-          1.3
+      this.waitText
+        .setPosition(
+          width / 2,
+          height / 2
         );
 
-    }
-
-  }
-
-
-  /* =======================================================
-     NEW BOARD
-     ======================================================= */
-
-  newBoard() {
-
-    this.selected =
-      null;
-
-
-    this.down =
-      null;
-
-
-    this.selection
-      ?.setVisible(false);
-
-
-    this.hints
-      ?.clear();
-
-
-    this.board
-      .flat()
-      .forEach(tile => {
-
-        tile
-          ?.sprite
-          ?.destroy();
-
-      });
-
-
-    let attempts =
-      0;
-
-
-    do {
-
-      this.board =
-        Array.from(
-          {
-            length:
-              BOARD_SIZE
-          },
-          () =>
-            Array(
-              BOARD_SIZE
-            ).fill(null)
-        );
-
-
-      for (
-        let row = 0;
-        row < BOARD_SIZE;
-        row++
-      ) {
-
-        for (
-          let column = 0;
-          column < BOARD_SIZE;
-          column++
-        ) {
-
-          let kind;
-
-
-          do {
-
-            kind =
-              Phaser.Math.Between(
-                0,
-                5
-              );
-
-          } while (
-
-            (
-
-              column >= 2
-
-              &&
-
-              this.board[row][column - 1]
-                .kind === kind
-
-              &&
-
-              this.board[row][column - 2]
-                .kind === kind
-
-            )
-
-            ||
-
-            (
-
-              row >= 2
-
-              &&
-
-              this.board[row - 1][column]
-                .kind === kind
-
-              &&
-
-              this.board[row - 2][column]
-                .kind === kind
-
-            )
-
-          );
-
-
-          this.board[row][column] = {
-
-            kind
-
-          };
-
-        }
-
-      }
-
-
-      attempts++;
-
-    } while (
-
-      !legalMove(this.board)
-
-      &&
-
-      attempts < 200
-
-    );
-
-
-    /* ===============================
-       FALLBACK BOARD
-       =============================== */
-
-    if (
-      !legalMove(this.board)
-    ) {
-
-      for (
-        let row = 0;
-        row < BOARD_SIZE;
-        row++
-      ) {
-
-        for (
-          let column = 0;
-          column < BOARD_SIZE;
-          column++
-        ) {
-
-          this.board[row][column] = {
-
-            kind:
-              (
-                row * 2 +
-                column
-              ) %
-              6
-
-          };
-
-        }
-
-      }
-
-
-      this.board[0][0].kind =
-        0;
-
-
-      this.board[0][1].kind =
-        1;
-
-
-      this.board[0][2].kind =
-        0;
-
-
-      this.board[1][1].kind =
-        0;
-
-    }
-
-
-    /* ===============================
-       CREATE SPRITES
-       =============================== */
-
-    for (
-      let row = 0;
-      row < BOARD_SIZE;
-      row++
-    ) {
-
-      for (
-        let column = 0;
-        column < BOARD_SIZE;
-        column++
-      ) {
-
-        const position =
-          this.pos(
-            row,
-            column
-          );
-
-
-        const tile =
-          this.board[row][column];
-
-
-        tile.sprite =
-          this.add
-
-            .image(
-              position.x,
-              position.y,
-              "plant" +
-                tile.kind
-            )
-
-            .setScale(
-              1.9
-            )
-
-            .setDepth(
-              3
-            );
-
-      }
-
-    }
-
-  }
-
-
-  /* =======================================================
-     SELECT CELL
-     ======================================================= */
-
-  select(cell) {
-
-    this.hints.clear();
-
-
-    if (
-
-      this.selected
-
-      &&
-
-      Math.abs(
-        this.selected.r -
-        cell.r
-      )
-
-      +
-
-      Math.abs(
-        this.selected.c -
-        cell.c
-      )
-
-      === 1
-
-    ) {
-
-      this.swap(
-        this.selected,
-        cell
-      );
-
-
       return;
 
     }
 
+    let previewSize;
 
-    if (
+    if(width >= 720){
 
-      this.selected?.r ===
-        cell.r
-
-      &&
-
-      this.selected?.c ===
-        cell.c
-
-    ) {
-
-      this.selected =
-        null;
-
-
-      this.selection
-        .setVisible(false);
-
-
-      return;
-
-    }
-
-
-    this.selected =
-      cell;
-
-
-    const position =
-      this.pos(
-        cell.r,
-        cell.c
-      );
-
-
-    this.selection
-
-      .setPosition(
-        position.x,
-        position.y
-      )
-
-      .setVisible(true);
-
-
-    sound(
-      350,
-      0.05
-    );
-
-  }
-
-
-  /* =======================================================
-     PROMISE TWEEN
-     ======================================================= */
-
-  tween(config) {
-
-    return new Promise(
-      resolve => {
-
-        this.tweens.add({
-
-          ...config,
-
-          onComplete:
-            resolve
-
-        });
-
-      }
-    );
-
-  }
-
-
-  /* =======================================================
-     SWAP
-     ======================================================= */
-
-  async swap(
-    first,
-    second
-  ) {
-
-    if (
-      !this.ready()
-    ) {
-
-      return;
-
-    }
-
-
-    if (
-
-      Math.abs(
-        first.r -
-        second.r
-      )
-
-      +
-
-      Math.abs(
-        first.c -
-        second.c
-      )
-
-      !== 1
-
-    ) {
-
-      return;
-
-    }
-
-
-    this.busy =
-      true;
-
-
-    this.selected =
-      null;
-
-
-    this.selection
-      .setVisible(false);
-
-
-    this.hints
-      .clear();
-
-
-    const firstTile =
-      this.board
-        [first.r]
-        [first.c];
-
-
-    const secondTile =
-      this.board
-        [second.r]
-        [second.c];
-
-
-    const firstPosition =
-      this.pos(
-        first.r,
-        first.c
-      );
-
-
-    const secondPosition =
-      this.pos(
-        second.r,
-        second.c
-      );
-
-
-    /* ===============================
-       SWAP DATA
-       =============================== */
-
-    [
-      this.board[first.r][first.c],
-      this.board[second.r][second.c]
-
-    ] = [
-
-      secondTile,
-      firstTile
-
-    ];
-
-
-    /* ===============================
-       SWAP ANIMATION
-       =============================== */
-
-    await Promise.all([
-
-      this.tween({
-
-        targets:
-          firstTile.sprite,
-
-        ...secondPosition,
-
-        duration:
-          150,
-
-        ease:
-          "Quad.Out"
-
-      }),
-
-
-      this.tween({
-
-        targets:
-          secondTile.sprite,
-
-        ...firstPosition,
-
-        duration:
-          150,
-
-        ease:
-          "Quad.Out"
-
-      })
-
-    ]);
-
-
-    let hit =
-      matches(
-        this.board
-      );
-
-
-    /* ===============================
-       NO MATCH → RESTORE
-       =============================== */
-
-    if (
-      !hit.length
-    ) {
-
-      [
-
-        this.board[first.r][first.c],
-
-        this.board[second.r][second.c]
-
-      ] = [
-
-        firstTile,
-
-        secondTile
-
-      ];
-
-
-      await Promise.all([
-
-        this.tween({
-
-          targets:
-            firstTile.sprite,
-
-          ...firstPosition,
-
-          duration:
-            150,
-
-          ease:
-            "Quad.Out"
-
-        }),
-
-
-        this.tween({
-
-          targets:
-            secondTile.sprite,
-
-          ...secondPosition,
-
-          duration:
-            150,
-
-          ease:
-            "Quad.Out"
-
-        })
-
-      ]);
-
-
-      status(
-        "Belum ada padanan. Cuba tumbuhan di sebelahnya."
-      );
-
-
-      sound(
-        190,
-        0.08
-      );
-
-
-      this.busy =
-        false;
-
-
-      return;
-
-    }
-
-
-    /* =====================================================
-       MATCH CHAINS
-       ===================================================== */
-
-    let chain =
-      0;
-
-
-    while (
-      hit.length
-    ) {
-
-      chain++;
-
-
-      status(
-
-        chain > 1
-
-          ? "Rantaian " +
-            chain +
-            "! Taman semakin ceria."
-
-          : "Padanan berjaya! Soalan sedang tumbuh…"
-
-      );
-
-
-      sound(
-
+      this.boardSize =
         Math.min(
-          400 +
-            chain *
-            100,
-
-          1200
-        ),
-
-        0.16
-
-      );
-
-
-      /* ===============================
-         REMOVE ANIMATION
-         =============================== */
-
-      await Promise.all(
-
-        hit.map(
-          ({
-            r,
-            c
-          }) => {
-
-            const tile =
-              this.board[r][c];
-
-
-            return this.tween({
-
-              targets:
-                tile.sprite,
-
-              scaleX:
-                0,
-
-              scaleY:
-                0,
-
-              angle:
-                25,
-
-              duration:
-                160,
-
-              ease:
-                "Back.In"
-
-            });
-
-          }
-        )
-
-      );
-
-
-      /* ===============================
-         DESTROY MATCHES
-         =============================== */
-
-      hit.forEach(
-        ({
-          r,
-          c
-        }) => {
-
-          this.board[r][c]
-            .sprite
-            .destroy();
-
-
-          this.board[r][c] =
-            null;
-
-        }
-      );
-
-
-      const falling =
-        [];
-
-
-      /* ===============================
-         GRAVITY
-         =============================== */
-
-      for (
-        let column = 0;
-        column < BOARD_SIZE;
-        column++
-      ) {
-
-        let writeRow =
-          BOARD_SIZE - 1;
-
-
-        for (
-          let row = BOARD_SIZE - 1;
-          row >= 0;
-          row--
-        ) {
-
-          const tile =
-            this.board[row][column];
-
-
-          if (
-            !tile
-          ) {
-
-            continue;
-
-          }
-
-
-          this.board
-            [writeRow]
-            [column] =
-            tile;
-
-
-          if (
-            writeRow !== row
-          ) {
-
-            this.board
-              [row]
-              [column] =
-              null;
-
-          }
-
-
-          falling.push(
-
-            this.tween({
-
-              targets:
-                tile.sprite,
-
-              ...this.pos(
-                writeRow,
-                column
-              ),
-
-              duration:
-                210 +
-                35 *
-                (
-                  writeRow -
-                  row
-                ),
-
-              ease:
-                "Bounce.Out"
-
-            })
-
-          );
-
-
-          writeRow--;
-
-        }
-
-
-        const topEmptyRow =
-          writeRow;
-
-
-        /* ===============================
-           NEW TILES
-           =============================== */
-
-        for (
-          let row = writeRow;
-          row >= 0;
-          row--
-        ) {
-
-          const kind =
-            Phaser.Math.Between(
-              0,
-              5
-            );
-
-
-          const position =
-            this.pos(
-              row,
-              column
-            );
-
-
-          const sprite =
-            this.add
-
-              .image(
-
-                position.x,
-
-                BOARD_Y -
-                (
-                  topEmptyRow -
-                  row +
-                  1
-                ) *
-                TILE_SIZE,
-
-                "plant" +
-                kind
-
-              )
-
-              .setScale(
-                1.9
-              )
-
-              .setDepth(
-                3
-              );
-
-
-          this.board[row][column] = {
-
-            kind,
-
-            sprite
-
-          };
-
-
-          falling.push(
-
-            this.tween({
-
-              targets:
-                sprite,
-
-              y:
-                position.y,
-
-              duration:
-                280 +
-                35 *
-                (
-                  topEmptyRow +
-                  1
-                ),
-
-              ease:
-                "Bounce.Out"
-
-            })
-
-          );
-
-        }
-
-      }
-
-
-      await Promise.all(
-        falling
-      );
-
-
-      hit =
-        matches(
-          this.board
+          540,
+          height - 80,
+          width * .59
         );
 
+      this.boardSize =
+        Math.max(
+          280,
+          this.boardSize
+        );
 
-      /* ===============================
-         SAFETY LIMIT
-         =============================== */
+      this.boardX =
+        Math.min(
+          width -
+          this.boardSize -
+          28,
+          width * .62 -
+          this.boardSize / 2
+        );
 
-      if (
-        chain >= 15 &&
-        hit.length
-      ) {
+      this.boardX =
+        Math.max(
+          width * .39,
+          this.boardX
+        );
 
-        this.newBoard();
+      this.boardY =
+        (
+          height -
+          this.boardSize
+        ) / 2;
 
+      previewSize =
+        Math.min(
+          215,
+          this.boardSize * .42
+        );
 
-        hit =
-          [];
+      this.previewX =
+        Math.max(
+          20,
+          (
+            this.boardX -
+            previewSize
+          ) / 2
+        );
 
-      }
+      this.previewY =
+        Math.max(
+          80,
+          this.boardY +
+          45
+        );
 
-    }
+      this.instructionText
+        .setFontSize(
+          17
+        );
 
+      this.instructionText
+        .setWordWrapWidth(
+          Math.max(
+            180,
+            this.boardX - 45
+          )
+        );
 
-    /* ===============================
-       CHECK POSSIBLE MOVE
-       =============================== */
+      this.instructionText
+        .setPosition(
+          24,
+          20
+        );
 
-    if (
-      !legalMove(
-        this.board
-      )
-    ) {
+    }else{
 
-      this.newBoard();
+      this.boardSize =
+        Math.min(
+          width - 18,
+          height - 170,
+          510
+        );
 
+      this.boardSize =
+        Math.max(
+          240,
+          this.boardSize
+        );
 
-      status(
-        "Papan baharu disediakan. Jawab soalan dahulu!"
-      );
+      this.boardX =
+        (
+          width -
+          this.boardSize
+        ) / 2;
 
-    }
+      this.boardY =
+        height -
+        this.boardSize -
+        10;
 
+      previewSize =
+        Math.min(
+          94,
+          width * .24
+        );
 
-    /* ===============================
-       ONE SUCCESSFUL MOVE = ONE QUIZ
-       =============================== */
+      this.previewX =
+        14;
 
-    quiz();
+      this.previewY =
+        13;
 
-  }
+      this.instructionText
+        .setFontSize(
+          width < 390
+            ? 13
+            : 14
+        );
 
+      this.instructionText
+        .setWordWrapWidth(
+          width -
+          previewSize -
+          50
+        );
 
-  /* =======================================================
-     HINT
-     ======================================================= */
-
-  hint() {
-
-    let move =
-      legalMove(
-        this.board
-      );
-
-
-    if (
-      !move
-    ) {
-
-      this.newBoard();
-
-
-      move =
-        legalMove(
-          this.board
+      this.instructionText
+        .setPosition(
+          previewSize + 32,
+          23
         );
 
     }
 
+    this.tileSize =
+      this.boardSize / 3;
 
-    if (
-      !move
-    ) {
+    /* ================================================
+       DRAW FRAMES
+    ================================================= */
 
-      return;
+    this.frames.clear();
 
-    }
+    /* example shadow */
+    this.frames.fillStyle(
+      0x8a604d,
+      .18
+    );
 
+    this.frames.fillRoundedRect(
+      this.previewX - 4,
+      this.previewY + 6,
+      previewSize + 8,
+      previewSize + 8,
+      14
+    );
 
-    this.hints.clear();
-
-
-    this.hints.lineStyle(
-      4,
-      0xf6a84d,
+    /* pink preview frame */
+    this.frames.fillStyle(
+      0xf3a0b9,
       1
     );
 
+    this.frames.fillRoundedRect(
+      this.previewX - 7,
+      this.previewY - 7,
+      previewSize + 14,
+      previewSize + 14,
+      14
+    );
 
-    move.forEach(
-      ({
-        r,
-        c
-      }) => {
+    this.frames.lineStyle(
+      3,
+      0xc96685,
+      .5
+    );
 
-        this.hints.strokeRect(
+    this.frames.strokeRoundedRect(
+      this.previewX - 7,
+      this.previewY - 7,
+      previewSize + 14,
+      previewSize + 14,
+      14
+    );
 
-          BOARD_X +
-          c *
-          TILE_SIZE +
-          4,
+    /* board outer shadow */
+    this.frames.fillStyle(
+      0x675039,
+      .17
+    );
 
-          BOARD_Y +
-          r *
-          TILE_SIZE +
-          4,
+    this.frames.fillRoundedRect(
+      this.boardX - 9,
+      this.boardY - 3,
+      this.boardSize + 18,
+      this.boardSize + 20,
+      20
+    );
 
-          TILE_SIZE -
-          8,
+    /* pink board frame */
+    this.frames.fillStyle(
+      0xf4a3b9,
+      1
+    );
 
-          TILE_SIZE -
-          8
+    this.frames.fillRoundedRect(
+      this.boardX - 12,
+      this.boardY - 12,
+      this.boardSize + 24,
+      this.boardSize + 24,
+      18
+    );
 
+    this.frames.lineStyle(
+      4,
+      0xce6a87,
+      .55
+    );
+
+    this.frames.strokeRoundedRect(
+      this.boardX - 12,
+      this.boardY - 12,
+      this.boardSize + 24,
+      this.boardSize + 24,
+      18
+    );
+
+    /* 9 recessed spaces */
+    for(
+      let slot = 0;
+      slot < 9;
+      slot++
+    ){
+
+      const pos =
+        this.getSlotPosition(
+          slot
         );
 
-      }
-    );
+      this.frames.fillStyle(
+        0xe88ca6,
+        .45
+      );
 
+      this.frames.fillRoundedRect(
+        pos.x -
+        this.tileSize / 2 +
+        4,
+        pos.y -
+        this.tileSize / 2 +
+        4,
+        this.tileSize - 8,
+        this.tileSize - 8,
+        7
+      );
 
-    status(
-      "Tukar tempat dua tumbuhan dalam bingkai emas."
-    );
+    }
 
+    /* ================================================
+       PREVIEW IMAGE
+    ================================================= */
 
-    sound(
-      600,
-      0.08
-    );
+    if(this.preview){
 
-  }
+      this.preview
+        .setPosition(
+          this.previewX +
+          previewSize / 2,
+          this.previewY +
+          previewSize / 2
+        )
+        .setDisplaySize(
+          previewSize,
+          previewSize
+        )
+        .setDepth(3);
 
+    }
 
-  /* =======================================================
-     CELEBRATE
-     ======================================================= */
+    this.exampleTitle
+      .setPosition(
+        this.previewX +
+        previewSize / 2,
+        Math.max(
+          10,
+          this.previewY - 18
+        )
+      );
 
-  celebrate() {
+    this.plantName
+      .setPosition(
+        this.previewX +
+        previewSize / 2,
+        this.previewY +
+        previewSize +
+        21
+      );
 
-    const colors = [
+    /* ================================================
+       PUZZLE TILES
+    ================================================= */
 
-      0xffd36c,
+    for(
+      let id = 0;
+      id < this.tiles.length;
+      id++
+    ){
 
-      0xff8f9c,
+      const tile =
+        this.tiles[id];
 
-      0xa0db78,
+      if(!tile)
+        continue;
 
-      0x70cfc1,
+      const currentSlot =
+        this.state.indexOf(
+          id
+        );
 
-      0xc4a1ed
+      tile.slotIndex =
+        currentSlot;
 
-    ];
+      const pos =
+        this.getSlotPosition(
+          currentSlot
+        );
 
+      tile.container
+        .setPosition(
+          pos.x,
+          pos.y
+        );
 
-    for (
-      let index = 0;
-      index < 60;
-      index++
-    ) {
+      const outer =
+        this.tileSize - 6;
 
-      const square =
-        this.add
+      const imageSize =
+        this.tileSize - 12;
 
-          .rectangle(
+      tile.shadow
+        .setDisplaySize(
+          outer,
+          outer
+        );
 
-            Phaser.Math.Between(
-              0,
-              560
-            ),
+      tile.backing
+        .setDisplaySize(
+          outer,
+          outer
+        );
 
-            -Phaser.Math.Between(
-              5,
-              450
-            ),
+      tile.image
+        .setDisplaySize(
+          imageSize,
+          imageSize
+        );
 
-            Phaser.Math.Between(
-              5,
-              9
-            ),
+    }
 
-            Phaser.Math.Between(
-              5,
-              9
-            ),
+    /* final piece if puzzle is solved */
+    if(this.completionTile){
 
-            colors[
-              index %
-              colors.length
-            ]
+      const pos =
+        this.getSlotPosition(
+          8
+        );
 
-          )
-
-          .setDepth(
-            12
-          );
-
-
-      this.tweens.add({
-
-        targets:
-          square,
-
-        y:
-          680,
-
-        angle:
-          Phaser.Math.Between(
-            180,
-            720
-          ),
-
-        x:
-          square.x +
-          Phaser.Math.Between(
-            -40,
-            40
-          ),
-
-        duration:
-          Phaser.Math.Between(
-            1400,
-            2700
-          ),
-
-        onComplete:
-          () =>
-            square.destroy()
-
-      });
+      this.completionTile
+        .setPosition(
+          pos.x,
+          pos.y
+        )
+        .setDisplaySize(
+          this.tileSize - 12,
+          this.tileSize - 12
+        );
 
     }
 
@@ -5584,227 +3843,357 @@ class Garden extends Phaser.Scene {
 }
 
 
-/* =========================================================
-   CREATE PHASER GAME
-   ========================================================= */
+/* ======================================================
+   PHASER CONFIG
+====================================================== */
 
-phaserGame =
-  new Phaser.Game({
+const config = {
 
-    type:
-      Phaser.AUTO,
+  type:
+    Phaser.AUTO,
 
+  parent:
+    "phaser-game",
 
-    parent:
-      "game",
+  backgroundColor:
+    "#cbe8c5",
 
+  transparent:
+    true,
 
-    width:
-      560,
+  scale:{
 
+    mode:
+      Phaser.Scale.RESIZE,
 
-    height:
-      640,
-
-
-    backgroundColor:
-      "#aed5a4",
-
-
-    pixelArt:
-      true,
-
-
-    roundPixels:
-      true,
-
-
-    antialias:
-      false,
-
-
-    scale: {
-
-      mode:
-        Phaser.Scale.FIT,
-
-      autoCenter:
-        Phaser.Scale.CENTER_BOTH,
-
-      width:
-        560,
-
-      height:
-        640
-
-    },
-
-
-    scene:
-      Garden,
-
-
-    audio: {
-
-      noAudio:
-        true
-
-    },
-
-
-    render: {
-
-      antialias:
-        false,
-
-      pixelArt:
-        true,
-
-      roundPixels:
-        true,
-
-      powerPreference:
-        "low-power"
-
-    },
-
-
-    input: {
-
-      activePointers:
-        2,
-
-      touch: {
-
-        capture:
-          true
-
-      }
-
-    }
-
-  });
-
-}
-
-
-/* =========================================================
-   RESPONSIVE PHASER REFRESH
-   ========================================================= */
-
-function refreshGameSize() {
-
-  if (
-    !phaserGame
-  ) {
-
-    return;
-
-  }
-
-
-  requestAnimationFrame(
-    () => {
-
-      try {
-
-        phaserGame.scale.refresh();
-
-      } catch (error) {
-
-        /*
-          Elakkan game rosak jika refresh
-          berlaku ketika Phaser belum siap.
-        */
-
-      }
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   RESIZE OBSERVER
-   ========================================================= */
-
-if (
-  "ResizeObserver" in window
-) {
-
-  const gameResizeObserver =
-    new ResizeObserver(
-      () => {
-
-        refreshGameSize();
-
-      }
-    );
-
-
-  gameResizeObserver.observe(
-    $("game")
-  );
-
-}
-
-
-/* =========================================================
-   WINDOW RESIZE
-   ========================================================= */
-
-window.addEventListener(
-  "resize",
-  () => {
-
-    refreshGameSize();
+    autoCenter:
+      Phaser.Scale.CENTER_BOTH
 
   },
-  {
-    passive: true
-  }
-);
+
+  render:{
+
+    antialias:true,
+    pixelArt:false,
+    roundPixels:true
+
+  },
+
+  input:{
+
+    activePointers:3
+
+  },
+
+  scene:[
+    PuzzleScene
+  ]
+
+};
+
+const game =
+  new Phaser.Game(
+    config
+  );
 
 
-/* =========================================================
-   ORIENTATION CHANGE
-   ========================================================= */
+/* ======================================================
+   QUESTION CATEGORY
+====================================================== */
 
-window.addEventListener(
-  "orientationchange",
-  () => {
+function getTopic(
+  index
+){
+
+  if(index <= 5)
+    return "KENALI BAHAGIAN TUMBUHAN";
+
+  if(index <= 11)
+    return "CIRI BAHAGIAN YANG BERBEZA";
+
+  if(index <= 18)
+    return "PENTINGNYA BAHAGIAN TUMBUHAN";
+
+  return "BERBEZA TAPI SERUPA";
+
+}
+
+
+/* ======================================================
+   SHOW QUESTION
+====================================================== */
+
+function showQuestion(
+  stageIndex
+){
+
+  quizLocked = false;
+
+  const question =
+    QUESTIONS[
+      stageIndex
+    ];
+
+  const overlay =
+    document.getElementById(
+      "quiz-overlay"
+    );
+
+  const questionText =
+    document.getElementById(
+      "question-text"
+    );
+
+  const answerGrid =
+    document.getElementById(
+      "answer-grid"
+    );
+
+  const feedback =
+    document.getElementById(
+      "feedback"
+    );
+
+  document.getElementById(
+    "quiz-topic"
+  ).textContent =
+    getTopic(
+      stageIndex
+    );
+
+  document.getElementById(
+    "quiz-stage"
+  ).textContent =
+    `Stage ${stageIndex + 1} / 25`;
+
+  questionText.textContent =
+    `[${question.tp}] ${question.q}`;
+
+  feedback.textContent =
+    "";
+
+  feedback.className =
+    "";
+
+  answerGrid.innerHTML =
+    "";
+
+  const letters =
+    [
+      "A",
+      "B",
+      "C",
+      "D"
+    ];
+
+  question.choices.forEach(
+    (choice,index) => {
+
+      const button =
+        document.createElement(
+          "button"
+        );
+
+      button.className =
+        "answer-btn";
+
+      button.innerHTML =
+        `
+          <span class="answer-letter">
+            ${letters[index]}
+          </span>
+
+          <span>
+            ${choice}
+          </span>
+        `;
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          handleAnswer(
+            index,
+            button
+          );
+
+        }
+      );
+
+      answerGrid.appendChild(
+        button
+      );
+
+    }
+  );
+
+  overlay.classList.remove(
+    "hidden"
+  );
+
+}
+
+
+/* ======================================================
+   ANSWER QUESTION
+====================================================== */
+
+function handleAnswer(
+  selectedIndex,
+  selectedButton
+){
+
+  if(quizLocked)
+    return;
+
+  SFX.unlock();
+
+  const question =
+    QUESTIONS[
+      currentStage
+    ];
+
+  const feedback =
+    document.getElementById(
+      "feedback"
+    );
+
+  if(
+    selectedIndex ===
+    question.answer
+  ){
+
+    quizLocked = true;
+
+    selectedButton.classList.remove(
+      "wrong"
+    );
+
+    selectedButton.classList.add(
+      "correct"
+    );
+
+    feedback.className =
+      "good";
+
+    feedback.textContent =
+      "Betul! Bagus! 🌱";
+
+    SFX.correct();
+
+    document
+      .querySelectorAll(
+        ".answer-btn"
+      )
+      .forEach(
+        btn => {
+
+          btn.disabled =
+            true;
+
+        }
+      );
 
     setTimeout(
       () => {
 
-        refreshGameSize();
+        document.getElementById(
+          "quiz-overlay"
+        )
+        .classList.add(
+          "hidden"
+        );
+
+        if(
+          currentStage >=
+          QUESTIONS.length - 1
+        ){
+
+          document.getElementById(
+            "finish-overlay"
+          )
+          .classList.remove(
+            "hidden"
+          );
+
+          return;
+
+        }
+
+        currentStage++;
+
+        gameScene.loadStage(
+          currentStage
+        );
 
       },
-      120
+      850
     );
 
-  },
-  {
-    passive: true
+  }else{
+
+    selectedButton.classList.remove(
+      "wrong"
+    );
+
+    void selectedButton.offsetWidth;
+
+    selectedButton.classList.add(
+      "wrong"
+    );
+
+    feedback.className =
+      "bad";
+
+    feedback.textContent =
+      "Belum tepat. Cuba lagi.";
+
+    SFX.wrong();
+
+    setTimeout(
+      () => {
+
+        selectedButton.classList.remove(
+          "wrong"
+        );
+
+      },
+      500
+    );
+
   }
-);
+
+}
 
 
-/* =========================================================
-   VISIBILITY
-   Elakkan timer / input jadi pelik selepas tukar tab.
-   ========================================================= */
+/* ======================================================
+   START BUTTON
+====================================================== */
 
-document.addEventListener(
-  "visibilitychange",
+document.getElementById(
+  "start-btn"
+)
+.addEventListener(
+  "click",
   () => {
 
-    if (
-      !document.hidden
-    ) {
+    SFX.unlock();
 
-      refreshGameSize();
+    document.getElementById(
+      "start-overlay"
+    )
+    .classList.add(
+      "hidden"
+    );
+
+    if(gameScene){
+
+      gameScene.startGame();
+
+    }else{
+
+      pendingStart =
+        true;
 
     }
 
@@ -5812,11 +4201,102 @@ document.addEventListener(
 );
 
 
-/* =========================================================
-   PREVENT CONTEXT MENU ON GAME
-   ========================================================= */
+/* ======================================================
+   SOUND BUTTON
+====================================================== */
 
-$("game").addEventListener(
+document.getElementById(
+  "sound-btn"
+)
+.addEventListener(
+  "click",
+  () => {
+
+    SFX.enabled =
+      !SFX.enabled;
+
+    if(SFX.enabled){
+
+      SFX.unlock();
+
+    }
+
+    document.getElementById(
+      "sound-btn"
+    ).textContent =
+      SFX.enabled
+        ? "🔊"
+        : "🔇";
+
+  }
+);
+
+
+/* ======================================================
+   HOME
+====================================================== */
+
+function goHome(){
+
+  window.location.href =
+    "index.html";
+
+}
+
+document.getElementById(
+  "home-btn"
+)
+.addEventListener(
+  "click",
+  goHome
+);
+
+document.getElementById(
+  "finish-home-btn"
+)
+.addEventListener(
+  "click",
+  goHome
+);
+
+
+/* ======================================================
+   REPLAY
+====================================================== */
+
+document.getElementById(
+  "replay-btn"
+)
+.addEventListener(
+  "click",
+  () => {
+
+    SFX.unlock();
+
+    document.getElementById(
+      "finish-overlay"
+    )
+    .classList.add(
+      "hidden"
+    );
+
+    currentStage = 0;
+
+    if(gameScene){
+
+      gameScene.startGame();
+
+    }
+
+  }
+);
+
+
+/* ======================================================
+   PREVENT MOBILE LONG-PRESS / CONTEXT MENU
+====================================================== */
+
+document.addEventListener(
   "contextmenu",
   event => {
 
