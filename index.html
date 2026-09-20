@@ -2,5950 +2,2249 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-
-<title>Classroom Quest</title>
-
-<!-- PHASER -->
-<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
-
-<script>
-if(typeof Phaser === "undefined"){
-    document.write(
-        '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>'
-    );
-}
-</script>
+<title>Taman Pixel — Kenali Tumbuhan</title>
 
 <style>
-
-*{
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
+:root {
+  --ink: #203e35;
+  --cream: #fff7d9;
+  --gold: #ffce69;
 }
 
-html,
-body{
-    margin:0;
-    min-height:100%;
-    font-family:Arial,Helvetica,sans-serif;
-
-    /* BODY LUAR GAME MERAH LEMBUT */
-    background:#f4dede;
-
-    color:#17384c;
+* {
+  box-sizing: border-box;
 }
 
-body{
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-
-    padding:8px;
-
-    overflow-x:hidden;
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Trebuchet MS", Arial, sans-serif;
+  background-color: #cbe7b4;
+  background-image:
+    linear-gradient(
+      45deg,
+      #c1dfa8 25%,
+      transparent 25%,
+      transparent 75%,
+      #c1dfa8 75%
+    ),
+    linear-gradient(
+      45deg,
+      #c1dfa8 25%,
+      transparent 25%,
+      transparent 75%,
+      #c1dfa8 75%
+    );
+  background-size: 48px 48px;
+  background-position: 0 0, 24px 24px;
 }
 
-button{
-    font:inherit;
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* =========================================================
-   KESELURUHAN GAME LEBIH KECIL
-========================================================= */
-
-#page{
-    width:min(96vw,520px);
+button {
+  font: inherit;
+  cursor: pointer;
 }
 
-/* =========================================================
-   CONSOLE MERAH
-========================================================= */
-
-#device{
-    position:relative;
-
-    width:100%;
-
-    padding:
-        11px
-        12px
-        16px;
-
-    border-radius:
-        30px
-        30px
-        42px
-        42px;
-
-    background:
-        radial-gradient(
-            circle at 18% 5%,
-            rgba(255,255,255,.27),
-            transparent 23%
-        ),
-        linear-gradient(
-            180deg,
-            #f36f69 0%,
-            #dd4f51 55%,
-            #c53d44 100%
-        );
-
-    border:
-        4px solid #992d35;
-
-    box-shadow:
-        inset 0 3px 0 rgba(255,255,255,.25),
-        inset 0 -5px 0 rgba(90,20,26,.18),
-        0 12px 28px rgba(82,24,29,.24);
-
-    overflow:hidden;
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #e78628;
+  outline-offset: 4px;
 }
 
-/* =========================================================
-   TOP PANEL
-========================================================= */
-
-#topPanel{
-    height:52px;
-
-    display:grid;
-
-    grid-template-columns:
-        48px
-        1fr
-        48px;
-
-    align-items:center;
-
-    gap:4px;
+[hidden] {
+  display: none !important;
 }
 
-.smallButton{
-    width:42px;
-    height:31px;
-
-    border:
-        3px solid #ffd37e;
-
-    border-radius:11px;
-
-    background:
-        linear-gradient(
-            #f7aa39,
-            #f17b26
-        );
-
-    color:white;
-
-    font-size:16px;
-
-    font-weight:900;
-
-    cursor:pointer;
-
-    box-shadow:
-        0 4px 0 #ad4e20;
+.app {
+  max-width: 1020px;
+  margin: 24px auto;
+  padding: 0 18px;
 }
 
-.smallButton:active{
-    transform:
-        translateY(2px);
-
-    box-shadow:
-        0 2px 0 #ad4e20;
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-#homeBtn{
-    justify-self:start;
+.brand {
+  font-weight: 900;
+  font-size: 17px;
+  letter-spacing: 2px;
 }
 
-#pauseBtn{
-    justify-self:end;
+.brand small {
+  display: block;
+  margin-top: 6px;
+  font-size: 10px;
+  letter-spacing: 3px;
 }
 
-#brandBox{
-    text-align:center;
-    line-height:1;
+.nav {
+  display: flex;
+  gap: 8px;
 }
 
-#speaker{
-    width:28px;
-    height:5px;
-
-    margin:
-        0 auto 4px;
-
-    background:#74232a;
-
-    border-radius:999px;
+.btn {
+  border: 2px solid var(--ink);
+  background: var(--cream);
+  box-shadow: 0 3px 0 var(--ink);
+  color: var(--ink);
+  padding: 10px 14px;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 13px;
 }
 
-#brand{
-    font-weight:1000;
-
-    letter-spacing:1.2px;
-
-    color:#751f27;
-
-    font-size:13px;
-
-    text-shadow:
-        0 1px 0 rgba(255,255,255,.45);
+.btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ink);
 }
 
-#subBrand{
-    margin-top:3px;
-
-    color:#8b3037;
-
-    font-size:7px;
-
-    font-weight:900;
-
-    letter-spacing:.8px;
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
-/* =========================================================
-   SCREEN
-========================================================= */
-
-#screenBorder{
-    position:relative;
-
-    padding:3px;
-
-    border-radius:18px;
-
-    background:
-        linear-gradient(
-            #8b2931,
-            #691f26
-        );
-
-    box-shadow:
-        0 4px 0 rgba(103,25,31,.28);
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 600px) 1fr;
+  gap: 26px;
+  align-items: start;
 }
 
-#screen{
-    position:relative;
-
-    width:100%;
-
-    /*
-       Gameplay masih portrait,
-       cuma keseluruhan console lebih kecil.
-    */
-
-    aspect-ratio:620 / 790;
-
-    max-height:65vh;
-
-    background:#d7ad7b;
-
-    overflow:hidden;
-
-    border-radius:15px;
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 2px;
+  font-weight: 900;
+  color: #3f7752;
 }
 
-#game{
-    position:absolute;
-    inset:0;
+.hero h1 {
+  margin: 9px 0 10px;
+  font-size: clamp(30px, 5vw, 48px);
+  line-height: 1;
+  letter-spacing: -2px;
 }
 
-#game canvas{
-    display:block !important;
-
-    width:100% !important;
-    height:100% !important;
-
-    touch-action:none;
+.hero p {
+  margin: 0 0 20px;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
-/* =========================================================
-   CONTROL DECK LEBIH KECIL
-========================================================= */
-
-#controls{
-    min-height:112px;
-
-    padding:
-        11px
-        10px
-        0;
-
-    display:grid;
-
-    grid-template-columns:
-        1fr
-        1fr;
-
-    align-items:center;
-
-    gap:18px;
+.game-shell {
+  position: relative;
+  background: #244c3b;
+  border: 3px solid var(--ink);
+  box-shadow: 7px 7px 0 #8eaf7d;
 }
 
-.controlSide{
-    text-align:center;
+#game {
+  width: 100%;
+  aspect-ratio: 560 / 640;
+  touch-action: none;
+  overflow: hidden;
 }
 
-.controlTitle{
-    margin-bottom:5px;
-
-    color:#772329;
-
-    font-size:9px;
-
-    font-weight:1000;
-
-    letter-spacing:1.2px;
+#game canvas {
+  display: block;
+  image-rendering: pixelated;
 }
 
-/* =========================================================
-   JOYSTICK KECIL
-========================================================= */
-
-#movePad{
-    position:relative;
-
-    width:82px;
-    height:82px;
-
-    margin:auto;
-
-    border-radius:50%;
-
-    background:
-        radial-gradient(
-            circle,
-            #9bedeb 0 35%,
-            #55c2c7 36% 65%,
-            #3a9ca4 66%
-        );
-
-    border:
-        4px solid #aaf0eb;
-
-    box-shadow:
-        inset 0 -4px 0 rgba(17,91,99,.23),
-        0 5px 0 #318992;
-
-    touch-action:none;
+.game-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #fff4d7;
+  border-bottom: 3px solid var(--ink);
+  font-size: 12px;
+  font-weight: 900;
 }
 
-#movePad:before,
-#movePad:after{
-    content:"";
-
-    position:absolute;
-
-    left:50%;
-    top:50%;
-
-    transform:
-        translate(-50%,-50%);
-
-    background:#146b73;
-
-    opacity:.24;
-
-    border-radius:3px;
+.status {
+  min-height: 42px;
+  padding: 11px 8px;
+  color: #ffefb1;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
 }
 
-#movePad:before{
-    width:50px;
-    height:12px;
+.tools {
+  display: flex;
+  gap: 10px;
+  margin: 14px 0;
 }
 
-#movePad:after{
-    width:12px;
-    height:50px;
+.tools .btn {
+  flex: 1;
 }
 
-#moveKnob{
-    position:absolute;
-
-    left:50%;
-    top:50%;
-
-    width:35px;
-    height:35px;
-
-    transform:
-        translate(-50%,-50%);
-
-    border-radius:50%;
-
-    background:
-        radial-gradient(
-            circle at 35% 30%,
-            #2499d7,
-            #0873c7 65%,
-            #04558e
-        );
-
-    border:
-        3px solid #b5edf7;
-
-    box-shadow:
-        0 3px 0 #03538b;
-
-    pointer-events:none;
+.panel {
+  margin-top: 18px;
+  padding: 20px;
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  box-shadow: 5px 5px 0 #8eaf7d;
 }
 
-/* =========================================================
-   ATTACK KECIL
-========================================================= */
-
-#attackBtn{
-    width:72px;
-    height:72px;
-
-    border-radius:50%;
-
-    border:
-        5px solid #ffd283;
-
-    background:
-        radial-gradient(
-            circle at 35% 25%,
-            #ffb34d,
-            #f47d28 60%,
-            #dc5525
-        );
-
-    color:white;
-
-    font-weight:1000;
-
-    font-size:11px;
-
-    cursor:pointer;
-
-    box-shadow:
-        0 5px 0 #af4821,
-        inset 0 3px 0 rgba(255,255,255,.32);
-
-    touch-action:manipulation;
+.panel h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
 }
 
-#attackBtn.pressed{
-    transform:
-        translateY(3px);
-
-    box-shadow:
-        0 2px 0 #af4821;
+.panel p {
+  margin: 8px 0;
+  font-size: 13px;
+  line-height: 1.6;
 }
 
-#attackHelp{
-    margin-top:6px;
-
-    color:#7a2930;
-
-    font-size:8px;
-
-    font-weight:900;
+.progress-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 900;
 }
 
-#bottomText{
-    margin-top:4px;
-
-    text-align:center;
-
-    color:#76252c;
-
-    font-weight:1000;
-
-    letter-spacing:1.4px;
-
-    font-size:8px;
+.bar {
+  height: 12px;
+  margin: 10px 0 17px;
+  background: #d9dfb9;
+  border: 2px solid var(--ink);
 }
 
-/* =========================================================
-   QUESTION / MENU OVERLAY
-========================================================= */
-
-.overlay{
-    position:absolute;
-
-    inset:0;
-
-    z-index:100;
-
-    display:none;
-
-    align-items:center;
-    justify-content:center;
-
-    padding:13px;
-
-    background:
-        rgba(10,25,37,.75);
-
-    backdrop-filter:
-        blur(4px);
+.bar div {
+  width: 0;
+  height: 100%;
+  background: #63a65a;
+  transition: width 0.3s;
 }
 
-.overlay.show{
-    display:flex;
+.garden {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
 }
 
-.card{
-    width:min(100%,420px);
-
-    max-height:90%;
-
-    overflow:auto;
-
-    padding:15px;
-
-    background:white;
-
-    border-radius:18px;
-
-    border:
-        3px solid #d7f1ff;
-
-    box-shadow:
-        0 14px 40px rgba(0,0,0,.30);
+.seed {
+  display: grid;
+  place-items: center;
+  height: 33px;
+  background: #dfd7b0;
+  border-bottom: 4px solid #c1ad7c;
+  color: #8a835f;
+  font-size: 11px;
+  font-weight: 900;
 }
 
-.questionHeader{
-    display:flex;
-
-    align-items:flex-start;
-
-    gap:9px;
+.seed.grown {
+  background: #b9d793;
+  border-color: #739656;
+  color: #275c45;
+  font-size: 21px;
 }
 
-.questionIcon{
-    width:44px;
-    height:44px;
-
-    flex:
-        0 0 44px;
-
-    display:grid;
-
-    place-items:center;
-
-    border-radius:12px;
-
-    background:
-        linear-gradient(
-            #ffd65c,
-            #f3a01e
-        );
-
-    font-size:24px;
-
-    box-shadow:
-        0 4px 0 #aa6016;
+.steps {
+  padding: 0;
+  list-style: none;
+  counter-reset: steps;
 }
 
-#questionNumber{
-    color:#687f91;
-
-    font-size:10px;
-
-    font-weight:900;
+.steps li {
+  position: relative;
+  margin-top: 12px;
+  padding-left: 30px;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
-#questionText{
-    margin-top:3px;
-
-    color:#17384c;
-
-    font-size:14px;
-
-    font-weight:900;
-
-    line-height:1.38;
+.steps li::before {
+  counter-increment: steps;
+  content: counter(steps);
+  position: absolute;
+  left: 0;
+  width: 21px;
+  height: 21px;
+  background: #dfb96c;
+  text-align: center;
+  font-weight: 900;
 }
 
-.instruction{
-    margin:
-        10px 0;
-
-    color:#708494;
-
-    font-size:11px;
-
-    font-weight:800;
+.note {
+  margin: 20px;
+  color: #40664a;
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.5;
 }
 
-#answers{
-    display:grid;
-
-    gap:7px;
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: #173e34d9;
+  backdrop-filter: blur(4px);
 }
 
-.answer{
-    width:100%;
-
-    padding:
-        9px
-        10px;
-
-    text-align:left;
-
-    border:
-        2px solid #dbe9f2;
-
-    border-radius:11px;
-
-    background:#f8fcff;
-
-    color:#284459;
-
-    font-weight:850;
-
-    font-size:12px;
-
-    cursor:pointer;
+.dialog {
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100vh - 36px);
+  max-height: calc(100dvh - 36px);
+  overflow: auto;
+  padding: 26px;
+  background: var(--cream);
+  border: 4px solid var(--ink);
+  box-shadow: 8px 8px 0 #122d26;
 }
 
-.answer.correct{
-    background:#e9faef;
-
-    border-color:#42c878;
-
-    color:#177d47;
+.tag {
+  color: #52704a;
+  font-size: 11px;
+  letter-spacing: 1px;
+  font-weight: 900;
 }
 
-.answer.wrong{
-    background:#fff0f1;
-
-    border-color:#ee6871;
-
-    color:#ba303a;
+.dialog h2 {
+  margin: 12px 0 18px;
+  font-size: 25px;
+  line-height: 1.3;
 }
 
-#feedback{
-    min-height:20px;
-
-    margin-top:7px;
-
-    text-align:center;
-
-    font-size:11px;
-
-    font-weight:900;
+.dialog p {
+  font-size: 14px;
+  line-height: 1.6;
 }
 
-.center{
-    text-align:center;
+.options {
+  display: grid;
+  gap: 9px;
 }
 
-.bigIcon{
-    font-size:43px;
+.option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 12px;
+  background: #fffef3;
+  border: 2px solid #abc49b;
+  color: var(--ink);
+  text-align: left;
+  font-size: 15px;
 }
 
-.overlayTitle{
-    margin:
-        7px 0;
-
-    font-size:21px;
-
-    font-weight:1000;
+.option b {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  background: #e5eccb;
 }
 
-.overlayText{
-    color:#617789;
-
-    font-size:12px;
-
-    line-height:1.5;
+.option:hover:not(:disabled) {
+  background: #f1f4d5;
+  border-color: #356b49;
 }
 
-#countdown{
-    margin-top:6px;
-
-    color:#148bde;
-
-    font-size:38px;
-
-    font-weight:1000;
+.option.wrong {
+  background: #ffe1d9;
+  border-color: #bd5343;
 }
 
-.menuButton{
-    width:100%;
-
-    margin-top:9px;
-
-    padding:10px;
-
-    border:0;
-
-    border-radius:11px;
-
-    background:#188ee0;
-
-    color:white;
-
-    font-size:12px;
-
-    font-weight:900;
-
-    cursor:pointer;
+.option.correct {
+  background: #d5edb8;
+  border-color: #3c804b;
 }
 
-.menuButton.secondary{
-    background:#e7f1f6;
-
-    color:#23475e;
+.feedback {
+  min-height: 44px;
+  margin: 14px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 800;
 }
 
-/* =========================================================
-   PHONE
-========================================================= */
-
-@media(max-width:420px){
-
-    body{
-        padding:3px;
-    }
-
-    #page{
-        width:min(97vw,420px);
-    }
-
-    #device{
-        padding:
-            8px
-            8px
-            12px;
-
-        border-radius:
-            23px
-            23px
-            32px
-            32px;
-    }
-
-    #topPanel{
-        height:44px;
-
-        grid-template-columns:
-            42px
-            1fr
-            42px;
-    }
-
-    .smallButton{
-        width:37px;
-        height:27px;
-
-        font-size:14px;
-    }
-
-    #brand{
-        font-size:11px;
-    }
-
-    #screen{
-        max-height:67vh;
-    }
-
-    #controls{
-        min-height:96px;
-
-        padding-top:8px;
-    }
-
-    #movePad{
-        width:70px;
-        height:70px;
-    }
-
-    #moveKnob{
-        width:30px;
-        height:30px;
-    }
-
-    #attackBtn{
-        width:62px;
-        height:62px;
-
-        font-size:9px;
-    }
+.primary {
+  width: 100%;
+  padding: 14px;
+  background: #ffcf73;
+  font-size: 15px;
 }
 
+.intro-art {
+  margin: 5px;
+  text-align: center;
+  font-size: 48px;
+}
+
+.center {
+  text-align: center;
+}
+
+.muted {
+  color: #56704d;
+}
+
+#timer {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 740px) {
+  .app {
+    max-width: 580px;
+    margin: 14px auto;
+    padding: 0 12px;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .hero {
+    margin: 7px 0 12px;
+  }
+
+  .hero h1 {
+    font-size: 35px;
+  }
+
+  .hero p {
+    margin-bottom: 10px;
+  }
+
+  .side {
+    display: contents;
+  }
+
+  .panel {
+    margin-top: 10px;
+    padding: 16px;
+  }
+
+  .guide {
+    display: none;
+  }
+
+  header {
+    margin-bottom: 14px;
+  }
+
+  .brand {
+    font-size: 14px;
+  }
+
+  .brand small {
+    font-size: 9px;
+  }
+
+  .nav .btn {
+    padding: 9px;
+    font-size: 12px;
+  }
+
+  .dialog {
+    padding: 20px;
+  }
+
+  .dialog h2 {
+    font-size: 20px;
+  }
+
+  .option {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .game-shell {
+    box-shadow: 4px 4px 0 #8eaf7d;
+  }
+
+  .seed {
+    height: 25px;
+  }
+
+  .garden {
+    grid-template-columns: repeat(10, 1fr);
+    gap: 4px;
+  }
+
+  .panel h2 {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  .brand {
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+
+  .brand small {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+
+  .nav {
+    gap: 5px;
+  }
+
+  .nav .btn {
+    padding: 8px 6px;
+  }
+
+  .game-label {
+    padding: 10px 8px;
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
 </style>
 </head>
 
 <body>
 
-<div id="page">
+<main class="app">
+  <header>
+    <div class="brand">
+      TAMAN PIXEL
+      <small>PADAN • BELAJAR • MEKAR</small>
+    </div>
 
-<div id="device">
+    <nav class="nav">
+      <a class="btn" href="index.html">⌂ Home</a>
+      <button id="sound" class="btn" aria-pressed="true">
+        Bunyi: ON
+      </button>
+      <button id="help" class="btn" aria-label="Cara bermain">?</button>
+    </nav>
+  </header>
 
-<!-- ======================================================
-     TOP
-======================================================= -->
+  <div class="layout">
+    <section>
+      <div class="game-shell">
+        <div class="game-label">
+          <span>KEBUN PADANAN</span>
+          <span id="counter">0 / 25 SOALAN</span>
+          <span id="timer">00:00</span>
+        </div>
 
-<div id="topPanel">
+        <div
+          id="game"
+          role="application"
+          aria-label="Papan padanan tumbuhan. Leret tumbuhan atau ketik dua petak bersebelahan."
+        ></div>
 
-<button
-class="smallButton"
-id="homeBtn">
-⌂
-</button>
+        <div class="status" id="status" aria-live="polite">
+          Memuatkan taman…
+        </div>
+      </div>
 
-<div id="brandBox">
+      <div class="tools">
+        <button class="btn" id="hint" disabled>✦ Petunjuk</button>
+        <button class="btn" id="shuffle" disabled>↻ Susun semula</button>
+      </div>
+    </section>
 
-<div id="speaker"></div>
+    <aside class="side">
+      <div class="hero">
+        <div class="eyebrow">SAINS TAHUN 1 · SET 1</div>
+        <h1>Padankan.<br>Belajar.<br>Mekarkan!</h1>
+        <p>
+          Temui sahabat tumbuhan pixel. Padankan 3 yang sama
+          dan suburkan taman ilmu kamu.
+        </p>
+      </div>
 
-<div id="brand">
-CLASSROOM QUEST
+      <section class="panel">
+        <div class="progress-top">
+          <span>TAMAN ILMU KAMU</span>
+          <span id="percent">0%</span>
+        </div>
+
+        <div class="bar">
+          <div id="fill"></div>
+        </div>
+
+        <div class="garden" id="garden"></div>
+        <p id="garden-text">25 petak menanti untuk berbunga.</p>
+      </section>
+
+      <section class="panel guide">
+        <h2>Cara bermain</h2>
+
+        <ol class="steps">
+          <li>
+            Leret atau ketik dua tumbuhan bersebelahan
+            untuk menukar tempat.
+          </li>
+          <li>
+            Padankan sekurang-kurangnya 3 tumbuhan sama
+            secara mendatar atau menegak.
+          </li>
+          <li>
+            Jawab soalan dengan betul untuk menanam satu bunga.
+            Cuba lagi jika tersilap!
+          </li>
+        </ol>
+
+        <p class="muted">
+          Tiada had langkah. Tamat selepas semua
+          25 soalan dijawab dengan betul.
+        </p>
+      </section>
+    </aside>
+  </div>
+
+  <p class="note">
+    Kenali bahagian tumbuhan · Ciri tumbuhan ·
+    Kepentingan bahagian · Persamaan tumbuhan
+  </p>
+</main>
+
+<div id="overlay" class="overlay" hidden>
+  <section
+    class="dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-title"
+    id="dialog"
+  ></section>
 </div>
 
-<div id="subBrand">
-SAINS • HAIWAN
-</div>
-
-</div>
-
-<button
-class="smallButton"
-id="pauseBtn">
-Ⅱ
-</button>
-
-</div>
-
-<!-- ======================================================
-     GAME SCREEN
-======================================================= -->
-
-<div id="screenBorder">
-
-<div id="screen">
-
-<div id="game"></div>
-
-<!-- QUESTION -->
-
-<div
-class="overlay"
-id="questionOverlay">
-
-<div class="card">
-
-<div class="questionHeader">
-
-<div class="questionIcon">
-📦
-</div>
-
-<div>
-
-<div id="questionNumber">
-SOALAN 1 / 25
-</div>
-
-<div id="questionText">
-Soalan
-</div>
-
-</div>
-
-</div>
-
-<div class="instruction">
-Pilih jawapan yang paling tepat.
-</div>
-
-<div id="answers"></div>
-
-<div id="feedback"></div>
-
-</div>
-
-</div>
-
-<!-- REST -->
-
-<div
-class="overlay"
-id="restOverlay">
-
-<div class="card center">
-
-<div class="bigIcon">
-😴
-</div>
-
-<div class="overlayTitle">
-Berehat Sekejap!
-</div>
-
-<div class="overlayText">
-Nyawa habis. Permainan akan disambung semula selepas 10 saat.
-</div>
-
-<div id="countdown">
-10
-</div>
-
-</div>
-
-</div>
-
-<!-- PAUSE -->
-
-<div
-class="overlay"
-id="pauseOverlay">
-
-<div class="card center">
-
-<div class="bigIcon">
-⏸️
-</div>
-
-<div class="overlayTitle">
-Permainan Dijeda
-</div>
-
-<button
-class="menuButton"
-id="resumeBtn">
-Sambung
-</button>
-
-<button
-class="menuButton secondary"
-onclick="location.href='index.html'">
-Home
-</button>
-
-</div>
-
-</div>
-
-<!-- WIN -->
-
-<div
-class="overlay"
-id="winOverlay">
-
-<div class="card center">
-
-<div class="bigIcon">
-🏆
-</div>
-
-<div class="overlayTitle">
-Tahniah!
-</div>
-
-<div class="overlayText">
-Anda berjaya menjawab semua 25 soalan.
-</div>
-
-<button
-class="menuButton"
-onclick="restartGame()">
-Main Semula
-</button>
-
-<button
-class="menuButton secondary"
-onclick="location.href='index.html'">
-Home
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- ======================================================
-     CONTROLS
-======================================================= -->
-
-<div id="controls">
-
-<div class="controlSide">
-
-<div class="controlTitle">
-MOVE
-</div>
-
-<div id="movePad">
-
-<div id="moveKnob"></div>
-
-</div>
-
-</div>
-
-<div class="controlSide">
-
-<div class="controlTitle">
-ATTACK
-</div>
-
-<button id="attackBtn">
-ATTACK
-</button>
-
-<div id="attackHelp">
-SPACE • TEMBAK
-</div>
-
-</div>
-
-</div>
-
-<div id="bottomText">
-ENDLESS CLASSROOM
-</div>
-
-</div>
-
-</div>
+<script
+  src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"
+  onerror="document.getElementById('status').textContent='Phaser gagal dimuatkan. Semak internet dan muat semula halaman.'"
+></script>
 
 <script>
+"use strict";
 
 /* =========================================================
-   PHASER CHECK
-========================================================= */
+   SOALAN
+   Format: [TP, soalan, pilihan jawapan, indeks jawapan betul]
+   A = 0, B = 1, C = 2, D = 3
+   ========================================================= */
 
-if(typeof Phaser==="undefined"){
-
-document.body.innerHTML=
-`
-<div style="
-background:white;
-padding:25px;
-margin:30px;
-border-radius:15px;
-text-align:center;
-font-family:Arial;
-">
-Phaser gagal dimuatkan.<br>
-Pastikan internet aktif.
-</div>
-`;
-
-throw new Error(
-"Phaser gagal dimuatkan"
-);
-
-}
-
-/* =========================================================
-   QUESTIONS
-========================================================= */
-
-const QUESTIONS=[
-
-{
-q:"Apakah bahagian tubuh yang terdapat pada kuda?",
-o:[
-"Badan",
-"Sirip",
-"Kepak",
-"Cangkerang"
-],
-a:0
-},
-
-{
-q:"Apakah bahagian tubuh yang terdapat pada burung?",
-o:[
-"Tanduk",
-"Paruh",
-"Sumbu",
-"Sisik"
-],
-a:1
-},
-
-{
-q:"Apakah bahagian tubuh yang terdapat pada ikan?",
-o:[
-"Kepak",
-"Sisik",
-"Tanduk",
-"Paruh"
-],
-a:1
-},
-
-{
-q:"Apakah bahagian tubuh yang terdapat pada rama-rama?",
-o:[
-"Kepak",
-"Cangkerang",
-"Sumbu",
-"Tanduk"
-],
-a:0
-},
-
-{
-q:"Haiwan manakah mempunyai sesungut?",
-o:[
-"Kerbau",
-"Rusa",
-"Burung",
-"Siput"
-],
-a:3
-},
-
-{
-q:"Apakah bahagian tubuh yang terdapat pada kerbau?",
-o:[
-"Kepak",
-"Tanduk",
-"Sirip",
-"Cangkerang"
-],
-a:1
-},
-
-{
-q:"Apakah bahagian tubuh yang terdapat pada kura-kura?",
-o:[
-"Paruh",
-"Sumbu",
-"Cangkerang",
-"Kepak"
-],
-a:2
-},
-
-{
-q:"Haiwan manakah mempunyai kaki selaput renang?",
-o:[
-"Itik",
-"Kuda",
-"Rusa",
-"Badak sumbu"
-],
-a:0
-},
-
-{
-q:"Apakah fungsi kepak?",
-o:[
-"Terbang",
-"Berenang",
-"Memandu arah",
-"Mempertahankan diri"
-],
-a:0
-},
-
-{
-q:"Apakah fungsi sirip?",
-o:[
-"Terbang",
-"Mempertahankan diri",
-"Berenang",
-"Memandu arah"
-],
-a:2
-},
-
-{
-q:"Apakah fungsi ekor?",
-o:[
-"Terbang",
-"Mempertahankan diri",
-"Memandu arah",
-"Berenang"
-],
-a:2
-},
-
-{
-q:"Apakah fungsi kulit keras?",
-o:[
-"Terbang",
-"Mempertahankan diri",
-"Berenang",
-"Memandu arah"
-],
-a:1
-},
-
-{
-q:"Apakah fungsi tanduk?",
-o:[
-"Mempertahankan diri",
-"Berenang",
-"Terbang",
-"Memandu arah"
-],
-a:0
-},
-
-{
-q:"Apakah fungsi sumbu pada badak sumbu?",
-o:[
-"Berenang",
-"Terbang",
-"Mempertahankan diri",
-"Memandu arah"
-],
-a:2
-},
-
-{
-q:"Apakah fungsi kaki selaput renang?",
-o:[
-"Terbang",
-"Memandu arah",
-"Berenang",
-"Mempertahankan diri"
-],
-a:2
-},
-
-{
-q:"Haiwan manakah mempunyai bulu halus?",
-o:[
-"Kucing",
-"Ikan",
-"Buaya",
-"Rama-rama"
-],
-a:0
-},
-
-{
-q:"Lembu dan hamster mempunyai bahagian tubuh yang serupa, iaitu _______.",
-o:[
-"Kepak",
-"Sirip",
-"Cangkerang",
-"Bulu halus"
-],
-a:3
-},
-
-{
-q:"Apakah bahagian tubuh yang terdapat pada ikan?",
-o:[
-"Tanduk",
-"Sisik",
-"Paruh",
-"Kepak"
-],
-a:1
-},
-
-{
-q:"Pernyataan manakah yang betul?",
-o:[
-"Haiwan berlainan boleh mempunyai bahagian tubuh yang serupa",
-"Semua haiwan mempunyai kepak",
-"Semua haiwan mempunyai cangkerang",
-"Semua bahagian tubuh haiwan adalah berbeza"
-],
-a:0
-},
-
-{
-q:"Haiwan manakah mempunyai bulu halus?",
-o:[
-"Arnab",
-"Ikan",
-"Katak",
-"Buaya"
-],
-a:0
-},
-
-{
-q:"Apakah bahagian tubuh yang serupa pada kucing dan arnab?",
-o:[
-"Bulu halus",
-"Sirip",
-"Kepak",
-"Cangkerang"
-],
-a:0
-},
-
-{
-q:"Haiwan manakah mempunyai kulit keras?",
-o:[
-"Burung",
-"Kucing",
-"Arnab",
-"Buaya"
-],
-a:3
-},
-
-{
-q:"Jika dua haiwan mempunyai bahagian tubuh yang sama, kita boleh mengatakan bahawa kedua-duanya mempunyai bahagian tubuh yang _______.",
-o:[
-"Lebih besar",
-"Lebih kecil",
-"Lebih berat",
-"Serupa"
-],
-a:3
-},
-
-{
-q:"Apakah bahagian tubuh yang terdapat pada badak sumbu?",
-o:[
-"Sirip",
-"Sumbu",
-"Paruh",
-"Kaki selaput renang"
-],
-a:1
-},
-
-{
-q:"Antara berikut, yang manakah contoh haiwan berlainan yang mempunyai bahagian tubuh serupa?",
-o:[
-"Ikan dan burung mempunyai cangkerang",
-"Kucing dan arnab mempunyai bulu halus",
-"Siput dan kerbau mempunyai kepak",
-"Buaya dan ikan mempunyai tanduk"
-],
-a:1
-}
-
+const QUESTIONS = [
+  [
+    1,
+    "Bahagian manakah terdapat pada pokok bunga raya dan pokok keembung?",
+    ["Akar", "Sirip", "Tanduk", "Paruh"],
+    0
+  ],
+  [
+    1,
+    "Pokok keembung mempunyai bunga, daun, batang dan ____.",
+    ["Sayap", "Tanduk", "Sirip", "Akar"],
+    3
+  ],
+  [
+    2,
+    "Empat label yang sesuai untuk gambar pokok lengkap ialah ____.",
+    [
+      "Sirip, paruh, tanduk dan sumbu",
+      "Bunga, daun, batang dan akar",
+      "Mata, hidung, telinga dan kulit",
+      "Roda, pintu, bumbung dan tingkap"
+    ],
+    1
+  ],
+  [
+    2,
+    "Jika bahagian tumbuhan ditunjukkan berada di dalam tanah, apakah label yang sesuai?",
+    ["Akar", "Bunga", "Batang", "Daun"],
+    0
+  ],
+  [
+    1,
+    "Apakah bahagian tumbuhan yang terletak paling bawah?",
+    ["Bunga", "Buah", "Akar", "Daun"],
+    2
+  ],
+  [
+    2,
+    "Apabila melihat pokok berbunga, bahagian yang paling mudah dikenal sebagai bunga ialah bahagian yang ____.",
+    [
+      "Berada dalam tanah",
+      "Menjadi batang utama",
+      "Berbentuk akar",
+      "Mempunyai kelopak"
+    ],
+    3
+  ],
+  [
+    1,
+    "Urat daun selari terdapat pada daun pokok ____.",
+    ["Durian", "Teratai", "Pandan", "Bunga ros"],
+    2
+  ],
+  [
+    2,
+    "Apabila mengelaskan tumbuhan mengikut akar, dua kumpulan yang sesuai ialah ____.",
+    [
+      "Tunjang dan serabut",
+      "Berkayu dan tidak berkayu",
+      "Jejala dan selari",
+      "Berbunga dan tidak berbunga"
+    ],
+    0
+  ],
+  [
+    2,
+    "Apabila mengelaskan tumbuhan mengikut bunga, dua kumpulan yang sesuai ialah ____.",
+    [
+      "Besar dan kecil",
+      "Berbunga dan tidak berbunga",
+      "Keras dan lembut",
+      "Masam dan manis"
+    ],
+    1
+  ],
+  [
+    1,
+    "Pokok bunga ros dan pokok pandan berbeza dari segi jenis ____.",
+    ["Akar", "Sirip", "Sayap", "Paruh"],
+    0
+  ],
+  [
+    2,
+    "Antara pasangan berikut, yang manakah sepadan dengan betul?",
+    [
+      "Betik – batang berkayu",
+      "Pandan – akar tunjang",
+      "Durian – batang berkayu",
+      "Bunga ros – urat daun selari"
+    ],
+    2
+  ],
+  [
+    1,
+    "Pokok teratai ialah tumbuhan yang ____.",
+    [
+      "Berakar serabut sahaja",
+      "Berbunga",
+      "Tidak berbunga",
+      "Tidak berdaun"
+    ],
+    1
+  ],
+  [
+    1,
+    "Batang penting kerana batang ____.",
+    [
+      "Menjadi akar",
+      "Menghasilkan bunyi",
+      "Menjadi tanah",
+      "Mengangkut bahan dalam tumbuhan"
+    ],
+    3
+  ],
+  [
+    1,
+    "Bahagian yang mengangkut air dan nutrien daripada akar ke daun ialah ____.",
+    ["Bunga", "Batang", "Buah", "Daun"],
+    1
+  ],
+  [
+    1,
+    "Bunga akan bertukar menjadi ____.",
+    [
+      "Air dan nutrien",
+      "Akar dan tanah",
+      "Buah dan biji benih",
+      "Daun dan batang"
+    ],
+    2
+  ],
+  [
+    2,
+    "Jika tumbuhan memerlukan air dari tanah, bahagian pertama yang berperanan ialah ____.",
+    ["Akar", "Buah", "Bunga", "Daun"],
+    0
+  ],
+  [
+    2,
+    "Jika daun tidak dapat menjalankan fungsinya, tumbuhan sukar untuk ____.",
+    ["Mendengar", "Bergerak", "Bercakap", "Membuat makanan"],
+    3
+  ],
+  [
+    1,
+    "Bahagian yang mengangkut makanan yang dihasilkan oleh daun ialah ____.",
+    ["Akar", "Bunga", "Batang", "Daun"],
+    2
+  ],
+  [
+    2,
+    "Akar menyerap air daripada tanah. Selepas itu, bahagian yang mengangkut air ke daun ialah ____.",
+    ["Biji benih", "Bunga", "Buah", "Batang"],
+    3
+  ],
+  [
+    2,
+    "Antara berikut, yang manakah satu lagi persamaan bunga raya dan bunga ros?",
+    [
+      "Kedua-duanya tidak berbunga",
+      "Kedua-duanya berbatang berkayu",
+      "Kedua-duanya berurat selari",
+      "Kedua-duanya tidak berkayu"
+    ],
+    1
+  ],
+  [
+    2,
+    "Dua tumbuhan berbeza boleh sama-sama berbunga tetapi masih merupakan ____.",
+    [
+      "Tumbuhan yang berlainan",
+      "Objek bukan hidup",
+      "Haiwan yang sama",
+      "Bahagian badan manusia"
+    ],
+    0
+  ],
+  [
+    1,
+    "Apakah persamaan pokok bunga raya dengan pokok bunga ros dari segi bunga?",
+    [
+      "Hanya bunga raya berbunga",
+      "Hanya bunga ros berbunga",
+      "Kedua-duanya tidak berbunga",
+      "Kedua-duanya berbunga"
+    ],
+    3
+  ],
+  [
+    1,
+    "Apakah persamaan kedua-dua pokok bunga raya dan bunga ros dari segi batang?",
+    [
+      "Urat selari",
+      "Batang berkayu",
+      "Batang tidak berkayu",
+      "Akar serabut"
+    ],
+    1
+  ],
+  [
+    2,
+    "Apabila membandingkan dua tumbuhan, 'serupa' bermaksud mempunyai ____.",
+    [
+      "Saiz yang mesti sama",
+      "Tempat tumbuh yang sama",
+      "Ciri yang sama",
+      "Nama yang sama sahaja"
+    ],
+    2
+  ],
+  [
+    1,
+    "Apakah persamaan kedua-dua pokok bunga raya dan bunga ros dari segi daun?",
+    [
+      "Urat daun jejala",
+      "Akar serabut",
+      "Urat daun selari",
+      "Tiada urat daun"
+    ],
+    0
+  ]
 ];
 
 /* =========================================================
-   GLOBAL
-========================================================= */
+   STATUS PERMAINAN
+   ========================================================= */
 
-const W=620;
-const H=790;
+const $ = id => document.getElementById(id);
+const overlay = $("overlay");
+const dialog = $("dialog");
 
-const CHUNK_HEIGHT=
-790;
+let scene;
+let started = false;
+let finished = false;
+let answered = 0;
+let muted = false;
+let audioContext;
+let elapsed = 0;
+let clockStart = 0;
+let modal = false;
+let previousFocus;
 
-let sceneRef=null;
+const N = 7;
+const S = 68;
+const X = 42;
+const Y = 105;
 
-let questionIndex=0;
+function stamp(ms) {
+  const seconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(seconds / 60);
 
-let currentChest=null;
+  return (
+    String(minutes).padStart(2, "0") +
+    ":" +
+    String(seconds % 60).padStart(2, "0")
+  );
+}
 
-let questionOpen=false;
+function status(message) {
+  $("status").textContent = message;
+}
 
-let answerLocked=false;
+/* =========================================================
+   BUNYI DIJANA MENGGUNAKAN WEB AUDIO
+   ========================================================= */
 
-let externalJoy={
-x:0,
-y:0
+function sound(frequency = 520, duration = 0.1) {
+  if (muted) return;
+
+  try {
+    audioContext ||= new (
+      window.AudioContext || window.webkitAudioContext
+    )();
+
+    audioContext.resume();
+
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.type = "triangle";
+    oscillator.frequency.value = frequency;
+
+    gain.gain.setValueAtTime(
+      0.055,
+      audioContext.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      audioContext.currentTime + duration
+    );
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + duration);
+  } catch (error) {
+    // Permainan masih boleh diteruskan jika audio tidak tersedia.
+  }
+}
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+
+function openModal(html) {
+  previousFocus = document.activeElement;
+  modal = true;
+  dialog.innerHTML = html;
+  overlay.hidden = false;
+
+  setTimeout(() => {
+    dialog.querySelector("button:not([hidden])")?.focus();
+  }, 30);
+}
+
+function closeModal() {
+  overlay.hidden = true;
+  modal = false;
+  previousFocus?.focus?.();
+}
+
+overlay.addEventListener("keydown", event => {
+  if (event.key !== "Tab") return;
+
+  const elements = [
+    ...dialog.querySelectorAll(
+      "button:not(:disabled):not([hidden]), a[href]"
+    )
+  ];
+
+  if (!elements.length) return;
+
+  const first = elements[0];
+  const last = elements[elements.length - 1];
+
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (
+    !event.shiftKey &&
+    document.activeElement === last
+  ) {
+    event.preventDefault();
+    first.focus();
+  }
+});
+
+/* =========================================================
+   PAPARAN KEMAJUAN
+   ========================================================= */
+
+function progress() {
+  $("counter").textContent = answered + " / 25 SOALAN";
+  $("percent").textContent = answered * 4 + "%";
+  $("fill").style.width = answered * 4 + "%";
+
+  $("garden").innerHTML = Array.from(
+    { length: 25 },
+    (_, index) => `
+      <div
+        class="seed ${index < answered ? "grown" : ""}"
+        aria-label="Soalan ${index + 1}${
+          index < answered ? " selesai" : ""
+        }"
+      >
+        ${index < answered ? "✿" : index + 1}
+      </div>
+    `
+  ).join("");
+
+  $("garden-text").textContent =
+    answered === 25
+      ? "Taman kamu sudah mekar sepenuhnya!"
+      : answered +
+        " bunga ditanam. " +
+        (25 - answered) +
+        " lagi untuk mekar!";
+}
+
+/* =========================================================
+   ARAHAN
+   ========================================================= */
+
+function intro(help = false) {
+  openModal(`
+    <div class="intro-art">✿</div>
+
+    <div class="tag center">
+      SELAMAT DATANG, PEKEBUN CILIK!
+    </div>
+
+    <h2 id="modal-title" class="center">
+      Taman kecil, ilmu besar.
+    </h2>
+
+    <p>
+      Padankan <b>3 atau lebih tumbuhan sama</b>
+      dalam satu baris atau lajur.
+      Leret satu petak atau ketik dua petak bersebelahan.
+    </p>
+
+    <p>
+      Setiap pertukaran yang menghasilkan padanan membuka
+      <b>satu soalan</b>.
+      Jawab dengan betul untuk menanam bunga.
+      Jawapan salah? Cuba lagi tanpa had!
+    </p>
+
+    <p class="muted">
+      Lengkapkan semua 25 soalan.
+      Petunjuk dan susun semula sentiasa tersedia
+      ketika papan sedia.
+    </p>
+
+    <button class="btn primary" id="begin">
+      ${help ? "Sambung bermain" : "Jom berkebun!"} →
+    </button>
+  `);
+
+  $("begin").onclick = () => {
+    closeModal();
+
+    if (!started) {
+      started = true;
+      clockStart = performance.now();
+    }
+
+    sound();
+    status("Padankan 3 tumbuhan sama untuk buka soalan.");
+  };
+}
+
+/* =========================================================
+   SOALAN DAN JAWAPAN
+   ========================================================= */
+
+function quiz() {
+  const question = QUESTIONS[answered];
+  const number = answered + 1;
+
+  openModal(`
+    <div class="tag">
+      SOALAN ${number} / 25 · TP${question[0]}
+    </div>
+
+    <h2 id="modal-title">${question[1]}</h2>
+
+    <div class="options">
+      ${question[2].map((answer, index) => `
+        <button class="option" data-answer="${index}">
+          <b>${"ABCD"[index]}</b>
+          <span>${answer}</span>
+        </button>
+      `).join("")}
+    </div>
+
+    <div class="feedback" id="feedback" aria-live="polite">
+      Pilih jawapan yang paling tepat.
+    </div>
+
+    <button hidden class="btn primary" id="next">
+      ${
+        number === 25
+          ? "Lihat taman saya"
+          : "Tanam bunga & sambung"
+      } →
+    </button>
+  `);
+
+  let questionSolved = false;
+
+  dialog.querySelectorAll(".option").forEach(button => {
+    button.onclick = () => {
+      if (questionSolved) return;
+
+      const choice = Number(button.dataset.answer);
+
+      if (choice !== question[3]) {
+        button.classList.add("wrong");
+        button.disabled = true;
+
+        $("feedback").textContent =
+          "Belum tepat. Cuba jawapan lain, kamu boleh!";
+
+        sound(170, 0.16);
+
+        dialog
+          .querySelector(".option:not(:disabled)")
+          ?.focus();
+
+        return;
+      }
+
+      questionSolved = true;
+      button.classList.add("correct");
+
+      dialog.querySelectorAll(".option").forEach(option => {
+        option.disabled = true;
+      });
+
+      $("feedback").textContent =
+        "Betul! " +
+        question[2][choice] +
+        ". Satu bunga untuk taman kamu!";
+
+      answered++;
+      progress();
+      sound(780, 0.22);
+
+      $("next").hidden = false;
+      $("next").focus();
+
+      $("next").onclick = () => {
+        closeModal();
+
+        if (answered === QUESTIONS.length) {
+          win();
+        } else {
+          scene.busy = false;
+
+          status(
+            "Bunga baharu ditanam! Cari padanan seterusnya."
+          );
+        }
+      };
+    };
+  });
+}
+
+/* =========================================================
+   TAMAT DAN MAIN SEMULA
+   ========================================================= */
+
+function win() {
+  finished = true;
+  elapsed = performance.now() - clockStart;
+
+  $("timer").textContent = stamp(elapsed);
+  scene.celebrate();
+
+  openModal(`
+    <div class="intro-art">✿ ✦ ✿</div>
+
+    <div class="tag center">
+      25 / 25 SOALAN SELESAI
+    </div>
+
+    <h2 id="modal-title" class="center">
+      Taman ilmu sudah mekar!
+    </h2>
+
+    <p class="center">
+      Hebat! Kamu telah mengenali bahagian tumbuhan,
+      ciri, kepentingan dan persamaannya.
+    </p>
+
+    <p class="center">
+      <b>Masa bermain: ${stamp(elapsed)}</b>
+    </p>
+
+    <button class="btn primary" id="again">
+      Main sekali lagi ↻
+    </button>
+
+    <p class="center">
+      <a href="index.html">Kembali ke Home</a>
+    </p>
+  `);
+
+  $("again").onclick = () => {
+    closeModal();
+
+    answered = 0;
+    finished = false;
+    started = true;
+    clockStart = performance.now();
+
+    progress();
+    scene.newBoard();
+    scene.busy = false;
+
+    status(
+      "Taman baharu! Padankan tumbuhan untuk bermula."
+    );
+  };
+}
+
+/* =========================================================
+   BUTANG
+   ========================================================= */
+
+$("sound").onclick = () => {
+  muted = !muted;
+
+  $("sound").textContent =
+    "Bunyi: " + (muted ? "OFF" : "ON");
+
+  $("sound").setAttribute(
+    "aria-pressed",
+    String(!muted)
+  );
+
+  if (!muted) sound();
 };
 
-/* =========================================================
-   AUDIO TANPA FILE
-========================================================= */
-
-const AudioSystem={
-
-ctx:null,
-
-master:null,
-
-music:null,
-
-sfx:null,
-
-timer:null,
-
-step:0,
-
-nextTime:0,
-
-unlock(){
-
-try{
-
-if(!this.ctx){
-
-const AC=
-window.AudioContext||
-window.webkitAudioContext;
-
-if(!AC){
-return;
-}
-
-this.ctx=
-new AC();
-
-this.master=
-this.ctx.createGain();
-
-this.music=
-this.ctx.createGain();
-
-this.sfx=
-this.ctx.createGain();
-
-this.master.gain.value=.75;
-this.music.gain.value=.10;
-this.sfx.gain.value=.30;
-
-this.music.connect(
-this.master
-);
-
-this.sfx.connect(
-this.master
-);
-
-this.master.connect(
-this.ctx.destination
-);
-
-}
-
-if(
-this.ctx.state==="suspended"
-){
-
-this.ctx.resume();
-
-}
-
-}catch(e){
-
-console.log(e);
-
-}
-
-},
-
-tone(
-freq,
-time,
-duration,
-type="square",
-volume=.05,
-destination=null,
-endFreq=null
-){
-
-if(!this.ctx){
-return;
-}
-
-const output=
-destination||
-this.sfx;
-
-const osc=
-this.ctx.createOscillator();
-
-const gain=
-this.ctx.createGain();
-
-osc.type=
-type;
-
-osc.frequency.setValueAtTime(
-freq,
-time
-);
-
-if(endFreq){
-
-osc.frequency
-.exponentialRampToValueAtTime(
-endFreq,
-time+duration
-);
-
-}
-
-gain.gain
-.setValueAtTime(
-.0001,
-time
-);
-
-gain.gain
-.exponentialRampToValueAtTime(
-volume,
-time+.01
-);
-
-gain.gain
-.exponentialRampToValueAtTime(
-.0001,
-time+duration
-);
-
-osc.connect(
-gain
-);
-
-gain.connect(
-output
-);
-
-osc.start(
-time
-);
-
-osc.stop(
-time+duration+.03
-);
-
-},
-
-startMusic(){
-
-this.unlock();
-
-if(
-!this.ctx||
-this.timer
-){
-return;
-}
-
-this.step=0;
-
-this.nextTime=
-this.ctx.currentTime+.05;
-
-this.schedule();
-
-this.timer=
-setInterval(
-()=>this.schedule(),
-90
-);
-
-},
-
-schedule(){
-
-if(!this.ctx){
-return;
-}
-
-const horizon=
-this.ctx.currentTime+.28;
-
-while(
-this.nextTime<horizon
-){
-
-this.musicStep(
-this.step,
-this.nextTime
-);
-
-this.step++;
-
-this.nextTime+=.185;
-
-}
-
-},
-
-musicStep(
-step,
-time
-){
-
-const melody=[
-
-523.25,
-659.25,
-783.99,
-659.25,
-
-587.33,
-698.46,
-880,
-698.46,
-
-659.25,
-783.99,
-987.77,
-783.99,
-
-587.33,
-698.46,
-783.99,
-523.25
-
-];
-
-const note=
-melody[
-step%
-melody.length
-];
-
-this.tone(
-note,
-time,
-.13,
-"square",
-.032,
-this.music
-);
-
-if(step%2===0){
-
-this.tone(
-note/2,
-time,
-.17,
-"triangle",
-.022,
-this.music
-);
-
-}
-
-},
-
-sound(name){
-
-this.unlock();
-
-if(!this.ctx){
-return;
-}
-
-const t=
-this.ctx.currentTime+.005;
-
-if(name==="attack"){
-
-this.tone(
-820,
-t,
-.07,
-"square",
-.11,
-this.sfx,
-430
-);
-
-}
-
-if(name==="enemyShoot"){
-
-this.tone(
-240,
-t,
-.09,
-"sawtooth",
-.07,
-this.sfx,
-140
-);
-
-}
-
-if(name==="hit"){
-
-this.tone(
-150,
-t,
-.16,
-"sawtooth",
-.11,
-this.sfx,
-75
-);
-
-}
-
-if(name==="enemyHit"){
-
-this.tone(
-340,
-t,
-.08,
-"square",
-.08,
-this.sfx,
-240
-);
-
-}
-
-if(name==="correct"){
-
-this.tone(
-523,
-t,
-.10,
-"square",
-.08
-);
-
-this.tone(
-659,
-t+.09,
-.10,
-"square",
-.08
-);
-
-this.tone(
-784,
-t+.18,
-.15,
-"triangle",
-.08
-);
-
-}
-
-if(name==="wrong"){
-
-this.tone(
-210,
-t,
-.13,
-"sawtooth",
-.08,
-this.sfx,
-150
-);
-
-}
-
-if(name==="chest"){
-
-this.tone(
-650,
-t,
-.08,
-"square",
-.08
-);
-
-this.tone(
-850,
-t+.08,
-.12,
-"triangle",
-.08
-);
-
-}
-
-if(name==="win"){
-
-[
-523,
-659,
-784,
-1046
-]
-.forEach(
-(f,i)=>{
-
-this.tone(
-f,
-t+i*.1,
-.18,
-"square",
-.08
-);
-
-}
-);
-
-}
-
-}
-
+$("help").onclick = () => {
+  if (
+    scene &&
+    !scene.busy &&
+    !modal &&
+    !finished
+  ) {
+    intro(true);
+  }
 };
 
-/* =========================================================
-   PHASER SCENE
-========================================================= */
-
-class ClassroomGame
-extends Phaser.Scene{
-
-constructor(){
-
-super(
-"ClassroomGame"
-);
-
-}
-
-create(){
-
-sceneRef=this;
-
-this.maxHP=5;
-
-this.hp=5;
-
-this.started=false;
-
-this.resting=false;
-
-this.manualPause=false;
-
-this.invincible=false;
-
-this.lastShot=-9999;
-
-this.attackCooldown=280;
-
-this.lastDirection=
-new Phaser.Math.Vector2(
-0,
--1
-);
-
-this.generated=
-new Map();
-
-createTextures(
-this
-);
-
-this.obstacles=
-this.physics.add.staticGroup();
-
-this.enemies=
-this.physics.add.group();
-
-this.enemyBullets=
-this.physics.add.group();
-
-this.playerBullets=
-this.physics.add.group();
-
-/* START AREA */
-
-this.generateChunk(
-0,
-true
-);
-
-/* PLAYER */
-
-this.startY=
-H/2;
-
-this.playerShadow=
-this.add.ellipse(
-W/2,
-this.startY+29,
-53,
-20,
-0x352719,
-.25
-)
-.setDepth(
-40
-);
-
-this.player=
-this.physics.add.sprite(
-W/2,
-this.startY,
-"player"
-)
-.setDepth(
-50
-);
-
-this.player.body
-.setSize(
-35,
-44
-)
-.setOffset(
-19,
-20
-);
-
-/* COLLISIONS */
-
-this.physics.add.collider(
-this.player,
-this.obstacles
-);
-
-this.physics.add.collider(
-this.enemies,
-this.obstacles
-);
-
-this.physics.add.overlap(
-this.player,
-this.enemies,
-(p,e)=>{
-
-this.damagePlayer(
-e.x,
-e.y
-);
-
-}
-);
-
-this.physics.add.overlap(
-this.player,
-this.enemyBullets,
-(p,b)=>{
-
-const x=b.x;
-const y=b.y;
-
-b.destroy();
-
-this.damagePlayer(
-x,
-y
-);
-
-}
-);
-
-this.physics.add.overlap(
-this.playerBullets,
-this.enemies,
-(b,e)=>{
-
-this.damageEnemy(
-b,
-e
-);
-
-}
-);
-
-this.physics.add.collider(
-this.playerBullets,
-this.obstacles,
-b=>{
-
-if(
-b&&
-b.active
-){
-
-b.destroy();
-
-}
-
-}
-);
-
-this.physics.add.collider(
-this.enemyBullets,
-this.obstacles,
-b=>{
-
-if(
-b&&
-b.active
-){
-
-b.destroy();
-
-}
-
-}
-);
-
-/* KEYBOARD */
-
-this.cursors=
-this.input.keyboard
-.createCursorKeys();
-
-this.keys=
-this.input.keyboard
-.addKeys({
-
-up:"W",
-
-down:"S",
-
-left:"A",
-
-right:"D",
-
-attack:"SPACE"
-
-});
-
-/* CAMERA */
-
-this.cameraAnchor=
-H/2;
-
-this.cameras.main
-.setScroll(
-0,
-0
-);
-
-this.cameras.main
-.setBackgroundColor(
-"#d7ad7b"
-);
-
-this.createHUD();
-
-/* START HINT */
-
-this.startText=
-this.add.text(
-
-W/2,
-
-H/2+105,
-
-"✦ MULA JELAJAH ✦\nGERAKKAN CHARACTER KE ATAS",
-
-{
-
-font:
-"bold 16px Arial",
-
-color:
-"#ffffff",
-
-align:
-"center",
-
-backgroundColor:
-"rgba(25,78,90,.80)",
-
-padding:{
-x:15,
-y:8
-},
-
-stroke:
-"#145a65",
-
-strokeThickness:
-3
-
-}
-
-)
-.setOrigin(
-.5
-)
-.setScrollFactor(
-0
-)
-.setDepth(
-999999
-);
-
-this.tweens.add({
-
-targets:
-this.startText,
-
-scale:{
-from:.97,
-to:1.04
-},
-
-duration:700,
-
-yoyo:true,
-
-repeat:-1
-
-});
-
-document
-.getElementById(
-"resumeBtn"
-)
-.onclick=
-()=>this.togglePause(
-false
-);
-
-this.updateHUD();
-
-}
-
-/* =====================================================
-   UPDATE
-===================================================== */
-
-update(time){
-
-if(
-!this.player||
-!this.player.active
-){
-return;
-}
-
-if(
-this.resting||
-this.manualPause||
-questionOpen
-){
-
-this.player.setVelocity(
-0,
-0
-);
-
-return;
-
-}
-
-let x=0;
-let y=0;
-
-if(
-this.cursors.left.isDown||
-this.keys.left.isDown
-){
-x--;
-}
-
-if(
-this.cursors.right.isDown||
-this.keys.right.isDown
-){
-x++;
-}
-
-if(
-this.cursors.up.isDown||
-this.keys.up.isDown
-){
-y--;
-}
-
-if(
-this.cursors.down.isDown||
-this.keys.down.isDown
-){
-y++;
-}
-
-if(
-Math.hypot(
-externalJoy.x,
-externalJoy.y
-)>.08
-){
-
-x=externalJoy.x;
-y=externalJoy.y;
-
-}
-
-const movement=
-new Phaser.Math.Vector2(
-x,
-y
-);
-
-if(
-movement.length()>1
-){
-
-movement.normalize();
-
-}
-
-/*
-   GAME START APABILA
-   CHARACTER BERGERAK
-*/
-
-if(
-!this.started&&
-movement.lengthSq()>.02
-){
-
-this.beginGame();
-
-}
-
-this.player.setVelocity(
-movement.x*205,
-movement.y*205
-);
-
-if(
-movement.lengthSq()>.02
-){
-
-this.lastDirection
-.copy(
-movement
-)
-.normalize();
-
-if(movement.x<-.05){
-
-this.player.setFlipX(
-true
-);
-
-}else if(
-movement.x>.05
-){
-
-this.player.setFlipX(
-false
-);
-
-}
-
-}
-
-/*
-   CHARACTER TAK BOLEH
-   KELUAR ROUTE
-*/
-
-this.player.x=
-Phaser.Math.Clamp(
-this.player.x,
-30,
-W-30
-);
-
-if(
-this.player.y>
-H-40
-){
-
-this.player.y=
-H-40;
-
-}
-
-this.playerShadow
-.setPosition(
-this.player.x,
-this.player.y+29
-);
-
-/* CAMERA Y SAHAJA */
-
-const cameraY=
-Math.min(
-0,
-this.player.y-
-this.cameraAnchor
-);
-
-this.cameras.main.scrollX=0;
-
-this.cameras.main.scrollY=
-Phaser.Math.Linear(
-this.cameras.main.scrollY,
-cameraY,
-.20
-);
-
-if(!this.started){
-return;
-}
-
-/* ENDLESS */
-
-const chunk=
-this.player.y>=0
-?0
-:
-Math.floor(
-(
--this.player.y-
-1
-)/
-CHUNK_HEIGHT
-)+1;
-
-for(
-let i=1;
-i<=chunk+3;
-i++
-){
-
-if(
-!this.generated.has(
-i
-)
-){
-
-this.generateChunk(
-i,
-false
-);
-
-}
-
-}
-
-this.cleanup(
-chunk
-);
-
-this.updateEnemies(
-time
-);
-
-this.updateBullets(
-time
-);
-
-this.updateChest();
-
-if(
-Phaser.Input.Keyboard
-.JustDown(
-this.keys.attack
-)
-){
-
-this.attack(
-time
-);
-
-}
-
-}
-
-/* =====================================================
-   BEGIN
-===================================================== */
-
-beginGame(){
-
-if(this.started){
-return;
-}
-
-this.started=true;
-
-AudioSystem.startMusic();
-
-this.populateStartArea();
-
-this.generateChunk(
-1,
-false
-);
-
-this.generateChunk(
-2,
-false
-);
-
-this.generateChunk(
-3,
-false
-);
-
-if(this.startText){
-
-this.tweens.add({
-
-targets:
-this.startText,
-
-alpha:0,
-
-duration:250,
-
-onComplete:()=>{
-
-if(this.startText){
-
-this.startText.destroy();
-
-this.startText=null;
-
-}
-
-}
-
-});
-
-}
-
-this.status
-.setText(
-"↑ JELAJAH KE ATAS"
-);
-
-this.time.delayedCall(
-500,
-()=>{
-
-if(
-!currentChest&&
-questionIndex<
-QUESTIONS.length
-){
-
-this.spawnChest(
-500
-);
-
-}
-
-}
-);
-
-}
-
-/* =====================================================
-   START AREA OBJECTS
-===================================================== */
-
-populateStartArea(){
-
-const area=
-this.generated.get(
-0
-);
-
-if(
-!area||
-area.populated
-){
-return;
-}
-
-area.populated=true;
-
-/*
-   MEJA CUKUP SEDIKIT
-*/
-
-[
-{
-x:140,
-y:220
-},
-
-{
-x:480,
-y:85
-}
-
-]
-.forEach(
-p=>{
-
-const desk=
-this.obstacles.create(
-p.x,
-p.y,
-"desk"
-);
-
-desk.body
-.setSize(
-91,
-50
-)
-.setOffset(
-9,
-25
-);
-
-desk.refreshBody();
-
-desk.setDepth(
-25
-);
-
-area.objects.push(
-desk
-);
-
-}
-);
-
-/* START ENEMY */
-
-[
-{
-x:390,
-y:250
-},
-
-{
-x:230,
-y:140
-},
-
-{
-x:520,
-y:160
-}
-
-]
-.forEach(
-p=>{
-
-const enemy=
-this.createEnemy(
-p.x,
-p.y
-);
-
-area.objects.push(
-enemy
-);
-
-}
-);
-
-}
-
-/* =====================================================
-   WORLD GENERATION
-===================================================== */
-
-generateChunk(
-index,
-safeStart=false
-){
-
-if(
-this.generated.has(
-index
-)
-){
-return;
-}
-
-const top=
--index*
-CHUNK_HEIGHT;
-
-const objects=[];
-
-/* FLOOR */
-
-const floor=
-this.add.tileSprite(
-
-W/2,
-
-top+
-CHUNK_HEIGHT/2,
-
-W,
-
-CHUNK_HEIGHT,
-
-"floor"
-
-)
-.setDepth(
--1000
-);
-
-objects.push(
-floor
-);
-
-/* START */
-
-if(safeStart){
-
-objects.push(
-
-this.add.image(
-W/2,
-top+70,
-"board"
-)
-
-);
-
-objects.push(
-
-this.add.image(
-42,
-top+260,
-"plant"
-)
-
-);
-
-objects.push(
-
-this.add.image(
-W-42,
-top+260,
-"plant"
-)
-
-);
-
-objects.push(
-
-this.add.image(
-42,
-top+650,
-"plant"
-)
-
-);
-
-objects.push(
-
-this.add.image(
-W-42,
-top+650,
-"plant"
-)
-
-);
-
-const welcome=
-this.add.text(
-
-W/2,
-
-top+190,
-
-"★ SELAMAT DATANG KE KELAS SAINS ★",
-
-{
-
-font:
-"bold 15px Arial",
-
-color:
-"#73502e",
-
-backgroundColor:
-"rgba(255,248,221,.72)",
-
-padding:{
-x:13,
-y:6
-}
-
-}
-
-)
-.setOrigin(
-.5
-);
-
-objects.push(
-welcome
-);
-
-}else{
-
-if(index%2===0){
-
-objects.push(
-
-this.add.image(
-W/2,
-top+70,
-"board"
-)
-
-);
-
-}
-
-/* PLANTS */
-
-objects.push(
-
-this.add.image(
-
-40,
-
-top+
-Phaser.Math.Between(
-150,
-270
-),
-
-"plant"
-
-)
-
-);
-
-objects.push(
-
-this.add.image(
-
-W-40,
-
-top+
-Phaser.Math.Between(
-520,
-700
-),
-
-"plant"
-
-)
-
-);
-
-/* =================================================
-   DESKS
-================================================= */
-
-const lanes=[
-110,
-310,
-510
-];
-
-const shuffled=
-Phaser.Utils.Array.Shuffle(
-[
-0,
-1,
-2
-]
-);
-
-const deskCount=
-index%4===0
-?2
-:3;
-
-const deskY=[
-
-top+210,
-
-top+455,
-
-top+690
-
-];
-
-for(
-let i=0;
-i<deskCount;
-i++
-){
-
-const desk=
-this.obstacles.create(
-
-lanes[
-shuffled[i]
-]+
-Phaser.Math.Between(
--15,
-15
-),
-
-deskY[i]+
-Phaser.Math.Between(
--25,
-25
-),
-
-"desk"
-
-);
-
-desk.body
-.setSize(
-91,
-50
-)
-.setOffset(
-9,
-25
-);
-
-desk.refreshBody();
-
-desk.setDepth(
-25
-);
-
-objects.push(
-desk
-);
-
-}
-
-/* =================================================
-   ENEMY
-   Q1-Q9 = 4/5
-   Q10+ = 6/7
-================================================= */
-
-const harder=
-questionIndex>=9;
-
-const enemyCount=
-harder
-
-?(
-index%3===0
-?7
-:6
-)
-
-:(
-index%4===0
-?5
-:4
-);
-
-const enemyYs=
-harder
-
-?[
-top+95,
-top+205,
-top+315,
-top+430,
-top+545,
-top+655,
-top+750
-]
-
-:[
-top+130,
-top+280,
-top+430,
-top+580,
-top+720
-];
-
-const enemyXs=[
-
-85,
-
-195,
-
-310,
-
-425,
-
-535
-
-];
-
-let previous=-1;
-
-for(
-let i=0;
-i<enemyCount;
-i++
-){
-
-let lane=
-Phaser.Math.Between(
-0,
-enemyXs.length-1
-);
-
-if(lane===previous){
-
-lane=
-(
-lane+
-1+
-Phaser.Math.Between(
-0,
-3
-)
-)%
-enemyXs.length;
-
-}
-
-previous=lane;
-
-const enemy=
-this.createEnemy(
-
-enemyXs[lane]+
-Phaser.Math.Between(
--15,
-15
-),
-
-enemyYs[i]+
-Phaser.Math.Between(
--20,
-20
-)
-
-);
-
-if(harder){
-
-enemy.speed=
-Phaser.Math.Between(
-52,
-70
-);
-
-}
-
-objects.push(
-enemy
-);
-
-}
-
-}
-
-this.generated.set(
-index,
-{
-
-top,
-
-objects,
-
-safeStart,
-
-populated:false
-
-}
-);
-
-}
-
-/* =====================================================
-   ENEMY
-===================================================== */
-
-createEnemy(
-x,
-y
-){
-
-const e=
-this.enemies.create(
-x,
-y,
-"enemy"
-);
-
-e.hp=3;
-
-e.speed=
-Phaser.Math.Between(
-47,
-65
-);
-
-e.lastAttack=
-Phaser.Math.Between(
-0,
-900
-);
-
-e.body
-.setCircle(
-25,
-11,
-11
-);
-
-e.setDepth(
-35
-);
-
-return e;
-
-}
-
-/* =====================================================
-   QUESTION 10 BOOST
-===================================================== */
-
-question10Boost(){
-
-[
-{
-x:95,
-y:-350
-},
-
-{
-x:310,
-y:-510
-},
-
-{
-x:525,
-y:-650
-}
-
-]
-.forEach(
-p=>{
-
-const enemy=
-this.createEnemy(
-
-p.x+
-Phaser.Math.Between(
--15,
-15
-),
-
-this.player.y+
-p.y
-
-);
-
-enemy.speed=
-Phaser.Math.Between(
-52,
-70
-);
-
-}
-);
-
-}
-
-/* =====================================================
-   CLEAN OLD WORLD
-===================================================== */
-
-cleanup(
-currentChunk
-){
-
-for(
-const[
-index,
-chunk
-]
-of
-this.generated
-){
-
-if(index===0){
-continue;
-}
-
-if(
-index<
-currentChunk-
-5
-){
-
-chunk.objects.forEach(
-obj=>{
-
-if(
-obj&&
-obj.active&&
-obj!==currentChest
-){
-
-obj.destroy();
-
-}
-
-}
-);
-
-this.generated.delete(
-index
-);
-
-}
-
-}
-
-}
-
-/* =====================================================
-   CHEST
-===================================================== */
-
-chestPosition(
-y
-){
-
-const xs=
-Phaser.Utils.Array.Shuffle(
-[
-80,
-195,
-310,
-425,
-540
-]
-);
-
-for(
-const x
-of
-xs
-){
-
-let blocked=false;
-
-this.obstacles.children
-.iterate(
-o=>{
-
-if(
-!o||
-!o.active
-){
-return;
-}
-
-if(
-Math.abs(
-o.x-x
-)<120&&
-Math.abs(
-o.y-y
-)<140
-){
-
-blocked=true;
-
-}
-
-}
-);
-
-if(!blocked){
-
-return{
-x,
-y
+$("hint").onclick = () => {
+  if (scene?.ready()) {
+    scene.hint();
+  }
 };
 
-}
+$("shuffle").onclick = () => {
+  if (scene?.ready()) {
+    scene.newBoard();
 
-}
+    status(
+      "Papan disusun semula. Jom cari padanan!"
+    );
 
-return{
-x:W/2,
-y
+    sound(400);
+  }
 };
 
+setInterval(() => {
+  if (started && !finished) {
+    $("timer").textContent = stamp(
+      performance.now() - clockStart
+    );
+  }
+
+  const disabled =
+    !scene ||
+    !started ||
+    scene.busy ||
+    modal ||
+    finished;
+
+  $("hint").disabled = disabled;
+  $("shuffle").disabled = disabled;
+
+  $("help").disabled =
+    !scene ||
+    scene.busy ||
+    modal ||
+    finished;
+}, 150);
+
+/* =========================================================
+   LOGIK PADANAN
+   ========================================================= */
+
+function matches(board) {
+  const hit = new Set();
+
+  for (let row = 0; row < N; row++) {
+    for (let column = 0; column < N; column++) {
+      const kind = board[row][column]?.kind;
+
+      if (kind == null) continue;
+
+      // Padanan mendatar.
+      if (
+        column <= N - 3 &&
+        board[row][column + 1]?.kind === kind &&
+        board[row][column + 2]?.kind === kind
+      ) {
+        let position = column;
+
+        while (
+          position < N &&
+          board[row][position]?.kind === kind
+        ) {
+          hit.add(row * N + position);
+          position++;
+        }
+      }
+
+      // Padanan menegak.
+      if (
+        row <= N - 3 &&
+        board[row + 1][column]?.kind === kind &&
+        board[row + 2][column]?.kind === kind
+      ) {
+        let position = row;
+
+        while (
+          position < N &&
+          board[position][column]?.kind === kind
+        ) {
+          hit.add(position * N + column);
+          position++;
+        }
+      }
+    }
+  }
+
+  return [...hit].map(index => ({
+    r: Math.floor(index / N),
+    c: index % N
+  }));
 }
 
-spawnChest(
-distance=480
-){
+function legalMove(board) {
+  for (let row = 0; row < N; row++) {
+    for (let column = 0; column < N; column++) {
+      for (const [dr, dc] of [[0, 1], [1, 0]]) {
+        const nextRow = row + dr;
+        const nextColumn = column + dc;
 
-if(
-currentChest||
-questionIndex>=
-QUESTIONS.length
-){
-return;
+        if (
+          nextRow >= N ||
+          nextColumn >= N
+        ) {
+          continue;
+        }
+
+        // Cuba pertukaran sementara.
+        [
+          board[row][column],
+          board[nextRow][nextColumn]
+        ] = [
+          board[nextRow][nextColumn],
+          board[row][column]
+        ];
+
+        const valid = matches(board).length > 0;
+
+        // Pulihkan papan.
+        [
+          board[row][column],
+          board[nextRow][nextColumn]
+        ] = [
+          board[nextRow][nextColumn],
+          board[row][column]
+        ];
+
+        if (valid) {
+          return [
+            { r: row, c: column },
+            { r: nextRow, c: nextColumn }
+          ];
+        }
+      }
+    }
+  }
+
+  return null;
 }
 
-const y=
-this.player.y-
-distance;
+/* =========================================================
+   PHASER
+   ========================================================= */
 
-const target=
-y>=0
-?0
-:
-Math.floor(
-(
--y-
-1
-)/
-CHUNK_HEIGHT
-)+1;
+if (typeof Phaser !== "undefined") {
 
-for(
-let i=1;
-i<=target+1;
-i++
-){
+class Garden extends Phaser.Scene {
+  constructor() {
+    super("Garden");
 
-if(
-!this.generated.has(
-i
-)
-){
+    this.busy = false;
+    this.selected = null;
+    this.board = [];
+    this.down = null;
+  }
 
-this.generateChunk(
-i,
-false
-);
+  create() {
+    scene = this;
 
+    this.makeTextures();
+    this.drawWorld();
+
+    this.selection = this.add
+      .rectangle(0, 0, 64, 64)
+      .setStrokeStyle(4, 0xffe184)
+      .setFillStyle(0, 0)
+      .setDepth(8)
+      .setVisible(false);
+
+    this.hints = this.add
+      .graphics()
+      .setDepth(8);
+
+    this.newBoard();
+
+    this.input.on("pointerdown", pointer => {
+      if (!this.ready()) return;
+
+      this.down = {
+        x: pointer.x,
+        y: pointer.y,
+        cell: this.cell(pointer)
+      };
+    });
+
+    this.input.on("pointerup", pointer => {
+      if (!this.ready() || !this.down) {
+        this.down = null;
+        return;
+      }
+
+      const down = this.down;
+      this.down = null;
+
+      if (!down.cell) return;
+
+      const dx = pointer.x - down.x;
+      const dy = pointer.y - down.y;
+
+      if (Math.max(Math.abs(dx), Math.abs(dy)) > 22) {
+        const destination = {
+          r: down.cell.r,
+          c: down.cell.c
+        };
+
+        if (Math.abs(dx) > Math.abs(dy)) {
+          destination.c += Math.sign(dx);
+        } else {
+          destination.r += Math.sign(dy);
+        }
+
+        if (
+          destination.r >= 0 &&
+          destination.r < N &&
+          destination.c >= 0 &&
+          destination.c < N
+        ) {
+          this.swap(down.cell, destination);
+        }
+      } else {
+        const cell = this.cell(pointer);
+
+        if (cell) {
+          this.select(cell);
+        }
+      }
+    });
+
+    this.input.on("pointerupoutside", () => {
+      this.down = null;
+    });
+
+    progress();
+    status("Selamat datang ke Taman Pixel!");
+    intro();
+  }
+
+  ready() {
+    return (
+      started &&
+      !finished &&
+      !modal &&
+      !this.busy
+    );
+  }
+
+  cell(pointer) {
+    const column = Math.floor((pointer.x - X) / S);
+    const row = Math.floor((pointer.y - Y) / S);
+
+    if (
+      row >= 0 &&
+      row < N &&
+      column >= 0 &&
+      column < N
+    ) {
+      return { r: row, c: column };
+    }
+
+    return null;
+  }
+
+  pos(row, column) {
+    return {
+      x: X + column * S + S / 2,
+      y: Y + row * S + S / 2
+    };
+  }
+
+  /* =======================================================
+     LUKISAN PIXEL ASLI
+     Semua watak dilukis menggunakan Canvas.
+     ======================================================= */
+
+  makeTextures() {
+    const palettes = [
+      ["#ffd36c", "#e9a83c"],
+      ["#ff8f9c", "#d34e77"],
+      ["#87ca69", "#488751"],
+      ["#c4a1ed", "#8462b1"],
+      ["#70cfc1", "#399788"],
+      ["#ffac66", "#d17042"]
+    ];
+
+    for (let kind = 0; kind < 6; kind++) {
+      const texture = this.textures.createCanvas(
+        "plant" + kind,
+        28,
+        30
+      );
+
+      const context = texture.context;
+
+      const rect = (x, y, width, height, color) => {
+        context.fillStyle = color;
+        context.fillRect(x, y, width, height);
+      };
+
+      const [light, dark] = palettes[kind];
+
+      // Bayang, batang dan daun.
+      rect(5, 27, 18, 2, "#9eac7d");
+      rect(13, 15, 3, 12, "#3e7150");
+      rect(8, 20, 5, 3, "#539950");
+      rect(6, 18, 5, 3, "#78bc65");
+      rect(16, 22, 5, 3, "#539950");
+      rect(18, 20, 4, 3, "#87c970");
+
+      // Bunga matahari.
+      if (kind === 0) {
+        rect(9, 2, 10, 4, dark);
+        rect(5, 6, 18, 12, dark);
+        rect(9, 18, 10, 3, dark);
+
+        rect(9, 3, 10, 4, light);
+        rect(4, 8, 6, 6, light);
+        rect(19, 8, 6, 6, light);
+        rect(10, 16, 8, 5, light);
+
+        rect(9, 7, 11, 10, "#9d643e");
+        rect(11, 8, 7, 6, "#e9b663");
+      }
+
+      // Bunga merah jambu.
+      if (kind === 1) {
+        rect(5, 7, 18, 11, dark);
+        rect(8, 4, 12, 16, dark);
+
+        rect(6, 6, 7, 8, light);
+        rect(15, 5, 7, 8, light);
+        rect(9, 12, 12, 6, light);
+
+        rect(11, 9, 7, 7, "#ffd887");
+      }
+
+      // Daun hijau.
+      if (kind === 2) {
+        rect(6, 7, 16, 14, dark);
+        rect(9, 3, 11, 18, dark);
+
+        rect(7, 7, 13, 11, light);
+        rect(10, 4, 8, 7, light);
+        rect(8, 8, 3, 4, "#c0e88c");
+
+        rect(20, 14, 4, 3, dark);
+      }
+
+      // Buah ungu.
+      if (kind === 3) {
+        rect(6, 10, 18, 11, dark);
+        rect(8, 7, 14, 15, dark);
+        rect(9, 8, 12, 11, light);
+
+        rect(12, 3, 3, 6, "#47714b");
+        rect(15, 3, 6, 3, "#78ad5b");
+        rect(8, 12, 3, 4, "#e2c8fc");
+      }
+
+      // Pucuk biru kehijauan.
+      if (kind === 4) {
+        rect(12, 4, 5, 17, dark);
+
+        rect(5, 7, 9, 5, light);
+        rect(3, 5, 8, 4, light);
+
+        rect(16, 11, 9, 5, light);
+        rect(19, 8, 7, 5, light);
+
+        rect(6, 15, 8, 5, light);
+        rect(5, 13, 5, 4, light);
+
+        rect(12, 3, 4, 6, light);
+      }
+
+      // Lobak oren.
+      if (kind === 5) {
+        rect(6, 8, 16, 12, dark);
+        rect(9, 5, 10, 18, dark);
+
+        rect(8, 8, 12, 11, light);
+        rect(10, 19, 8, 4, light);
+
+        rect(12, 2, 3, 6, "#60944a");
+        rect(7, 2, 5, 3, "#91c765");
+        rect(15, 1, 6, 4, "#6dac55");
+
+        rect(9, 9, 3, 4, "#ffd899");
+      }
+
+      // Wajah.
+      const eyeY = kind === 0 ? 11 : 13;
+
+      rect(10, eyeY, 2, 3, "#253c39");
+      rect(17, eyeY, 2, 3, "#253c39");
+
+      rect(13, eyeY + 4, 3, 1, "#694746");
+
+      rect(8, eyeY + 3, 2, 1, "#ef8c83");
+      rect(19, eyeY + 3, 2, 1, "#ef8c83");
+
+      texture.refresh();
+    }
+  }
+
+  /* =======================================================
+     LATAR TAMAN
+     ======================================================= */
+
+  drawWorld() {
+    const graphics = this.add.graphics();
+
+    graphics
+      .fillStyle(0xaed5a4)
+      .fillRect(0, 0, 560, 640);
+
+    graphics
+      .fillStyle(0xd8edbc)
+      .fillRect(0, 0, 560, 70);
+
+    // Matahari pixel.
+    graphics
+      .fillStyle(0xffe5a0)
+      .fillRect(451, 12, 34, 34);
+
+    graphics
+      .fillStyle(0xfff5cf)
+      .fillRect(447, 18, 42, 22);
+
+    // Pokok di belakang.
+    for (let index = 0; index < 14; index++) {
+      const x = index * 44;
+
+      graphics
+        .fillStyle(index % 2 ? 0x5c9666 : 0x79ac71)
+        .fillRect(
+          x,
+          48 + (index % 3) * 9,
+          44,
+          42
+        );
+
+      graphics
+        .fillStyle(0x477655)
+        .fillRect(x + 8, 75, 24, 12);
+    }
+
+    // Bingkai kayu.
+    graphics
+      .fillStyle(0x684e3c)
+      .fillRect(25, 98, 510, 502);
+
+    graphics
+      .fillStyle(0x97724d)
+      .fillRect(25, 94, 510, 495);
+
+    graphics
+      .fillStyle(0xf5e7b0)
+      .fillRect(33, 98, 494, 488);
+
+    graphics
+      .fillStyle(0x739564)
+      .fillRect(37, 102, 486, 480);
+
+    // Petak papan.
+    for (let row = 0; row < N; row++) {
+      for (let column = 0; column < N; column++) {
+        graphics
+          .fillStyle(
+            (row + column) % 2
+              ? 0xd3dfb1
+              : 0xe5ebc3
+          )
+          .fillRect(
+            X + column * S,
+            Y + row * S,
+            S,
+            S
+          );
+
+        graphics
+          .fillStyle(
+            (row + column) % 2
+              ? 0xc1d0a0
+              : 0xd1dcb0
+          )
+          .fillRect(
+            X + column * S,
+            Y + row * S + S - 5,
+            S,
+            5
+          );
+      }
+    }
+
+    // Rumput.
+    graphics
+      .fillStyle(0x44684c)
+      .fillRect(0, 609, 560, 31);
+
+    for (let index = 0; index < 40; index++) {
+      const x = (index * 83) % 560;
+      const y = 594 + (index % 4) * 7;
+
+      graphics
+        .fillStyle(index % 2 ? 0x74a66a : 0x8fb679)
+        .fillRect(x, y, 5, 19);
+
+      graphics.fillRect(x - 4, y + 5, 13, 4);
+    }
+
+    this.add
+      .text(
+        280,
+        24,
+        "THE LITTLE BOTANICAL GARDEN",
+        {
+          fontFamily: "monospace",
+          fontSize: "12px",
+          color: "#345947",
+          fontStyle: "bold"
+        }
+      )
+      .setOrigin(0.5);
+
+    for (let index = 0; index < 5; index++) {
+      this.add
+        .image(
+          75 + index * 101,
+          618,
+          "plant" + index
+        )
+        .setScale(1.3);
+    }
+  }
+
+  /* =======================================================
+     BINA PAPAN
+     ======================================================= */
+
+  newBoard() {
+    this.selected = null;
+    this.down = null;
+
+    this.selection?.setVisible(false);
+    this.hints?.clear();
+
+    this.board.flat().forEach(tile => {
+      tile?.sprite?.destroy();
+    });
+
+    let attempts = 0;
+
+    do {
+      this.board = Array.from(
+        { length: N },
+        () => Array(N).fill(null)
+      );
+
+      for (let row = 0; row < N; row++) {
+        for (let column = 0; column < N; column++) {
+          let kind;
+
+          do {
+            kind = Phaser.Math.Between(0, 5);
+          } while (
+            (
+              column >= 2 &&
+              this.board[row][column - 1].kind === kind &&
+              this.board[row][column - 2].kind === kind
+            ) ||
+            (
+              row >= 2 &&
+              this.board[row - 1][column].kind === kind &&
+              this.board[row - 2][column].kind === kind
+            )
+          );
+
+          this.board[row][column] = { kind };
+        }
+      }
+
+      attempts++;
+    } while (
+      !legalMove(this.board) &&
+      attempts < 200
+    );
+
+    // Susunan sandaran yang menjamin satu langkah sah.
+    if (!legalMove(this.board)) {
+      for (let row = 0; row < N; row++) {
+        for (let column = 0; column < N; column++) {
+          this.board[row][column] = {
+            kind: (row * 2 + column) % 6
+          };
+        }
+      }
+
+      this.board[0][0].kind = 0;
+      this.board[0][1].kind = 1;
+      this.board[0][2].kind = 0;
+      this.board[1][1].kind = 0;
+    }
+
+    for (let row = 0; row < N; row++) {
+      for (let column = 0; column < N; column++) {
+        const position = this.pos(row, column);
+        const tile = this.board[row][column];
+
+        tile.sprite = this.add
+          .image(
+            position.x,
+            position.y,
+            "plant" + tile.kind
+          )
+          .setScale(1.9)
+          .setDepth(3);
+      }
+    }
+  }
+
+  /* =======================================================
+     PILIH PETAK
+     ======================================================= */
+
+  select(cell) {
+    this.hints.clear();
+
+    if (
+      this.selected &&
+      Math.abs(this.selected.r - cell.r) +
+      Math.abs(this.selected.c - cell.c) === 1
+    ) {
+      this.swap(this.selected, cell);
+      return;
+    }
+
+    if (
+      this.selected?.r === cell.r &&
+      this.selected?.c === cell.c
+    ) {
+      this.selected = null;
+      this.selection.setVisible(false);
+      return;
+    }
+
+    this.selected = cell;
+
+    const position = this.pos(cell.r, cell.c);
+
+    this.selection
+      .setPosition(position.x, position.y)
+      .setVisible(true);
+
+    sound(350, 0.05);
+  }
+
+  tween(config) {
+    return new Promise(resolve => {
+      this.tweens.add({
+        ...config,
+        onComplete: resolve
+      });
+    });
+  }
+
+  /* =======================================================
+     TUKAR TEMPAT DAN PADANAN BERANTAI
+     ======================================================= */
+
+  async swap(first, second) {
+    if (!this.ready()) return;
+
+    if (
+      Math.abs(first.r - second.r) +
+      Math.abs(first.c - second.c) !== 1
+    ) {
+      return;
+    }
+
+    this.busy = true;
+    this.selected = null;
+
+    this.selection.setVisible(false);
+    this.hints.clear();
+
+    const firstTile = this.board[first.r][first.c];
+    const secondTile = this.board[second.r][second.c];
+
+    const firstPosition = this.pos(first.r, first.c);
+    const secondPosition = this.pos(second.r, second.c);
+
+    [
+      this.board[first.r][first.c],
+      this.board[second.r][second.c]
+    ] = [
+      secondTile,
+      firstTile
+    ];
+
+    await Promise.all([
+      this.tween({
+        targets: firstTile.sprite,
+        ...secondPosition,
+        duration: 150
+      }),
+
+      this.tween({
+        targets: secondTile.sprite,
+        ...firstPosition,
+        duration: 150
+      })
+    ]);
+
+    let hit = matches(this.board);
+
+    // Tiada padanan: kembalikan kedua-dua tumbuhan.
+    if (!hit.length) {
+      [
+        this.board[first.r][first.c],
+        this.board[second.r][second.c]
+      ] = [
+        firstTile,
+        secondTile
+      ];
+
+      await Promise.all([
+        this.tween({
+          targets: firstTile.sprite,
+          ...firstPosition,
+          duration: 150
+        }),
+
+        this.tween({
+          targets: secondTile.sprite,
+          ...secondPosition,
+          duration: 150
+        })
+      ]);
+
+      status(
+        "Belum ada padanan. Cuba tumbuhan di sebelahnya."
+      );
+
+      sound(190, 0.08);
+      this.busy = false;
+      return;
+    }
+
+    let chain = 0;
+
+    while (hit.length) {
+      chain++;
+
+      status(
+        chain > 1
+          ? "Rantaian " + chain + "! Taman semakin ceria."
+          : "Padanan berjaya! Soalan sedang tumbuh…"
+      );
+
+      sound(
+        Math.min(400 + chain * 100, 1200),
+        0.16
+      );
+
+      // Kecilkan tumbuhan yang sepadan.
+      await Promise.all(
+        hit.map(({ r, c }) => {
+          const tile = this.board[r][c];
+
+          return this.tween({
+            targets: tile.sprite,
+            scaleX: 0,
+            scaleY: 0,
+            angle: 25,
+            duration: 160
+          });
+        })
+      );
+
+      // Kosongkan petak padanan.
+      hit.forEach(({ r, c }) => {
+        this.board[r][c].sprite.destroy();
+        this.board[r][c] = null;
+      });
+
+      const falling = [];
+
+      // Tumbuhan jatuh mengisi ruang kosong.
+      for (let column = 0; column < N; column++) {
+        let writeRow = N - 1;
+
+        for (let row = N - 1; row >= 0; row--) {
+          const tile = this.board[row][column];
+
+          if (!tile) continue;
+
+          this.board[writeRow][column] = tile;
+
+          if (writeRow !== row) {
+            this.board[row][column] = null;
+          }
+
+          falling.push(
+            this.tween({
+              targets: tile.sprite,
+              ...this.pos(writeRow, column),
+              duration: 210 + 35 * (writeRow - row),
+              ease: "Bounce.Out"
+            })
+          );
+
+          writeRow--;
+        }
+
+        const topEmptyRow = writeRow;
+
+        // Isi tumbuhan baharu dari atas.
+        for (let row = writeRow; row >= 0; row--) {
+          const kind = Phaser.Math.Between(0, 5);
+          const position = this.pos(row, column);
+
+          const sprite = this.add
+            .image(
+              position.x,
+              Y - (topEmptyRow - row + 1) * S,
+              "plant" + kind
+            )
+            .setScale(1.9)
+            .setDepth(3);
+
+          this.board[row][column] = {
+            kind,
+            sprite
+          };
+
+          falling.push(
+            this.tween({
+              targets: sprite,
+              y: position.y,
+              duration: 280 + 35 * (topEmptyRow + 1),
+              ease: "Bounce.Out"
+            })
+          );
+        }
+      }
+
+      await Promise.all(falling);
+
+      hit = matches(this.board);
+
+      // Hadkan rantaian automatik yang terlalu panjang.
+      if (chain >= 15 && hit.length) {
+        this.newBoard();
+        hit = [];
+      }
+    }
+
+    // Papan sentiasa mempunyai langkah yang boleh dimainkan.
+    if (!legalMove(this.board)) {
+      this.newBoard();
+
+      status(
+        "Papan baharu disediakan. Jawab soalan dahulu!"
+      );
+    }
+
+    // Satu pertukaran berjaya membuka satu soalan.
+    quiz();
+  }
+
+  /* =======================================================
+     PETUNJUK
+     ======================================================= */
+
+  hint() {
+    let move = legalMove(this.board);
+
+    if (!move) {
+      this.newBoard();
+      move = legalMove(this.board);
+    }
+
+    if (!move) return;
+
+    this.hints.clear();
+    this.hints.lineStyle(4, 0xf6a84d, 1);
+
+    move.forEach(({ r, c }) => {
+      this.hints.strokeRect(
+        X + c * S + 4,
+        Y + r * S + 4,
+        S - 8,
+        S - 8
+      );
+    });
+
+    status(
+      "Tukar tempat dua tumbuhan dalam bingkai emas."
+    );
+
+    sound(600, 0.08);
+  }
+
+  /* =======================================================
+     ANIMASI MENANG
+     ======================================================= */
+
+  celebrate() {
+    const colors = [
+      0xffd36c,
+      0xff8f9c,
+      0xa0db78
+    ];
+
+    for (let index = 0; index < 50; index++) {
+      const square = this.add
+        .rectangle(
+          Phaser.Math.Between(0, 560),
+          -Phaser.Math.Between(5, 450),
+          7,
+          7,
+          colors[index % colors.length]
+        )
+        .setDepth(12);
+
+      this.tweens.add({
+        targets: square,
+        y: 680,
+        angle: 360,
+        duration: Phaser.Math.Between(1400, 2600),
+        onComplete: () => square.destroy()
+      });
+    }
+  }
 }
 
-}
+/* =========================================================
+   MULAKAN GAME
+   ========================================================= */
 
-const pos=
-this.chestPosition(
-y
-);
+new Phaser.Game({
+  type: Phaser.AUTO,
+  parent: "game",
 
-/* GLOW */
+  width: 560,
+  height: 640,
 
-const glow=
-this.add.circle(
-pos.x,
-pos.y,
-78,
-0xffdc52,
-.27
-)
-.setDepth(
-24
-);
+  backgroundColor: "#aed5a4",
 
-glow.setStrokeStyle(
-6,
-0xfff4a3,
-.75
-);
+  pixelArt: true,
+  roundPixels: true,
+  antialias: false,
 
-this.tweens.add({
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH
+  },
 
-targets:
-glow,
+  scene: Garden,
 
-scale:{
-from:.85,
-to:1.15
-},
+  audio: {
+    noAudio: true
+  },
 
-alpha:{
-from:.2,
-to:.43
-},
+  render: {
+    powerPreference: "low-power"
+  },
 
-duration:620,
-
-yoyo:true,
-
-repeat:-1
-
-});
-
-/* CHEST */
-
-currentChest=
-this.physics.add
-.staticSprite(
-pos.x,
-pos.y,
-"chest"
-);
-
-currentChest
-.setScale(
-1.55
-);
-
-currentChest
-.setDepth(
-28
-);
-
-currentChest
-.refreshBody();
-
-currentChest.glow=
-glow;
-
-/* LABEL */
-
-currentChest.label=
-this.add.text(
-
-pos.x,
-
-pos.y-103,
-
-"PETI SOALAN",
-
-{
-
-font:
-"bold 15px Arial",
-
-color:
-"#52350d",
-
-backgroundColor:
-"#fff2a3",
-
-padding:{
-x:10,
-y:5
-}
-
-}
-
-)
-.setOrigin(
-.5
-)
-.setDepth(
-31
-);
-
-/* ARROW */
-
-currentChest.arrow=
-this.add.text(
-
-pos.x,
-
-pos.y-73,
-
-"▼",
-
-{
-
-font:
-"bold 30px Arial",
-
-color:
-"#ff493e",
-
-stroke:
-"#ffffff",
-
-strokeThickness:
-4
-
-}
-
-)
-.setOrigin(
-.5
-)
-.setDepth(
-32
-);
-
-/* ? */
-
-currentChest.question=
-this.add.text(
-
-pos.x,
-
-pos.y-7,
-
-"?",
-
-{
-
-font:
-"bold 28px Arial",
-
-color:
-"#ffffff",
-
-stroke:
-"#754313",
-
-strokeThickness:
-4
-
-}
-
-)
-.setOrigin(
-.5
-)
-.setDepth(
-33
-);
-
-this.tweens.add({
-
-targets:
-currentChest.arrow,
-
-y:
-currentChest.arrow.y+
-8,
-
-duration:420,
-
-yoyo:true,
-
-repeat:-1
-
-});
-
-}
-
-destroyChest(){
-
-if(!currentChest){
-return;
-}
-
-[
-"glow",
-"label",
-"arrow",
-"question"
-]
-.forEach(
-k=>{
-
-if(
-currentChest[k]
-){
-
-currentChest[k]
-.destroy();
-
-}
-
-}
-);
-
-if(currentChest.active){
-
-currentChest.destroy();
-
-}
-
-currentChest=null;
-
-}
-
-updateChest(){
-
-if(
-!currentChest||
-!currentChest.active
-){
-return;
-}
-
-const d=
-Phaser.Math.Distance.Between(
-
-this.player.x,
-this.player.y,
-
-currentChest.x,
-currentChest.y
-
-);
-
-if(d<100){
-
-openQuestion();
-
-return;
-
-}
-
-/* LOOP CHEST */
-
-if(
-currentChest.y>
-this.player.y+
-650
-){
-
-this.destroyChest();
-
-this.time.delayedCall(
-150,
-()=>this.spawnChest(
-480
-)
-);
-
-}
-
-}
-
-/* =====================================================
-   ENEMY AI
-===================================================== */
-
-updateEnemies(
-time
-){
-
-this.enemies.children
-.iterate(
-e=>{
-
-if(
-!e||
-!e.active
-){
-return;
-}
-
-const d=
-Phaser.Math.Distance.Between(
-
-e.x,
-e.y,
-
-this.player.x,
-this.player.y
-
-);
-
-if(d<500){
-
-const angle=
-Phaser.Math.Angle.Between(
-
-e.x,
-e.y,
-
-this.player.x,
-this.player.y
-
-);
-
-if(d>90){
-
-e.setVelocity(
-
-Math.cos(angle)*
-e.speed,
-
-Math.sin(angle)*
-e.speed
-
-);
-
-}else{
-
-e.setVelocity(
-0,
-0
-);
-
-}
-
-if(
-d<325&&
-time-
-e.lastAttack>
-1650
-){
-
-e.lastAttack=
-time+
-Phaser.Math.Between(
-0,
-300
-);
-
-this.enemyShoot(
-e
-);
-
-}
-
-}else{
-
-e.setVelocity(
-0,
-0
-);
-
-}
-
-if(
-e.body.velocity.x<-.1
-){
-
-e.setFlipX(
-true
-);
-
-}else if(
-e.body.velocity.x>.1
-){
-
-e.setFlipX(
-false
-);
-
-}
-
-if(
-e.y>
-this.player.y+
-1300
-){
-
-e.destroy();
-
-}
-
-}
-);
-
-}
-
-/* =====================================================
-   ENEMY RED BALL
-===================================================== */
-
-enemyShoot(
-enemy
-){
-
-AudioSystem.sound(
-"enemyShoot"
-);
-
-const b=
-this.enemyBullets.create(
-
-enemy.x,
-
-enemy.y,
-
-"redBall"
-
-);
-
-const angle=
-Phaser.Math.Angle.Between(
-
-enemy.x,
-enemy.y,
-
-this.player.x,
-this.player.y
-
-);
-
-b.setVelocity(
-
-Math.cos(angle)*
-220,
-
-Math.sin(angle)*
-220
-
-);
-
-b.birth=
-this.time.now;
-
-b.setDepth(
-42
-);
-
-}
-
-/* =====================================================
-   PLAYER ATTACK
-===================================================== */
-
-attack(
-time=this.time.now
-){
-
-if(
-!this.started||
-this.resting||
-this.manualPause||
-questionOpen
-){
-return;
-}
-
-if(
-time-
-this.lastShot<
-this.attackCooldown
-){
-return;
-}
-
-this.lastShot=
-time;
-
-AudioSystem.sound(
-"attack"
-);
-
-let target=null;
-
-let best=560;
-
-this.enemies.children
-.iterate(
-e=>{
-
-if(
-!e||
-!e.active
-){
-return;
-}
-
-const d=
-Phaser.Math.Distance.Between(
-
-this.player.x,
-this.player.y,
-
-e.x,
-e.y
-
-);
-
-if(d<best){
-
-best=d;
-target=e;
-
-}
-
-}
-);
-
-let direction;
-
-if(target){
-
-const angle=
-Phaser.Math.Angle.Between(
-
-this.player.x,
-this.player.y,
-
-target.x,
-target.y
-
-);
-
-direction=
-new Phaser.Math.Vector2(
-
-Math.cos(angle),
-
-Math.sin(angle)
-
-);
-
-}else{
-
-direction=
-this.lastDirection.clone();
-
-if(
-direction.lengthSq()<.01
-){
-
-direction.set(
-0,
--1
-);
-
-}
-
-direction.normalize();
-
-}
-
-const x=
-this.player.x+
-direction.x*
-28;
-
-const y=
-this.player.y+
-direction.y*
-28;
-
-const bullet=
-this.playerBullets.create(
-
-x,
-y,
-
-"pencil"
-
-);
-
-bullet.rotation=
-Math.atan2(
-direction.y,
-direction.x
-);
-
-bullet.setVelocity(
-
-direction.x*
-470,
-
-direction.y*
-470
-
-);
-
-bullet.birth=
-time;
-
-bullet.setDepth(
-44
-);
-
-}
-
-/* =====================================================
-   BULLET UPDATE
-===================================================== */
-
-updateBullets(
-time
-){
-
-this.playerBullets.children
-.iterate(
-b=>{
-
-if(
-b&&
-b.active&&
-time-
-b.birth>
-1800
-){
-
-b.destroy();
-
-}
-
-}
-);
-
-this.enemyBullets.children
-.iterate(
-b=>{
-
-if(
-b&&
-b.active&&
-time-
-b.birth>
-3200
-){
-
-b.destroy();
-
-}
-
-}
-);
-
-}
-
-/* =====================================================
-   DAMAGE ENEMY
-===================================================== */
-
-damageEnemy(
-bullet,
-enemy
-){
-
-if(
-!bullet||
-!enemy||
-!bullet.active||
-!enemy.active
-){
-return;
-}
-
-bullet.destroy();
-
-enemy.hp--;
-
-AudioSystem.sound(
-"enemyHit"
-);
-
-this.damageText(
-enemy.x,
-enemy.y,
-"-1"
-);
-
-enemy.setTint(
-0xffffff
-);
-
-this.time.delayedCall(
-70,
-()=>{
-
-if(enemy.active){
-
-enemy.clearTint();
-
-}
-
-}
-);
-
-if(enemy.hp<=0){
-
-this.enemyExplosion(
-enemy.x,
-enemy.y
-);
-
-enemy.destroy();
-
-}
-
-}
-
-/* =====================================================
-   PLAYER DAMAGE
-===================================================== */
-
-damagePlayer(
-sourceX,
-sourceY
-){
-
-if(
-this.invincible||
-this.resting||
-questionOpen||
-this.manualPause
-){
-return;
-}
-
-AudioSystem.sound(
-"hit"
-);
-
-this.invincible=true;
-
-this.hp=
-Math.max(
-0,
-this.hp-
-1
-);
-
-this.updateHUD();
-
-this.damageText(
-this.player.x,
-this.player.y-27,
-"-♥"
-);
-
-this.player.setTint(
-0xff7777
-);
-
-this.tweens.add({
-
-targets:
-this.player,
-
-alpha:.3,
-
-duration:90,
-
-yoyo:true,
-
-repeat:4
-
-});
-
-this.time.delayedCall(
-850,
-()=>{
-
-this.player.clearTint();
-
-this.player.alpha=1;
-
-this.invincible=false;
-
-}
-);
-
-if(this.hp<=0){
-
-this.restPlayer();
-
-}
-
-}
-
-/* =====================================================
-   REST
-===================================================== */
-
-restPlayer(){
-
-if(this.resting){
-return;
-}
-
-this.resting=true;
-
-this.player.setVelocity(
-0,
-0
-);
-
-this.enemies.setVelocity(
-0,
-0
-);
-
-this.physics.world.pause();
-
-document
-.getElementById(
-"restOverlay"
-)
-.classList.add(
-"show"
-);
-
-let count=10;
-
-document
-.getElementById(
-"countdown"
-)
-.textContent=
-count;
-
-const timer=
-setInterval(
-()=>{
-
-count--;
-
-document
-.getElementById(
-"countdown"
-)
-.textContent=
-count;
-
-if(count<=0){
-
-clearInterval(
-timer
-);
-
-document
-.getElementById(
-"restOverlay"
-)
-.classList.remove(
-"show"
-);
-
-this.hp=
-this.maxHP;
-
-this.updateHUD();
-
-this.resting=false;
-
-this.invincible=true;
-
-if(
-!questionOpen&&
-!this.manualPause
-){
-
-this.physics.world.resume();
-
-}
-
-this.time.delayedCall(
-1500,
-()=>this.invincible=false
-);
-
-}
-
-},
-1000
-);
-
-}
-
-/* =====================================================
-   EFFECTS
-===================================================== */
-
-damageText(
-x,
-y,
-text
-){
-
-const obj=
-this.add.text(
-
-x,
-y,
-
-text,
-
-{
-
-font:
-"bold 24px Arial",
-
-color:
-"#ffffff",
-
-stroke:
-"#493526",
-
-strokeThickness:
-5
-
-}
-
-)
-.setOrigin(
-.5
-)
-.setDepth(
-999999
-);
-
-this.tweens.add({
-
-targets:
-obj,
-
-y:y-40,
-
-alpha:0,
-
-duration:600,
-
-onComplete:()=>
-obj.destroy()
-
+  input: {
+    activePointers: 1
+  }
 });
 
 }
-
-enemyExplosion(
-x,
-y
-){
-
-for(
-let i=0;
-i<8;
-i++
-){
-
-const p=
-this.add.circle(
-
-x,
-y,
-
-Phaser.Math.Between(
-4,
-8
-),
-
-Phaser.Math.RND.pick(
-[
-0xffd45a,
-0xffffff,
-0xff7180,
-0x57d589
-]
-)
-
-)
-.setDepth(
-99999
-);
-
-const a=
-Math.random()*
-Math.PI*
-2;
-
-const d=
-Phaser.Math.Between(
-30,
-70
-);
-
-this.tweens.add({
-
-targets:
-p,
-
-x:
-x+
-Math.cos(a)*
-d,
-
-y:
-y+
-Math.sin(a)*
-d,
-
-alpha:0,
-
-duration:450,
-
-onComplete:()=>
-p.destroy()
-
-});
-
-}
-
-}
-
-/* =====================================================
-   HUD
-===================================================== */
-
-createHUD(){
-
-const bg=
-this.add.graphics()
-.setScrollFactor(
-0
-)
-.setDepth(
-999990
-);
-
-bg.fillStyle(
-0x173e4d,
-.83
-);
-
-bg.fillRoundedRect(
-12,
-12,
-150,
-61,
-14
-);
-
-bg.fillRoundedRect(
-W-190,
-12,
-178,
-61,
-14
-);
-
-bg.fillRoundedRect(
-105,
-87,
-W-210,
-24,
-11
-);
-
-this.hpText=
-this.add.text(
-
-23,
-32,
-
-"",
-
-{
-
-font:
-"bold 21px Arial",
-
-color:
-"#ffeded",
-
-stroke:
-"#8d3434",
-
-strokeThickness:
-3
-
-}
-
-)
-.setScrollFactor(
-0
-)
-.setDepth(
-999992
-);
-
-this.progressText=
-this.add.text(
-
-W-28,
-42,
-
-"📦 0 / 25",
-
-{
-
-font:
-"bold 19px Arial",
-
-color:
-"#ffffff"
-
-}
-
-)
-.setOrigin(
-1,
-.5
-)
-.setScrollFactor(
-0
-)
-.setDepth(
-999992
-);
-
-this.progressBar=
-this.add.graphics()
-.setScrollFactor(
-0
-)
-.setDepth(
-999992
-);
-
-this.status=
-this.add.text(
-
-W/2,
-135,
-
-"GERAK UNTUK MULA",
-
-{
-
-font:
-"bold 13px Arial",
-
-color:
-"#ffffff",
-
-backgroundColor:
-"rgba(20,62,75,.57)",
-
-padding:{
-x:9,
-y:4
-}
-
-}
-
-)
-.setOrigin(
-.5
-)
-.setScrollFactor(
-0
-)
-.setDepth(
-999992
-);
-
-}
-
-updateHUD(){
-
-if(!this.progressText){
-return;
-}
-
-let hearts="";
-
-for(
-let i=0;
-i<this.maxHP;
-i++
-){
-
-hearts+=
-i<this.hp
-?"♥"
-:"♡";
-
-}
-
-this.hpText.setText(
-hearts
-);
-
-this.progressText.setText(
-
-"📦 "+
-questionIndex+
-" / 25"
-
-);
-
-this.progressBar.clear();
-
-this.progressBar
-.fillStyle(
-0xffc728
-)
-.fillRoundedRect(
-
-110,
-
-91,
-
-(
-W-
-220
-)*
-(
-questionIndex/
-25
-),
-
-16,
-
-8
-
-);
-
-}
-
-/* =====================================================
-   PAUSE
-===================================================== */
-
-togglePause(
-show=true
-){
-
-if(
-questionOpen||
-this.resting
-){
-return;
-}
-
-if(
-show&&
-!this.manualPause
-){
-
-this.manualPause=true;
-
-this.player.setVelocity(
-0,
-0
-);
-
-this.enemies.setVelocity(
-0,
-0
-);
-
-this.physics.world.pause();
-
-document
-.getElementById(
-"pauseOverlay"
-)
-.classList.add(
-"show"
-);
-
-document
-.getElementById(
-"pauseBtn"
-)
-.textContent=
-"▶";
-
-}else{
-
-this.manualPause=false;
-
-document
-.getElementById(
-"pauseOverlay"
-)
-.classList.remove(
-"show"
-);
-
-if(
-!questionOpen&&
-!this.resting
-){
-
-this.physics.world.resume();
-
-}
-
-document
-.getElementById(
-"pauseBtn"
-)
-.textContent=
-"Ⅱ";
-
-}
-
-}
-
-}
-
-/* =========================================================
-   TEXTURES
-========================================================= */
-
-function createTextures(
-scene
-){
-
-const g=
-scene.make.graphics({
-add:false
-});
-
-/* FLOOR */
-
-g.fillStyle(
-0xd9b27f
-);
-
-g.fillRect(
-0,
-0,
-180,
-180
-);
-
-g.fillStyle(
-0xc6915d,
-.44
-);
-
-g.fillRect(
-0,
-45,
-180,
-45
-);
-
-g.fillRect(
-0,
-135,
-180,
-45
-);
-
-g.fillStyle(
-0xf0cc97,
-.25
-);
-
-g.fillRect(
-0,
-0,
-180,
-45
-);
-
-g.fillRect(
-0,
-90,
-180,
-45
-);
-
-g.lineStyle(
-2,
-0xa66f45,
-.23
-);
-
-g.lineBetween(
-0,
-45,
-180,
-45
-);
-
-g.lineBetween(
-0,
-90,
-180,
-90
-);
-
-g.lineBetween(
-0,
-135,
-180,
-135
-);
-
-g.generateTexture(
-"floor",
-180,
-180
-);
-
-g.clear();
-
-/* PLAYER */
-
-g.fillStyle(
-0x324d6b
-);
-
-g.fillRoundedRect(
-21,
-56,
-11,
-18,
-4
-);
-
-g.fillRoundedRect(
-42,
-56,
-11,
-18,
-4
-);
-
-g.fillStyle(
-0x202c38
-);
-
-g.fillEllipse(
-26,
-74,
-17,
-8
-);
-
-g.fillEllipse(
-48,
-74,
-17,
-8
-);
-
-g.fillStyle(
-0xffffff
-);
-
-g.fillRoundedRect(
-14,
-31,
-46,
-36,
-12
-);
-
-g.fillStyle(
-0x277aca
-);
-
-g.fillTriangle(
-22,
-32,
-36,
-44,
-29,
-32
-);
-
-g.fillTriangle(
-52,
-32,
-38,
-44,
-45,
-32
-);
-
-g.fillStyle(
-0xe94f4f
-);
-
-g.fillTriangle(
-34,
-40,
-40,
-40,
-37,
-51
-);
-
-g.fillStyle(
-0xf2bf95
-);
-
-g.fillCircle(
-37,
-20,
-20
-);
-
-g.fillCircle(
-11,
-44,
-7
-);
-
-g.fillCircle(
-63,
-44,
-7
-);
-
-g.fillStyle(
-0x342a28
-);
-
-g.fillCircle(
-37,
-13,
-20
-);
-
-g.fillStyle(
-0xf2bf95
-);
-
-g.fillEllipse(
-37,
-22,
-36,
-29
-);
-
-g.fillStyle(
-0x1d2731
-);
-
-g.fillCircle(
-31,
-20,
-2.4
-);
-
-g.fillCircle(
-43,
-20,
-2.4
-);
-
-g.generateTexture(
-"player",
-74,
-80
-);
-
-g.clear();
-
-/* ENEMY */
-
-g.fillStyle(
-0x333c4e
-);
-
-g.fillRoundedRect(
-16,
-50,
-12,
-15,
-4
-);
-
-g.fillRoundedRect(
-44,
-50,
-12,
-15,
-4
-);
-
-g.fillStyle(
-0xe84f64
-);
-
-g.fillRoundedRect(
-8,
-13,
-56,
-49,
-18
-);
-
-g.fillStyle(
-0xc83652
-);
-
-g.fillRoundedRect(
-8,
-44,
-56,
-18,
-10
-);
-
-g.fillStyle(
-0xffffff
-);
-
-g.fillCircle(
-25,
-31,
-9
-);
-
-g.fillCircle(
-47,
-31,
-9
-);
-
-g.fillStyle(
-0x263649
-);
-
-g.fillCircle(
-27,
-32,
-4
-);
-
-g.fillCircle(
-45,
-32,
-4
-);
-
-g.lineStyle(
-4,
-0x773142
-);
-
-g.lineBetween(
-18,
-20,
-30,
-24
-);
-
-g.lineBetween(
-54,
-20,
-42,
-24
-);
-
-g.generateTexture(
-"enemy",
-72,
-72
-);
-
-g.clear();
-
-/* DESK */
-
-g.fillStyle(
-0xb36e3a
-);
-
-g.fillRoundedRect(
-5,
-22,
-96,
-45,
-8
-);
-
-g.fillStyle(
-0xe6a45f
-);
-
-g.fillRoundedRect(
-2,
-5,
-102,
-45,
-8
-);
-
-g.fillStyle(
-0xf7c77f
-);
-
-g.fillRoundedRect(
-8,
-9,
-90,
-31,
-6
-);
-
-g.fillStyle(
-0x4aa8de
-);
-
-g.fillRoundedRect(
-58,
-14,
-29,
-18,
-3
-);
-
-g.fillStyle(
-0x5b4a40
-);
-
-g.fillRect(
-14,
-63,
-9,
-19
-);
-
-g.fillRect(
-84,
-63,
-9,
-19
-);
-
-g.generateTexture(
-"desk",
-108,
-84
-);
-
-g.clear();
-
-/* CHEST */
-
-g.fillStyle(
-0x24434d,
-.25
-);
-
-g.fillEllipse(
-39,
-62,
-70,
-22
-);
-
-g.fillStyle(
-0x8f4313
-);
-
-g.fillRoundedRect(
-6,
-29,
-66,
-35,
-8
-);
-
-g.fillStyle(
-0xffaa20
-);
-
-g.fillRoundedRect(
-6,
-12,
-66,
-31,
-10
-);
-
-g.fillStyle(
-0xffe56f
-);
-
-g.fillRoundedRect(
-11,
-15,
-56,
-12,
-7
-);
-
-g.fillStyle(
-0x713e1a
-);
-
-g.fillRect(
-16,
-14,
-7,
-48
-);
-
-g.fillRect(
-55,
-14,
-7,
-48
-);
-
-g.fillStyle(
-0xffe16b
-);
-
-g.fillRoundedRect(
-31,
-34,
-17,
-19,
-4
-);
-
-g.generateTexture(
-"chest",
-78,
-72
-);
-
-g.clear();
-
-/* PENCIL */
-
-g.fillStyle(
-0xf4c744
-);
-
-g.fillRoundedRect(
-4,
-6,
-30,
-8,
-3
-);
-
-g.fillStyle(
-0xee8e2e
-);
-
-g.fillTriangle(
-34,
-6,
-44,
-10,
-34,
-14
-);
-
-g.fillStyle(
-0xe75f72
-);
-
-g.fillRoundedRect(
-0,
-6,
-8,
-8,
-2
-);
-
-g.generateTexture(
-"pencil",
-46,
-20
-);
-
-g.clear();
-
-/* RED BALL */
-
-g.fillStyle(
-0xffc5c0,
-.35
-);
-
-g.fillCircle(
-16,
-16,
-16
-);
-
-g.fillStyle(
-0xff584d
-);
-
-g.fillCircle(
-16,
-16,
-11
-);
-
-g.fillStyle(
-0xd92129
-);
-
-g.fillCircle(
-17,
-17,
-8
-);
-
-g.fillStyle(
-0xffffff,
-.8
-);
-
-g.fillCircle(
-12,
-11,
-3
-);
-
-g.generateTexture(
-"redBall",
-32,
-32
-);
-
-g.clear();
-
-/* PLANT */
-
-g.fillStyle(
-0xa5653c
-);
-
-g.fillRoundedRect(
-16,
-34,
-28,
-24,
-5
-);
-
-g.fillStyle(
-0x52b45a
-);
-
-g.fillEllipse(
-20,
-24,
-15,
-30
-);
-
-g.fillEllipse(
-30,
-18,
-15,
-31
-);
-
-g.fillStyle(
-0x65c869
-);
-
-g.fillEllipse(
-40,
-24,
-15,
-30
-);
-
-g.generateTexture(
-"plant",
-60,
-64
-);
-
-g.clear();
-
-/* BOARD */
-
-g.fillStyle(
-0x5f7680
-);
-
-g.fillRoundedRect(
-0,
-0,
-250,
-78,
-7
-);
-
-g.fillStyle(
-0xf8fffd
-);
-
-g.fillRoundedRect(
-8,
-8,
-234,
-57,
-4
-);
-
-g.fillStyle(
-0x57a1a1
-);
-
-g.fillRoundedRect(
-73,
-25,
-104,
-8,
-4
-);
-
-g.fillStyle(
-0x8bc3c1
-);
-
-g.fillRoundedRect(
-91,
-40,
-68,
-6,
-3
-);
-
-g.generateTexture(
-"board",
-250,
-78
-);
-
-g.destroy();
-
-}
-
-/* =========================================================
-   QUESTION
-========================================================= */
-
-function openQuestion(){
-
-if(
-questionOpen||
-answerLocked||
-questionIndex>=
-QUESTIONS.length
-){
-return;
-}
-
-AudioSystem.sound(
-"chest"
-);
-
-questionOpen=true;
-
-externalJoy.x=0;
-externalJoy.y=0;
-
-resetJoystick();
-
-sceneRef.player
-.setVelocity(
-0,
-0
-);
-
-sceneRef.enemies
-.setVelocity(
-0,
-0
-);
-
-sceneRef.physics.world
-.pause();
-
-const q=
-QUESTIONS[
-questionIndex
-];
-
-document
-.getElementById(
-"questionNumber"
-)
-.textContent=
-
-"SOALAN "+
-(
-questionIndex+
-1
-)+
-" / 25";
-
-document
-.getElementById(
-"questionText"
-)
-.textContent=
-q.q;
-
-const answers=
-document.getElementById(
-"answers"
-);
-
-answers.innerHTML="";
-
-document
-.getElementById(
-"feedback"
-)
-.textContent="";
-
-[
-"A",
-"B",
-"C",
-"D"
-]
-.forEach(
-(letter,index)=>{
-
-const button=
-document.createElement(
-"button"
-);
-
-button.className=
-"answer";
-
-button.textContent=
-letter+
-". "+
-q.o[index];
-
-button.onclick=
-()=>answerQuestion(
-index,
-button
-);
-
-answers.appendChild(
-button
-);
-
-}
-);
-
-document
-.getElementById(
-"questionOverlay"
-)
-.classList.add(
-"show"
-);
-
-}
-
-function answerQuestion(
-selected,
-button
-){
-
-if(answerLocked){
-return;
-}
-
-const q=
-QUESTIONS[
-questionIndex
-];
-
-const feedback=
-document
-.getElementById(
-"feedback"
-);
-
-if(selected!==q.a){
-
-AudioSystem.sound(
-"wrong"
-);
-
-button.classList.add(
-"wrong"
-);
-
-feedback.style.color=
-"#c3313c";
-
-feedback.textContent=
-"✕ Belum tepat. Cuba lagi!";
-
-setTimeout(
-()=>button.classList.remove(
-"wrong"
-),
-450
-);
-
-return;
-
-}
-
-AudioSystem.sound(
-"correct"
-);
-
-answerLocked=true;
-
-button.classList.add(
-"correct"
-);
-
-feedback.style.color=
-"#168049";
-
-feedback.textContent=
-"✓ Betul! Syabas!";
-
-document
-.querySelectorAll(
-".answer"
-)
-.forEach(
-b=>b.disabled=true
-);
-
-setTimeout(
-()=>{
-
-document
-.getElementById(
-"questionOverlay"
-)
-.classList.remove(
-"show"
-);
-
-sceneRef.destroyChest();
-
-questionIndex++;
-
-questionOpen=false;
-
-answerLocked=false;
-
-sceneRef.updateHUD();
-
-/*
-   SOALAN 10:
-   QUESTION INDEX 9
-*/
-
-if(questionIndex===9){
-
-sceneRef.question10Boost();
-
-}
-
-if(
-questionIndex>=
-QUESTIONS.length
-){
-
-AudioSystem.sound(
-"win"
-);
-
-sceneRef.physics.world
-.pause();
-
-document
-.getElementById(
-"winOverlay"
-)
-.classList.add(
-"show"
-);
-
-return;
-
-}
-
-sceneRef.physics.world
-.resume();
-
-sceneRef.time
-.delayedCall(
-500,
-()=>sceneRef.spawnChest(
-480
-)
-);
-
-},
-550
-);
-
-}
-
-/* =========================================================
-   RESTART
-========================================================= */
-
-function restartGame(){
-
-questionIndex=0;
-
-currentChest=null;
-
-questionOpen=false;
-
-answerLocked=false;
-
-externalJoy.x=0;
-
-externalJoy.y=0;
-
-resetJoystick();
-
-document
-.querySelectorAll(
-".overlay"
-)
-.forEach(
-overlay=>{
-
-overlay.classList.remove(
-"show"
-);
-
-}
-);
-
-if(sceneRef){
-
-sceneRef.scene.restart();
-
-}
-
-}
-
-/* =========================================================
-   JOYSTICK
-========================================================= */
-
-const movePad=
-document
-.getElementById(
-"movePad"
-);
-
-const moveKnob=
-document
-.getElementById(
-"moveKnob"
-);
-
-let pointerId=null;
-
-function updateJoystick(
-clientX,
-clientY
-){
-
-const rect=
-movePad
-.getBoundingClientRect();
-
-const cx=
-rect.left+
-rect.width/2;
-
-const cy=
-rect.top+
-rect.height/2;
-
-let dx=
-clientX-cx;
-
-let dy=
-clientY-cy;
-
-const max=
-rect.width*
-.28;
-
-const length=
-Math.hypot(
-dx,
-dy
-);
-
-if(length>max){
-
-dx=
-dx/
-length*
-max;
-
-dy=
-dy/
-length*
-max;
-
-}
-
-moveKnob.style.transform=
-
-`translate(
-calc(-50% + ${dx}px),
-calc(-50% + ${dy}px)
-)`;
-
-externalJoy.x=
-dx/max;
-
-externalJoy.y=
-dy/max;
-
-}
-
-function resetJoystick(){
-
-moveKnob.style.transform=
-"translate(-50%,-50%)";
-
-externalJoy.x=0;
-
-externalJoy.y=0;
-
-pointerId=null;
-
-}
-
-movePad.addEventListener(
-"pointerdown",
-e=>{
-
-AudioSystem.unlock();
-
-if(
-questionOpen||
-!sceneRef||
-sceneRef.resting||
-sceneRef.manualPause
-){
-return;
-}
-
-pointerId=
-e.pointerId;
-
-movePad
-.setPointerCapture(
-e.pointerId
-);
-
-updateJoystick(
-e.clientX,
-e.clientY
-);
-
-e.preventDefault();
-
-}
-);
-
-movePad.addEventListener(
-"pointermove",
-e=>{
-
-if(pointerId===e.pointerId){
-
-updateJoystick(
-e.clientX,
-e.clientY
-);
-
-e.preventDefault();
-
-}
-
-}
-);
-
-movePad.addEventListener(
-"pointerup",
-e=>{
-
-if(pointerId===e.pointerId){
-
-resetJoystick();
-
-}
-
-}
-);
-
-movePad.addEventListener(
-"pointercancel",
-resetJoystick
-);
-
-/* =========================================================
-   ATTACK
-========================================================= */
-
-const attackBtn=
-document
-.getElementById(
-"attackBtn"
-);
-
-attackBtn.addEventListener(
-"pointerdown",
-e=>{
-
-e.preventDefault();
-
-AudioSystem.unlock();
-
-attackBtn
-.classList.add(
-"pressed"
-);
-
-if(sceneRef){
-
-sceneRef.attack(
-sceneRef.time.now
-);
-
-}
-
-}
-);
-
-[
-"pointerup",
-"pointercancel",
-"pointerleave"
-]
-.forEach(
-eventName=>{
-
-attackBtn.addEventListener(
-eventName,
-()=>{
-
-attackBtn.classList.remove(
-"pressed"
-);
-
-}
-);
-
-}
-);
-
-/* =========================================================
-   HOME
-========================================================= */
-
-document
-.getElementById(
-"homeBtn"
-)
-.addEventListener(
-"click",
-()=>{
-
-location.href=
-"index.html";
-
-}
-);
-
-/* =========================================================
-   PAUSE
-========================================================= */
-
-document
-.getElementById(
-"pauseBtn"
-)
-.addEventListener(
-"click",
-()=>{
-
-AudioSystem.unlock();
-
-if(!sceneRef){
-return;
-}
-
-sceneRef.togglePause(
-!sceneRef.manualPause
-);
-
-}
-);
-
-window.addEventListener(
-"keydown",
-()=>AudioSystem.unlock(),
-{
-passive:true
-}
-);
-
-/* =========================================================
-   PHASER CONFIG
-========================================================= */
-
-const config={
-
-type:
-Phaser.AUTO,
-
-parent:
-"game",
-
-width:
-W,
-
-height:
-H,
-
-backgroundColor:
-"#d7ad7b",
-
-physics:{
-
-default:
-"arcade",
-
-arcade:{
-
-gravity:{
-y:0
-},
-
-debug:false
-
-}
-
-},
-
-render:{
-
-antialias:true,
-
-pixelArt:false
-
-},
-
-scale:{
-
-mode:
-Phaser.Scale.FIT,
-
-autoCenter:
-Phaser.Scale.CENTER_BOTH,
-
-width:
-W,
-
-height:
-H
-
-},
-
-input:{
-
-activePointers:
-4
-
-},
-
-scene:
-ClassroomGame
-
-};
-
-new Phaser.Game(
-config
-);
-
 </script>
 
 </body>
