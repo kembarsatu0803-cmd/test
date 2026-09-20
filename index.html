@@ -1,0 +1,6131 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<title>Classroom Quest</title>
+
+<!-- ======================================================
+     PHASER 3
+     CDN UTAMA + FALLBACK
+======================================================= -->
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+
+<script>
+if (typeof Phaser === "undefined") {
+    document.write(
+        '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>'
+    );
+}
+</script>
+
+<style>
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+    margin:0;
+    min-height:100%;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f7e8e8;
+    color:#17384c;
+}
+
+body{
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding:10px;
+    overflow-x:hidden;
+}
+
+button{
+    font:inherit;
+}
+
+#page{
+    width:min(100%,680px);
+}
+
+/* ======================================================
+   CONSOLE BODY — MERAH
+======================================================= */
+
+#device{
+    position:relative;
+
+    width:100%;
+
+    padding:
+        18px
+        18px
+        25px;
+
+    border-radius:
+        45px
+        45px
+        64px
+        64px;
+
+    background:
+        radial-gradient(
+            circle at 20% 7%,
+            rgba(255,255,255,.28),
+            transparent 25%
+        ),
+        linear-gradient(
+            180deg,
+            #f36f69,
+            #dc4e50 55%,
+            #c53d44
+        );
+
+    border:
+        5px solid #992d35;
+
+    box-shadow:
+        inset 0 4px 0 rgba(255,255,255,.25),
+        inset 0 -7px 0 rgba(90,20,26,.18),
+        0 18px 45px rgba(82,24,29,.28);
+
+    overflow:hidden;
+}
+
+/* ======================================================
+   TOP
+======================================================= */
+
+#topPanel{
+    height:72px;
+
+    display:grid;
+
+    grid-template-columns:
+        72px
+        1fr
+        72px;
+
+    align-items:center;
+
+    gap:5px;
+}
+
+.smallButton{
+    width:55px;
+    height:40px;
+
+    border:4px solid #ffd37e;
+
+    border-radius:14px;
+
+    background:
+        linear-gradient(
+            #f7aa39,
+            #f17b26
+        );
+
+    color:white;
+
+    font-size:21px;
+    font-weight:900;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 5px 0 #ad4e20;
+}
+
+.smallButton:active{
+    transform:
+        translateY(3px);
+
+    box-shadow:
+        0 2px 0 #ad4e20;
+}
+
+#homeBtn{
+    justify-self:start;
+}
+
+#pauseBtn{
+    justify-self:end;
+}
+
+#brandBox{
+    text-align:center;
+}
+
+#speaker{
+    width:38px;
+    height:6px;
+
+    margin:
+        0 auto 6px;
+
+    background:#74232a;
+
+    border-radius:999px;
+}
+
+#brand{
+    font-weight:1000;
+
+    letter-spacing:1.8px;
+
+    color:#751f27;
+
+    font-size:18px;
+
+    text-shadow:
+        0 1px 0 rgba(255,255,255,.45);
+}
+
+#subBrand{
+    margin-top:3px;
+
+    color:#8b3037;
+
+    font-size:9px;
+
+    font-weight:900;
+
+    letter-spacing:1px;
+}
+
+/* ======================================================
+   SCREEN
+======================================================= */
+
+#screenBorder{
+    position:relative;
+
+    padding:4px;
+
+    border-radius:23px;
+
+    background:
+        linear-gradient(
+            #8b2931,
+            #691f26
+        );
+
+    box-shadow:
+        0 6px 0 rgba(103,25,31,.30);
+}
+
+#screen{
+    position:relative;
+
+    width:100%;
+
+    aspect-ratio:620/790;
+
+    max-height:76vh;
+
+    background:#d7ad7b;
+
+    overflow:hidden;
+
+    border-radius:18px;
+}
+
+/*
+   Canvas memenuhi SELURUH kawasan screen.
+   Tiada bahagian luar route dipaparkan.
+*/
+
+#game{
+    position:absolute;
+    inset:0;
+}
+
+#game canvas{
+    display:block !important;
+
+    width:100% !important;
+    height:100% !important;
+
+    touch-action:none;
+}
+
+/* ======================================================
+   CONTROLS
+======================================================= */
+
+#controls{
+    min-height:180px;
+
+    padding:
+        20px
+        15px
+        0;
+
+    display:grid;
+
+    grid-template-columns:
+        1fr
+        1fr;
+
+    align-items:center;
+
+    gap:30px;
+}
+
+.controlSide{
+    text-align:center;
+}
+
+.controlTitle{
+    margin-bottom:7px;
+
+    color:#772329;
+
+    font-size:11px;
+
+    font-weight:1000;
+
+    letter-spacing:1.5px;
+}
+
+/* JOYSTICK */
+
+#movePad{
+    position:relative;
+
+    width:125px;
+    height:125px;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle,
+            #9bedeb 0 35%,
+            #55c2c7 36% 65%,
+            #3a9ca4 66%
+        );
+
+    border:
+        6px solid #aaf0eb;
+
+    box-shadow:
+        inset 0 -6px 0 rgba(17,91,99,.23),
+        0 7px 0 #318992;
+
+    touch-action:none;
+}
+
+#movePad:before,
+#movePad:after{
+    content:"";
+
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    background:#146b73;
+
+    opacity:.25;
+
+    border-radius:4px;
+}
+
+#movePad:before{
+    width:75px;
+    height:18px;
+}
+
+#movePad:after{
+    width:18px;
+    height:75px;
+}
+
+#moveKnob{
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    width:53px;
+    height:53px;
+
+    transform:
+        translate(-50%,-50%);
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            #2499d7,
+            #0873c7 65%,
+            #04558e
+        );
+
+    border:
+        5px solid #b5edf7;
+
+    box-shadow:
+        0 5px 0 #03538b;
+
+    pointer-events:none;
+}
+
+/* ATTACK */
+
+#attackBtn{
+    width:110px;
+    height:110px;
+
+    border-radius:50%;
+
+    border:
+        7px solid #ffd283;
+
+    background:
+        radial-gradient(
+            circle at 35% 25%,
+            #ffb34d,
+            #f47d28 60%,
+            #dc5525
+        );
+
+    color:white;
+
+    font-weight:1000;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 8px 0 #af4821,
+        inset 0 4px 0 rgba(255,255,255,.32);
+
+    touch-action:manipulation;
+}
+
+#attackBtn.pressed{
+    transform:
+        translateY(5px);
+
+    box-shadow:
+        0 3px 0 #af4821;
+}
+
+#attackHelp{
+    margin-top:9px;
+
+    color:#7a2930;
+
+    font-size:10px;
+
+    font-weight:900;
+}
+
+#bottomText{
+    text-align:center;
+
+    margin-top:2px;
+
+    color:#76252c;
+
+    font-weight:1000;
+
+    letter-spacing:2px;
+
+    font-size:11px;
+}
+
+/* ======================================================
+   OVERLAY
+======================================================= */
+
+.overlay{
+    position:absolute;
+
+    inset:0;
+
+    z-index:100;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:16px;
+
+    background:
+        rgba(10,25,37,.75);
+
+    backdrop-filter:
+        blur(4px);
+}
+
+.overlay.show{
+    display:flex;
+}
+
+.card{
+    width:min(100%,470px);
+
+    max-height:90%;
+
+    overflow:auto;
+
+    padding:18px;
+
+    background:white;
+
+    border-radius:22px;
+
+    border:
+        4px solid #d7f1ff;
+
+    box-shadow:
+        0 15px 50px rgba(0,0,0,.30);
+}
+
+.questionHeader{
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:11px;
+}
+
+.questionIcon{
+    width:52px;
+    height:52px;
+
+    flex:0 0 52px;
+
+    display:grid;
+    place-items:center;
+
+    border-radius:14px;
+
+    background:
+        linear-gradient(
+            #ffd65c,
+            #f3a01e
+        );
+
+    font-size:29px;
+
+    box-shadow:
+        0 5px 0 #aa6016;
+}
+
+#questionNumber{
+    color:#687f91;
+
+    font-size:12px;
+
+    font-weight:900;
+}
+
+#questionText{
+    margin-top:4px;
+
+    color:#17384c;
+
+    font-size:17px;
+
+    font-weight:900;
+
+    line-height:1.4;
+}
+
+.instruction{
+    margin:
+        12px 0;
+
+    color:#708494;
+
+    font-size:13px;
+
+    font-weight:800;
+}
+
+#answers{
+    display:grid;
+
+    gap:9px;
+}
+
+.answer{
+    width:100%;
+
+    padding:
+        12px
+        13px;
+
+    text-align:left;
+
+    border:
+        2px solid #dbe9f2;
+
+    border-radius:13px;
+
+    background:#f8fcff;
+
+    color:#284459;
+
+    font-weight:850;
+
+    font-size:14px;
+
+    cursor:pointer;
+}
+
+.answer.correct{
+    background:#e9faef;
+
+    border-color:#42c878;
+
+    color:#177d47;
+}
+
+.answer.wrong{
+    background:#fff0f1;
+
+    border-color:#ee6871;
+
+    color:#ba303a;
+}
+
+#feedback{
+    min-height:23px;
+
+    margin-top:9px;
+
+    text-align:center;
+
+    font-size:13px;
+
+    font-weight:900;
+}
+
+.center{
+    text-align:center;
+}
+
+.bigIcon{
+    font-size:53px;
+}
+
+.overlayTitle{
+    margin:
+        8px 0;
+
+    font-size:25px;
+
+    font-weight:1000;
+}
+
+.overlayText{
+    color:#617789;
+
+    font-size:14px;
+
+    line-height:1.5;
+}
+
+#countdown{
+    margin-top:8px;
+
+    color:#148bde;
+
+    font-size:45px;
+
+    font-weight:1000;
+}
+
+.menuButton{
+    width:100%;
+
+    margin-top:11px;
+
+    padding:13px;
+
+    border:0;
+
+    border-radius:13px;
+
+    background:#188ee0;
+
+    color:white;
+
+    font-weight:900;
+
+    cursor:pointer;
+}
+
+.menuButton.secondary{
+    background:#e7f1f6;
+
+    color:#23475e;
+}
+
+/* ======================================================
+   MOBILE
+======================================================= */
+
+@media(max-width:560px){
+
+    body{
+        padding:4px;
+    }
+
+    #device{
+        padding:
+            11px
+            11px
+            17px;
+
+        border-width:4px;
+
+        border-radius:
+            28px
+            28px
+            42px
+            42px;
+    }
+
+    #topPanel{
+        height:58px;
+
+        grid-template-columns:
+            55px
+            1fr
+            55px;
+    }
+
+    .smallButton{
+        width:46px;
+        height:34px;
+
+        border-width:3px;
+
+        font-size:17px;
+    }
+
+    #brand{
+        font-size:14px;
+    }
+
+    #subBrand{
+        font-size:8px;
+    }
+
+    #screenBorder{
+        padding:3px;
+
+        border-radius:17px;
+    }
+
+    #screen{
+        border-radius:14px;
+
+        max-height:74vh;
+    }
+
+    #controls{
+        min-height:150px;
+
+        padding:
+            14px
+            6px
+            0;
+
+        gap:18px;
+    }
+
+    #movePad{
+        width:104px;
+        height:104px;
+
+        border-width:5px;
+    }
+
+    #moveKnob{
+        width:45px;
+        height:45px;
+
+        border-width:4px;
+    }
+
+    #attackBtn{
+        width:91px;
+        height:91px;
+
+        border-width:6px;
+
+        font-size:14px;
+    }
+
+    .card{
+        padding:14px;
+    }
+
+    #questionText{
+        font-size:15px;
+    }
+
+    .answer{
+        padding:10px;
+
+        font-size:13px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="device">
+
+    <div id="topPanel">
+
+        <button
+            class="smallButton"
+            id="homeBtn">
+            ⌂
+        </button>
+
+        <div id="brandBox">
+
+            <div id="speaker"></div>
+
+            <div id="brand">
+                CLASSROOM QUEST
+            </div>
+
+            <div id="subBrand">
+                SAINS • HAIWAN
+            </div>
+
+        </div>
+
+        <button
+            class="smallButton"
+            id="pauseBtn">
+            Ⅱ
+        </button>
+
+    </div>
+
+    <div id="screenBorder">
+
+        <div id="screen">
+
+            <div id="game"></div>
+
+            <!-- QUESTION -->
+
+            <div
+                class="overlay"
+                id="questionOverlay">
+
+                <div class="card">
+
+                    <div class="questionHeader">
+
+                        <div class="questionIcon">
+                            📦
+                        </div>
+
+                        <div>
+
+                            <div id="questionNumber">
+                                SOALAN 1 / 25
+                            </div>
+
+                            <div id="questionText">
+                                Soalan
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="instruction">
+                        Pilih jawapan yang paling tepat.
+                    </div>
+
+                    <div id="answers"></div>
+
+                    <div id="feedback"></div>
+
+                </div>
+
+            </div>
+
+            <!-- REST -->
+
+            <div
+                class="overlay"
+                id="restOverlay">
+
+                <div class="card center">
+
+                    <div class="bigIcon">
+                        😴
+                    </div>
+
+                    <div class="overlayTitle">
+                        Berehat Sekejap!
+                    </div>
+
+                    <div class="overlayText">
+                        Nyawa habis. Permainan disambung semula selepas 10 saat.
+                    </div>
+
+                    <div id="countdown">
+                        10
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- PAUSE -->
+
+            <div
+                class="overlay"
+                id="pauseOverlay">
+
+                <div class="card center">
+
+                    <div class="bigIcon">
+                        ⏸️
+                    </div>
+
+                    <div class="overlayTitle">
+                        Permainan Dijeda
+                    </div>
+
+                    <button
+                        class="menuButton"
+                        id="resumeBtn">
+                        Sambung
+                    </button>
+
+                    <button
+                        class="menuButton secondary"
+                        onclick="location.href='index.html'">
+                        Home
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- WIN -->
+
+            <div
+                class="overlay"
+                id="winOverlay">
+
+                <div class="card center">
+
+                    <div class="bigIcon">
+                        🏆
+                    </div>
+
+                    <div class="overlayTitle">
+                        Tahniah!
+                    </div>
+
+                    <div class="overlayText">
+                        Anda berjaya menjawab semua 25 soalan.
+                    </div>
+
+                    <button
+                        class="menuButton"
+                        onclick="restartGame()">
+                        Main Semula
+                    </button>
+
+                    <button
+                        class="menuButton secondary"
+                        onclick="location.href='index.html'">
+                        Home
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- CONTROLS -->
+
+    <div id="controls">
+
+        <div class="controlSide">
+
+            <div class="controlTitle">
+                MOVE
+            </div>
+
+            <div id="movePad">
+                <div id="moveKnob"></div>
+            </div>
+
+        </div>
+
+        <div class="controlSide">
+
+            <div class="controlTitle">
+                ATTACK
+            </div>
+
+            <button id="attackBtn">
+                ATTACK
+            </button>
+
+            <div id="attackHelp">
+                SPACE • TEMBAK
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="bottomText">
+        ENDLESS CLASSROOM
+    </div>
+
+</div>
+
+</div>
+
+<script>
+
+/* =========================================================
+   CHECK PHASER
+========================================================= */
+
+if(typeof Phaser === "undefined"){
+
+    document.body.innerHTML =
+    `
+    <div style="
+        background:white;
+        max-width:600px;
+        margin:40px auto;
+        padding:30px;
+        border-radius:20px;
+        text-align:center;
+        font-family:Arial;
+    ">
+        <b>Phaser tidak dapat dimuatkan.</b>
+        <br><br>
+        Pastikan internet aktif dan CDN tidak disekat.
+    </div>
+    `;
+
+    throw new Error(
+        "Phaser gagal dimuatkan."
+    );
+
+}
+
+/* =========================================================
+   QUESTIONS
+========================================================= */
+
+const QUESTIONS = [
+
+{
+q:"Apakah bahagian tubuh yang terdapat pada kuda?",
+o:["Badan","Sirip","Kepak","Cangkerang"],
+a:0
+},
+
+{
+q:"Apakah bahagian tubuh yang terdapat pada burung?",
+o:["Tanduk","Paruh","Sumbu","Sisik"],
+a:1
+},
+
+{
+q:"Apakah bahagian tubuh yang terdapat pada ikan?",
+o:["Kepak","Sisik","Tanduk","Paruh"],
+a:1
+},
+
+{
+q:"Apakah bahagian tubuh yang terdapat pada rama-rama?",
+o:["Kepak","Cangkerang","Sumbu","Tanduk"],
+a:0
+},
+
+{
+q:"Haiwan manakah mempunyai sesungut?",
+o:["Kerbau","Rusa","Burung","Siput"],
+a:3
+},
+
+{
+q:"Apakah bahagian tubuh yang terdapat pada kerbau?",
+o:["Kepak","Tanduk","Sirip","Cangkerang"],
+a:1
+},
+
+{
+q:"Apakah bahagian tubuh yang terdapat pada kura-kura?",
+o:["Paruh","Sumbu","Cangkerang","Kepak"],
+a:2
+},
+
+{
+q:"Haiwan manakah mempunyai kaki selaput renang?",
+o:["Itik","Kuda","Rusa","Badak sumbu"],
+a:0
+},
+
+{
+q:"Apakah fungsi kepak?",
+o:["Terbang","Berenang","Memandu arah","Mempertahankan diri"],
+a:0
+},
+
+{
+q:"Apakah fungsi sirip?",
+o:["Terbang","Mempertahankan diri","Berenang","Memandu arah"],
+a:2
+},
+
+{
+q:"Apakah fungsi ekor?",
+o:["Terbang","Mempertahankan diri","Memandu arah","Berenang"],
+a:2
+},
+
+{
+q:"Apakah fungsi kulit keras?",
+o:["Terbang","Mempertahankan diri","Berenang","Memandu arah"],
+a:1
+},
+
+{
+q:"Apakah fungsi tanduk?",
+o:["Mempertahankan diri","Berenang","Terbang","Memandu arah"],
+a:0
+},
+
+{
+q:"Apakah fungsi sumbu pada badak sumbu?",
+o:["Berenang","Terbang","Mempertahankan diri","Memandu arah"],
+a:2
+},
+
+{
+q:"Apakah fungsi kaki selaput renang?",
+o:["Terbang","Memandu arah","Berenang","Mempertahankan diri"],
+a:2
+},
+
+{
+q:"Haiwan manakah mempunyai bulu halus?",
+o:["Kucing","Ikan","Buaya","Rama-rama"],
+a:0
+},
+
+{
+q:"Lembu dan hamster mempunyai bahagian tubuh yang serupa, iaitu _______.",
+o:["Kepak","Sirip","Cangkerang","Bulu halus"],
+a:3
+},
+
+{
+q:"Apakah bahagian tubuh yang terdapat pada ikan?",
+o:["Tanduk","Sisik","Paruh","Kepak"],
+a:1
+},
+
+{
+q:"Pernyataan manakah yang betul?",
+o:[
+"Haiwan berlainan boleh mempunyai bahagian tubuh yang serupa",
+"Semua haiwan mempunyai kepak",
+"Semua haiwan mempunyai cangkerang",
+"Semua bahagian tubuh haiwan adalah berbeza"
+],
+a:0
+},
+
+{
+q:"Haiwan manakah mempunyai bulu halus?",
+o:["Arnab","Ikan","Katak","Buaya"],
+a:0
+},
+
+{
+q:"Apakah bahagian tubuh yang serupa pada kucing dan arnab?",
+o:["Bulu halus","Sirip","Kepak","Cangkerang"],
+a:0
+},
+
+{
+q:"Haiwan manakah mempunyai kulit keras?",
+o:["Burung","Kucing","Arnab","Buaya"],
+a:3
+},
+
+{
+q:"Jika dua haiwan mempunyai bahagian tubuh yang sama, kita boleh mengatakan bahawa kedua-duanya mempunyai bahagian tubuh yang _______.",
+o:["Lebih besar","Lebih kecil","Lebih berat","Serupa"],
+a:3
+},
+
+{
+q:"Apakah bahagian tubuh yang terdapat pada badak sumbu?",
+o:["Sirip","Sumbu","Paruh","Kaki selaput renang"],
+a:1
+},
+
+{
+q:"Antara berikut, yang manakah contoh haiwan berlainan yang mempunyai bahagian tubuh serupa?",
+o:[
+"Ikan dan burung mempunyai cangkerang",
+"Kucing dan arnab mempunyai bulu halus",
+"Siput dan kerbau mempunyai kepak",
+"Buaya dan ikan mempunyai tanduk"
+],
+a:1
+}
+
+];
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+const W = 620;
+const H = 790;
+const CHUNK_HEIGHT = 790;
+
+let gameScene = null;
+
+let questionIndex = 0;
+
+let currentChest = null;
+
+let questionOpen = false;
+
+let answerLocked = false;
+
+let joystick = {
+    x:0,
+    y:0
+};
+
+/* =========================================================
+   AUDIO — TANPA FILE MP3 / WAV
+========================================================= */
+
+const AudioSystem = {
+
+ctx:null,
+
+master:null,
+
+music:null,
+
+sfx:null,
+
+timer:null,
+
+step:0,
+
+nextTime:0,
+
+unlock(){
+
+    try{
+
+        if(!this.ctx){
+
+            const AC =
+                window.AudioContext ||
+                window.webkitAudioContext;
+
+            if(!AC){
+                return;
+            }
+
+            this.ctx =
+                new AC();
+
+            this.master =
+                this.ctx.createGain();
+
+            this.music =
+                this.ctx.createGain();
+
+            this.sfx =
+                this.ctx.createGain();
+
+            this.master.gain.value =
+                .75;
+
+            this.music.gain.value =
+                .10;
+
+            this.sfx.gain.value =
+                .30;
+
+            this.music.connect(
+                this.master
+            );
+
+            this.sfx.connect(
+                this.master
+            );
+
+            this.master.connect(
+                this.ctx.destination
+            );
+
+        }
+
+        if(
+            this.ctx.state ===
+            "suspended"
+        ){
+            this.ctx.resume();
+        }
+
+    }catch(e){
+
+        console.log(e);
+
+    }
+
+},
+
+tone(
+    frequency,
+    time,
+    duration,
+    type="square",
+    volume=.05,
+    destination=null,
+    endFrequency=null
+){
+
+    if(!this.ctx){
+        return;
+    }
+
+    const output =
+        destination ||
+        this.sfx;
+
+    const oscillator =
+        this.ctx.createOscillator();
+
+    const gain =
+        this.ctx.createGain();
+
+    oscillator.type =
+        type;
+
+    oscillator.frequency
+        .setValueAtTime(
+            frequency,
+            time
+        );
+
+    if(endFrequency){
+
+        oscillator.frequency
+            .exponentialRampToValueAtTime(
+                endFrequency,
+                time+
+                duration
+            );
+
+    }
+
+    gain.gain
+        .setValueAtTime(
+            .0001,
+            time
+        );
+
+    gain.gain
+        .exponentialRampToValueAtTime(
+            volume,
+            time+.01
+        );
+
+    gain.gain
+        .exponentialRampToValueAtTime(
+            .0001,
+            time+
+            duration
+        );
+
+    oscillator.connect(
+        gain
+    );
+
+    gain.connect(
+        output
+    );
+
+    oscillator.start(
+        time
+    );
+
+    oscillator.stop(
+        time+
+        duration+
+        .03
+    );
+
+},
+
+startMusic(){
+
+    this.unlock();
+
+    if(
+        !this.ctx ||
+        this.timer
+    ){
+        return;
+    }
+
+    this.step=0;
+
+    this.nextTime =
+        this.ctx.currentTime+
+        .05;
+
+    this.schedule();
+
+    this.timer =
+        setInterval(
+            ()=>this.schedule(),
+            90
+        );
+
+},
+
+schedule(){
+
+    if(!this.ctx){
+        return;
+    }
+
+    const horizon =
+        this.ctx.currentTime+
+        .28;
+
+    while(
+        this.nextTime <
+        horizon
+    ){
+
+        this.musicStep(
+            this.step,
+            this.nextTime
+        );
+
+        this.step++;
+
+        this.nextTime +=
+            .185;
+
+    }
+
+},
+
+musicStep(
+    step,
+    time
+){
+
+    const melody = [
+
+        523.25,
+        659.25,
+        783.99,
+        659.25,
+
+        587.33,
+        698.46,
+        880,
+        698.46,
+
+        659.25,
+        783.99,
+        987.77,
+        783.99,
+
+        587.33,
+        698.46,
+        783.99,
+        523.25
+
+    ];
+
+    const note =
+        melody[
+            step %
+            melody.length
+        ];
+
+    this.tone(
+        note,
+        time,
+        .13,
+        "square",
+        .032,
+        this.music
+    );
+
+    if(
+        step%2 ===
+        0
+    ){
+
+        this.tone(
+            note/2,
+            time,
+            .17,
+            "triangle",
+            .022,
+            this.music
+        );
+
+    }
+
+},
+
+sound(name){
+
+    this.unlock();
+
+    if(!this.ctx){
+        return;
+    }
+
+    const t =
+        this.ctx.currentTime+
+        .005;
+
+    if(name==="attack"){
+
+        this.tone(
+            820,
+            t,
+            .07,
+            "square",
+            .11,
+            this.sfx,
+            430
+        );
+
+    }
+
+    if(name==="enemyShoot"){
+
+        this.tone(
+            240,
+            t,
+            .09,
+            "sawtooth",
+            .07,
+            this.sfx,
+            140
+        );
+
+    }
+
+    if(name==="hit"){
+
+        this.tone(
+            150,
+            t,
+            .16,
+            "sawtooth",
+            .11,
+            this.sfx,
+            75
+        );
+
+    }
+
+    if(name==="enemyHit"){
+
+        this.tone(
+            340,
+            t,
+            .08,
+            "square",
+            .08,
+            this.sfx,
+            240
+        );
+
+    }
+
+    if(name==="correct"){
+
+        this.tone(
+            523,
+            t,
+            .10,
+            "square",
+            .08
+        );
+
+        this.tone(
+            659,
+            t+.09,
+            .10,
+            "square",
+            .08
+        );
+
+        this.tone(
+            784,
+            t+.18,
+            .15,
+            "triangle",
+            .08
+        );
+
+    }
+
+    if(name==="wrong"){
+
+        this.tone(
+            210,
+            t,
+            .13,
+            "sawtooth",
+            .08,
+            this.sfx,
+            150
+        );
+
+    }
+
+    if(name==="chest"){
+
+        this.tone(
+            650,
+            t,
+            .08,
+            "square",
+            .08
+        );
+
+        this.tone(
+            850,
+            t+.08,
+            .12,
+            "triangle",
+            .08
+        );
+
+    }
+
+    if(name==="win"){
+
+        [
+            523,
+            659,
+            784,
+            1046
+        ]
+        .forEach(
+            (f,i)=>{
+
+                this.tone(
+                    f,
+                    t+i*.1,
+                    .18,
+                    "square",
+                    .08
+                );
+
+            }
+        );
+
+    }
+
+}
+
+};
+
+/* =========================================================
+   GAME
+========================================================= */
+
+class ClassroomGame
+extends Phaser.Scene{
+
+constructor(){
+
+    super(
+        "ClassroomGame"
+    );
+
+}
+
+create(){
+
+    gameScene =
+        this;
+
+    this.maxHP=5;
+
+    this.hp=5;
+
+    this.started=false;
+
+    this.resting=false;
+
+    this.pausedManually=false;
+
+    this.invincible=false;
+
+    this.lastShot=-9999;
+
+    this.attackDelay=280;
+
+    this.lastDirection =
+        new Phaser.Math.Vector2(
+            0,
+            -1
+        );
+
+    this.generated =
+        new Map();
+
+    createTextures(
+        this
+    );
+
+    this.obstacles =
+        this.physics.add.staticGroup();
+
+    this.enemies =
+        this.physics.add.group({
+            allowGravity:false
+        });
+
+    this.enemyBullets =
+        this.physics.add.group({
+            allowGravity:false
+        });
+
+    this.playerBullets =
+        this.physics.add.group({
+            allowGravity:false
+        });
+
+    /*
+       STARTING AREA.
+       Tidak ada meja/enemy ketika mula.
+    */
+
+    this.generateChunk(
+        0,
+        true
+    );
+
+    this.startY =
+        H/2;
+
+    this.playerShadow =
+        this.add.ellipse(
+            W/2,
+            this.startY+29,
+            53,
+            20,
+            0x352719,
+            .25
+        )
+        .setDepth(
+            40
+        );
+
+    this.player =
+        this.physics.add.sprite(
+            W/2,
+            this.startY,
+            "player"
+        )
+        .setDepth(
+            50
+        );
+
+    this.player.body
+        .setSize(
+            35,
+            44
+        )
+        .setOffset(
+            19,
+            20
+        );
+
+    /* COLLISION */
+
+    this.physics.add.collider(
+        this.player,
+        this.obstacles
+    );
+
+    this.physics.add.collider(
+        this.enemies,
+        this.obstacles
+    );
+
+    this.physics.add.overlap(
+        this.player,
+        this.enemies,
+        (
+            player,
+            enemy
+        )=>{
+
+            this.damagePlayer(
+                enemy.x,
+                enemy.y
+            );
+
+        }
+    );
+
+    this.physics.add.overlap(
+        this.player,
+        this.enemyBullets,
+        (
+            player,
+            bullet
+        )=>{
+
+            const x =
+                bullet.x;
+
+            const y =
+                bullet.y;
+
+            bullet.destroy();
+
+            this.damagePlayer(
+                x,
+                y
+            );
+
+        }
+    );
+
+    this.physics.add.overlap(
+        this.playerBullets,
+        this.enemies,
+        (
+            bullet,
+            enemy
+        )=>{
+
+            this.damageEnemy(
+                bullet,
+                enemy
+            );
+
+        }
+    );
+
+    this.physics.add.collider(
+        this.playerBullets,
+        this.obstacles,
+        bullet=>{
+
+            if(
+                bullet &&
+                bullet.active
+            ){
+                bullet.destroy();
+            }
+
+        }
+    );
+
+    this.physics.add.collider(
+        this.enemyBullets,
+        this.obstacles,
+        bullet=>{
+
+            if(
+                bullet &&
+                bullet.active
+            ){
+                bullet.destroy();
+            }
+
+        }
+    );
+
+    /* KEYBOARD */
+
+    this.cursors =
+        this.input.keyboard
+        .createCursorKeys();
+
+    this.keys =
+        this.input.keyboard.addKeys({
+
+            up:"W",
+
+            down:"S",
+
+            left:"A",
+
+            right:"D",
+
+            attack:"SPACE"
+
+        });
+
+    /*
+       CAMERA hanya scroll Y.
+       X sentiasa 0.
+    */
+
+    this.cameraAnchor =
+        H/2;
+
+    this.cameras.main
+        .setScroll(
+            0,
+            0
+        );
+
+    this.cameras.main
+        .setBackgroundColor(
+            "#d7ad7b"
+        );
+
+    this.createHUD();
+
+    /* START DECORATION */
+
+    this.startText =
+        this.add.text(
+
+            W/2,
+
+            H/2+110,
+
+            "✦ MULA JELAJAH ✦\nGERAKKAN CHARACTER KE ATAS",
+
+            {
+
+                font:
+                    "bold 16px Arial",
+
+                color:
+                    "#ffffff",
+
+                align:
+                    "center",
+
+                backgroundColor:
+                    "rgba(25,78,90,.80)",
+
+                padding:{
+                    x:15,
+                    y:8
+                },
+
+                stroke:
+                    "#145a65",
+
+                strokeThickness:
+                    3
+
+            }
+
+        )
+        .setOrigin(
+            .5
+        )
+        .setScrollFactor(
+            0
+        )
+        .setDepth(
+            999999
+        );
+
+    this.tweens.add({
+
+        targets:
+            this.startText,
+
+        scale:{
+            from:.97,
+            to:1.04
+        },
+
+        duration:
+            700,
+
+        yoyo:
+            true,
+
+        repeat:
+            -1
+
+    });
+
+    document
+    .getElementById(
+        "resumeBtn"
+    )
+    .onclick =
+        ()=>this.togglePause(
+            false
+        );
+
+    this.updateHUD();
+
+}
+
+/* ======================================================
+   UPDATE
+======================================================= */
+
+update(time){
+
+    if(
+        !this.player ||
+        !this.player.active
+    ){
+        return;
+    }
+
+    if(
+        this.resting ||
+        this.pausedManually ||
+        questionOpen
+    ){
+
+        this.player.setVelocity(
+            0,
+            0
+        );
+
+        return;
+    }
+
+    let x=0;
+    let y=0;
+
+    if(
+        this.cursors.left.isDown ||
+        this.keys.left.isDown
+    ){
+        x--;
+    }
+
+    if(
+        this.cursors.right.isDown ||
+        this.keys.right.isDown
+    ){
+        x++;
+    }
+
+    if(
+        this.cursors.up.isDown ||
+        this.keys.up.isDown
+    ){
+        y--;
+    }
+
+    if(
+        this.cursors.down.isDown ||
+        this.keys.down.isDown
+    ){
+        y++;
+    }
+
+    if(
+        Math.hypot(
+            joystick.x,
+            joystick.y
+        ) >
+        .08
+    ){
+
+        x =
+            joystick.x;
+
+        y =
+            joystick.y;
+
+    }
+
+    const movement =
+        new Phaser.Math.Vector2(
+            x,
+            y
+        );
+
+    if(
+        movement.length() >
+        1
+    ){
+        movement.normalize();
+    }
+
+    /*
+       Game hanya bermula
+       selepas character bergerak.
+    */
+
+    if(
+        !this.started &&
+        movement.lengthSq() >
+        .02
+    ){
+
+        this.startGame();
+
+    }
+
+    this.player.setVelocity(
+        movement.x*
+        205,
+        movement.y*
+        205
+    );
+
+    if(
+        movement.lengthSq() >
+        .02
+    ){
+
+        this.lastDirection
+            .copy(
+                movement
+            )
+            .normalize();
+
+        if(
+            movement.x <
+            -.05
+        ){
+
+            this.player
+                .setFlipX(
+                    true
+                );
+
+        }else if(
+            movement.x >
+            .05
+        ){
+
+            this.player
+                .setFlipX(
+                    false
+                );
+
+        }
+
+    }
+
+    /*
+       Tidak boleh keluar route.
+    */
+
+    this.player.x =
+        Phaser.Math.Clamp(
+            this.player.x,
+            30,
+            W-30
+        );
+
+    if(
+        this.player.y >
+        H-40
+    ){
+
+        this.player.y =
+            H-40;
+
+    }
+
+    this.playerShadow
+        .setPosition(
+            this.player.x,
+            this.player.y+29
+        );
+
+    /*
+       CAMERA VERTICAL ONLY.
+    */
+
+    const cameraY =
+        Math.min(
+            0,
+            this.player.y-
+            this.cameraAnchor
+        );
+
+    this.cameras.main.scrollX =
+        0;
+
+    this.cameras.main.scrollY =
+        Phaser.Math.Linear(
+            this.cameras.main.scrollY,
+            cameraY,
+            .20
+        );
+
+    if(!this.started){
+        return;
+    }
+
+    /* ENDLESS CHUNK */
+
+    const chunk =
+        this.player.y >= 0
+        ? 0
+        :
+        Math.floor(
+            (
+                -this.player.y-
+                1
+            )/
+            CHUNK_HEIGHT
+        )+
+        1;
+
+    for(
+        let i=1;
+        i<=chunk+3;
+        i++
+    ){
+
+        if(
+            !this.generated.has(
+                i
+            )
+        ){
+
+            this.generateChunk(
+                i,
+                false
+            );
+
+        }
+
+    }
+
+    this.cleanup(
+        chunk
+    );
+
+    this.updateEnemies(
+        time
+    );
+
+    this.updateBullets(
+        time
+    );
+
+    this.updateChest();
+
+    /*
+       SPACE = ATTACK
+    */
+
+    if(
+        Phaser.Input.Keyboard
+        .JustDown(
+            this.keys.attack
+        )
+    ){
+
+        this.attack(
+            time
+        );
+
+    }
+
+}
+
+/* ======================================================
+   START GAME
+======================================================= */
+
+startGame(){
+
+    if(this.started){
+        return;
+    }
+
+    this.started =
+        true;
+
+    AudioSystem.startMusic();
+
+    /*
+       Lepas mula bergerak,
+       baru meja dan enemy muncul.
+    */
+
+    this.populateStartingArea();
+
+    this.generateChunk(
+        1,
+        false
+    );
+
+    this.generateChunk(
+        2,
+        false
+    );
+
+    this.generateChunk(
+        3,
+        false
+    );
+
+    if(
+        this.startText
+    ){
+
+        this.tweens.add({
+
+            targets:
+                this.startText,
+
+            alpha:0,
+
+            y:
+                this.startText.y-
+                15,
+
+            duration:
+                250,
+
+            onComplete:()=>{
+
+                if(
+                    this.startText
+                ){
+
+                    this.startText
+                        .destroy();
+
+                    this.startText =
+                        null;
+
+                }
+
+            }
+
+        });
+
+    }
+
+    this.status
+        .setText(
+            "↑ JELAJAH KE ATAS"
+        );
+
+    /*
+       Peti pertama.
+    */
+
+    this.time.delayedCall(
+        550,
+        ()=>{
+
+            if(
+                !currentChest &&
+                questionIndex <
+                QUESTIONS.length
+            ){
+
+                this.spawnChest(
+                    500
+                );
+
+            }
+
+        }
+    );
+
+}
+
+/* ======================================================
+   START AREA OBJECTS
+======================================================= */
+
+populateStartingArea(){
+
+    const chunk =
+        this.generated.get(
+            0
+        );
+
+    if(
+        !chunk ||
+        chunk.populated
+    ){
+        return;
+    }
+
+    chunk.populated =
+        true;
+
+    /*
+       Hanya selepas game bermula.
+    */
+
+    const desks = [
+
+        {
+            x:140,
+            y:220
+        },
+
+        {
+            x:480,
+            y:85
+        }
+
+    ];
+
+    desks.forEach(
+        p=>{
+
+            const desk =
+                this.obstacles.create(
+                    p.x,
+                    p.y,
+                    "desk"
+                );
+
+            desk.body
+                .setSize(
+                    91,
+                    50
+                )
+                .setOffset(
+                    9,
+                    25
+                );
+
+            desk.refreshBody();
+
+            desk.setDepth(
+                25
+            );
+
+            chunk.objects.push(
+                desk
+            );
+
+        }
+    );
+
+    const enemies = [
+
+        {
+            x:390,
+            y:250
+        },
+
+        {
+            x:230,
+            y:140
+        },
+
+        {
+            x:520,
+            y:160
+        }
+
+    ];
+
+    enemies.forEach(
+        p=>{
+
+            const enemy =
+                this.createEnemy(
+                    p.x,
+                    p.y,
+                    0
+                );
+
+            chunk.objects.push(
+                enemy
+            );
+
+        }
+    );
+
+}
+
+/* ======================================================
+   GENERATE ENDLESS CLASSROOM
+======================================================= */
+
+generateChunk(
+    index,
+    safeStart=false
+){
+
+    if(
+        this.generated.has(
+            index
+        )
+    ){
+        return;
+    }
+
+    const top =
+        -index*
+        CHUNK_HEIGHT;
+
+    const objects=[];
+
+    /*
+       Lantai memenuhi seluruh route.
+    */
+
+    const floor =
+        this.add.tileSprite(
+
+            W/2,
+
+            top+
+            CHUNK_HEIGHT/2,
+
+            W,
+
+            CHUNK_HEIGHT,
+
+            "floor"
+
+        )
+        .setDepth(
+            -1000
+        );
+
+    objects.push(
+        floor
+    );
+
+    /*
+       START DECORATION
+       tetapi tiada meja/enemy.
+    */
+
+    if(safeStart){
+
+        objects.push(
+
+            this.add.image(
+                W/2,
+                top+70,
+                "board"
+            )
+            .setDepth(
+                4
+            )
+
+        );
+
+        objects.push(
+
+            this.add.image(
+                42,
+                top+260,
+                "plant"
+            )
+
+        );
+
+        objects.push(
+
+            this.add.image(
+                W-42,
+                top+260,
+                "plant"
+            )
+
+        );
+
+        objects.push(
+
+            this.add.image(
+                42,
+                top+650,
+                "plant"
+            )
+
+        );
+
+        objects.push(
+
+            this.add.image(
+                W-42,
+                top+650,
+                "plant"
+            )
+
+        );
+
+        const welcome =
+            this.add.text(
+
+                W/2,
+
+                top+190,
+
+                "★ SELAMAT DATANG KE KELAS SAINS ★",
+
+                {
+
+                    font:
+                        "bold 15px Arial",
+
+                    color:
+                        "#73502e",
+
+                    backgroundColor:
+                        "rgba(255,248,221,.72)",
+
+                    padding:{
+                        x:13,
+                        y:6
+                    }
+
+                }
+
+            )
+            .setOrigin(
+                .5
+            );
+
+        objects.push(
+            welcome
+        );
+
+    }else{
+
+        /*
+           Decoration.
+        */
+
+        if(
+            index%2 ===
+            0
+        ){
+
+            objects.push(
+
+                this.add.image(
+                    W/2,
+                    top+70,
+                    "board"
+                )
+
+            );
+
+        }
+
+        objects.push(
+
+            this.add.image(
+
+                40,
+
+                top+
+                Phaser.Math.Between(
+                    150,
+                    270
+                ),
+
+                "plant"
+
+            )
+
+        );
+
+        objects.push(
+
+            this.add.image(
+
+                W-40,
+
+                top+
+                Phaser.Math.Between(
+                    520,
+                    700
+                ),
+
+                "plant"
+
+            )
+
+        );
+
+        /* ===============================================
+           MEJA
+           Tidak terlalu banyak.
+           Sentiasa ada ruang lalu.
+        ================================================ */
+
+        const lanes = [
+            110,
+            310,
+            510
+        ];
+
+        const shuffled =
+            Phaser.Utils.Array.Shuffle(
+                [
+                    0,
+                    1,
+                    2
+                ]
+            );
+
+        const deskCount =
+            index%4 ===
+            0
+            ? 2
+            : 3;
+
+        const deskY = [
+
+            top+210,
+
+            top+455,
+
+            top+690
+
+        ];
+
+        for(
+            let i=0;
+            i<deskCount;
+            i++
+        ){
+
+            const desk =
+                this.obstacles.create(
+
+                    lanes[
+                        shuffled[i]
+                    ]+
+                    Phaser.Math.Between(
+                        -15,
+                        15
+                    ),
+
+                    deskY[i]+
+                    Phaser.Math.Between(
+                        -25,
+                        25
+                    ),
+
+                    "desk"
+
+                );
+
+            desk.body
+                .setSize(
+                    91,
+                    50
+                )
+                .setOffset(
+                    9,
+                    25
+                );
+
+            desk.refreshBody();
+
+            desk.setDepth(
+                25
+            );
+
+            objects.push(
+                desk
+            );
+
+        }
+
+        /* ===============================================
+           ENEMY
+
+           SOALAN 1–9:
+           4–5 enemy.
+
+           SOALAN 10 DAN SETERUSNYA:
+           6–7 enemy.
+        ================================================ */
+
+        const hardMode =
+            questionIndex >=
+            9;
+
+        const enemyCount =
+            hardMode
+            ?
+            (
+                index%3===0
+                ? 7
+                : 6
+            )
+            :
+            (
+                index%4===0
+                ? 5
+                : 4
+            );
+
+        const enemyY =
+            hardMode
+
+            ? [
+
+                top+95,
+                top+205,
+                top+315,
+                top+430,
+                top+545,
+                top+655,
+                top+750
+
+            ]
+
+            : [
+
+                top+130,
+                top+280,
+                top+430,
+                top+580,
+                top+720
+
+            ];
+
+        const enemyX = [
+
+            85,
+            195,
+            310,
+            425,
+            535
+
+        ];
+
+        let previousLane =
+            -1;
+
+        for(
+            let i=0;
+            i<enemyCount;
+            i++
+        ){
+
+            let lane =
+                Phaser.Math.Between(
+                    0,
+                    enemyX.length-
+                    1
+                );
+
+            if(
+                lane ===
+                previousLane
+            ){
+
+                lane =
+                    (
+                        lane+
+                        1+
+                        Phaser.Math.Between(
+                            0,
+                            3
+                        )
+                    ) %
+                    enemyX.length;
+
+            }
+
+            previousLane =
+                lane;
+
+            const enemy =
+                this.createEnemy(
+
+                    enemyX[lane]+
+                    Phaser.Math.Between(
+                        -15,
+                        15
+                    ),
+
+                    enemyY[i]+
+                    Phaser.Math.Between(
+                        -20,
+                        20
+                    ),
+
+                    index
+
+                );
+
+            /*
+               Lepas Q10 enemy sedikit
+               lebih laju juga.
+            */
+
+            if(hardMode){
+
+                enemy.speed =
+                    Phaser.Math.Between(
+                        52,
+                        70
+                    );
+
+            }
+
+            objects.push(
+                enemy
+            );
+
+        }
+
+    }
+
+    this.generated.set(
+        index,
+        {
+
+            top,
+
+            objects,
+
+            safeStart,
+
+            populated:false
+
+        }
+    );
+
+}
+
+/* ======================================================
+   CREATE ENEMY
+======================================================= */
+
+createEnemy(
+    x,
+    y,
+    chunk
+){
+
+    const enemy =
+        this.enemies.create(
+            x,
+            y,
+            "enemy"
+        );
+
+    enemy.hp=3;
+
+    enemy.speed =
+        Phaser.Math.Between(
+            47,
+            65
+        );
+
+    enemy.lastAttack =
+        Phaser.Math.Between(
+            0,
+            900
+        );
+
+    enemy.chunk =
+        chunk;
+
+    enemy.body
+        .setCircle(
+            25,
+            11,
+            11
+        );
+
+    enemy.setDepth(
+        35
+    );
+
+    return enemy;
+
+}
+
+/* ======================================================
+   SOALAN 10 BOOST
+======================================================= */
+
+question10Boost(){
+
+    const positions = [
+
+        {
+            x:100,
+            y:-350
+        },
+
+        {
+            x:310,
+            y:-510
+        },
+
+        {
+            x:520,
+            y:-650
+        }
+
+    ];
+
+    positions.forEach(
+        p=>{
+
+            const enemy =
+                this.createEnemy(
+
+                    p.x+
+                    Phaser.Math.Between(
+                        -15,
+                        15
+                    ),
+
+                    this.player.y+
+                    p.y,
+
+                    -1
+
+                );
+
+            enemy.speed =
+                Phaser.Math.Between(
+                    52,
+                    70
+                );
+
+        }
+    );
+
+}
+
+/* ======================================================
+   CLEAN OLD WORLD
+======================================================= */
+
+cleanup(
+    currentChunk
+){
+
+    for(
+        const [
+            index,
+            chunk
+        ]
+        of
+        this.generated
+    ){
+
+        if(index===0){
+            continue;
+        }
+
+        if(
+            index <
+            currentChunk-
+            5
+        ){
+
+            chunk.objects
+            .forEach(
+                object=>{
+
+                    if(
+                        object &&
+                        object.active &&
+                        object !==
+                        currentChest
+                    ){
+
+                        object.destroy();
+
+                    }
+
+                }
+            );
+
+            this.generated.delete(
+                index
+            );
+
+        }
+
+    }
+
+}
+
+/* ======================================================
+   CHEST
+======================================================= */
+
+getChestPosition(
+    y
+){
+
+    const positions =
+        Phaser.Utils.Array.Shuffle(
+            [
+                80,
+                195,
+                310,
+                425,
+                540
+            ]
+        );
+
+    for(
+        const x of positions
+    ){
+
+        let blocked=false;
+
+        this.obstacles.children
+        .iterate(
+            obstacle=>{
+
+                if(
+                    !obstacle ||
+                    !obstacle.active
+                ){
+                    return;
+                }
+
+                if(
+                    Math.abs(
+                        obstacle.x-x
+                    ) <
+                    120 &&
+                    Math.abs(
+                        obstacle.y-y
+                    ) <
+                    140
+                ){
+
+                    blocked=true;
+
+                }
+
+            }
+        );
+
+        if(!blocked){
+
+            return{
+                x,
+                y
+            };
+
+        }
+
+    }
+
+    return{
+        x:W/2,
+        y
+    };
+
+}
+
+spawnChest(
+    distance=480
+){
+
+    if(
+        currentChest ||
+        questionIndex >=
+        QUESTIONS.length
+    ){
+        return;
+    }
+
+    const y =
+        this.player.y-
+        distance;
+
+    const targetChunk =
+        y>=0
+        ? 0
+        :
+        Math.floor(
+            (
+                -y-
+                1
+            )/
+            CHUNK_HEIGHT
+        )+
+        1;
+
+    for(
+        let i=1;
+        i<=targetChunk+1;
+        i++
+    ){
+
+        if(
+            !this.generated.has(
+                i
+            )
+        ){
+
+            this.generateChunk(
+                i,
+                false
+            );
+
+        }
+
+    }
+
+    const position =
+        this.getChestPosition(
+            y
+        );
+
+    /* GLOW */
+
+    const glow =
+        this.add.circle(
+            position.x,
+            position.y,
+            78,
+            0xffdc52,
+            .27
+        )
+        .setDepth(
+            24
+        );
+
+    glow.setStrokeStyle(
+        6,
+        0xfff4a3,
+        .75
+    );
+
+    this.tweens.add({
+
+        targets:
+            glow,
+
+        scale:{
+            from:.85,
+            to:1.15
+        },
+
+        alpha:{
+            from:.2,
+            to:.43
+        },
+
+        duration:
+            620,
+
+        yoyo:
+            true,
+
+        repeat:
+            -1
+
+    });
+
+    currentChest =
+        this.physics.add.staticSprite(
+            position.x,
+            position.y,
+            "chest"
+        );
+
+    currentChest
+        .setScale(
+            1.55
+        );
+
+    currentChest
+        .setDepth(
+            28
+        );
+
+    currentChest
+        .refreshBody();
+
+    currentChest.glow =
+        glow;
+
+    currentChest.label =
+        this.add.text(
+
+            position.x,
+
+            position.y-
+            103,
+
+            "PETI SOALAN",
+
+            {
+
+                font:
+                    "bold 15px Arial",
+
+                color:
+                    "#52350d",
+
+                backgroundColor:
+                    "#fff2a3",
+
+                padding:{
+                    x:10,
+                    y:5
+                }
+
+            }
+
+        )
+        .setOrigin(
+            .5
+        )
+        .setDepth(
+            31
+        );
+
+    currentChest.arrow =
+        this.add.text(
+
+            position.x,
+
+            position.y-
+            73,
+
+            "▼",
+
+            {
+
+                font:
+                    "bold 30px Arial",
+
+                color:
+                    "#ff493e",
+
+                stroke:
+                    "#ffffff",
+
+                strokeThickness:
+                    4
+
+            }
+
+        )
+        .setOrigin(
+            .5
+        )
+        .setDepth(
+            32
+        );
+
+    currentChest.question =
+        this.add.text(
+
+            position.x,
+
+            position.y-
+            7,
+
+            "?",
+
+            {
+
+                font:
+                    "bold 28px Arial",
+
+                color:
+                    "#ffffff",
+
+                stroke:
+                    "#754313",
+
+                strokeThickness:
+                    4
+
+            }
+
+        )
+        .setOrigin(
+            .5
+        )
+        .setDepth(
+            33
+        );
+
+    this.tweens.add({
+
+        targets:
+            currentChest.arrow,
+
+        y:
+            currentChest.arrow.y+
+            8,
+
+        duration:
+            420,
+
+        yoyo:
+            true,
+
+        repeat:
+            -1
+
+    });
+
+}
+
+destroyChest(){
+
+    if(!currentChest){
+        return;
+    }
+
+    [
+        "glow",
+        "label",
+        "arrow",
+        "question"
+    ]
+    .forEach(
+        name=>{
+
+            if(
+                currentChest[name]
+            ){
+
+                currentChest[name]
+                    .destroy();
+
+            }
+
+        }
+    );
+
+    if(
+        currentChest.active
+    ){
+
+        currentChest.destroy();
+
+    }
+
+    currentChest =
+        null;
+
+}
+
+updateChest(){
+
+    if(
+        !currentChest ||
+        !currentChest.active
+    ){
+        return;
+    }
+
+    const distance =
+        Phaser.Math.Distance.Between(
+
+            this.player.x,
+            this.player.y,
+
+            currentChest.x,
+            currentChest.y
+
+        );
+
+    if(
+        distance <
+        100
+    ){
+
+        openQuestion();
+
+        return;
+
+    }
+
+    /*
+       Kalau peti tertinggal,
+       peti sama loop semula di hadapan.
+    */
+
+    if(
+        currentChest.y >
+        this.player.y+
+        650
+    ){
+
+        this.destroyChest();
+
+        this.time.delayedCall(
+            150,
+            ()=>this.spawnChest(
+                480
+            )
+        );
+
+    }
+
+}
+
+/* ======================================================
+   ENEMY
+======================================================= */
+
+updateEnemies(
+    time
+){
+
+    this.enemies.children
+    .iterate(
+        enemy=>{
+
+            if(
+                !enemy ||
+                !enemy.active
+            ){
+                return;
+            }
+
+            const distance =
+                Phaser.Math.Distance.Between(
+
+                    enemy.x,
+                    enemy.y,
+
+                    this.player.x,
+                    this.player.y
+
+                );
+
+            if(
+                distance <
+                500
+            ){
+
+                const angle =
+                    Phaser.Math.Angle.Between(
+
+                        enemy.x,
+                        enemy.y,
+
+                        this.player.x,
+                        this.player.y
+
+                    );
+
+                if(
+                    distance >
+                    90
+                ){
+
+                    enemy.setVelocity(
+
+                        Math.cos(angle)*
+                        enemy.speed,
+
+                        Math.sin(angle)*
+                        enemy.speed
+
+                    );
+
+                }else{
+
+                    enemy.setVelocity(
+                        0,
+                        0
+                    );
+
+                }
+
+                if(
+                    distance <
+                    325 &&
+                    time-
+                    enemy.lastAttack >
+                    1650
+                ){
+
+                    enemy.lastAttack =
+                        time+
+                        Phaser.Math.Between(
+                            0,
+                            300
+                        );
+
+                    this.enemyShoot(
+                        enemy
+                    );
+
+                }
+
+            }else{
+
+                enemy.setVelocity(
+                    0,
+                    0
+                );
+
+            }
+
+            if(
+                enemy.body.velocity.x <
+                -.1
+            ){
+
+                enemy.setFlipX(
+                    true
+                );
+
+            }else if(
+                enemy.body.velocity.x >
+                .1
+            ){
+
+                enemy.setFlipX(
+                    false
+                );
+
+            }
+
+            /*
+               Enemy belakang sangat jauh
+               dibuang.
+            */
+
+            if(
+                enemy.y >
+                this.player.y+
+                1300
+            ){
+
+                enemy.destroy();
+
+            }
+
+        }
+    );
+
+}
+
+/* ======================================================
+   ENEMY RED BALL
+======================================================= */
+
+enemyShoot(
+    enemy
+){
+
+    AudioSystem.sound(
+        "enemyShoot"
+    );
+
+    const bullet =
+        this.enemyBullets.create(
+
+            enemy.x,
+
+            enemy.y,
+
+            "redBall"
+
+        );
+
+    const angle =
+        Phaser.Math.Angle.Between(
+
+            enemy.x,
+            enemy.y,
+
+            this.player.x,
+            this.player.y
+
+        );
+
+    bullet.setVelocity(
+
+        Math.cos(angle)*
+        220,
+
+        Math.sin(angle)*
+        220
+
+    );
+
+    bullet.birth =
+        this.time.now;
+
+    bullet.setDepth(
+        42
+    );
+
+}
+
+/* ======================================================
+   PLAYER ATTACK
+======================================================= */
+
+attack(
+    time=this.time.now
+){
+
+    if(
+        !this.started ||
+        this.resting ||
+        this.pausedManually ||
+        questionOpen
+    ){
+        return;
+    }
+
+    if(
+        time-
+        this.lastShot <
+        this.attackDelay
+    ){
+        return;
+    }
+
+    this.lastShot =
+        time;
+
+    AudioSystem.sound(
+        "attack"
+    );
+
+    /*
+       Cari enemy terdekat.
+    */
+
+    let target =
+        null;
+
+    let targetDistance =
+        560;
+
+    this.enemies.children
+    .iterate(
+        enemy=>{
+
+            if(
+                !enemy ||
+                !enemy.active
+            ){
+                return;
+            }
+
+            const distance =
+                Phaser.Math.Distance.Between(
+
+                    this.player.x,
+                    this.player.y,
+
+                    enemy.x,
+                    enemy.y
+
+                );
+
+            if(
+                distance <
+                targetDistance
+            ){
+
+                targetDistance =
+                    distance;
+
+                target =
+                    enemy;
+
+            }
+
+        }
+    );
+
+    let direction;
+
+    if(target){
+
+        const angle =
+            Phaser.Math.Angle.Between(
+
+                this.player.x,
+                this.player.y,
+
+                target.x,
+                target.y
+
+            );
+
+        direction =
+            new Phaser.Math.Vector2(
+
+                Math.cos(angle),
+
+                Math.sin(angle)
+
+            );
+
+    }else{
+
+        direction =
+            this.lastDirection.clone();
+
+        if(
+            direction.lengthSq() <
+            .01
+        ){
+
+            direction.set(
+                0,
+                -1
+            );
+
+        }
+
+        direction.normalize();
+
+    }
+
+    const x =
+        this.player.x+
+        direction.x*
+        28;
+
+    const y =
+        this.player.y+
+        direction.y*
+        28;
+
+    const bullet =
+        this.playerBullets.create(
+
+            x,
+            y,
+
+            "pencil"
+
+        );
+
+    bullet.rotation =
+        Math.atan2(
+            direction.y,
+            direction.x
+        );
+
+    bullet.setVelocity(
+
+        direction.x*
+        470,
+
+        direction.y*
+        470
+
+    );
+
+    bullet.birth =
+        time;
+
+    bullet.setDepth(
+        44
+    );
+
+    /* FLASH */
+
+    const flash =
+        this.add.circle(
+            x,
+            y,
+            11,
+            0xffef87,
+            .9
+        )
+        .setDepth(
+            43
+        );
+
+    this.tweens.add({
+
+        targets:
+            flash,
+
+        alpha:0,
+
+        scale:2,
+
+        duration:110,
+
+        onComplete:()=>
+            flash.destroy()
+
+    });
+
+}
+
+/* ======================================================
+   BULLETS
+======================================================= */
+
+updateBullets(
+    time
+){
+
+    this.playerBullets.children
+    .iterate(
+        bullet=>{
+
+            if(
+                bullet &&
+                bullet.active &&
+                time-
+                bullet.birth >
+                1800
+            ){
+
+                bullet.destroy();
+
+            }
+
+        }
+    );
+
+    this.enemyBullets.children
+    .iterate(
+        bullet=>{
+
+            if(
+                bullet &&
+                bullet.active &&
+                time-
+                bullet.birth >
+                3200
+            ){
+
+                bullet.destroy();
+
+            }
+
+        }
+    );
+
+}
+
+/* ======================================================
+   DAMAGE ENEMY
+======================================================= */
+
+damageEnemy(
+    bullet,
+    enemy
+){
+
+    if(
+        !bullet ||
+        !enemy ||
+        !bullet.active ||
+        !enemy.active
+    ){
+        return;
+    }
+
+    bullet.destroy();
+
+    enemy.hp--;
+
+    AudioSystem.sound(
+        "enemyHit"
+    );
+
+    this.damageText(
+        enemy.x,
+        enemy.y,
+        "-1"
+    );
+
+    enemy.setTint(
+        0xffffff
+    );
+
+    this.time.delayedCall(
+        70,
+        ()=>{
+
+            if(
+                enemy.active
+            ){
+
+                enemy.clearTint();
+
+            }
+
+        }
+    );
+
+    if(
+        enemy.hp <=
+        0
+    ){
+
+        this.enemyExplosion(
+            enemy.x,
+            enemy.y
+        );
+
+        enemy.destroy();
+
+    }
+
+}
+
+/* ======================================================
+   PLAYER DAMAGE
+======================================================= */
+
+damagePlayer(
+    sourceX,
+    sourceY
+){
+
+    if(
+        this.invincible ||
+        this.resting ||
+        questionOpen ||
+        this.pausedManually
+    ){
+        return;
+    }
+
+    AudioSystem.sound(
+        "hit"
+    );
+
+    this.invincible =
+        true;
+
+    this.hp =
+        Math.max(
+            0,
+            this.hp-
+            1
+        );
+
+    this.updateHUD();
+
+    this.damageText(
+        this.player.x,
+        this.player.y-
+        27,
+        "-♥"
+    );
+
+    this.player
+        .setTint(
+            0xff7777
+        );
+
+    this.tweens.add({
+
+        targets:
+            this.player,
+
+        alpha:.3,
+
+        duration:
+            90,
+
+        yoyo:
+            true,
+
+        repeat:
+            4
+
+    });
+
+    this.time.delayedCall(
+        850,
+        ()=>{
+
+            this.player
+                .clearTint();
+
+            this.player.alpha =
+                1;
+
+            this.invincible =
+                false;
+
+        }
+    );
+
+    if(
+        this.hp <=
+        0
+    ){
+
+        this.restPlayer();
+
+    }
+
+}
+
+/* ======================================================
+   REST 10 SECONDS
+======================================================= */
+
+restPlayer(){
+
+    if(this.resting){
+        return;
+    }
+
+    this.resting =
+        true;
+
+    this.player.setVelocity(
+        0,
+        0
+    );
+
+    this.enemies.setVelocity(
+        0,
+        0
+    );
+
+    this.physics.world
+        .pause();
+
+    document
+    .getElementById(
+        "restOverlay"
+    )
+    .classList.add(
+        "show"
+    );
+
+    let number =
+        10;
+
+    document
+    .getElementById(
+        "countdown"
+    )
+    .textContent =
+        number;
+
+    const interval =
+        setInterval(
+            ()=>{
+
+                number--;
+
+                document
+                .getElementById(
+                    "countdown"
+                )
+                .textContent =
+                    number;
+
+                if(
+                    number <=
+                    0
+                ){
+
+                    clearInterval(
+                        interval
+                    );
+
+                    document
+                    .getElementById(
+                        "restOverlay"
+                    )
+                    .classList.remove(
+                        "show"
+                    );
+
+                    this.hp =
+                        this.maxHP;
+
+                    this.updateHUD();
+
+                    this.resting =
+                        false;
+
+                    this.invincible =
+                        true;
+
+                    if(
+                        !questionOpen &&
+                        !this.pausedManually
+                    ){
+
+                        this.physics.world
+                            .resume();
+
+                    }
+
+                    this.time.delayedCall(
+                        1500,
+                        ()=>{
+
+                            this.invincible =
+                                false;
+
+                        }
+                    );
+
+                }
+
+            },
+            1000
+        );
+
+}
+
+/* ======================================================
+   EFFECTS
+======================================================= */
+
+damageText(
+    x,
+    y,
+    text
+){
+
+    const object =
+        this.add.text(
+
+            x,
+            y,
+
+            text,
+
+            {
+
+                font:
+                    "bold 24px Arial",
+
+                color:
+                    "#ffffff",
+
+                stroke:
+                    "#493526",
+
+                strokeThickness:
+                    5
+
+            }
+
+        )
+        .setOrigin(
+            .5
+        )
+        .setDepth(
+            999999
+        );
+
+    this.tweens.add({
+
+        targets:
+            object,
+
+        y:
+            y-40,
+
+        alpha:0,
+
+        duration:
+            600,
+
+        onComplete:()=>
+            object.destroy()
+
+    });
+
+}
+
+enemyExplosion(
+    x,
+    y
+){
+
+    for(
+        let i=0;
+        i<8;
+        i++
+    ){
+
+        const particle =
+            this.add.circle(
+
+                x,
+                y,
+
+                Phaser.Math.Between(
+                    4,
+                    8
+                ),
+
+                Phaser.Math.RND.pick(
+                    [
+                        0xffd45a,
+                        0xffffff,
+                        0xff7180,
+                        0x57d589
+                    ]
+                )
+
+            )
+            .setDepth(
+                99999
+            );
+
+        const angle =
+            Math.random()*
+            Math.PI*
+            2;
+
+        const distance =
+            Phaser.Math.Between(
+                30,
+                70
+            );
+
+        this.tweens.add({
+
+            targets:
+                particle,
+
+            x:
+                x+
+                Math.cos(angle)*
+                distance,
+
+            y:
+                y+
+                Math.sin(angle)*
+                distance,
+
+            alpha:0,
+
+            duration:
+                450,
+
+            onComplete:()=>
+                particle.destroy()
+
+        });
+
+    }
+
+}
+
+/* ======================================================
+   HUD
+======================================================= */
+
+createHUD(){
+
+    const hud =
+        this.add.graphics()
+        .setScrollFactor(
+            0
+        )
+        .setDepth(
+            999990
+        );
+
+    hud.fillStyle(
+        0x173e4d,
+        .83
+    );
+
+    hud.fillRoundedRect(
+        12,
+        12,
+        150,
+        61,
+        14
+    );
+
+    hud.fillRoundedRect(
+        W-190,
+        12,
+        178,
+        61,
+        14
+    );
+
+    hud.fillRoundedRect(
+        105,
+        87,
+        W-210,
+        24,
+        11
+    );
+
+    this.hpText =
+        this.add.text(
+
+            23,
+            32,
+
+            "",
+
+            {
+
+                font:
+                    "bold 21px Arial",
+
+                color:
+                    "#ffeded",
+
+                stroke:
+                    "#8d3434",
+
+                strokeThickness:
+                    3
+
+            }
+
+        )
+        .setScrollFactor(
+            0
+        )
+        .setDepth(
+            999992
+        );
+
+    this.progressText =
+        this.add.text(
+
+            W-28,
+            42,
+
+            "📦 0 / 25",
+
+            {
+
+                font:
+                    "bold 19px Arial",
+
+                color:
+                    "#ffffff"
+
+            }
+
+        )
+        .setOrigin(
+            1,
+            .5
+        )
+        .setScrollFactor(
+            0
+        )
+        .setDepth(
+            999992
+        );
+
+    this.progressBar =
+        this.add.graphics()
+        .setScrollFactor(
+            0
+        )
+        .setDepth(
+            999992
+        );
+
+    this.status =
+        this.add.text(
+
+            W/2,
+
+            135,
+
+            "GERAK UNTUK MULA",
+
+            {
+
+                font:
+                    "bold 13px Arial",
+
+                color:
+                    "#ffffff",
+
+                backgroundColor:
+                    "rgba(20,62,75,.57)",
+
+                padding:{
+                    x:9,
+                    y:4
+                }
+
+            }
+
+        )
+        .setOrigin(
+            .5
+        )
+        .setScrollFactor(
+            0
+        )
+        .setDepth(
+            999992
+        );
+
+}
+
+updateHUD(){
+
+    if(
+        !this.progressText
+    ){
+        return;
+    }
+
+    let hearts="";
+
+    for(
+        let i=0;
+        i<this.maxHP;
+        i++
+    ){
+
+        hearts +=
+            i < this.hp
+            ? "♥"
+            : "♡";
+
+    }
+
+    this.hpText
+        .setText(
+            hearts
+        );
+
+    this.progressText
+        .setText(
+            "📦 "+
+            questionIndex+
+            " / 25"
+        );
+
+    this.progressBar
+        .clear();
+
+    this.progressBar
+        .fillStyle(
+            0xffc728
+        );
+
+    this.progressBar
+        .fillRoundedRect(
+
+            110,
+
+            91,
+
+            (
+                W-
+                220
+            )*
+            (
+                questionIndex/
+                25
+            ),
+
+            16,
+
+            8
+
+        );
+
+}
+
+/* ======================================================
+   PAUSE
+======================================================= */
+
+togglePause(
+    show=true
+){
+
+    if(
+        questionOpen ||
+        this.resting
+    ){
+        return;
+    }
+
+    if(
+        show &&
+        !this.pausedManually
+    ){
+
+        this.pausedManually =
+            true;
+
+        this.player.setVelocity(
+            0,
+            0
+        );
+
+        this.enemies.setVelocity(
+            0,
+            0
+        );
+
+        this.physics.world
+            .pause();
+
+        document
+        .getElementById(
+            "pauseOverlay"
+        )
+        .classList.add(
+            "show"
+        );
+
+        document
+        .getElementById(
+            "pauseBtn"
+        )
+        .textContent =
+            "▶";
+
+    }else{
+
+        this.pausedManually =
+            false;
+
+        document
+        .getElementById(
+            "pauseOverlay"
+        )
+        .classList.remove(
+            "show"
+        );
+
+        if(
+            !questionOpen &&
+            !this.resting
+        ){
+
+            this.physics.world
+                .resume();
+
+        }
+
+        document
+        .getElementById(
+            "pauseBtn"
+        )
+        .textContent =
+            "Ⅱ";
+
+    }
+
+}
+
+}
+
+/* =========================================================
+   TEXTURES
+========================================================= */
+
+function createTextures(
+    scene
+){
+
+    const g =
+        scene.make.graphics({
+            add:false
+        });
+
+    /* =====================================================
+       FLOOR — COKLAT TERANG + GELAP
+    ====================================================== */
+
+    g.fillStyle(
+        0xd9b27f
+    );
+
+    g.fillRect(
+        0,
+        0,
+        180,
+        180
+    );
+
+    g.fillStyle(
+        0xc6915d,
+        .44
+    );
+
+    g.fillRect(
+        0,
+        45,
+        180,
+        45
+    );
+
+    g.fillRect(
+        0,
+        135,
+        180,
+        45
+    );
+
+    g.fillStyle(
+        0xf0cc97,
+        .25
+    );
+
+    g.fillRect(
+        0,
+        0,
+        180,
+        45
+    );
+
+    g.fillRect(
+        0,
+        90,
+        180,
+        45
+    );
+
+    g.lineStyle(
+        2,
+        0xa66f45,
+        .23
+    );
+
+    g.lineBetween(
+        0,
+        45,
+        180,
+        45
+    );
+
+    g.lineBetween(
+        0,
+        90,
+        180,
+        90
+    );
+
+    g.lineBetween(
+        0,
+        135,
+        180,
+        135
+    );
+
+    g.generateTexture(
+        "floor",
+        180,
+        180
+    );
+
+    g.clear();
+
+    /* =====================================================
+       PLAYER
+    ====================================================== */
+
+    g.fillStyle(
+        0x324d6b
+    );
+
+    g.fillRoundedRect(
+        21,
+        56,
+        11,
+        18,
+        4
+    );
+
+    g.fillRoundedRect(
+        42,
+        56,
+        11,
+        18,
+        4
+    );
+
+    g.fillStyle(
+        0x202c38
+    );
+
+    g.fillEllipse(
+        26,
+        74,
+        17,
+        8
+    );
+
+    g.fillEllipse(
+        48,
+        74,
+        17,
+        8
+    );
+
+    g.fillStyle(
+        0xffffff
+    );
+
+    g.fillRoundedRect(
+        14,
+        31,
+        46,
+        36,
+        12
+    );
+
+    g.fillStyle(
+        0x277aca
+    );
+
+    g.fillTriangle(
+        22,
+        32,
+        36,
+        44,
+        29,
+        32
+    );
+
+    g.fillTriangle(
+        52,
+        32,
+        38,
+        44,
+        45,
+        32
+    );
+
+    g.fillStyle(
+        0xe94f4f
+    );
+
+    g.fillTriangle(
+        34,
+        40,
+        40,
+        40,
+        37,
+        51
+    );
+
+    g.fillStyle(
+        0xf2bf95
+    );
+
+    g.fillCircle(
+        37,
+        20,
+        20
+    );
+
+    g.fillCircle(
+        11,
+        44,
+        7
+    );
+
+    g.fillCircle(
+        63,
+        44,
+        7
+    );
+
+    g.fillStyle(
+        0x342a28
+    );
+
+    g.fillCircle(
+        37,
+        13,
+        20
+    );
+
+    g.fillStyle(
+        0xf2bf95
+    );
+
+    g.fillEllipse(
+        37,
+        22,
+        36,
+        29
+    );
+
+    g.fillStyle(
+        0x1d2731
+    );
+
+    g.fillCircle(
+        31,
+        20,
+        2.4
+    );
+
+    g.fillCircle(
+        43,
+        20,
+        2.4
+    );
+
+    g.generateTexture(
+        "player",
+        74,
+        80
+    );
+
+    g.clear();
+
+    /* =====================================================
+       ENEMY
+    ====================================================== */
+
+    g.fillStyle(
+        0x333c4e
+    );
+
+    g.fillRoundedRect(
+        16,
+        50,
+        12,
+        15,
+        4
+    );
+
+    g.fillRoundedRect(
+        44,
+        50,
+        12,
+        15,
+        4
+    );
+
+    g.fillStyle(
+        0xe84f64
+    );
+
+    g.fillRoundedRect(
+        8,
+        13,
+        56,
+        49,
+        18
+    );
+
+    g.fillStyle(
+        0xc83652
+    );
+
+    g.fillRoundedRect(
+        8,
+        44,
+        56,
+        18,
+        10
+    );
+
+    g.fillStyle(
+        0xffffff
+    );
+
+    g.fillCircle(
+        25,
+        31,
+        9
+    );
+
+    g.fillCircle(
+        47,
+        31,
+        9
+    );
+
+    g.fillStyle(
+        0x263649
+    );
+
+    g.fillCircle(
+        27,
+        32,
+        4
+    );
+
+    g.fillCircle(
+        45,
+        32,
+        4
+    );
+
+    g.lineStyle(
+        4,
+        0x773142
+    );
+
+    g.lineBetween(
+        18,
+        20,
+        30,
+        24
+    );
+
+    g.lineBetween(
+        54,
+        20,
+        42,
+        24
+    );
+
+    g.generateTexture(
+        "enemy",
+        72,
+        72
+    );
+
+    g.clear();
+
+    /* =====================================================
+       DESK
+    ====================================================== */
+
+    g.fillStyle(
+        0xb36e3a
+    );
+
+    g.fillRoundedRect(
+        5,
+        22,
+        96,
+        45,
+        8
+    );
+
+    g.fillStyle(
+        0xe6a45f
+    );
+
+    g.fillRoundedRect(
+        2,
+        5,
+        102,
+        45,
+        8
+    );
+
+    g.fillStyle(
+        0xf7c77f
+    );
+
+    g.fillRoundedRect(
+        8,
+        9,
+        90,
+        31,
+        6
+    );
+
+    g.fillStyle(
+        0x4aa8de
+    );
+
+    g.fillRoundedRect(
+        58,
+        14,
+        29,
+        18,
+        3
+    );
+
+    g.fillStyle(
+        0x5b4a40
+    );
+
+    g.fillRect(
+        14,
+        63,
+        9,
+        19
+    );
+
+    g.fillRect(
+        84,
+        63,
+        9,
+        19
+    );
+
+    g.generateTexture(
+        "desk",
+        108,
+        84
+    );
+
+    g.clear();
+
+    /* =====================================================
+       CHEST
+    ====================================================== */
+
+    g.fillStyle(
+        0x24434d,
+        .25
+    );
+
+    g.fillEllipse(
+        39,
+        62,
+        70,
+        22
+    );
+
+    g.fillStyle(
+        0x8f4313
+    );
+
+    g.fillRoundedRect(
+        6,
+        29,
+        66,
+        35,
+        8
+    );
+
+    g.fillStyle(
+        0xffaa20
+    );
+
+    g.fillRoundedRect(
+        6,
+        12,
+        66,
+        31,
+        10
+    );
+
+    g.fillStyle(
+        0xffe56f
+    );
+
+    g.fillRoundedRect(
+        11,
+        15,
+        56,
+        12,
+        7
+    );
+
+    g.fillStyle(
+        0x713e1a
+    );
+
+    g.fillRect(
+        16,
+        14,
+        7,
+        48
+    );
+
+    g.fillRect(
+        55,
+        14,
+        7,
+        48
+    );
+
+    g.fillStyle(
+        0xffe16b
+    );
+
+    g.fillRoundedRect(
+        31,
+        34,
+        17,
+        19,
+        4
+    );
+
+    g.generateTexture(
+        "chest",
+        78,
+        72
+    );
+
+    g.clear();
+
+    /* =====================================================
+       PENCIL BULLET
+    ====================================================== */
+
+    g.fillStyle(
+        0xf4c744
+    );
+
+    g.fillRoundedRect(
+        4,
+        6,
+        30,
+        8,
+        3
+    );
+
+    g.fillStyle(
+        0xee8e2e
+    );
+
+    g.fillTriangle(
+        34,
+        6,
+        44,
+        10,
+        34,
+        14
+    );
+
+    g.fillStyle(
+        0xe75f72
+    );
+
+    g.fillRoundedRect(
+        0,
+        6,
+        8,
+        8,
+        2
+    );
+
+    g.generateTexture(
+        "pencil",
+        46,
+        20
+    );
+
+    g.clear();
+
+    /* =====================================================
+       RED BALL ENEMY BULLET
+    ====================================================== */
+
+    g.fillStyle(
+        0xffc5c0,
+        .35
+    );
+
+    g.fillCircle(
+        16,
+        16,
+        16
+    );
+
+    g.fillStyle(
+        0xff584d
+    );
+
+    g.fillCircle(
+        16,
+        16,
+        11
+    );
+
+    g.fillStyle(
+        0xd92129
+    );
+
+    g.fillCircle(
+        17,
+        17,
+        8
+    );
+
+    g.fillStyle(
+        0xffffff,
+        .8
+    );
+
+    g.fillCircle(
+        12,
+        11,
+        3
+    );
+
+    g.generateTexture(
+        "redBall",
+        32,
+        32
+    );
+
+    g.clear();
+
+    /* =====================================================
+       PLANT
+    ====================================================== */
+
+    g.fillStyle(
+        0xa5653c
+    );
+
+    g.fillRoundedRect(
+        16,
+        34,
+        28,
+        24,
+        5
+    );
+
+    g.fillStyle(
+        0x52b45a
+    );
+
+    g.fillEllipse(
+        20,
+        24,
+        15,
+        30
+    );
+
+    g.fillEllipse(
+        30,
+        18,
+        15,
+        31
+    );
+
+    g.fillStyle(
+        0x65c869
+    );
+
+    g.fillEllipse(
+        40,
+        24,
+        15,
+        30
+    );
+
+    g.generateTexture(
+        "plant",
+        60,
+        64
+    );
+
+    g.clear();
+
+    /* =====================================================
+       BOARD
+    ====================================================== */
+
+    g.fillStyle(
+        0x5f7680
+    );
+
+    g.fillRoundedRect(
+        0,
+        0,
+        250,
+        78,
+        7
+    );
+
+    g.fillStyle(
+        0xf8fffd
+    );
+
+    g.fillRoundedRect(
+        8,
+        8,
+        234,
+        57,
+        4
+    );
+
+    g.fillStyle(
+        0x57a1a1
+    );
+
+    g.fillRoundedRect(
+        73,
+        25,
+        104,
+        8,
+        4
+    );
+
+    g.fillStyle(
+        0x8bc3c1
+    );
+
+    g.fillRoundedRect(
+        91,
+        40,
+        68,
+        6,
+        3
+    );
+
+    g.generateTexture(
+        "board",
+        250,
+        78
+    );
+
+    g.destroy();
+
+}
+
+/* =========================================================
+   QUESTION WINDOW
+========================================================= */
+
+function openQuestion(){
+
+    if(
+        questionOpen ||
+        answerLocked ||
+        questionIndex >=
+        QUESTIONS.length
+    ){
+        return;
+    }
+
+    AudioSystem.sound(
+        "chest"
+    );
+
+    questionOpen =
+        true;
+
+    joystick.x=0;
+    joystick.y=0;
+
+    resetJoystick();
+
+    gameScene.player
+        .setVelocity(
+            0,
+            0
+        );
+
+    gameScene.enemies
+        .setVelocity(
+            0,
+            0
+        );
+
+    gameScene.physics.world
+        .pause();
+
+    const question =
+        QUESTIONS[
+            questionIndex
+        ];
+
+    document
+    .getElementById(
+        "questionNumber"
+    )
+    .textContent =
+        "SOALAN "+
+        (
+            questionIndex+
+            1
+        )+
+        " / 25";
+
+    document
+    .getElementById(
+        "questionText"
+    )
+    .textContent =
+        question.q;
+
+    const answers =
+        document.getElementById(
+            "answers"
+        );
+
+    answers.innerHTML="";
+
+    document
+    .getElementById(
+        "feedback"
+    )
+    .textContent="";
+
+    [
+        "A",
+        "B",
+        "C",
+        "D"
+    ]
+    .forEach(
+        (
+            letter,
+            index
+        )=>{
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+            button.className =
+                "answer";
+
+            button.textContent =
+                letter+
+                ". "+
+                question.o[index];
+
+            button.onclick =
+                ()=>answerQuestion(
+                    index,
+                    button
+                );
+
+            answers.appendChild(
+                button
+            );
+
+        }
+    );
+
+    document
+    .getElementById(
+        "questionOverlay"
+    )
+    .classList.add(
+        "show"
+    );
+
+}
+
+/* =========================================================
+   ANSWER
+========================================================= */
+
+function answerQuestion(
+    selected,
+    button
+){
+
+    if(answerLocked){
+        return;
+    }
+
+    const question =
+        QUESTIONS[
+            questionIndex
+        ];
+
+    const feedback =
+        document.getElementById(
+            "feedback"
+        );
+
+    /* WRONG */
+
+    if(
+        selected !==
+        question.a
+    ){
+
+        AudioSystem.sound(
+            "wrong"
+        );
+
+        button.classList.add(
+            "wrong"
+        );
+
+        feedback.style.color =
+            "#c3313c";
+
+        feedback.textContent =
+            "✕ Belum tepat. Cuba lagi!";
+
+        setTimeout(
+            ()=>button.classList.remove(
+                "wrong"
+            ),
+            450
+        );
+
+        return;
+
+    }
+
+    /* CORRECT */
+
+    AudioSystem.sound(
+        "correct"
+    );
+
+    answerLocked =
+        true;
+
+    button.classList.add(
+        "correct"
+    );
+
+    feedback.style.color =
+        "#168049";
+
+    feedback.textContent =
+        "✓ Betul! Syabas!";
+
+    document
+    .querySelectorAll(
+        ".answer"
+    )
+    .forEach(
+        button=>
+            button.disabled=
+                true
+    );
+
+    setTimeout(
+        ()=>{
+
+            document
+            .getElementById(
+                "questionOverlay"
+            )
+            .classList.remove(
+                "show"
+            );
+
+            gameScene.destroyChest();
+
+            questionIndex++;
+
+            questionOpen=false;
+
+            answerLocked=false;
+
+            gameScene.updateHUD();
+
+            /*
+               ==========================================
+               SELEPAS SOALAN 9:
+               SOALAN 10 BERMULA.
+               ENEMY TERUS BERTAMBAH.
+               ==========================================
+            */
+
+            if(
+                questionIndex ===
+                9
+            ){
+
+                gameScene.question10Boost();
+
+            }
+
+            /* WIN */
+
+            if(
+                questionIndex >=
+                QUESTIONS.length
+            ){
+
+                AudioSystem.sound(
+                    "win"
+                );
+
+                gameScene.physics.world
+                    .pause();
+
+                document
+                .getElementById(
+                    "winOverlay"
+                )
+                .classList.add(
+                    "show"
+                );
+
+                return;
+
+            }
+
+            gameScene.physics.world
+                .resume();
+
+            gameScene.time
+            .delayedCall(
+                500,
+                ()=>gameScene.spawnChest(
+                    480
+                )
+            );
+
+        },
+        550
+    );
+
+}
+
+/* =========================================================
+   RESTART
+========================================================= */
+
+function restartGame(){
+
+    questionIndex=0;
+
+    currentChest=null;
+
+    questionOpen=false;
+
+    answerLocked=false;
+
+    joystick.x=0;
+
+    joystick.y=0;
+
+    resetJoystick();
+
+    document
+    .querySelectorAll(
+        ".overlay"
+    )
+    .forEach(
+        overlay=>
+            overlay.classList.remove(
+                "show"
+            )
+    );
+
+    if(gameScene){
+
+        gameScene.scene
+            .restart();
+
+    }
+
+}
+
+/* =========================================================
+   JOYSTICK
+========================================================= */
+
+const movePad =
+    document.getElementById(
+        "movePad"
+    );
+
+const moveKnob =
+    document.getElementById(
+        "moveKnob"
+    );
+
+let joystickPointer =
+    null;
+
+function updateJoystick(
+    clientX,
+    clientY
+){
+
+    const rect =
+        movePad
+        .getBoundingClientRect();
+
+    const centerX =
+        rect.left+
+        rect.width/2;
+
+    const centerY =
+        rect.top+
+        rect.height/2;
+
+    let x =
+        clientX-
+        centerX;
+
+    let y =
+        clientY-
+        centerY;
+
+    const maximum =
+        rect.width*
+        .28;
+
+    const length =
+        Math.hypot(
+            x,
+            y
+        );
+
+    if(
+        length >
+        maximum
+    ){
+
+        x =
+            x/
+            length*
+            maximum;
+
+        y =
+            y/
+            length*
+            maximum;
+
+    }
+
+    moveKnob.style.transform =
+        `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+
+    joystick.x =
+        x/
+        maximum;
+
+    joystick.y =
+        y/
+        maximum;
+
+}
+
+function resetJoystick(){
+
+    moveKnob.style.transform =
+        "translate(-50%,-50%)";
+
+    joystick.x=0;
+
+    joystick.y=0;
+
+    joystickPointer=null;
+
+}
+
+movePad.addEventListener(
+    "pointerdown",
+    event=>{
+
+        AudioSystem.unlock();
+
+        if(
+            questionOpen ||
+            !gameScene ||
+            gameScene.resting ||
+            gameScene.pausedManually
+        ){
+            return;
+        }
+
+        joystickPointer =
+            event.pointerId;
+
+        movePad.setPointerCapture(
+            event.pointerId
+        );
+
+        updateJoystick(
+            event.clientX,
+            event.clientY
+        );
+
+        event.preventDefault();
+
+    }
+);
+
+movePad.addEventListener(
+    "pointermove",
+    event=>{
+
+        if(
+            joystickPointer ===
+            event.pointerId
+        ){
+
+            updateJoystick(
+                event.clientX,
+                event.clientY
+            );
+
+            event.preventDefault();
+
+        }
+
+    }
+);
+
+movePad.addEventListener(
+    "pointerup",
+    event=>{
+
+        if(
+            joystickPointer ===
+            event.pointerId
+        ){
+
+            resetJoystick();
+
+        }
+
+    }
+);
+
+movePad.addEventListener(
+    "pointercancel",
+    resetJoystick
+);
+
+/* =========================================================
+   ATTACK BUTTON
+========================================================= */
+
+const attackBtn =
+    document.getElementById(
+        "attackBtn"
+    );
+
+attackBtn.addEventListener(
+    "pointerdown",
+    event=>{
+
+        event.preventDefault();
+
+        AudioSystem.unlock();
+
+        attackBtn
+            .classList.add(
+                "pressed"
+            );
+
+        if(gameScene){
+
+            gameScene.attack(
+                gameScene.time.now
+            );
+
+        }
+
+    }
+);
+
+[
+    "pointerup",
+    "pointercancel",
+    "pointerleave"
+]
+.forEach(
+    eventName=>{
+
+        attackBtn.addEventListener(
+            eventName,
+            ()=>{
+
+                attackBtn
+                    .classList.remove(
+                        "pressed"
+                    );
+
+            }
+        );
+
+    }
+);
+
+/* =========================================================
+   HOME
+========================================================= */
+
+document
+.getElementById(
+    "homeBtn"
+)
+.addEventListener(
+    "click",
+    ()=>{
+
+        location.href =
+            "index.html";
+
+    }
+);
+
+/* =========================================================
+   PAUSE
+========================================================= */
+
+document
+.getElementById(
+    "pauseBtn"
+)
+.addEventListener(
+    "click",
+    ()=>{
+
+        AudioSystem.unlock();
+
+        if(!gameScene){
+            return;
+        }
+
+        gameScene.togglePause(
+            !gameScene.pausedManually
+        );
+
+    }
+);
+
+/*
+   Browser perlukan interaksi user
+   sebelum Web Audio boleh berbunyi.
+*/
+
+window.addEventListener(
+    "keydown",
+    ()=>AudioSystem.unlock(),
+    {
+        passive:true
+    }
+);
+
+/* =========================================================
+   PHASER CONFIG
+========================================================= */
+
+const config = {
+
+    type:
+        Phaser.AUTO,
+
+    parent:
+        "game",
+
+    width:
+        W,
+
+    height:
+        H,
+
+    backgroundColor:
+        "#d7ad7b",
+
+    physics:{
+
+        default:
+            "arcade",
+
+        arcade:{
+
+            gravity:{
+                y:0
+            },
+
+            debug:false
+
+        }
+
+    },
+
+    render:{
+
+        antialias:true,
+
+        pixelArt:false
+
+    },
+
+    scale:{
+
+        mode:
+            Phaser.Scale.FIT,
+
+        autoCenter:
+            Phaser.Scale.CENTER_BOTH,
+
+        width:
+            W,
+
+        height:
+            H
+
+    },
+
+    input:{
+
+        activePointers:
+            4
+
+    },
+
+    scene:
+        ClassroomGame
+
+};
+
+new Phaser.Game(
+    config
+);
+
+</script>
+
+</body>
+</html>
