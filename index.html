@@ -1,428 +1,230 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 
-<meta
-    name="viewport"
-    content="width=device-width,
-    initial-scale=1,
-    maximum-scale=1,
-    user-scalable=no,
-    viewport-fit=cover"
->
+<meta name="viewport"
+content="width=device-width,
+initial-scale=1,
+maximum-scale=1,
+user-scalable=no,
+viewport-fit=cover" />
 
-<title>Cup Find — Kenali Tumbuhan</title>
+<title>Connect Match Tumbuhan — Set 5</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <style>
 
 :root{
-    --dark:#294936;
-    --green:#578b58;
+  --ink:#173d2c;
+  --cream:#fffdf1;
+  --panel:#fff9df;
+  --green:#4d9d58;
+  --green2:#dff4c8;
+  --gold:#ffd66b;
 }
 
 *{
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
 
 html,
 body{
-    margin:0;
-    width:100%;
-    min-height:100%;
-    font-family:"Trebuchet MS",Arial,sans-serif;
-}
-
-html{
-    height:100%;
+  margin:0;
+  width:100%;
+  min-height:100%;
+  font-family:"Trebuchet MS",Arial,sans-serif;
+  background:#bfe7a4;
+  color:var(--ink);
 }
 
 body{
-    min-height:100vh;
-    min-height:100svh;
-    min-height:100dvh;
+  min-height:100vh;
+  min-height:100svh;
 
-    color:var(--dark);
+  display:flex;
+  align-items:center;
+  justify-content:center;
 
-    background:
-        radial-gradient(
-            circle at 15% 10%,
-            rgba(255,255,255,.75),
-            transparent 23%
-        ),
-        linear-gradient(
-            135deg,
-            #dff3c8,
-            #a1d17d
-        );
+  padding:10px;
 
-    padding:
-        max(10px,env(safe-area-inset-top))
-        max(8px,env(safe-area-inset-right))
-        max(18px,env(safe-area-inset-bottom))
-        max(8px,env(safe-area-inset-left));
+  background:
+  radial-gradient(
+    circle at 10% 8%,
+    rgba(255,255,255,.7) 0 2%,
+    transparent 2.2%
+  ),
 
-    overscroll-behavior:none;
+  radial-gradient(
+    circle at 90% 12%,
+    rgba(255,255,255,.65) 0 1.8%,
+    transparent 2%
+  ),
+
+  linear-gradient(
+    180deg,
+    #dff5c9,
+    #a9d989
+  );
 }
 
 button{
-    font-family:inherit;
+  font:inherit;
 }
 
-.main-wrap{
-    width:min(980px,100%);
-    margin:0 auto 25px;
-}
+#app{
+  width:min(100%,980px);
 
+  height:min(94svh,880px);
 
-/* =========================
-   HEADER
-========================= */
+  min-height:600px;
 
-.topbar{
-    display:grid;
-    grid-template-columns:auto minmax(0,1fr) auto;
-    align-items:center;
-    gap:8px;
-    margin-bottom:10px;
-}
+  display:flex;
+  flex-direction:column;
 
-.home-btn{
-    display:flex;
-    align-items:center;
-    justify-content:center;
+  overflow:hidden;
 
-    min-height:44px;
+  border:5px solid #276843;
+  border-radius:26px;
 
-    padding:8px 14px;
+  background:var(--cream);
 
-    border-radius:14px;
+  box-shadow:
+  0 14px 35px
+  rgba(32,72,45,.24);
 
-    text-decoration:none;
-
-    color:#fff;
-
-    background:#46704d;
-
-    border:3px solid #31543a;
-
-    box-shadow:0 5px 0 #29472f;
-
-    font-size:14px;
-    font-weight:900;
-
-    touch-action:manipulation;
-}
-
-.home-btn:active{
-    transform:translateY(3px);
-    box-shadow:0 2px 0 #29472f;
-}
-
-.game-title{
-    min-width:0;
-    text-align:center;
-}
-
-.game-title h1{
-    margin:0;
-
-    font-size:clamp(20px,4vw,35px);
-
-    line-height:1;
-
-    color:#375f40;
-
-    text-shadow:0 2px #fff;
-}
-
-.game-title span{
-    display:block;
-
-    margin-top:5px;
-
-    font-size:clamp(10px,2vw,15px);
-
-    color:#627d60;
-
-    font-weight:900;
-}
-
-.top-spacer{
-    width:70px;
+  position:relative;
 }
 
 
 /* =========================
-   PROGRESS
+   TOP BAR
 ========================= */
 
-.progress-box{
-    padding:10px 13px;
-    margin-bottom:10px;
+#topbar{
 
-    background:rgba(255,253,242,.94);
+  flex:0 0 auto;
 
-    border:3px solid rgba(76,117,71,.28);
+  display:grid;
 
-    border-radius:17px;
+  grid-template-columns:
+  auto
+  1fr
+  auto;
 
-    box-shadow:0 5px 15px rgba(55,86,45,.14);
+  gap:10px;
+
+  align-items:center;
+
+  padding:10px 12px;
+
+  background:
+  linear-gradient(
+    180deg,
+    #fff8d9,
+    #f4efc8
+  );
+
+  border-bottom:
+  3px solid #7aaa56;
 }
 
-.progress-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+.topBtn,
+.pill{
 
-    gap:10px;
+  min-height:44px;
 
-    margin-bottom:7px;
+  border:0;
 
-    font-weight:900;
-    font-size:14px;
+  border-radius:14px;
+
+  padding:8px 12px;
+
+  font-weight:900;
+
+  box-shadow:
+  0 4px 0
+  rgba(0,0,0,.13);
+
+  cursor:pointer;
 }
 
-.progress-track{
-    width:100%;
-    height:13px;
+.topBtn{
 
-    overflow:hidden;
+  background:#fff;
 
-    border-radius:999px;
+  color:#24583d;
 
-    border:2px solid #b7cfa8;
-
-    background:#dfe9d7;
+  border:
+  2px solid #77a95a;
 }
 
-.progress-fill{
-    width:4%;
-    height:100%;
+.topBtn:active{
 
-    border-radius:999px;
+  transform:
+  translateY(2px);
 
-    background:
-        linear-gradient(
-            90deg,
-            #65a853,
-            #a3cf68
-        );
-
-    transition:width .3s ease;
+  box-shadow:
+  0 2px 0
+  rgba(0,0,0,.12);
 }
 
+#titleWrap{
 
-/* =========================
-   QUESTION
-========================= */
+  text-align:center;
 
-.question-card{
-    position:relative;
-    overflow:hidden;
+  line-height:1.05;
 
-    padding:15px;
-    margin-bottom:13px;
-
-    border-radius:22px;
-
-    border:4px solid #dfc178;
-
-    background:
-        linear-gradient(
-            180deg,
-            #fffef9,
-            #fff8e8
-        );
-
-    box-shadow:
-        0 7px 0 #c1a257,
-        0 14px 25px rgba(64,72,40,.12);
+  min-width:0;
 }
 
-.question-card::after{
-    content:"";
+#title{
 
-    position:absolute;
+  font-size:
+  clamp(
+    18px,
+    3.6vw,
+    30px
+  );
 
-    width:150px;
-    height:150px;
+  font-weight:1000;
 
-    right:-80px;
-    bottom:-90px;
+  letter-spacing:.3px;
 
-    border-radius:50%;
+  color:#2a6643;
 
-    background:rgba(125,182,88,.12);
+  white-space:nowrap;
+
+  overflow:hidden;
+
+  text-overflow:ellipsis;
 }
 
-.topic{
-    position:relative;
-    z-index:1;
+#subtitle{
 
-    display:inline-block;
+  font-size:
+  clamp(
+    11px,
+    2vw,
+    14px
+  );
 
-    padding:6px 12px;
-    margin-bottom:9px;
+  font-weight:800;
 
-    border-radius:999px;
+  color:#6f784c;
 
-    color:#fff;
-
-    background:#638d58;
-
-    font-size:clamp(11px,2vw,13px);
-
-    font-weight:900;
+  margin-top:4px;
 }
 
-.question-text{
-    position:relative;
-    z-index:1;
+.pill{
 
-    margin-bottom:12px;
+  background:#ffe38a;
 
-    font-size:clamp(16px,2.9vw,21px);
+  color:#6b4c13;
 
-    line-height:1.4;
-
-    font-weight:900;
-}
-
-.options-grid{
-    position:relative;
-    z-index:1;
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(2,minmax(0,1fr));
-
-    gap:8px;
-}
-
-.option-item{
-    display:flex;
-    align-items:flex-start;
-
-    gap:8px;
-
-    min-width:0;
-    min-height:52px;
-
-    padding:9px 10px;
-
-    background:#fff;
-
-    border:2px solid #e8dbb7;
-
-    border-radius:13px;
-
-    box-shadow:0 3px 0 #d7c9a6;
-
-    font-size:clamp(12px,2vw,14px);
-
-    line-height:1.3;
-
-    font-weight:800;
-}
-
-.option-letter{
-    flex:0 0 auto;
-
-    width:31px;
-    height:31px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border-radius:9px;
-
-    color:#fff;
-
-    background:#668e59;
-
-    font-size:16px;
-
-    font-weight:1000;
-}
-
-
-/* =========================
-   START BUTTON
-========================= */
-
-.control-box{
-    margin-bottom:13px;
-
-    padding:10px 12px;
-
-    border-radius:17px;
-
-    text-align:center;
-
-    background:rgba(255,255,255,.8);
-
-    border:2px solid rgba(79,118,72,.25);
-}
-
-.start-info{
-    margin-bottom:8px;
-
-    font-size:clamp(12px,2.2vw,15px);
-
-    line-height:1.35;
-
-    font-weight:800;
-
-    color:#587256;
-}
-
-.start-btn{
-    appearance:none;
-
-    width:min(420px,100%);
-
-    min-height:52px;
-
-    padding:10px 18px;
-
-    border:none;
-
-    border-radius:16px;
-
-    color:#fff;
-
-    background:
-        linear-gradient(
-            #72ad59,
-            #589046
-        );
-
-    border:3px solid #416f39;
-
-    box-shadow:0 6px 0 #355e31;
-
-    font-size:clamp(14px,2.8vw,19px);
-
-    font-weight:1000;
-
-    cursor:pointer;
-
-    touch-action:manipulation;
-}
-
-.start-btn:active{
-    transform:translateY(4px);
-    box-shadow:0 2px 0 #355e31;
-}
-
-.start-btn:disabled{
-    opacity:.45;
+  white-space:nowrap;
 }
 
 
@@ -430,3096 +232,3624 @@ button{
    GAME
 ========================= */
 
-.game-shell{
-    position:relative;
+#gameBox{
 
-    width:100%;
+  position:relative;
 
-    overflow:hidden;
+  flex:1;
 
-    border-radius:24px;
+  min-height:0;
 
-    border:5px solid #486f4b;
+  background:#daf0bd;
 
-    background:#dff0b2;
-
-    box-shadow:
-        0 9px 0 #35573b,
-        0 17px 28px rgba(50,74,45,.22);
+  overflow:hidden;
 }
 
-#game-container{
-    position:relative;
+#game{
 
-    width:100%;
+  position:absolute;
 
-    aspect-ratio:720 / 560;
-
-    background:#dff0b2;
-
-    touch-action:none;
+  inset:0;
 }
 
-#game-container canvas{
-    display:block !important;
+#game canvas{
 
-    width:100% !important;
-    height:100% !important;
+  display:block;
 
-    object-fit:contain;
+  width:100% !important;
 
-    touch-action:none;
+  height:100% !important;
+
+  touch-action:none;
 }
 
 
 /* =========================
-   STATUS
+   HINT
 ========================= */
 
-.status-area{
-    margin-top:14px;
-    text-align:center;
-}
+#hint{
 
-#statusText{
-    display:inline-flex;
+  position:absolute;
 
-    justify-content:center;
-    align-items:center;
+  left:50%;
 
-    max-width:100%;
+  bottom:10px;
 
-    min-height:43px;
+  transform:
+  translateX(-50%);
 
-    padding:9px 15px;
+  z-index:3;
 
-    border-radius:15px;
+  max-width:92%;
 
-    background:rgba(255,255,255,.88);
+  padding:8px 12px;
 
-    border:2px solid rgba(70,111,65,.28);
+  border-radius:999px;
 
-    box-shadow:0 4px 12px rgba(49,73,45,.12);
+  background:
+  rgba(255,253,237,.94);
 
-    font-size:clamp(12px,2.1vw,14px);
+  border:
+  2px solid #93b86f;
 
-    line-height:1.35;
+  font-size:13px;
 
-    font-weight:900;
-}
+  font-weight:900;
 
-.rules{
-    margin-top:12px;
+  text-align:center;
 
-    padding:10px 13px;
+  pointer-events:none;
 
-    border-radius:14px;
-
-    background:rgba(255,255,255,.65);
-
-    color:#566e53;
-
-    font-size:clamp(11px,1.9vw,13px);
-
-    line-height:1.45;
-
-    text-align:center;
-
-    font-weight:800;
+  box-shadow:
+  0 4px 12px
+  rgba(39,88,61,.13);
 }
 
 
 /* =========================
-   FINISH
+   OVERLAY
 ========================= */
 
-.finish-overlay{
-    position:absolute;
-    inset:0;
+.overlay{
+
+  position:absolute;
+
+  inset:0;
+
+  z-index:20;
+
+  display:none;
+
+  align-items:center;
+
+  justify-content:center;
+
+  padding:16px;
+
+  background:
+  rgba(24,60,42,.54);
+
+  backdrop-filter:
+  blur(2px);
+}
+
+.overlay.show{
+
+  display:flex;
+}
+
+.card{
+
+  width:min(94%,720px);
+
+  max-height:92%;
+
+  overflow:auto;
+
+  background:#fffdf2;
+
+  border:
+  4px solid #3e8453;
+
+  border-radius:24px;
+
+  padding:18px;
+
+  box-shadow:
+  0 16px 40px
+  rgba(0,0,0,.28);
+}
+
+.card h2{
+
+  margin:
+  0 0 8px;
+
+  font-size:
+  clamp(
+    24px,
+    5vw,
+    38px
+  );
+
+  color:#2c6b43;
+
+  text-align:center;
+}
+
+.card p{
+
+  font-size:
+  clamp(
+    15px,
+    2.4vw,
+    18px
+  );
+
+  line-height:1.45;
+}
+
+#introList{
+
+  margin:
+  12px 0 18px;
+
+  padding-left:22px;
+
+  font-weight:800;
+
+  line-height:1.55;
+}
+
+
+/* =========================
+   BUTTON
+========================= */
+
+.primary{
+
+  width:100%;
+
+  min-height:52px;
+
+  border:0;
+
+  border-radius:16px;
+
+  background:#4eaa62;
+
+  color:white;
+
+  font-size:18px;
+
+  font-weight:1000;
+
+  cursor:pointer;
+
+  box-shadow:
+  0 5px 0 #317b43;
+}
+
+.primary:active{
+
+  transform:
+  translateY(2px);
+
+  box-shadow:
+  0 3px 0 #317b43;
+}
+
+
+/* =========================
+   QUESTION
+========================= */
+
+#questionMeta{
+
+  font-weight:1000;
+
+  color:#7a5e18;
+
+  text-align:center;
+
+  margin-bottom:8px;
+}
+
+#questionText{
+
+  font-size:
+  clamp(
+    18px,
+    3.4vw,
+    26px
+  );
+
+  font-weight:1000;
+
+  line-height:1.3;
+
+  margin:
+  8px 0 14px;
+
+  text-align:center;
+}
+
+#answers{
+
+  display:grid;
+
+  grid-template-columns:
+  1fr 1fr;
+
+  gap:10px;
+}
+
+.answer{
+
+  min-height:58px;
+
+  border:
+  3px solid #96b875;
+
+  border-radius:16px;
+
+  background:white;
+
+  color:#214d36;
+
+  padding:
+  10px 12px;
+
+  text-align:left;
+
+  font-weight:900;
+
+  font-size:
+  clamp(
+    15px,
+    2.5vw,
+    18px
+  );
+
+  cursor:pointer;
+
+  box-shadow:
+  0 4px 0 #c5d9aa;
+}
+
+.answer:hover{
+
+  background:#f4ffe8;
+}
+
+.answer:active{
+
+  transform:
+  translateY(2px);
+
+  box-shadow:
+  0 2px 0 #c5d9aa;
+}
+
+.answer.correct{
+
+  background:#d7f7d9;
+
+  border-color:#42a653;
+
+  color:#1b6a2c;
+}
+
+.answer.wrong{
+
+  background:#ffe0de;
+
+  border-color:#e95d50;
+
+  color:#8c2d27;
+}
+
+#feedback{
+
+  min-height:30px;
+
+  margin-top:12px;
+
+  text-align:center;
+
+  font-weight:1000;
+
+  font-size:17px;
+}
+
+
+/* =========================
+   WIN
+========================= */
+
+#winCard{
+
+  text-align:center;
+}
+
+#winPlant{
+
+  font-size:76px;
+
+  margin:
+  4px 0 10px;
+}
+
+#winCard p{
+
+  font-weight:800;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:650px){
+
+  body{
+
+    padding:0;
+
+    background:#dff5c9;
+  }
+
+  #app{
+
+    width:100%;
+
+    height:100svh;
+
+    min-height:540px;
+
+    border-radius:0;
+
+    border-width:0;
+  }
+
+  #topbar{
+
+    grid-template-columns:
+    auto
+    1fr
+    auto;
+
+    padding:8px;
+
+    gap:7px;
+
+    border-bottom-width:3px;
+  }
+
+  .topBtn,
+  .pill{
+
+    min-height:40px;
+
+    padding:7px 9px;
+
+    font-size:12px;
+
+    border-radius:12px;
+  }
+
+  #subtitle{
 
     display:none;
+  }
 
-    align-items:center;
-    justify-content:center;
+  #hint{
 
-    z-index:100;
+    font-size:11px;
 
-    padding:20px;
+    bottom:7px;
+  }
 
-    background:rgba(26,47,30,.72);
+  .card{
 
-    backdrop-filter:blur(5px);
+    padding:14px;
+
+    border-width:3px;
+
+    border-radius:18px;
+  }
+
+  #answers{
+
+    grid-template-columns:
+    1fr;
+  }
+
+  .answer{
+
+    min-height:52px;
+  }
 }
 
-.finish-overlay.show{
-    display:flex;
-}
+@media(max-width:370px){
 
-.finish-card{
-    width:min(420px,100%);
-
-    padding:25px 18px;
-
-    text-align:center;
-
-    background:#fffbea;
-
-    border:5px solid #edc65e;
-
-    border-radius:25px;
-
-    box-shadow:
-        0 9px 0 #b58a38,
-        0 20px 45px rgba(0,0,0,.3);
-}
-
-.finish-icon{
-    font-size:60px;
-}
-
-.finish-card h2{
-    margin:5px 0 8px;
-
-    color:#477248;
-
-    font-size:clamp(25px,5vw,32px);
-}
-
-.finish-card p{
-    margin:0 0 18px;
-
-    color:#64755e;
-
-    line-height:1.45;
-
-    font-weight:800;
-}
-
-.restart-btn{
-    appearance:none;
-
-    border:0;
-
-    padding:12px 22px;
-
-    border-radius:14px;
-
-    color:#fff;
-
-    background:#639b52;
-
-    border:3px solid #416e3d;
-
-    box-shadow:0 5px 0 #356032;
+  #title{
 
     font-size:16px;
+  }
 
-    font-weight:1000;
+  .topBtn,
+  .pill{
 
-    cursor:pointer;
-}
+    font-size:11px;
 
-
-/* =========================
-   TABLET
-========================= */
-
-@media(max-width:800px){
-
-    .main-wrap{
-        width:100%;
-    }
-
-    .game-shell{
-        border-width:4px;
-    }
-
-}
-
-
-/* =========================
-   PHONE
-========================= */
-
-@media(max-width:600px){
-
-    body{
-        padding-left:6px;
-        padding-right:6px;
-    }
-
-    .topbar{
-        gap:4px;
-    }
-
-    .home-btn{
-        min-height:39px;
-
-        padding:6px 9px;
-
-        border-width:2px;
-
-        border-radius:11px;
-
-        font-size:11px;
-    }
-
-    .top-spacer{
-        width:51px;
-    }
-
-    .progress-box{
-        padding:8px 10px;
-        border-radius:14px;
-    }
-
-    .progress-head{
-        font-size:12px;
-    }
-
-    .question-card{
-        padding:10px;
-
-        border-width:3px;
-
-        border-radius:17px;
-
-        box-shadow:0 5px 0 #c1a257;
-    }
-
-    .options-grid{
-        gap:6px;
-    }
-
-    .option-item{
-        padding:7px;
-        min-height:48px;
-    }
-
-    .option-letter{
-        width:27px;
-        height:27px;
-
-        font-size:14px;
-    }
-
-    .control-box{
-        padding:8px 9px;
-        margin-bottom:10px;
-    }
-
-    .game-shell{
-        border-width:3px;
-
-        border-radius:17px;
-
-        box-shadow:0 6px 0 #35573b;
-    }
-
-    .status-area{
-        margin-top:10px;
-    }
-
-}
-
-
-@media(max-width:360px){
-
-    .option-item{
-        font-size:11px;
-    }
-
-    .question-text{
-        font-size:14px;
-    }
-
-    .home-btn{
-        padding:5px 7px;
-    }
-
+    padding:6px 7px;
+  }
 }
 
 </style>
 </head>
 
+
 <body>
 
-<div class="main-wrap">
+<div id="app">
 
 
-<!-- HEADER -->
+<!-- =========================
+     HEADER
+========================= -->
 
-<div class="topbar">
+<div id="topbar">
 
-    <a
-        class="home-btn"
-        href="index.html"
-    >
-        🏠 Home
-    </a>
+  <button
+  class="topBtn"
+  id="homeBtn">
+  ⌂ Home
+  </button>
 
 
-    <div class="game-title">
+  <div id="titleWrap">
 
-        <h1>
-            🌱 Cup Find
-        </h1>
-
-        <span>
-            Misi Rahsia Tumbuhan
-        </span>
-
+    <div id="title">
+      🌱 Connect Match Tumbuhan
     </div>
 
-
-    <div class="top-spacer"></div>
-
-</div>
-
-
-<!-- PROGRESS -->
-
-<div class="progress-box">
-
-    <div class="progress-head">
-
-        <span id="progressText">
-            Soalan 1 / 25
-        </span>
-
-        <span id="scoreText">
-            Betul: 0
-        </span>
-
+    <div id="subtitle">
+      Sambungkan pasangan warna yang sama
     </div>
 
-
-    <div class="progress-track">
-
-        <div
-            class="progress-fill"
-            id="progressFill"
-        ></div>
-
-    </div>
-
-</div>
+  </div>
 
 
-<!-- QUESTION -->
-
-<div class="question-card">
-
-    <div
-        class="topic"
-        id="topicText"
-    ></div>
-
-
-    <div
-        class="question-text"
-        id="questionText"
-    ></div>
-
-
-    <div
-        class="options-grid"
-        id="optionsGrid"
-    ></div>
+  <div
+  class="pill"
+  id="stagePill">
+    Stage 1/25
+  </div>
 
 </div>
 
 
-<!-- START -->
 
-<div class="control-box">
+<!-- =========================
+     GAME BOX
+========================= -->
 
-    <div
-        class="start-info"
-        id="startInfo"
-    >
-        Baca soalan dan ingat kedudukan A, B, C dan D.
-    </div>
+<div id="gameBox">
+
+<div id="game"></div>
 
 
-    <button
-        class="start-btn"
-        id="startBtn"
-    >
-        ▶ MULA SHUFFLE
-    </button>
+<div id="hint">
+
+Tekan & seret dari satu tumbuhan ke pasangan warna yang sama.
 
 </div>
 
 
-<!-- GAME -->
 
-<div class="game-shell">
+<!-- =========================
+     INTRO
+========================= -->
 
-    <div id="game-container"></div>
+<div
+class="overlay show"
+id="introOverlay">
+
+<div class="card">
+
+<h2>
+🌿 Misi Sambung Tumbuhan
+</h2>
+
+<p
+style="
+text-align:center;
+font-weight:900;
+">
+
+Setiap stage ada 4 pasangan:
+
+<b>
+Daun, Bunga, Akar dan Batang
+</b>.
+
+</p>
 
 
-    <div
-        class="finish-overlay"
-        id="finishOverlay"
-    >
+<ol id="introList">
 
-        <div class="finish-card">
+<li>
 
-            <div class="finish-icon">
-                🏆
-            </div>
+Tekan satu watak tumbuhan dan
 
-            <h2>
-                Misi Selesai!
-            </h2>
+<b>seret</b>
 
-            <p>
-                Tahniah! Anda berjaya menyelesaikan semua
-                25 soalan tumbuhan.
-            </p>
+ke pasangan warna yang sama.
 
-            <button
-                class="restart-btn"
-                id="restartBtn"
-            >
-                Main Semula
-            </button>
+</li>
 
-        </div>
 
-    </div>
+<li>
+
+Sambungkan semua 4 pasangan.
+
+</li>
+
+
+<li>
+
+Jawab soalan Sains untuk pergi ke stage seterusnya.
+
+</li>
+
+</ol>
+
+
+<button
+class="primary"
+id="startBtn">
+
+MULA GAME
+
+</button>
+
+</div>
 
 </div>
 
 
-<!-- STATUS -->
 
-<div class="status-area">
+<!-- =========================
+     QUESTION
+========================= -->
 
-    <div id="statusText">
-        👀 Baca soalan dan perhatikan jawapan di bawah setiap cup.
-    </div>
+<div
+class="overlay"
+id="questionOverlay">
+
+<div class="card">
+
+<div id="questionMeta"></div>
+
+<div id="questionText"></div>
+
+<div id="answers"></div>
+
+<div id="feedback"></div>
+
+</div>
 
 </div>
 
 
-<div class="rules">
 
-    Baca soalan → ingat jawapan →
-    tekan <b>MULA SHUFFLE</b> →
-    ikut cup → selepas cup berhenti,
-    tekan sekali pada cup pilihan anda.
+<!-- =========================
+     WIN
+========================= -->
+
+<div
+class="overlay"
+id="winOverlay">
+
+<div
+class="card"
+id="winCard">
+
+<div id="winPlant">
+
+🌻
+
+</div>
+
+<h2>
+
+Tahniah!
+
+</h2>
+
+<p>
+
+Anda berjaya melengkapkan semua 25 stage
+Connect Match Tumbuhan.
+
+</p>
+
+
+<button
+class="primary"
+id="playAgainBtn">
+
+MAIN SEMULA
+
+</button>
+
+</div>
 
 </div>
 
 
 </div>
+</div>
+
 
 
 <script>
 
-/* ==========================================================
-   QUESTIONS SET 4
-========================================================== */
+/* =========================================================
+   SOALAN SET 5
+========================================================= */
 
 const QUESTIONS = [
 
 {
-    topic:"Kenali Bahagian Tumbuhan",
-    question:"Apakah nama bahagian tumbuhan yang kelihatan seperti kelopak pada pokok berbunga?",
-    options:{A:"Daun",B:"Batang",C:"Akar",D:"Bunga"},
-    correct:"D"
+tp:'TP1',
+q:'Apakah bahagian tumbuhan yang biasanya berwarna hijau dan terdapat pada ranting?',
+o:[
+'Daun',
+'Batang',
+'Akar',
+'Bunga'
+],
+a:0
 },
 
 {
-    topic:"Kenali Bahagian Tumbuhan",
-    question:"Apakah bahagian utama tumbuhan yang biasanya berada di dalam tanah?",
-    options:{A:"Akar",B:"Bunga",C:"Batang",D:"Daun"},
-    correct:"A"
+tp:'TP1',
+q:'Pada pokok berbunga, bahagian yang disebut sebagai bunga ialah salah satu daripada ____ utama tumbuhan.',
+o:[
+'Bunyi',
+'Haiwan',
+'Bahagian',
+'Rasa'
+],
+a:2
 },
 
 {
-    topic:"Kenali Bahagian Tumbuhan",
-    question:"Dalam gambar sebatang pokok, bahagian yang bercabang daripada batang dan berwarna hijau biasanya ialah ____.",
-    options:{A:"Bunga",B:"Tanah",C:"Daun",D:"Akar"},
-    correct:"C"
+tp:'TP2',
+q:'Bahagian tumbuhan yang boleh dikenal pasti pada pokok bunga raya ialah ____.',
+o:[
+'Paruh',
+'Kepak',
+'Sirip',
+'Bunga'
+],
+a:3
 },
 
 {
-    topic:"Kenali Bahagian Tumbuhan",
-    question:"Antara berikut, yang manakah ialah bahagian tumbuhan?",
-    options:{A:"Sirip",B:"Telinga",C:"Paruh",D:"Akar"},
-    correct:"D"
+tp:'TP2',
+q:'Bahagian tumbuhan yang menghubungkan bahagian bawah dan bahagian atas pokok ialah ____.',
+o:[
+'Akar',
+'Batang',
+'Daun',
+'Bunga'
+],
+a:1
 },
 
 {
-    topic:"Kenali Bahagian Tumbuhan",
-    question:"Mira melihat bahagian tumbuhan yang cantik dan berwarna-warni. Bahagian itu ialah ____.",
-    options:{A:"Daun",B:"Bunga",C:"Akar",D:"Batang"},
-    correct:"B"
+tp:'TP1',
+q:'Pilih kumpulan yang semuanya merupakan bahagian tumbuhan.',
+o:[
+'Bunga, daun, batang, akar',
+'Mata, telinga, hidung, kulit',
+'Kepak, sirip, paruh, tanduk',
+'Roda, pintu, tingkap, bumbung'
+],
+a:0
 },
 
 {
-    topic:"Kenali Bahagian Tumbuhan",
-    question:"Ali memegang bahagian pokok yang keras dan tegak di tengah pokok. Bahagian itu ialah ____.",
-    options:{A:"Daun",B:"Akar",C:"Batang",D:"Bunga"},
-    correct:"C"
+tp:'TP2',
+q:'Amin melihat satu bahagian tumbuhan di bawah tanah. Bahagian itu ialah ____.',
+o:[
+'Batang',
+'Akar',
+'Daun',
+'Bunga'
+],
+a:1
 },
 
 {
-    topic:"Ciri Bahagian yang Berbeza",
-    question:"Jika akar tumbuhan menyerupai akar pokok bunga ros, jenis akarnya ialah ____.",
-    options:{A:"Serabut",B:"Tunjang",C:"Jejala",D:"Selari"},
-    correct:"B"
+tp:'TP2',
+q:'Apabila mengelaskan tumbuhan mengikut batang, dua kumpulan yang sesuai ialah ____.',
+o:[
+'Jejala dan selari',
+'Tunjang dan serabut',
+'Berbunga dan tidak berbunga',
+'Berkayu dan tidak berkayu'
+],
+a:3
 },
 
 {
-    topic:"Ciri Bahagian yang Berbeza",
-    question:"Faiz membandingkan durian dengan betik. Perbezaan yang betul ialah ____.",
-    options:{
-        A:"Durian tidak berkayu, betik berkayu",
-        B:"Kedua-duanya berakar serabut",
-        C:"Kedua-duanya tidak berkayu",
-        D:"Durian berkayu, betik tidak berkayu"
-    },
-    correct:"D"
+tp:'TP2',
+q:'Rina membandingkan pokok teratai dengan paku pakis. Perbezaan yang dinyatakan dalam buku ialah ____.',
+o:[
+'Teratai berbunga, paku pakis tidak berbunga',
+'Kedua-duanya berbunga',
+'Teratai tidak berdaun',
+'Kedua-duanya tidak berbunga'
+],
+a:0
 },
 
 {
-    topic:"Ciri Bahagian yang Berbeza",
-    question:"Urat daun jejala terdapat pada daun pokok ____.",
-    options:{A:"Bunga ros",B:"Paku pakis",C:"Betik",D:"Pandan"},
-    correct:"A"
+tp:'TP1',
+q:'Batang pokok betik ialah jenis ____.',
+o:[
+'Jejala',
+'Berkayu',
+'Tidak berkayu',
+'Tunjang'
+],
+a:2
 },
 
 {
-    topic:"Ciri Bahagian yang Berbeza",
-    question:"Pokok bunga ros berbeza daripada pokok pandan dari segi urat daun. Bunga ros berurat ____.",
-    options:{A:"Selari",B:"Tunjang",C:"Serabut",D:"Jejala"},
-    correct:"D"
+tp:'TP2',
+q:'Apakah ciri yang digunakan untuk membezakan pokok durian dengan pokok betik dalam buku?',
+o:[
+'Berbunga atau tidak berbunga',
+'Tunjang atau serabut',
+'Jejala atau selari',
+'Berkayu atau tidak berkayu'
+],
+a:3
 },
 
 {
-    topic:"Ciri Bahagian yang Berbeza",
-    question:"Pokok bunga ros mempunyai akar ____.",
-    options:{A:"Jejala",B:"Tunjang",C:"Serabut",D:"Selari"},
-    correct:"B"
+tp:'TP1',
+q:'Pokok pandan mempunyai akar ____.',
+o:[
+'Serabut',
+'Jejala',
+'Selari',
+'Tunjang'
+],
+a:0
 },
 
 {
-    topic:"Ciri Bahagian yang Berbeza",
-    question:"Aina membandingkan daun bunga ros dengan daun pandan. Perbezaan yang betul ialah ____.",
-    options:{
-        A:"Bunga ros jejala, pandan selari",
-        B:"Kedua-duanya jejala",
-        C:"Bunga ros selari, pandan jejala",
-        D:"Kedua-duanya selari"
-    },
-    correct:"A"
+tp:'TP1',
+q:'Batang pokok durian ialah jenis ____.',
+o:[
+'Serabut',
+'Berkayu',
+'Tidak berkayu',
+'Jejala'
+],
+a:1
 },
 
 {
-    topic:"Pentingnya Bahagian Tumbuhan",
-    question:"Antara berikut, yang manakah padanan fungsi yang betul?",
-    options:{
-        A:"Daun – menyerap air dari tanah",
-        B:"Batang – membuat makanan",
-        C:"Akar – menyerap air dan nutrien",
-        D:"Bunga – mengangkut air ke daun"
-    },
-    correct:"C"
+tp:'TP2',
+q:'Apakah bahagian yang membantu tumbuhan berdiri kukuh di dalam tanah?',
+o:[
+'Buah',
+'Bunga',
+'Daun',
+'Akar'
+],
+a:3
 },
 
 {
-    topic:"Pentingnya Bahagian Tumbuhan",
-    question:"Apakah bahagian yang membawa air dan nutrien naik daripada akar?",
-    options:{A:"Bunga",B:"Batang",C:"Buah",D:"Daun"},
-    correct:"B"
+tp:'TP1',
+q:'Batang membawa makanan dari daun ke ____.',
+o:[
+'Pasu',
+'Langit',
+'Bahagian tumbuhan yang lain',
+'Batu'
+],
+a:2
 },
 
 {
-    topic:"Pentingnya Bahagian Tumbuhan",
-    question:"Makanan yang dihasilkan daun digunakan oleh ____.",
-    options:{
-        A:"Tanah sahaja",
-        B:"Pasu sahaja",
-        C:"Batu di sekeliling pokok",
-        D:"Bahagian tumbuhan yang lain"
-    },
-    correct:"D"
+tp:'TP1',
+q:'Akar mengambil air dan nutrien terus daripada ____.',
+o:[
+'Tanah',
+'Buah',
+'Daun',
+'Bunga'
+],
+a:0
 },
 
 {
-    topic:"Pentingnya Bahagian Tumbuhan",
-    question:"Apakah bahan yang diserap akar daripada tanah?",
-    options:{
-        A:"Air dan nutrien",
-        B:"Buah dan bunga",
-        C:"Warna dan bentuk",
-        D:"Cahaya dan bunyi"
-    },
-    correct:"A"
+tp:'TP2',
+q:'Air dan nutrien bergerak dari akar ke daun melalui ____.',
+o:[
+'Buah',
+'Bunga',
+'Batang',
+'Biji benih'
+],
+a:2
 },
 
 {
-    topic:"Pentingnya Bahagian Tumbuhan",
-    question:"Makanan tumbuhan dihasilkan oleh ____.",
-    options:{A:"Bunga",B:"Akar",C:"Daun",D:"Batang"},
-    correct:"C"
+tp:'TP2',
+q:'Mengapakah akar penting kepada pokok?',
+o:[
+'Membuat bunga berwarna',
+'Menyokong pokok dan menyerap air serta nutrien',
+'Menarik cahaya',
+'Menghasilkan bunyi'
+],
+a:1
 },
 
 {
-    topic:"Pentingnya Bahagian Tumbuhan",
-    question:"Mengapakah bunga penting kepada tumbuhan?",
-    options:{
-        A:"Bunga terlibat dalam pembiakan",
-        B:"Bunga menyerap air",
-        C:"Bunga membawa air dari akar",
-        D:"Bunga membuat tanah"
-    },
-    correct:"A"
+tp:'TP2',
+q:'Jika akar rosak, fungsi yang mungkin terganggu ialah ____.',
+o:[
+'Menghasilkan bunyi',
+'Melihat cahaya',
+'Mendengar bunyi',
+'Menyerap air dan nutrien'
+],
+a:3
 },
 
 {
-    topic:"Pentingnya Bahagian Tumbuhan",
-    question:"Jika pokok perlu menghasilkan buah dan biji benih, bahagian yang penting ialah ____.",
-    options:{A:"Batang",B:"Akar",C:"Daun",D:"Bunga"},
-    correct:"D"
+tp:'TP1',
+q:'Daun penting kerana daun ____.',
+o:[
+'Membuat makanan',
+'Menjadi akar',
+'Menjadi biji benih',
+'Menyerap air dari tanah'
+],
+a:0
 },
 
 {
-    topic:"Berbeza Tapi Serupa",
-    question:"Ciri yang boleh dibandingkan pada batang ialah sama ada ____.",
-    options:{
-        A:"Jejala atau selari",
-        B:"Berkayu atau tidak berkayu",
-        C:"Berbunga atau tidak berbunga",
-        D:"Tunjang atau serabut"
-    },
-    correct:"B"
+tp:'TP2',
+q:'Pokok A dan B mempunyai batang berkayu. Apakah ciri yang serupa?',
+o:[
+'Jenis urat daun',
+'Jenis tanah',
+'Jenis batang',
+'Jenis akar'
+],
+a:2
 },
 
 {
-    topic:"Berbeza Tapi Serupa",
-    question:"Selain sama-sama berbunga, bunga raya dan bunga ros juga sama-sama mempunyai urat daun ____.",
-    options:{A:"Serabut",B:"Selari",C:"Jejala",D:"Tunjang"},
-    correct:"C"
+tp:'TP1',
+q:'Batang pokok bunga raya dan bunga ros sama-sama jenis ____.',
+o:[
+'Serabut',
+'Berkayu',
+'Tidak berkayu',
+'Selari'
+],
+a:1
 },
 
 {
-    topic:"Berbeza Tapi Serupa",
-    question:"Jika dua tumbuhan berlainan sama-sama berurat jejala, apakah kesimpulan yang betul?",
-    options:{
-        A:"Mereka pasti tidak berbunga",
-        B:"Mereka mempunyai persamaan pada urat daun",
-        C:"Mereka tiada akar",
-        D:"Mereka pasti tumbuhan yang sama"
-    },
-    correct:"B"
+tp:'TP2',
+q:'Bunga raya dan bunga ros mempunyai batang berkayu. Pernyataan ini menunjukkan ____.',
+o:[
+'Perbezaan akar',
+'Perbezaan bunga',
+'Tiada batang',
+'Persamaan ciri batang'
+],
+a:3
 },
 
 {
-    topic:"Berbeza Tapi Serupa",
-    question:"Jika dua tumbuhan berlainan sama-sama berbatang berkayu, apakah persamaan mereka?",
-    options:{A:"Ciri pasu",B:"Ciri tanah",C:"Ciri buah",D:"Ciri batang"},
-    correct:"D"
+tp:'TP1',
+q:'Bunga raya dan bunga ros mempunyai tiga ciri yang sama: urat daun jejala, batang berkayu dan akar ____.',
+o:[
+'Serabut',
+'Tunjang',
+'Selari',
+'Tidak berkayu'
+],
+a:1
 },
 
 {
-    topic:"Berbeza Tapi Serupa",
-    question:"Ciri yang boleh dibandingkan pada akar ialah jenis ____.",
-    options:{A:"Akar",B:"Buah",C:"Urat daun",D:"Bunga"},
-    correct:"A"
+tp:'TP2',
+q:'Pokok A dan B mempunyai urat daun jejala. Apakah ciri yang serupa?',
+o:[
+'Warna tanah',
+'Jenis buah',
+'Jenis urat daun',
+'Jenis bunga'
+],
+a:2
 },
 
 {
-    topic:"Berbeza Tapi Serupa",
-    question:"Antara berikut, yang manakah persamaan bunga raya dan bunga ros?",
-    options:{
-        A:"Kedua-duanya berurat selari",
-        B:"Kedua-duanya berakar serabut",
-        C:"Kedua-duanya berakar tunjang",
-        D:"Kedua-duanya tidak berbunga"
-    },
-    correct:"C"
+tp:'TP1',
+q:'Selain sama-sama berbunga, bunga raya dan bunga ros juga sama-sama mempunyai batang ____.',
+o:[
+'Berkayu',
+'Tidak berkayu',
+'Selari',
+'Serabut'
+],
+a:0
 }
 
 ];
 
 
-/* ==========================================================
+
+/* =========================================================
+   JENIS PASANGAN
+========================================================= */
+
+const PARTS = [
+
+{
+name:'Daun',
+short:'D',
+color:0x39a8ff
+},
+
+{
+name:'Bunga',
+short:'B',
+color:0xf04ba9
+},
+
+{
+name:'Akar',
+short:'A',
+color:0xf3a43b
+},
+
+{
+name:'Batang',
+short:'Bt',
+color:0x55b96a
+}
+
+];
+
+
+
+/* =========================================================
    GLOBAL
-========================================================== */
+========================================================= */
 
-let currentQuestion = 0;
-let correctTotal = 0;
-let gameFinished = false;
-let sceneRef = null;
+let gameScene = null;
+
+let currentStage = 0;
+
+let started = false;
+
+let questionLocked = false;
 
 
-/* ==========================================================
-   DOM
-========================================================== */
+const stagePill =
+document.getElementById(
+'stagePill'
+);
+
+const introOverlay =
+document.getElementById(
+'introOverlay'
+);
+
+const questionOverlay =
+document.getElementById(
+'questionOverlay'
+);
+
+const winOverlay =
+document.getElementById(
+'winOverlay'
+);
+
+const questionMeta =
+document.getElementById(
+'questionMeta'
+);
 
 const questionText =
-document.getElementById("questionText");
+document.getElementById(
+'questionText'
+);
 
-const topicText =
-document.getElementById("topicText");
+const answers =
+document.getElementById(
+'answers'
+);
 
-const optionsGrid =
-document.getElementById("optionsGrid");
+const feedback =
+document.getElementById(
+'feedback'
+);
 
-const progressText =
-document.getElementById("progressText");
 
-const progressFill =
-document.getElementById("progressFill");
 
-const scoreText =
-document.getElementById("scoreText");
+/* =========================================================
+   HOME
+========================================================= */
 
-const statusText =
-document.getElementById("statusText");
+document
+.getElementById(
+'homeBtn'
+)
+.onclick = () => {
 
-const startBtn =
-document.getElementById("startBtn");
+window.location.href =
+'index.html';
 
-const startInfo =
-document.getElementById("startInfo");
-
-const finishOverlay =
-document.getElementById("finishOverlay");
-
-const restartBtn =
-document.getElementById("restartBtn");
-
-
-function setStatus(text){
-    statusText.textContent = text;
-}
-
-
-function enableStartButton(){
-
-    startBtn.disabled = false;
-
-    startBtn.style.display =
-        "inline-block";
-
-    startInfo.style.display =
-        "block";
-}
-
-
-function disableStartButton(){
-    startBtn.disabled = true;
-}
-
-
-function hideStartButton(){
-
-    startBtn.style.display =
-        "none";
-
-    startInfo.style.display =
-        "none";
-}
-
-
-function updateHTMLQuestion(){
-
-    const q =
-        QUESTIONS[currentQuestion];
-
-    topicText.textContent =
-        q.topic;
-
-    questionText.textContent =
-        `${currentQuestion + 1}. ${q.question}`;
-
-    optionsGrid.innerHTML =
-        "";
-
-    ["A","B","C","D"]
-    .forEach(letter=>{
-
-        const item =
-            document.createElement("div");
-
-        item.className =
-            "option-item";
-
-        item.innerHTML = `
-            <div class="option-letter">
-                ${letter}
-            </div>
-
-            <div>
-                ${q.options[letter]}
-            </div>
-        `;
-
-        optionsGrid.appendChild(
-            item
-        );
-    });
-
-
-    progressText.textContent =
-        `Soalan ${currentQuestion + 1} / ${QUESTIONS.length}`;
-
-
-    scoreText.textContent =
-        `Betul: ${correctTotal}`;
-
-
-    progressFill.style.width =
-        `${
-            (
-                (currentQuestion + 1)
-                /
-                QUESTIONS.length
-            ) * 100
-        }%`;
-}
-
-
-/* ==========================================================
-   SCENE
-========================================================== */
-
-class CupFindScene extends Phaser.Scene{
-
-constructor(){
-
-    super("CupFindScene");
-
-    this.cups = [];
-
-    this.canChoose =
-        false;
-
-    this.readyToStart =
-        false;
-
-    this.shuffleRound =
-        0;
-
-    this.shuffleCount =
-        10;
-
-    this.baseY =
-        355;
-
-    this.slotPositions =
-        [
-            100,
-            273,
-            447,
-            620
-        ];
-}
-
-
-/* ==========================================================
-   CREATE
-========================================================== */
-
-create(){
-
-    sceneRef =
-        this;
-
-    this.input
-        .setTopOnly(true);
-
-    this.createBackground();
-
-    this.createInstructionPanel();
-
-    this.time.delayedCall(
-        250,
-        ()=>{
-            this.startQuestion();
-        }
-    );
-}
-
-
-/* ==========================================================
-   BACKGROUND
-========================================================== */
-
-createBackground(){
-
-    this.cameras.main
-        .setBackgroundColor(
-            "#dff0b2"
-        );
-
-
-    const sky =
-        this.add.graphics();
-
-    sky.fillStyle(
-        0xdff4bb,
-        1
-    );
-
-    sky.fillRect(
-        0,
-        0,
-        720,
-        270
-    );
-
-
-    sky.fillStyle(
-        0xffdc72,
-        .8
-    );
-
-    sky.fillCircle(
-        630,
-        65,
-        43
-    );
-
-
-    sky.fillStyle(
-        0xffed9e,
-        .45
-    );
-
-    sky.fillCircle(
-        630,
-        65,
-        58
-    );
-
-
-    this.createCloud(
-        105,
-        70,
-        1
-    );
-
-    this.createCloud(
-        400,
-        115,
-        .75
-    );
-
-
-    const hills =
-        this.add.graphics();
-
-
-    hills.fillStyle(
-        0x91c263,
-        1
-    );
-
-    hills.fillCircle(
-        80,
-        270,
-        140
-    );
-
-    hills.fillCircle(
-        255,
-        280,
-        150
-    );
-
-    hills.fillCircle(
-        460,
-        270,
-        155
-    );
-
-    hills.fillCircle(
-        660,
-        275,
-        135
-    );
-
-
-    hills.fillStyle(
-        0xb3d982,
-        1
-    );
-
-    hills.fillCircle(
-        0,
-        290,
-        120
-    );
-
-    hills.fillCircle(
-        170,
-        290,
-        115
-    );
-
-    hills.fillCircle(
-        355,
-        290,
-        130
-    );
-
-    hills.fillCircle(
-        550,
-        290,
-        110
-    );
-
-    hills.fillCircle(
-        720,
-        285,
-        125
-    );
-
-
-    const ground =
-        this.add.graphics();
-
-    ground.fillStyle(
-        0x87b65e,
-        1
-    );
-
-    ground.fillRect(
-        0,
-        245,
-        720,
-        315
-    );
-
-
-    const table =
-        this.add.graphics();
-
-    table.fillStyle(
-        0xb57c4e,
-        1
-    );
-
-    table.fillRoundedRect(
-        18,
-        310,
-        684,
-        215,
-        28
-    );
-
-
-    table.lineStyle(
-        7,
-        0x795032,
-        1
-    );
-
-    table.strokeRoundedRect(
-        18,
-        310,
-        684,
-        215,
-        28
-    );
-
-
-    table.lineStyle(
-        3,
-        0x93613e,
-        .32
-    );
-
-
-    for(
-        let y=355;
-        y<510;
-        y+=44
-    ){
-
-        table.lineBetween(
-            35,
-            y,
-            685,
-            y
-        );
-    }
-
-
-    this.createPlant(
-        50,
-        270,
-        .8
-    );
-
-    this.createPlant(
-        675,
-        265,
-        .85
-    );
-
-    this.createPlant(
-        145,
-        285,
-        .55
-    );
-
-    this.createPlant(
-        585,
-        285,
-        .55
-    );
-
-
-    this.createFlower(
-        220,
-        289,
-        0xffc5dc
-    );
-
-    this.createFlower(
-        500,
-        289,
-        0xffcf68
-    );
-
-
-    for(
-        let i=0;
-        i<15;
-        i++
-    ){
-
-        const sparkle =
-            this.add.circle(
-
-                Phaser.Math.Between(
-                    15,
-                    705
-                ),
-
-                Phaser.Math.Between(
-                    20,
-                    225
-                ),
-
-                Phaser.Math.Between(
-                    2,
-                    4
-                ),
-
-                0xffffff,
-
-                Phaser.Math.FloatBetween(
-                    .2,
-                    .55
-                )
-            );
-
-
-        this.tweens.add({
-
-            targets:
-                sparkle,
-
-            alpha:{
-                from:.15,
-                to:.8
-            },
-
-            duration:
-                Phaser.Math.Between(
-                    800,
-                    1500
-                ),
-
-            yoyo:true,
-
-            repeat:-1
-        });
-    }
-}
-
-
-/* ==========================================================
-   CLOUD
-========================================================== */
-
-createCloud(
-    x,
-    y,
-    scale
-){
-
-    const cloud =
-        this.add.graphics();
-
-    cloud.fillStyle(
-        0xffffff,
-        .65
-    );
-
-    cloud.fillCircle(
-        x,
-        y,
-        24*scale
-    );
-
-    cloud.fillCircle(
-        x+27*scale,
-        y-5*scale,
-        30*scale
-    );
-
-    cloud.fillCircle(
-        x+57*scale,
-        y,
-        22*scale
-    );
-
-    cloud.fillRoundedRect(
-        x-20*scale,
-        y,
-        98*scale,
-        28*scale,
-        14*scale
-    );
-}
-
-
-/* ==========================================================
-   PLANT
-========================================================== */
-
-createPlant(
-    x,
-    y,
-    scale
-){
-
-    const pot =
-        this.add.graphics();
-
-    pot.fillStyle(
-        0xc36a47,
-        1
-    );
-
-    pot.fillRoundedRect(
-        x-21*scale,
-        y+20*scale,
-        42*scale,
-        34*scale,
-        7
-    );
-
-    pot.fillStyle(
-        0x984a34,
-        1
-    );
-
-    pot.fillRect(
-        x-26*scale,
-        y+17*scale,
-        52*scale,
-        10*scale
-    );
-
-
-    const stem =
-        this.add.graphics();
-
-    stem.lineStyle(
-        5*scale,
-        0x467b3c,
-        1
-    );
-
-    stem.lineBetween(
-        x,
-        y+20*scale,
-        x,
-        y-28*scale
-    );
-
-
-    const leaves =
-        this.add.graphics();
-
-    leaves.fillStyle(
-        0x559b48,
-        1
-    );
-
-    leaves.fillEllipse(
-        x-13*scale,
-        y-6*scale,
-        29*scale,
-        17*scale
-    );
-
-    leaves.fillEllipse(
-        x+14*scale,
-        y-17*scale,
-        30*scale,
-        17*scale
-    );
-
-    leaves.fillEllipse(
-        x-8*scale,
-        y-31*scale,
-        27*scale,
-        17*scale
-    );
-}
-
-
-/* ==========================================================
-   FLOWER
-========================================================== */
-
-createFlower(
-    x,
-    y,
-    color
-){
-
-    const flower =
-        this.add.graphics();
-
-    flower.fillStyle(
-        color,
-        1
-    );
-
-
-    for(
-        let i=0;
-        i<5;
-        i++
-    ){
-
-        const angle =
-            (Math.PI*2/5)*i;
-
-        flower.fillCircle(
-            x+Math.cos(angle)*9,
-            y+Math.sin(angle)*9,
-            7
-        );
-    }
-
-
-    flower.fillStyle(
-        0xffd857,
-        1
-    );
-
-    flower.fillCircle(
-        x,
-        y,
-        6
-    );
-}
-
-
-/* ==========================================================
-   PANEL
-========================================================== */
-
-createInstructionPanel(){
-
-    const panel =
-        this.add.graphics();
-
-
-    panel.fillStyle(
-        0xffffff,
-        .93
-    );
-
-    panel.fillRoundedRect(
-        100,
-        30,
-        520,
-        112,
-        22
-    );
-
-
-    panel.lineStyle(
-        4,
-        0x71935b,
-        1
-    );
-
-    panel.strokeRoundedRect(
-        100,
-        30,
-        520,
-        112,
-        22
-    );
-
-
-    this.instructionTitle =
-        this.add.text(
-            360,
-            56,
-            "BACA SOALAN DAHULU",
-            {
-                fontFamily:
-                    "Trebuchet MS, Arial",
-
-                fontSize:
-                    "25px",
-
-                fontStyle:
-                    "bold",
-
-                color:
-                    "#3d663e"
-            }
-        )
-        .setOrigin(.5);
-
-
-    this.instructionText =
-        this.add.text(
-            360,
-            101,
-            "Ingat A, B, C atau D. Tekan MULA SHUFFLE apabila sudah bersedia.",
-            {
-                fontFamily:
-                    "Trebuchet MS, Arial",
-
-                fontSize:
-                    "16px",
-
-                fontStyle:
-                    "bold",
-
-                color:
-                    "#64795d",
-
-                align:
-                    "center",
-
-                wordWrap:{
-                    width:465
-                }
-            }
-        )
-        .setOrigin(.5);
-}
-
-
-/* ==========================================================
-   START QUESTION
-========================================================== */
-
-startQuestion(){
-
-    if(gameFinished){
-        return;
-    }
-
-
-    this.canChoose =
-        false;
-
-
-    this.readyToStart =
-        true;
-
-
-    updateHTMLQuestion();
-
-
-    enableStartButton();
-
-
-    startInfo.textContent =
-        "Baca soalan dan ingat kedudukan A, B, C dan D. Tekan apabila sudah bersedia.";
-
-
-    setStatus(
-        "👀 Ambil masa untuk baca soalan. Cup belum akan bergerak."
-    );
-
-
-    this.instructionTitle
-        .setText(
-            "BACA & INGAT"
-        );
-
-
-    this.instructionText
-        .setText(
-            "Jawapan masih terbuka. Tekan MULA SHUFFLE apabila sudah bersedia."
-        );
-
-
-    this.destroyCups();
-
-    this.buildCups();
-
-
-    this.cups.forEach(
-        cup=>{
-
-            cup.cupPart.y =
-                -125;
-        }
-    );
-}
-
-
-/* ==========================================================
-   START BUTTON
-========================================================== */
-
-pressStartButton(){
-
-    if(
-        !this.readyToStart ||
-        gameFinished
-    ){
-        return;
-    }
-
-
-    this.readyToStart =
-        false;
-
-
-    disableStartButton();
-
-    hideStartButton();
-
-    this.coverAnswers();
-}
-
-
-/* ==========================================================
-   BUILD CUPS
-========================================================== */
-
-buildCups(){
-
-    ["A","B","C","D"]
-    .forEach(
-        (letter,index)=>{
-
-            const cup =
-                this.createCup(
-
-                    this.slotPositions[
-                        index
-                    ],
-
-                    this.baseY,
-
-                    letter,
-
-                    index
-                );
-
-
-            this.cups.push(
-                cup
-            );
-        }
-    );
-}
-
-
-/* ==========================================================
-   CREATE CUP
-========================================================== */
-
-createCup(
-    x,
-    y,
-    answerLetter,
-    slot
-){
-
-    const group =
-        this.add.container(
-            x,
-            y
-        );
-
-
-    /* ANSWER */
-
-    const answerContainer =
-        this.add.container(
-            0,
-            37
-        );
-
-
-    const answerBg =
-        this.add.graphics();
-
-
-    this.drawAnswerCard(
-        answerBg,
-        "normal"
-    );
-
-
-    const answerText =
-        this.add.text(
-            0,
-            0,
-            answerLetter,
-            {
-                fontFamily:
-                    "Trebuchet MS, Arial",
-
-                fontSize:
-                    "54px",
-
-                fontStyle:
-                    "bold",
-
-                color:
-                    "#355d3c"
-            }
-        )
-        .setOrigin(.5);
-
-
-    answerContainer.add(
-        [
-            answerBg,
-            answerText
-        ]
-    );
-
-
-    /* CUP */
-
-    const cupPart =
-        this.add.container(
-            0,
-            0
-        );
-
-
-    const shadow =
-        this.add.ellipse(
-            0,
-            89,
-            123,
-            23,
-            0x4b321f,
-            .22
-        );
-
-
-    const body =
-        this.add.graphics();
-
-
-    body.fillStyle(
-        0xe65c4c,
-        1
-    );
-
-    body.lineStyle(
-        5,
-        0xa63831,
-        1
-    );
-
-
-    body.beginPath();
-
-    body.moveTo(
-        -45,
-        -72
-    );
-
-    body.lineTo(
-        45,
-        -72
-    );
-
-    body.lineTo(
-        63,
-        71
-    );
-
-    body.lineTo(
-        -63,
-        71
-    );
-
-    body.closePath();
-
-    body.fillPath();
-
-    body.strokePath();
-
-
-    body.fillStyle(
-        0xff8c78,
-        .75
-    );
-
-    body.fillRoundedRect(
-        -30,
-        -55,
-        15,
-        101,
-        7
-    );
-
-
-    body.fillStyle(
-        0xf88772,
-        1
-    );
-
-    body.fillEllipse(
-        0,
-        -72,
-        90,
-        22
-    );
-
-    body.lineStyle(
-        4,
-        0xa63831,
-        1
-    );
-
-    body.strokeEllipse(
-        0,
-        -72,
-        90,
-        22
-    );
-
-
-    body.fillStyle(
-        0xc64139,
-        1
-    );
-
-    body.fillRoundedRect(
-        -68,
-        67,
-        136,
-        20,
-        10
-    );
-
-    body.lineStyle(
-        4,
-        0x92302c,
-        1
-    );
-
-    body.strokeRoundedRect(
-        -68,
-        67,
-        136,
-        20,
-        10
-    );
-
-
-    const leaf =
-        this.add.text(
-            0,
-            -4,
-            "🌿",
-            {
-                fontSize:
-                    "32px"
-            }
-        )
-        .setOrigin(.5);
-
-
-    cupPart.add(
-        [
-            shadow,
-            body,
-            leaf
-        ]
-    );
-
-
-    /* LARGE INVISIBLE TOUCH ZONE */
-
-    const tapZone =
-        this.add.zone(
-            0,
-            0,
-            165,
-            220
-        );
-
-
-    tapZone
-        .setInteractive({
-            useHandCursor:true
-        });
-
-
-    group.add(
-        [
-            answerContainer,
-            cupPart,
-            tapZone
-        ]
-    );
-
-
-    const cupObject = {
-
-        group,
-
-        cupPart,
-
-        tapZone,
-
-        answerContainer,
-
-        answerBg,
-
-        answerText,
-
-        answer:
-            answerLetter,
-
-        slot
-    };
-
-
-    /* TAP SEKALI TERUS PILIH */
-
-    tapZone.on(
-        "pointerdown",
-        (
-            pointer,
-            localX,
-            localY,
-            event
-        )=>{
-
-            if(event){
-                event.stopPropagation();
-            }
-
-
-            if(
-                !this.canChoose ||
-                gameFinished
-            ){
-                return;
-            }
-
-
-            this.canChoose =
-                false;
-
-
-            this.chooseCup(
-                cupObject
-            );
-        }
-    );
-
-
-    return cupObject;
-}
-
-
-/* ==========================================================
-   ANSWER CARD
-========================================================== */
-
-drawAnswerCard(
-    graphics,
-    type
-){
-
-    graphics.clear();
-
-
-    let fill =
-        0xfff7cd;
-
-    let border =
-        0xd6aa50;
-
-
-    if(
-        type === "correct"
-    ){
-
-        fill =
-            0xcdf0b8;
-
-        border =
-            0x4c9a4a;
-    }
-
-
-    if(
-        type === "wrong"
-    ){
-
-        fill =
-            0xffc2bc;
-
-        border =
-            0xd3463d;
-    }
-
-
-    graphics.fillStyle(
-        fill,
-        1
-    );
-
-    graphics.fillRoundedRect(
-        -58,
-        -56,
-        116,
-        112,
-        20
-    );
-
-
-    graphics.lineStyle(
-        5,
-        border,
-        1
-    );
-
-    graphics.strokeRoundedRect(
-        -58,
-        -56,
-        116,
-        112,
-        20
-    );
-}
-
-
-/* ==========================================================
-   COVER ANSWERS
-========================================================== */
-
-coverAnswers(){
-
-    setStatus(
-        "🥤 Jawapan sedang ditutup..."
-    );
-
-
-    this.instructionTitle
-        .setText(
-            "SEDIA!"
-        );
-
-
-    this.instructionText
-        .setText(
-            "Cup akan menutup jawapan dan mula bercampur."
-        );
-
-
-    let completeCount =
-        0;
-
-
-    this.cups.forEach(
-        cup=>{
-
-            this.tweens.add({
-
-                targets:
-                    cup.cupPart,
-
-                y:
-                    0,
-
-                duration:
-                    450,
-
-                ease:
-                    "Back.easeOut",
-
-                onComplete:()=>{
-
-                    completeCount++;
-
-
-                    if(
-                        completeCount ===
-                        this.cups.length
-                    ){
-
-                        this.time.delayedCall(
-                            450,
-                            ()=>{
-                                this.startShuffle();
-                            }
-                        );
-                    }
-                }
-            });
-        }
-    );
-}
-
-
-/* ==========================================================
-   START SHUFFLE
-========================================================== */
-
-startShuffle(){
-
-    this.shuffleRound =
-        0;
-
-
-    this.canChoose =
-        false;
-
-
-    setStatus(
-        "🔀 Cup sedang bercampur. Ikut cup jawapan anda!"
-    );
-
-
-    this.instructionTitle
-        .setText(
-            "JANGAN HILANG FOKUS!"
-        );
-
-
-    this.instructionText
-        .setText(
-            "Ikut cup yang menyimpan jawapan betul."
-        );
-
-
-    this.shuffleStep();
-}
-
-
-/* ==========================================================
-   SHUFFLE - SEDIKIT LEBIH LAJU
-========================================================== */
-
-shuffleStep(){
-
-    if(gameFinished){
-        return;
-    }
-
-
-    if(
-        this.shuffleRound >=
-        this.shuffleCount
-    ){
-
-        this.finishShuffle();
-
-        return;
-    }
-
-
-    this.shuffleRound++;
-
-
-    let first =
-        Phaser.Math.Between(
-            0,
-            3
-        );
-
-
-    let second =
-        Phaser.Math.Between(
-            0,
-            3
-        );
-
-
-    while(
-        second === first
-    ){
-
-        second =
-            Phaser.Math.Between(
-                0,
-                3
-            );
-    }
-
-
-    const cupA =
-        this.cups[first];
-
-
-    const cupB =
-        this.cups[second];
-
-
-    const oldXA =
-        cupA.group.x;
-
-
-    const oldXB =
-        cupB.group.x;
-
-
-    const slotA =
-        cupA.slot;
-
-
-    const slotB =
-        cupB.slot;
-
-
-    if(
-        this.shuffleRound % 2 === 0
-    ){
-
-        cupA.group
-            .setDepth(20);
-
-        cupB.group
-            .setDepth(19);
-
-    }else{
-
-        cupA.group
-            .setDepth(19);
-
-        cupB.group
-            .setDepth(20);
-    }
-
-
-    /*
-       SHUFFLE BARU
-
-       Sebelum:
-       540 - 650 ms
-
-       Sekarang:
-       sekitar 380 - 460 ms
-    */
-
-    const duration =
-        Math.max(
-            380,
-            470 -
-            this.shuffleRound * 8
-        );
-
-
-    /* CUP A */
-
-    this.tweens.add({
-
-        targets:
-            cupA.group,
-
-        x:
-            oldXB,
-
-        duration:
-            duration,
-
-        ease:
-            "Sine.easeInOut",
-
-        onComplete:()=>{
-
-            cupA.slot =
-                slotB;
-
-
-            cupB.slot =
-                slotA;
-
-
-            cupA.group
-                .setDepth(10);
-
-
-            cupB.group
-                .setDepth(10);
-
-
-            /*
-               Jeda dipendekkan supaya
-               shuffle rasa lebih lancar.
-            */
-
-            this.time.delayedCall(
-                90,
-                ()=>{
-                    this.shuffleStep();
-                }
-            );
-        }
-    });
-
-
-    /* ARC CUP A */
-
-    this.tweens.add({
-
-        targets:
-            cupA.group,
-
-        y:
-            this.baseY - 23,
-
-        duration:
-            duration / 2,
-
-        yoyo:
-            true,
-
-        ease:
-            "Sine.easeOut"
-    });
-
-
-    /* CUP B */
-
-    this.tweens.add({
-
-        targets:
-            cupB.group,
-
-        x:
-            oldXA,
-
-        duration:
-            duration,
-
-        ease:
-            "Sine.easeInOut"
-    });
-
-
-    /* ARC CUP B */
-
-    this.tweens.add({
-
-        targets:
-            cupB.group,
-
-        y:
-            this.baseY + 14,
-
-        duration:
-            duration / 2,
-
-        yoyo:
-            true,
-
-        ease:
-            "Sine.easeInOut"
-    });
-}
-
-
-/* ==========================================================
-   FINISH SHUFFLE
-========================================================== */
-
-finishShuffle(){
-
-    this.cups.forEach(
-        cup=>{
-
-            cup.group
-                .setDepth(10);
-
-
-            cup.group.y =
-                this.baseY;
-
-
-            cup.group
-                .setScale(1);
-        }
-    );
-
-
-    this.canChoose =
-        true;
-
-
-    setStatus(
-        "👆 Shuffle selesai! Tekan sekali pada cup jawapan anda."
-    );
-
-
-    this.instructionTitle
-        .setText(
-            "PILIH CUP!"
-        );
-
-
-    this.instructionText
-        .setText(
-            "Tekan sekali pada cup pilihan anda."
-        );
-}
-
-
-/* ==========================================================
-   CHOOSE CUP
-========================================================== */
-
-chooseCup(cup){
-
-    if(gameFinished){
-        return;
-    }
-
-
-    this.canChoose =
-        false;
-
-
-    this.cups.forEach(
-        item=>{
-
-            item.tapZone
-                .disableInteractive();
-        }
-    );
-
-
-    const q =
-        QUESTIONS[currentQuestion];
-
-
-    if(
-        cup.answer ===
-        q.correct
-    ){
-
-        this.correctChoice(
-            cup
-        );
-
-    }else{
-
-        this.wrongChoice(
-            cup
-        );
-    }
-}
-
-
-/* ==========================================================
-   CORRECT
-========================================================== */
-
-correctChoice(cup){
-
-    this.drawAnswerCard(
-        cup.answerBg,
-        "correct"
-    );
-
-
-    this.tweens.add({
-
-        targets:
-            cup.cupPart,
-
-        y:
-            -130,
-
-        duration:
-            330,
-
-        ease:
-            "Back.easeOut"
-    });
-
-
-    this.tweens.add({
-
-        targets:
-            cup.group,
-
-        scaleX:
-            1.08,
-
-        scaleY:
-            1.08,
-
-        duration:
-            140,
-
-        yoyo:
-            true
-    });
-
-
-    setStatus(
-        `✅ Betul! Jawapan ialah ${cup.answer}.`
-    );
-
-
-    this.instructionTitle
-        .setText(
-            "BETUL! 🎉"
-        );
-
-
-    this.instructionText
-        .setText(
-            `Jawapan ${cup.answer} berjaya ditemui.`
-        );
-
-
-    correctTotal++;
-
-
-    scoreText.textContent =
-        `Betul: ${correctTotal}`;
-
-
-    this.createConfetti(
-        cup.group.x,
-        230
-    );
-
-
-    this.time.delayedCall(
-        1400,
-        ()=>{
-
-            currentQuestion++;
-
-
-            if(
-                currentQuestion >=
-                QUESTIONS.length
-            ){
-
-                this.finishGame();
-
-            }else{
-
-                this.startQuestion();
-            }
-        }
-    );
-}
-
-
-/* ==========================================================
-   WRONG
-========================================================== */
-
-wrongChoice(cup){
-
-    const q =
-        QUESTIONS[currentQuestion];
-
-
-    this.drawAnswerCard(
-        cup.answerBg,
-        "wrong"
-    );
-
-
-    this.tweens.add({
-
-        targets:
-            cup.cupPart,
-
-        y:
-            -130,
-
-        duration:
-            330,
-
-        ease:
-            "Back.easeOut"
-    });
-
-
-    this.tweens.add({
-
-        targets:
-            cup.group,
-
-        x:
-            cup.group.x - 7,
-
-        duration:
-            65,
-
-        yoyo:
-            true,
-
-        repeat:
-            4
-    });
-
-
-    setStatus(
-        `❌ Itu jawapan ${cup.answer}. Jawapan sebenar ialah ${q.correct}.`
-    );
-
-
-    this.instructionTitle
-        .setText(
-            "BELUM TEPAT"
-        );
-
-
-    this.instructionText
-        .setText(
-            `Jawapan betul ialah ${q.correct}. Cuba lagi.`
-        );
-
-
-    const correctCup =
-        this.cups.find(
-            item=>
-                item.answer ===
-                q.correct
-        );
-
-
-    if(
-        correctCup &&
-        correctCup !== cup
-    ){
-
-        this.time.delayedCall(
-            450,
-            ()=>{
-
-                this.drawAnswerCard(
-                    correctCup.answerBg,
-                    "correct"
-                );
-
-
-                this.tweens.add({
-
-                    targets:
-                        correctCup.cupPart,
-
-                    y:
-                        -130,
-
-                    duration:
-                        350,
-
-                    ease:
-                        "Back.easeOut"
-                });
-            }
-        );
-    }
-
-
-    this.time.delayedCall(
-        2300,
-        ()=>{
-            this.startQuestion();
-        }
-    );
-}
-
-
-/* ==========================================================
-   CONFETTI
-========================================================== */
-
-createConfetti(
-    x,
-    y
-){
-
-    const icons =
-        [
-            "🌿",
-            "🌼",
-            "✨",
-            "🍃",
-            "⭐"
-        ];
-
-
-    for(
-        let i=0;
-        i<14;
-        i++
-    ){
-
-        const icon =
-            Phaser.Utils.Array.GetRandom(
-                icons
-            );
-
-
-        const piece =
-            this.add.text(
-                x,
-                y,
-                icon,
-                {
-                    fontSize:
-                        Phaser.Math.Between(
-                            17,
-                            27
-                        ) + "px"
-                }
-            )
-            .setOrigin(.5)
-            .setDepth(50);
-
-
-        this.tweens.add({
-
-            targets:
-                piece,
-
-            x:
-                x +
-                Phaser.Math.Between(
-                    -160,
-                    160
-                ),
-
-            y:
-                y +
-                Phaser.Math.Between(
-                    -170,
-                    40
-                ),
-
-            angle:
-                Phaser.Math.Between(
-                    -180,
-                    180
-                ),
-
-            alpha:
-                0,
-
-            duration:
-                Phaser.Math.Between(
-                    750,
-                    1200
-                ),
-
-            ease:
-                "Quad.easeOut",
-
-            onComplete:()=>{
-                piece.destroy();
-            }
-        });
-    }
-}
-
-
-/* ==========================================================
-   DESTROY
-========================================================== */
-
-destroyCups(){
-
-    this.cups.forEach(
-        cup=>{
-
-            if(
-                cup.group &&
-                cup.group.active
-            ){
-
-                this.tweens
-                    .killTweensOf(
-                        cup.group
-                    );
-
-
-                this.tweens
-                    .killTweensOf(
-                        cup.cupPart
-                    );
-
-
-                cup.group
-                    .destroy(true);
-            }
-        }
-    );
-
-
-    this.cups = [];
-}
-
-
-/* ==========================================================
-   FINISH
-========================================================== */
-
-finishGame(){
-
-    gameFinished =
-        true;
-
-
-    this.canChoose =
-        false;
-
-
-    this.readyToStart =
-        false;
-
-
-    hideStartButton();
-
-
-    progressFill.style.width =
-        "100%";
-
-
-    progressText.textContent =
-        "25 / 25 Selesai";
-
-
-    scoreText.textContent =
-        `Betul: ${correctTotal}`;
-
-
-    setStatus(
-        "🏆 Tahniah! Semua 25 soalan telah selesai."
-    );
-
-
-    this.instructionTitle
-        .setText(
-            "MISI SELESAI! 🏆"
-        );
-
-
-    this.instructionText
-        .setText(
-            "Anda berjaya menyelesaikan semua soalan."
-        );
-
-
-    this.bigCelebration();
-
-
-    this.time.delayedCall(
-        600,
-        ()=>{
-
-            finishOverlay
-                .classList
-                .add("show");
-        }
-    );
-}
-
-
-/* ==========================================================
-   CELEBRATION
-========================================================== */
-
-bigCelebration(){
-
-    const icons =
-        [
-            "🌼",
-            "🌿",
-            "⭐",
-            "✨",
-            "🍃",
-            "🌸"
-        ];
-
-
-    for(
-        let i=0;
-        i<45;
-        i++
-    ){
-
-        const icon =
-            Phaser.Utils.Array.GetRandom(
-                icons
-            );
-
-
-        const x =
-            Phaser.Math.Between(
-                20,
-                700
-            );
-
-
-        const piece =
-            this.add.text(
-                x,
-                -30,
-                icon,
-                {
-                    fontSize:
-                        Phaser.Math.Between(
-                            18,
-                            33
-                        ) + "px"
-                }
-            )
-            .setDepth(100);
-
-
-        this.tweens.add({
-
-            targets:
-                piece,
-
-            y:
-                Phaser.Math.Between(
-                    500,
-                    650
-                ),
-
-            x:
-                x +
-                Phaser.Math.Between(
-                    -70,
-                    70
-                ),
-
-            angle:
-                Phaser.Math.Between(
-                    -400,
-                    400
-                ),
-
-            duration:
-                Phaser.Math.Between(
-                    1600,
-                    2800
-                ),
-
-            delay:
-                Phaser.Math.Between(
-                    0,
-                    850
-                ),
-
-            ease:
-                "Linear",
-
-            onComplete:()=>{
-                piece.destroy();
-            }
-        });
-    }
-}
-
-}
-
-
-/* ==========================================================
-   PHASER CONFIG
-========================================================== */
-
-const config = {
-
-    type:
-        Phaser.AUTO,
-
-
-    parent:
-        "game-container",
-
-
-    width:
-        720,
-
-
-    height:
-        560,
-
-
-    backgroundColor:
-        "#dff0b2",
-
-
-    transparent:
-        false,
-
-
-    render:{
-
-        antialias:
-            true,
-
-        pixelArt:
-            false,
-
-        roundPixels:
-            false
-    },
-
-
-    scale:{
-
-        mode:
-            Phaser.Scale.FIT,
-
-        autoCenter:
-            Phaser.Scale.CENTER_BOTH,
-
-        width:
-            720,
-
-        height:
-            560
-    },
-
-
-    input:{
-
-        activePointers:
-            4,
-
-        touch:{
-            capture:true
-        }
-    },
-
-
-    scene:[
-        CupFindScene
-    ]
 };
 
 
-const game =
-    new Phaser.Game(
-        config
-    );
 
-
-/* ==========================================================
+/* =========================================================
    START
-========================================================== */
+========================================================= */
 
-startBtn.addEventListener(
-    "click",
-    ()=>{
+document
+.getElementById(
+'startBtn'
+)
+.onclick = () => {
 
-        if(sceneRef){
+started = true;
 
-            sceneRef
-                .pressStartButton();
-        }
-    }
+introOverlay
+.classList
+.remove(
+'show'
+);
+
+if(gameScene){
+
+gameScene
+.startStage(
+currentStage
+);
+
+}
+
+};
+
+
+
+/* =========================================================
+   PLAY AGAIN
+========================================================= */
+
+document
+.getElementById(
+'playAgainBtn'
+)
+.onclick = () => {
+
+currentStage = 0;
+
+winOverlay
+.classList
+.remove(
+'show'
+);
+
+started = true;
+
+if(gameScene){
+
+gameScene
+.startStage(
+0
+);
+
+}
+
+};
+
+
+
+/* =========================================================
+   RANDOM SEED
+========================================================= */
+
+function mulberry32(seed){
+
+return function(){
+
+let t =
+seed +=
+0x6D2B79F5;
+
+t =
+Math.imul(
+t ^ t >>> 15,
+t | 1
+);
+
+t ^=
+t +
+Math.imul(
+t ^ t >>> 7,
+t | 61
+);
+
+return (
+(
+t ^ t >>> 14
+) >>> 0
+) /
+4294967296;
+
+};
+
+}
+
+
+
+function seededShuffle(
+arr,
+seed
+){
+
+const a =
+arr.slice();
+
+const r =
+mulberry32(
+seed
+);
+
+for(
+let i =
+a.length - 1;
+i > 0;
+i--
+){
+
+const j =
+Math.floor(
+r() *
+(i + 1)
+);
+
+[
+a[i],
+a[j]
+] = [
+a[j],
+a[i]
+];
+
+}
+
+return a;
+
+}
+
+
+
+/* =========================================================
+   PHASER SCENE
+========================================================= */
+
+class ConnectScene
+extends Phaser.Scene{
+
+constructor(){
+
+super(
+'ConnectScene'
+);
+
+}
+
+
+
+/* =========================================================
+   CREATE
+========================================================= */
+
+create(){
+
+gameScene =
+this;
+
+
+this.bg =
+this.add.graphics();
+
+
+this.pathG =
+this.add.graphics();
+
+
+this.tempG =
+this.add.graphics();
+
+
+this.decor =
+this.add.container(
+0,
+0
 );
 
 
-/* ==========================================================
-   RESTART
-========================================================== */
-
-restartBtn.addEventListener(
-    "click",
-    ()=>{
-
-        finishOverlay
-            .classList
-            .remove("show");
-
-
-        currentQuestion =
-            0;
-
-
-        correctTotal =
-            0;
-
-
-        gameFinished =
-            false;
-
-
-        enableStartButton();
-
-
-        if(sceneRef){
-
-            sceneRef.scene
-                .restart();
-        }
-
-
-        setStatus(
-            "👀 Baca soalan dan perhatikan jawapan di bawah setiap cup."
-        );
-    }
+this.nodeLayer =
+this.add.container(
+0,
+0
 );
 
 
-/* ==========================================================
-   MOBILE / IOS
-========================================================== */
+this.pairs = [];
 
-document.addEventListener(
-    "gesturestart",
-    event=>{
-        event.preventDefault();
-    }
+this.drawing = null;
+
+this.stageLock = true;
+
+
+
+/* pointer move */
+
+this.input.on(
+'pointermove',
+pointer => {
+
+this.onMove(
+pointer
+);
+
+}
 );
 
 
-document.addEventListener(
-    "dblclick",
-    event=>{
 
-        if(
-            event.target.closest(
-                "#game-container"
-            )
-        ){
+/* pointer up */
 
-            event.preventDefault();
-        }
-    }
+this.input.on(
+'pointerup',
+pointer => {
+
+this.onUp(
+pointer
+);
+
+}
+);
+
+
+
+this.input.on(
+'pointerupoutside',
+pointer => {
+
+this.onUp(
+pointer
+);
+
+}
+);
+
+
+
+/* resize */
+
+this.scale.on(
+'resize',
+() => {
+
+this.drawBackground();
+
+if(started){
+
+this.startStage(
+currentStage
+);
+
+}
+
+}
+);
+
+
+this.drawBackground();
+
+}
+
+
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+drawBackground(){
+
+const w =
+this.scale.width;
+
+const h =
+this.scale.height;
+
+
+this.bg.clear();
+
+
+this.bg.fillStyle(
+0xdaf0bd,
+1
+);
+
+this.bg.fillRect(
+0,
+0,
+w,
+h
+);
+
+
+
+/* jalur taman */
+
+for(
+let y = 0;
+y < h;
+y += 90
+){
+
+this.bg.fillStyle(
+
+(y / 90) % 2 === 0
+
+?
+
+0xcfe9ac
+
+:
+
+0xdaf0bd,
+
+1
+
+);
+
+this.bg.fillRect(
+0,
+y,
+w,
+45
+);
+
+}
+
+
+
+/* garis hiasan */
+
+this.bg.lineStyle(
+2,
+0x9fc67a,
+0.35
+);
+
+for(
+let x = 35;
+x < w;
+x += 72
+){
+
+this.bg.lineBetween(
+x,
+0,
+x - 20,
+h
+);
+
+}
+
+
+
+/* decor */
+
+this.decor
+.removeAll(
+true
+);
+
+
+const spots = [
+
+[
+0.05,
+0.09,
+'🌼'
+],
+
+[
+0.92,
+0.12,
+'🍃'
+],
+
+[
+0.08,
+0.86,
+'🌱'
+],
+
+[
+0.90,
+0.82,
+'🌸'
+],
+
+[
+0.50,
+0.07,
+'🍀'
+],
+
+[
+0.54,
+0.90,
+'🌿'
+]
+
+];
+
+
+spots.forEach(
+(
+[
+nx,
+ny,
+symbol
+],
+i
+) => {
+
+const t =
+this.add.text(
+
+w * nx,
+
+h * ny,
+
+symbol,
+
+{
+
+fontSize:
+
+Math.max(
+
+24,
+
+Math.min(
+42,
+w * 0.05
+)
+
+) + 'px'
+
+}
+
+)
+
+.setOrigin(
+0.5
+)
+
+.setAlpha(
+0.30
+);
+
+
+t.setRotation(
+
+(i % 2 ? 1 : -1)
+
+* 0.15
+
+);
+
+
+this.decor.add(
+t
+);
+
+}
+);
+
+}
+
+
+
+/* =========================================================
+   START STAGE
+========================================================= */
+
+startStage(index){
+
+currentStage =
+index;
+
+
+stagePill.textContent =
+`Stage ${index + 1}/25`;
+
+
+questionOverlay
+.classList
+.remove(
+'show'
+);
+
+
+feedback.textContent =
+'';
+
+
+questionLocked =
+false;
+
+
+this.stageLock =
+false;
+
+
+this.drawing =
+null;
+
+
+this.pathG.clear();
+
+this.tempG.clear();
+
+
+this.nodeLayer
+.removeAll(
+true
+);
+
+
+this.pairs = [];
+
+
+
+const w =
+this.scale.width;
+
+const h =
+this.scale.height;
+
+
+
+const padX =
+Math.max(
+
+76,
+
+Math.min(
+120,
+w * 0.13
+)
+
+);
+
+
+const top =
+Math.max(
+75,
+h * 0.13
+);
+
+
+const bottom =
+Math.min(
+
+h - 88,
+
+h * 0.84
+
+);
+
+
+const left =
+padX;
+
+
+const right =
+w - padX;
+
+
+const midL =
+w * 0.32;
+
+
+const midR =
+w * 0.68;
+
+
+
+/* 8 posisi */
+
+const slots = [
+
+{
+x:left,
+y:top
+},
+
+{
+x:right,
+y:top
+},
+
+{
+x:left,
+y:h * 0.38
+},
+
+{
+x:right,
+y:h * 0.38
+},
+
+{
+x:left,
+y:h * 0.67
+},
+
+{
+x:right,
+y:h * 0.67
+},
+
+{
+x:midL,
+y:bottom
+},
+
+{
+x:midR,
+y:bottom
+}
+
+];
+
+
+
+/* random lokasi */
+
+const order =
+seededShuffle(
+
+[
+0,
+1,
+2,
+3,
+4,
+5,
+6,
+7
+],
+
+9001 +
+index * 1337
+
+);
+
+
+const chosen =
+order.map(
+
+i =>
+slots[i]
+
+);
+
+
+
+/* random jenis tumbuhan */
+
+const pairOrder =
+seededShuffle(
+
+[
+0,
+1,
+2,
+3
+],
+
+5000 +
+index * 71
+
+);
+
+
+
+for(
+let k = 0;
+k < 4;
+k++
+){
+
+const part =
+PARTS[
+pairOrder[k]
+];
+
+
+const p1 =
+chosen[
+k * 2
+];
+
+
+const p2 =
+chosen[
+k * 2 + 1
+];
+
+
+const pair = {
+
+id:k,
+
+part:part,
+
+connected:false,
+
+path:[],
+
+nodes:[]
+
+};
+
+
+
+pair.nodes.push(
+
+this.makeNode(
+
+p1.x,
+
+p1.y,
+
+pair,
+
+0
+
+)
+
+);
+
+
+pair.nodes.push(
+
+this.makeNode(
+
+p2.x,
+
+p2.y,
+
+pair,
+
+1
+
+)
+
+);
+
+
+this.pairs.push(
+pair
+);
+
+}
+
+}
+
+
+
+/* =========================================================
+   CREATE NODE
+========================================================= */
+
+makeNode(
+x,
+y,
+pair,
+side
+){
+
+const container =
+this.add.container(
+x,
+y
+);
+
+
+container.pairId =
+pair.id;
+
+
+container.side =
+side;
+
+
+container.connected =
+false;
+
+
+
+/* bayang */
+
+const shadow =
+this.add.ellipse(
+
+0,
+34,
+
+70,
+18,
+
+0x4f703d,
+
+0.18
+
+);
+
+
+
+/* batang kecil */
+
+const stem =
+this.add.rectangle(
+
+0,
+-32,
+
+10,
+20,
+
+0x2d7d45
+
+)
+
+.setOrigin(
+0.5,
+1
+);
+
+
+
+/* daun atas */
+
+const sprout1 =
+this.add.ellipse(
+
+-8,
+-48,
+
+24,
+13,
+
+0x46a95c
+
+)
+
+.setRotation(
+-0.45
+);
+
+
+
+const sprout2 =
+this.add.ellipse(
+
+9,
+-48,
+
+24,
+13,
+
+0x46a95c
+
+)
+
+.setRotation(
+0.45
+);
+
+
+
+/* badan watak */
+
+const blob =
+this.add.graphics();
+
+
+blob.fillStyle(
+pair.part.color,
+1
+);
+
+
+blob.fillRoundedRect(
+
+-33,
+-30,
+
+66,
+62,
+
+24
+
+);
+
+
+blob.fillCircle(
+
+-22,
+-5,
+
+16
+
+);
+
+
+blob.fillCircle(
+
+22,
+-5,
+
+16
+
+);
+
+
+/* highlight */
+
+blob.lineStyle(
+
+3,
+
+0xffffff,
+
+0.45
+
+);
+
+
+blob.strokeRoundedRect(
+
+-33,
+-30,
+
+66,
+62,
+
+24
+
+);
+
+
+
+/* mata */
+
+const eye1 =
+this.add.circle(
+
+-11,
+-5,
+
+7,
+
+0xffffff
+
+);
+
+
+const eye2 =
+this.add.circle(
+
+11,
+-5,
+
+7,
+
+0xffffff
+
+);
+
+
+
+const pupil1 =
+this.add.circle(
+
+-10,
+-4,
+
+3,
+
+0x173d2c
+
+);
+
+
+const pupil2 =
+this.add.circle(
+
+10,
+-4,
+
+3,
+
+0x173d2c
+
+);
+
+
+
+/* simbol */
+
+const symbol =
+this.add.text(
+
+0,
+14,
+
+pair.part.short,
+
+{
+
+fontFamily:
+'Trebuchet MS, Arial',
+
+fontSize:
+'17px',
+
+fontStyle:
+'bold',
+
+color:
+'#ffffff',
+
+stroke:
+'#173d2c',
+
+strokeThickness:
+3
+
+}
+
+)
+
+.setOrigin(
+0.5
+);
+
+
+
+/* nama */
+
+const label =
+this.add.text(
+
+0,
+48,
+
+pair.part.name,
+
+{
+
+fontFamily:
+'Trebuchet MS, Arial',
+
+fontSize:
+'14px',
+
+fontStyle:
+'bold',
+
+color:
+'#1d5136',
+
+backgroundColor:
+'#fffced',
+
+padding:{
+
+x:6,
+
+y:3
+
+}
+
+}
+
+)
+
+.setOrigin(
+0.5
+);
+
+
+
+container.add([
+
+shadow,
+
+stem,
+
+sprout1,
+
+sprout2,
+
+blob,
+
+eye1,
+
+eye2,
+
+pupil1,
+
+pupil2,
+
+symbol,
+
+label
+
+]);
+
+
+
+/* kawasan tap besar */
+
+container.setSize(
+100,
+112
+);
+
+
+container.setInteractive(
+
+new Phaser.Geom.Rectangle(
+
+-50,
+-56,
+
+100,
+112
+
+),
+
+Phaser.Geom.Rectangle.Contains
+
+);
+
+
+
+/* mula drag */
+
+container.on(
+
+'pointerdown',
+
+pointer => {
+
+this.beginDraw(
+
+container,
+
+pointer
+
+);
+
+}
+
+);
+
+
+
+/* hover desktop */
+
+container.on(
+
+'pointerover',
+
+() => {
+
+if(
+!container.connected &&
+!this.drawing
+){
+
+this.tweens.add({
+
+targets:
+container,
+
+scale:
+1.07,
+
+duration:
+90
+
+});
+
+}
+
+}
+
+);
+
+
+
+container.on(
+
+'pointerout',
+
+() => {
+
+if(
+!container.connected &&
+!this.drawing
+){
+
+this.tweens.add({
+
+targets:
+container,
+
+scale:
+1,
+
+duration:
+90
+
+});
+
+}
+
+}
+
+);
+
+
+this.nodeLayer.add(
+container
+);
+
+
+return container;
+
+}
+
+
+
+/* =========================================================
+   START DRAW
+========================================================= */
+
+beginDraw(
+node,
+pointer
+){
+
+if(
+this.stageLock ||
+node.connected
+){
+
+return;
+
+}
+
+
+const pair =
+this.pairs[
+node.pairId
+];
+
+
+this.drawing = {
+
+pair:pair,
+
+node:node,
+
+points:[
+
+new Phaser.Math.Vector2(
+
+node.x,
+
+node.y
+
+)
+
+]
+
+};
+
+
+this.tweens.add({
+
+targets:
+node,
+
+scale:
+1.12,
+
+duration:
+80
+
+});
+
+
+this.addPoint(
+
+pointer.x,
+
+pointer.y
+
+);
+
+}
+
+
+
+/* =========================================================
+   ADD POINT
+========================================================= */
+
+addPoint(
+x,
+y
+){
+
+if(
+!this.drawing
+){
+
+return;
+
+}
+
+
+const points =
+this.drawing.points;
+
+
+const last =
+points[
+points.length - 1
+];
+
+
+if(
+
+Phaser.Math.Distance.Between(
+
+last.x,
+last.y,
+
+x,
+y
+
+)
+
+> 7
+
+){
+
+points.push(
+
+new Phaser.Math.Vector2(
+
+x,
+y
+
+)
+
+);
+
+}
+
+}
+
+
+
+/* =========================================================
+   MOVE
+========================================================= */
+
+onMove(
+pointer
+){
+
+if(
+!this.drawing
+){
+
+return;
+
+}
+
+
+this.addPoint(
+
+pointer.x,
+
+pointer.y
+
+);
+
+
+this.renderTemp(
+
+pointer.x,
+
+pointer.y
+
+);
+
+}
+
+
+
+/* =========================================================
+   RELEASE
+========================================================= */
+
+onUp(
+pointer
+){
+
+if(
+!this.drawing
+){
+
+return;
+
+}
+
+
+const drawing =
+this.drawing;
+
+
+this.addPoint(
+
+pointer.x,
+
+pointer.y
+
+);
+
+
+const target =
+this.findNode(
+
+pointer.x,
+
+pointer.y
+
+);
+
+
+
+/* kalau pasangan betul */
+
+if(
+
+target &&
+
+target.pairId ===
+drawing.node.pairId &&
+
+target.side !==
+drawing.node.side &&
+
+!target.connected
+
+){
+
+const pair =
+drawing.pair;
+
+
+pair.connected =
+true;
+
+
+drawing.node.connected =
+true;
+
+
+target.connected =
+true;
+
+
+pair.path =
+drawing.points.slice();
+
+
+pair.path.push(
+
+new Phaser.Math.Vector2(
+
+target.x,
+
+target.y
+
+)
+
+);
+
+
+drawing.node.setScale(
+1
+);
+
+
+target.setScale(
+1
+);
+
+
+this.flashPair(
+
+pair,
+
+true
+
+);
+
+
+this.renderPaths();
+
+
+this.checkComplete();
+
+}
+
+
+/* salah */
+
+else{
+
+drawing.node.setScale(
+1
+);
+
+
+this.shake(
+
+drawing.node
+
+);
+
+}
+
+
+this.drawing =
+null;
+
+
+this.tempG.clear();
+
+}
+
+
+
+/* =========================================================
+   CARI NODE
+========================================================= */
+
+findNode(
+x,
+y
+){
+
+let best =
+null;
+
+
+let distance =
+Infinity;
+
+
+this.pairs.forEach(
+
+pair =>
+
+pair.nodes.forEach(
+
+node => {
+
+const d =
+Phaser.Math.Distance.Between(
+
+x,
+y,
+
+node.x,
+node.y
+
+);
+
+
+if(
+
+d < 62 &&
+
+d < distance
+
+){
+
+best =
+node;
+
+
+distance =
+d;
+
+}
+
+}
+
+)
+
+);
+
+
+return best;
+
+}
+
+
+
+/* =========================================================
+   TEMP LINE
+========================================================= */
+
+renderTemp(
+x,
+y
+){
+
+if(
+!this.drawing
+){
+
+return;
+
+}
+
+
+const graphics =
+this.tempG;
+
+
+const pair =
+this.drawing.pair;
+
+
+const points =
+
+this.drawing.points.concat([
+
+new Phaser.Math.Vector2(
+
+x,
+y
+
+)
+
+]);
+
+
+graphics.clear();
+
+
+
+/* glow */
+
+graphics.lineStyle(
+
+26,
+
+pair.part.color,
+
+0.20
+
+);
+
+
+graphics.strokePoints(
+
+points,
+
+false,
+
+false
+
+);
+
+
+
+/* main vine */
+
+graphics.lineStyle(
+
+16,
+
+pair.part.color,
+
+0.95
+
+);
+
+
+graphics.strokePoints(
+
+points,
+
+false,
+
+false
+
+);
+
+
+
+/* bulatan kecil supaya line nampak bulat */
+
+points.forEach(
+
+(point,index) => {
+
+if(
+index % 2 === 0
+){
+
+graphics.fillStyle(
+
+pair.part.color,
+
+0.96
+
+);
+
+graphics.fillCircle(
+
+point.x,
+
+point.y,
+
+8
+
+);
+
+}
+
+}
+
+);
+
+}
+
+
+
+/* =========================================================
+   PERMANENT PATH
+========================================================= */
+
+renderPaths(){
+
+const graphics =
+this.pathG;
+
+
+graphics.clear();
+
+
+this.pairs.forEach(
+
+pair => {
+
+if(
+!pair.connected
+){
+
+return;
+
+}
+
+
+
+/* border putih */
+
+graphics.lineStyle(
+
+28,
+
+0xffffff,
+
+0.72
+
+);
+
+
+graphics.strokePoints(
+
+pair.path,
+
+false,
+
+false
+
+);
+
+
+
+/* line warna */
+
+graphics.lineStyle(
+
+17,
+
+pair.part.color,
+
+1
+
+);
+
+
+graphics.strokePoints(
+
+pair.path,
+
+false,
+
+false
+
+);
+
+
+
+pair.path.forEach(
+
+(point,index) => {
+
+if(
+index % 2 === 0
+){
+
+graphics.fillStyle(
+
+pair.part.color,
+
+1
+
+);
+
+
+graphics.fillCircle(
+
+point.x,
+
+point.y,
+
+8.5
+
+);
+
+}
+
+}
+
+);
+
+
+
+/* hujung line */
+
+const first =
+pair.path[0];
+
+
+const last =
+pair.path[
+pair.path.length - 1
+];
+
+
+graphics.fillStyle(
+
+pair.part.color,
+
+1
+
+);
+
+
+graphics.fillCircle(
+
+first.x,
+
+first.y,
+
+10
+
+);
+
+
+graphics.fillCircle(
+
+last.x,
+
+last.y,
+
+10
+
+);
+
+}
+
+);
+
+}
+
+
+
+/* =========================================================
+   SUCCESS EFFECT
+========================================================= */
+
+flashPair(
+pair
+){
+
+pair.nodes.forEach(
+
+node => {
+
+this.tweens.add({
+
+targets:
+node,
+
+scale:
+1.16,
+
+duration:
+110,
+
+yoyo:
+true
+
+});
+
+
+const tick =
+this.add.text(
+
+node.x,
+
+node.y - 72,
+
+'✓',
+
+{
+
+fontSize:
+'30px',
+
+fontStyle:
+'bold',
+
+color:
+'#1c7a35',
+
+stroke:
+'#ffffff',
+
+strokeThickness:
+5
+
+}
+
+)
+
+.setOrigin(
+0.5
+);
+
+
+this.tweens.add({
+
+targets:
+tick,
+
+y:
+tick.y - 18,
+
+alpha:
+0,
+
+duration:
+650,
+
+ease:
+'Cubic.easeOut',
+
+onComplete:
+() => {
+
+tick.destroy();
+
+}
+
+});
+
+}
+
+);
+
+}
+
+
+
+/* =========================================================
+   WRONG EFFECT
+========================================================= */
+
+shake(
+node
+){
+
+const originalX =
+node.x;
+
+
+this.tweens.add({
+
+targets:
+node,
+
+x:
+originalX + 7,
+
+duration:
+55,
+
+yoyo:
+true,
+
+repeat:
+3,
+
+onComplete:
+() => {
+
+node.x =
+originalX;
+
+node.setScale(
+1
+);
+
+}
+
+});
+
+}
+
+
+
+/* =========================================================
+   CHECK COMPLETE
+========================================================= */
+
+checkComplete(){
+
+const complete =
+this.pairs.every(
+
+pair =>
+pair.connected
+
+);
+
+
+if(
+!complete
+){
+
+return;
+
+}
+
+
+this.stageLock =
+true;
+
+
+
+const completeText =
+this.add.text(
+
+this.scale.width / 2,
+
+this.scale.height / 2,
+
+'🌿  SEMUA BERSAMBUNG!  🌿',
+
+{
+
+fontFamily:
+'Trebuchet MS, Arial',
+
+fontSize:
+
+Math.max(
+
+22,
+
+Math.min(
+
+38,
+
+this.scale.width * 0.055
+
+)
+
+) + 'px',
+
+fontStyle:
+'bold',
+
+color:
+'#245b3a',
+
+backgroundColor:
+'#fff8cf',
+
+padding:{
+
+x:16,
+
+y:10
+
+},
+
+stroke:
+'#ffffff',
+
+strokeThickness:
+3
+
+}
+
+)
+
+.setOrigin(
+0.5
+)
+
+.setDepth(
+20
+);
+
+
+
+this.tweens.add({
+
+targets:
+completeText,
+
+scale:
+1.08,
+
+duration:
+250,
+
+yoyo:
+true,
+
+repeat:
+1
+
+});
+
+
+
+this.time.delayedCall(
+
+650,
+
+() => {
+
+completeText.destroy();
+
+
+showQuestion(
+
+currentStage
+
+);
+
+}
+
+);
+
+}
+
+}
+
+
+
+/* =========================================================
+   SHOW QUESTION
+========================================================= */
+
+function showQuestion(
+index
+){
+
+const item =
+QUESTIONS[
+index
+];
+
+
+questionLocked =
+false;
+
+
+questionMeta.textContent =
+
+`Soalan ${index + 1}/25 • ${item.tp}`;
+
+
+questionText.textContent =
+item.q;
+
+
+feedback.textContent =
+'';
+
+
+answers.innerHTML =
+'';
+
+
+const letters = [
+
+'A',
+'B',
+'C',
+'D'
+
+];
+
+
+
+item.o.forEach(
+
+(option,i) => {
+
+const button =
+document.createElement(
+'button'
+);
+
+
+button.className =
+'answer';
+
+
+button.textContent =
+
+`${letters[i]}. ${option}`;
+
+
+button.onclick =
+() => {
+
+checkAnswer(
+
+index,
+
+i,
+
+button
+
+);
+
+};
+
+
+answers.appendChild(
+button
+);
+
+}
+
+);
+
+
+questionOverlay
+.classList
+.add(
+'show'
+);
+
+}
+
+
+
+/* =========================================================
+   ANSWER
+========================================================= */
+
+function checkAnswer(
+index,
+chosen,
+button
+){
+
+if(
+questionLocked
+){
+
+return;
+
+}
+
+
+const item =
+QUESTIONS[
+index
+];
+
+
+
+/* betul */
+
+if(
+chosen === item.a
+){
+
+questionLocked =
+true;
+
+
+button.classList.add(
+'correct'
+);
+
+
+feedback.textContent =
+'✅ Betul! Bagus!';
+
+
+
+[
+...answers.children
+]
+.forEach(
+
+answerButton => {
+
+answerButton.disabled =
+true;
+
+}
+
+);
+
+
+
+setTimeout(
+
+() => {
+
+questionOverlay
+.classList
+.remove(
+'show'
+);
+
+
+
+/* last question */
+
+if(
+index >= 24
+){
+
+winOverlay
+.classList
+.add(
+'show'
+);
+
+}
+
+
+/* next stage */
+
+else{
+
+currentStage =
+index + 1;
+
+
+if(
+gameScene
+){
+
+gameScene.startStage(
+
+currentStage
+
+);
+
+}
+
+}
+
+},
+
+800
+
+);
+
+}
+
+
+
+/* salah */
+
+else{
+
+button.classList.add(
+'wrong'
+);
+
+
+feedback.textContent =
+'❌ Belum tepat. Cuba lagi.';
+
+
+button.disabled =
+true;
+
+
+
+setTimeout(
+
+() => {
+
+button.classList.remove(
+'wrong'
+);
+
+
+button.disabled =
+false;
+
+
+feedback.textContent =
+'';
+
+},
+
+700
+
+);
+
+}
+
+}
+
+
+
+/* =========================================================
+   PHASER CONFIG
+========================================================= */
+
+const config = {
+
+type:
+Phaser.AUTO,
+
+parent:
+'game',
+
+backgroundColor:
+'#daf0bd',
+
+scale:{
+
+mode:
+Phaser.Scale.RESIZE,
+
+width:
+'100%',
+
+height:
+'100%'
+
+},
+
+render:{
+
+antialias:
+true,
+
+pixelArt:
+false,
+
+roundPixels:
+false
+
+},
+
+input:{
+
+activePointers:
+3
+
+},
+
+scene:[
+ConnectScene
+]
+
+};
+
+
+
+new Phaser.Game(
+config
 );
 
 </script>
