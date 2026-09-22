@@ -3,31 +3,46 @@
 <head>
 <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width,
-initial-scale=1,
-maximum-scale=1,
-user-scalable=no,
-viewport-fit=cover">
+<meta
+    name="viewport"
+    content="width=device-width,
+    initial-scale=1,
+    maximum-scale=1,
+    user-scalable=no,
+    viewport-fit=cover"
+>
 
-<title>Connect Match Tumbuhan — Set 5</title>
-
-<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+<title>Tree Hop Climb — Unit 6 Tumbuhan</title>
 
 <style>
+/* =========================================================
+   GLOBAL
+========================================================= */
 
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
+    user-select:none;
 }
 
-html,body{
+html,
+body{
     margin:0;
     width:100%;
     height:100%;
     overflow:hidden;
-    font-family:"Trebuchet MS",Arial,sans-serif;
-    background:#cce8ae;
+    font-family:
+        "Trebuchet MS",
+        Arial,
+        sans-serif;
+
+    background:
+        linear-gradient(
+            180deg,
+            #c9f8d1 0%,
+            #e9ffd9 55%,
+            #fff8cc 100%
+        );
 }
 
 body{
@@ -36,126 +51,38 @@ body{
     align-items:center;
 }
 
-button{
-    font-family:inherit;
-}
+/* =========================================================
+   GAME WRAPPER
+========================================================= */
 
-#app{
-    width:min(100%,1000px);
+#gameWrap{
+    position:relative;
+
+    width:100vw;
     height:100vh;
     height:100svh;
+    height:100dvh;
 
-    position:relative;
-
-    display:flex;
-    flex-direction:column;
+    max-width:900px;
 
     overflow:hidden;
 
-    background:#f7f5dc;
-}
+    background:#d8f7d0;
 
-
-/* ============================================================
-   HEADER
-============================================================ */
-
-#topbar{
-    flex:none;
-
-    min-height:62px;
-
-    display:grid;
-    grid-template-columns:auto 1fr auto;
-
-    align-items:center;
-
-    gap:7px;
-
-    padding:7px 10px;
-
-    background:#fff7d5;
-
-    border-bottom:4px solid #5e9755;
-}
-
-#homeBtn{
-    border:2px solid #60995c;
-    background:#fff;
-    color:#295e3d;
-
-    padding:8px 11px;
-
-    border-radius:11px;
-
-    font-weight:900;
-
-    cursor:pointer;
-}
-
-#titleWrap{
-    min-width:0;
-    text-align:center;
-}
-
-#title{
-    font-size:clamp(17px,3.5vw,28px);
-    font-weight:1000;
-    color:#285f3c;
-}
-
-#subtitle{
-    margin-top:2px;
-
-    font-size:12px;
-    font-weight:800;
-
-    color:#71815a;
-}
-
-#stagePill{
-    padding:8px 10px;
-
-    border-radius:11px;
-
-    background:#ffe183;
-
-    color:#684c12;
-
-    font-size:13px;
-    font-weight:1000;
-
-    white-space:nowrap;
-}
-
-
-/* ============================================================
-   GAME
-============================================================ */
-
-#gameArea{
-    position:relative;
-
-    flex:1;
-    min-height:0;
-
-    overflow:hidden;
-
-    background:
-    linear-gradient(
-        180deg,
-        #e3f3ca,
-        #bade99
-    );
+    box-shadow:
+        0 0 30px rgba(0,0,0,.18);
 }
 
 #game{
     position:absolute;
     inset:0;
+
+    width:100%;
+    height:100%;
 }
 
 #game canvas{
-    display:block;
+    display:block !important;
 
     width:100% !important;
     height:100% !important;
@@ -163,4673 +90,2787 @@ button{
     touch-action:none;
 }
 
+/* =========================================================
+   HUD
+========================================================= */
 
-/* ============================================================
-   INFO
-============================================================ */
-
-#instruction{
+#hud{
     position:absolute;
 
-    z-index:6;
-
-    left:50%;
-    bottom:7px;
-
-    transform:translateX(-50%);
-
-    width:max-content;
-    max-width:94%;
-
-    padding:7px 11px;
-
-    border:2px solid #83aa68;
-
-    border-radius:999px;
-
-    background:rgba(255,255,243,.96);
-
-    color:#30583a;
-
-    font-size:11px;
-    font-weight:900;
-
-    text-align:center;
-
-    pointer-events:none;
-}
-
-#fillCounter{
-    position:absolute;
-
-    z-index:8;
-
-    top:9px;
-    right:9px;
-
-    min-width:72px;
-
-    padding:7px 9px;
-
-    border:2px solid #719e5d;
-
-    border-radius:11px;
-
-    background:rgba(255,255,245,.95);
-
-    color:#315b3c;
-
-    font-size:11px;
-    font-weight:1000;
-
-    text-align:center;
-
-    pointer-events:none;
-}
-
-#elementCounter{
-    position:absolute;
-
-    z-index:8;
-
-    top:9px;
-    left:9px;
-
-    padding:7px 9px;
-
-    border:2px solid #719e5d;
-
-    border-radius:11px;
-
-    background:rgba(255,255,245,.95);
-
-    color:#315b3c;
-
-    font-size:11px;
-    font-weight:1000;
-
-    pointer-events:none;
-}
-
-
-/* ============================================================
-   MESSAGE
-============================================================ */
-
-#miniMessage{
-    position:absolute;
-
-    z-index:16;
-
-    top:48px;
-    left:50%;
-
-    transform:
-    translateX(-50%)
-    translateY(-12px);
-
-    opacity:0;
-
-    max-width:90%;
-
-    padding:8px 13px;
-
-    border:2px solid #dbb14d;
-
-    border-radius:999px;
-
-    background:#fff7ca;
-
-    color:#654c15;
-
-    font-size:12px;
-    font-weight:1000;
-
-    text-align:center;
-
-    pointer-events:none;
-
-    transition:
-    opacity .18s,
-    transform .18s;
-}
-
-#miniMessage.show{
-    opacity:1;
-
-    transform:
-    translateX(-50%)
-    translateY(0);
-}
-
-
-/* ============================================================
-   OVERLAY
-============================================================ */
-
-.overlay{
-    position:absolute;
-    inset:0;
+    top:max(12px, env(safe-area-inset-top));
+    left:12px;
+    right:12px;
 
     z-index:30;
 
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+
+    pointer-events:none;
+}
+
+.hudBox{
+    padding:10px 14px;
+
+    border:3px solid #573414;
+
+    border-radius:18px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #fff9bf,
+            #ffdf76
+        );
+
+    box-shadow:
+        0 5px 0 #9c641e,
+        0 8px 14px rgba(0,0,0,.18);
+
+    color:#38200d;
+
+    font-weight:900;
+
+    line-height:1.3;
+
+    font-size:15px;
+
+    pointer-events:auto;
+}
+
+#progressBox{
+    min-width:150px;
+}
+
+#heightText{
+    margin-top:3px;
+    font-size:13px;
+    color:#6a3f18;
+}
+
+/* =========================================================
+   HOME BUTTON
+========================================================= */
+
+#homeBtn{
+    width:50px;
+    height:50px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border:3px solid #573414;
+    border-radius:50%;
+
+    background:
+        linear-gradient(
+            180deg,
+            #fff7ac,
+            #ffc94f
+        );
+
+    box-shadow:
+        0 5px 0 #965b19,
+        0 8px 13px rgba(0,0,0,.18);
+
+    text-decoration:none;
+
+    color:#4a2b11;
+
+    font-size:25px;
+    font-weight:900;
+
+    pointer-events:auto;
+}
+
+#homeBtn:active{
+    transform:translateY(4px);
+    box-shadow:
+        0 1px 0 #965b19;
+}
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+#controls{
+    position:absolute;
+
+    left:0;
+    right:0;
+
+    bottom:max(18px, env(safe-area-inset-bottom));
+
+    z-index:25;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+
+    padding:0 24px;
+
+    pointer-events:none;
+}
+
+.controlBtn{
+    width:94px;
+    height:94px;
+
+    border:none;
+
+    border-radius:50%;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:
+        linear-gradient(
+            180deg,
+            #fff897,
+            #f5b82e
+        );
+
+    border:5px solid #654016;
+
+    box-shadow:
+        0 8px 0 #98601d,
+        0 12px 20px rgba(0,0,0,.24);
+
+    color:#4a2c0d;
+
+    font-size:42px;
+    font-weight:900;
+
+    cursor:pointer;
+
+    pointer-events:auto;
+
+    touch-action:none;
+}
+
+.controlBtn.active,
+.controlBtn:active{
+    transform:translateY(6px);
+
+    box-shadow:
+        0 2px 0 #98601d;
+}
+
+/* =========================================================
+   SMALL INSTRUCTION
+========================================================= */
+
+#controlHint{
+    position:absolute;
+
+    bottom:max(123px, calc(env(safe-area-inset-bottom) + 123px));
+
+    left:50%;
+    transform:translateX(-50%);
+
+    z-index:20;
+
+    background:rgba(255,255,255,.88);
+
+    border:2px solid rgba(68,93,35,.7);
+
+    border-radius:50px;
+
+    padding:7px 14px;
+
+    font-size:12px;
+    font-weight:900;
+
+    color:#345329;
+
+    white-space:nowrap;
+
+    pointer-events:none;
+
+    transition:.3s;
+}
+
+/* =========================================================
+   START SCREEN
+========================================================= */
+
+.overlay{
+    position:absolute;
+
+    inset:0;
+
+    z-index:100;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:
+        max(20px, env(safe-area-inset-top))
+        20px
+        max(20px, env(safe-area-inset-bottom));
+
+    background:
+        rgba(221,255,217,.94);
+
+    backdrop-filter:blur(4px);
+}
+
+.startCard{
+    width:min(92%, 500px);
+
+    padding:28px 22px;
+
+    text-align:center;
+
+    border:5px solid #573414;
+
+    border-radius:30px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #fffbc8,
+            #ffe271
+        );
+
+    box-shadow:
+        0 11px 0 #9f641c,
+        0 18px 30px rgba(0,0,0,.2);
+}
+
+.startTree{
+    font-size:74px;
+    line-height:1;
+    margin-bottom:8px;
+}
+
+.startCard h1{
+    margin:5px 0 9px;
+
+    font-size:clamp(27px,7vw,42px);
+
+    color:#3c681e;
+
+    text-shadow:
+        0 2px 0 #fff;
+}
+
+.startCard p{
+    margin:8px auto 20px;
+
+    max-width:400px;
+
+    color:#533615;
+
+    font-size:16px;
+    line-height:1.5;
+    font-weight:700;
+}
+
+.bigBtn{
+    width:100%;
+
+    padding:16px 20px;
+
+    border:none;
+    border-radius:18px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #8ee449,
+            #49ad2c
+        );
+
+    border:4px solid #326c1f;
+
+    box-shadow:
+        0 7px 0 #27651b;
+
+    color:#fff;
+
+    font-size:20px;
+    font-weight:900;
+
+    cursor:pointer;
+
+    text-shadow:
+        0 2px rgba(0,0,0,.2);
+}
+
+.bigBtn:active{
+    transform:translateY(5px);
+    box-shadow:
+        0 2px 0 #27651b;
+}
+
+/* =========================================================
+   QUESTION MODAL
+========================================================= */
+
+#questionModal{
     display:none;
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:150;
 
     align-items:center;
     justify-content:center;
 
-    padding:14px;
+    padding:
+        max(18px, env(safe-area-inset-top))
+        15px
+        max(18px, env(safe-area-inset-bottom));
 
-    background:rgba(24,61,40,.58);
+    background:
+        rgba(25,66,28,.72);
 
-    backdrop-filter:blur(2px);
+    backdrop-filter:blur(4px);
 }
 
-.overlay.show{
-    display:flex;
-}
-
-.card{
-    width:min(94%,720px);
+.questionCard{
+    width:min(94%, 580px);
 
     max-height:92%;
 
     overflow:auto;
 
-    padding:18px;
+    padding:20px;
 
-    background:#fffef0;
+    border-radius:28px;
 
-    border:4px solid #4d8852;
+    border:5px solid #5b3515;
 
-    border-radius:22px;
+    background:
+        linear-gradient(
+            180deg,
+            #fffbd3,
+            #fff1a1
+        );
 
     box-shadow:
-    0 16px 42px
-    rgba(0,0,0,.28);
+        0 10px 0 #7d4b17,
+        0 19px 35px rgba(0,0,0,.32);
 }
 
-.card h2{
-    margin:0 0 9px;
+.questionTop{
+    display:flex;
 
-    color:#2a6740;
+    justify-content:space-between;
+    align-items:center;
 
-    font-size:clamp(24px,5vw,38px);
+    gap:10px;
 
-    text-align:center;
+    margin-bottom:12px;
 }
 
-.card p{
-    line-height:1.5;
-}
+#questionNumber{
+    display:inline-block;
 
-.primary{
-    width:100%;
-
-    min-height:52px;
-
-    border:0;
-
-    border-radius:15px;
-
-    background:#4da45e;
+    background:#69bf3c;
 
     color:white;
 
-    font-size:18px;
-    font-weight:1000;
+    border:3px solid #356f22;
 
-    box-shadow:0 5px 0 #307442;
+    border-radius:50px;
 
-    cursor:pointer;
+    padding:7px 13px;
+
+    font-weight:900;
+
+    font-size:14px;
 }
 
-.primary:active{
-    transform:translateY(2px);
+#tpBadge{
+    display:inline-block;
 
-    box-shadow:0 3px 0 #307442;
-}
+    background:#ffe15d;
 
+    color:#573414;
 
-/* ============================================================
-   QUESTION
-============================================================ */
+    border:3px solid #9f6b16;
 
-#questionMeta{
-    color:#83631a;
+    border-radius:50px;
 
-    font-weight:1000;
+    padding:7px 13px;
 
-    text-align:center;
+    font-weight:900;
+
+    font-size:14px;
 }
 
 #questionText{
-    margin:10px 0 15px;
+    margin:9px 0 16px;
 
-    color:#224f35;
+    color:#3d2b15;
 
-    font-size:clamp(18px,3vw,25px);
-
-    font-weight:1000;
+    font-size:clamp(18px,4.8vw,24px);
 
     line-height:1.35;
 
-    text-align:center;
+    font-weight:900;
 }
 
-#answers{
+.answers{
     display:grid;
-
-    grid-template-columns:
-    1fr 1fr;
-
     gap:10px;
 }
 
-.answer{
+.answerBtn{
+    width:100%;
+
     min-height:58px;
 
-    padding:10px 13px;
+    border:3px solid #71501e;
 
-    border:3px solid #9dbb7c;
+    border-radius:16px;
 
-    border-radius:15px;
+    padding:12px 15px;
 
-    background:#fff;
+    background:#fffdf1;
 
-    color:#254f36;
+    color:#402b13;
+
+    text-align:left;
+
+    font-family:inherit;
 
     font-size:16px;
     font-weight:900;
 
-    text-align:left;
-
     cursor:pointer;
+
+    box-shadow:
+        0 4px 0 #c4a255;
+
+    touch-action:manipulation;
 }
 
-.answer:active{
-    transform:scale(.98);
+.answerBtn:hover{
+    background:#fff9cb;
 }
 
-.answer.correct{
-    background:#d6f5d8;
-    border-color:#42a853;
+.answerBtn:active{
+    transform:translateY(3px);
+    box-shadow:
+        0 1px 0 #c4a255;
 }
 
-.answer.wrong{
-    background:#ffe0dd;
-    border-color:#e85b50;
+.answerBtn.correct{
+    background:#8be16d;
+    border-color:#35852c;
+    color:#174b17;
+    box-shadow:
+        0 4px 0 #39842a;
+}
+
+.answerBtn.wrong{
+    background:#ff9a91;
+    border-color:#ba3c36;
+    color:#721e1a;
+    box-shadow:
+        0 4px 0 #ad3a35;
 }
 
 #feedback{
-    min-height:29px;
+    min-height:26px;
 
-    margin-top:11px;
-
-    font-size:17px;
-    font-weight:1000;
+    margin-top:12px;
 
     text-align:center;
+
+    font-weight:900;
+
+    font-size:16px;
 }
 
+/* =========================================================
+   COMPLETION
+========================================================= */
 
-/* ============================================================
-   WIN
-============================================================ */
+#completeModal{
+    display:none;
 
-#winOverlay .card{
+    position:absolute;
+
+    inset:0;
+
+    z-index:160;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
+
+    background:
+        rgba(30,92,39,.75);
+
+    backdrop-filter:blur(5px);
+}
+
+.completeCard{
+    width:min(92%, 500px);
+
     text-align:center;
+
+    padding:28px 22px;
+
+    border:5px solid #573414;
+
+    border-radius:30px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #fffac1,
+            #ffd965
+        );
+
+    box-shadow:
+        0 11px 0 #975c1a,
+        0 20px 36px rgba(0,0,0,.32);
 }
 
-#winIcon{
+.completeEmoji{
     font-size:70px;
 }
 
+.completeCard h2{
+    margin:4px 0 10px;
 
-/* ============================================================
-   MOBILE
-============================================================ */
+    color:#347427;
 
-@media(max-width:650px){
+    font-size:30px;
+}
 
-    #topbar{
-        min-height:56px;
+.completeCard p{
+    color:#513213;
 
-        padding:6px;
+    font-weight:800;
 
-        gap:4px;
+    line-height:1.5;
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+#toast{
+    position:absolute;
+
+    z-index:80;
+
+    left:50%;
+    top:105px;
+
+    transform:
+        translateX(-50%)
+        translateY(-20px);
+
+    opacity:0;
+
+    pointer-events:none;
+
+    background:rgba(51,88,31,.93);
+
+    color:white;
+
+    border:3px solid white;
+
+    border-radius:50px;
+
+    padding:8px 16px;
+
+    white-space:nowrap;
+
+    font-size:13px;
+    font-weight:900;
+
+    transition:.25s;
+}
+
+#toast.show{
+    opacity:1;
+
+    transform:
+        translateX(-50%)
+        translateY(0);
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width:600px){
+
+    .hudBox{
+        font-size:13px;
+        padding:8px 11px;
     }
 
-    #homeBtn,
-    #stagePill{
-        padding:7px;
-
-        font-size:11px;
+    #progressBox{
+        min-width:132px;
     }
 
-    #title{
-        font-size:16px;
+    #homeBtn{
+        width:45px;
+        height:45px;
+        font-size:22px;
     }
 
-    #subtitle{
+    .controlBtn{
+        width:78px;
+        height:78px;
+
+        font-size:35px;
+
+        border-width:4px;
+    }
+
+    #controls{
+        padding:0 17px;
+    }
+
+    #controlHint{
+        bottom:max(
+            105px,
+            calc(env(safe-area-inset-bottom) + 105px)
+        );
+    }
+
+    .questionCard{
+        padding:16px;
+    }
+
+    .answerBtn{
+        min-height:52px;
+        font-size:14px;
+    }
+}
+
+@media (orientation:landscape) and (max-height:700px){
+
+    #controls{
+        padding:0 25px;
+    }
+
+    .controlBtn{
+        width:68px;
+        height:68px;
+        font-size:31px;
+    }
+
+    #controlHint{
         display:none;
     }
 
-    .card{
-        padding:14px;
-
-        border-width:3px;
+    .questionCard{
+        max-height:94vh;
     }
 
-    #answers{
-        grid-template-columns:1fr;
+    .answerBtn{
+        min-height:45px;
+        padding:9px 12px;
     }
-
-    .answer{
-        min-height:50px;
-
-        font-size:14px;
-    }
-
-    #instruction{
-        bottom:5px;
-
-        padding:6px 8px;
-
-        font-size:10px;
-    }
-
-    #fillCounter,
-    #elementCounter{
-        top:6px;
-
-        padding:5px 7px;
-
-        font-size:9px;
-    }
-
-    #fillCounter{
-        right:6px;
-    }
-
-    #elementCounter{
-        left:6px;
-    }
-
 }
-
 </style>
 </head>
 
 <body>
 
-<div id="app">
+<div id="gameWrap">
+
+    <div id="game"></div>
+
+    <!-- HUD -->
+    <div id="hud">
+
+        <div
+            id="progressBox"
+            class="hudBox"
+        >
+            🌱 Soalan:
+            <span id="questionProgress">0 / 25</span>
+
+            <div id="heightText">
+                🌳 Ketinggian: 0 m
+            </div>
+        </div>
+
+        <a
+            id="homeBtn"
+            href="index.html"
+            aria-label="Home"
+        >
+            🏠
+        </a>
 
+    </div>
 
-<!-- ============================================================
-     HEADER
-============================================================ -->
+    <!-- hint -->
+    <div id="controlHint">
+        Tekan ◀ ▶ untuk gerakkan Grasshopper
+    </div>
 
-<div id="topbar">
+    <!-- controls -->
+    <div id="controls">
 
-<button id="homeBtn">
-⌂ Home
-</button>
+        <button
+            id="leftBtn"
+            class="controlBtn"
+            aria-label="Kiri"
+        >
+            ◀
+        </button>
 
+        <button
+            id="rightBtn"
+            class="controlBtn"
+            aria-label="Kanan"
+        >
+            ▶
+        </button>
+
+    </div>
+
+    <!-- toast -->
+    <div id="toast"></div>
+
+    <!-- start screen -->
+    <div
+        id="startOverlay"
+        class="overlay"
+    >
+
+        <div class="startCard">
+
+            <div class="startTree">
+                🌳🦗
+            </div>
+
+            <h1>
+                TREE HOP CLIMB
+            </h1>
+
+            <p>
+                Bantu Grasshopper melompat dari satu
+                dahan ke dahan yang lain dan mendaki
+                pokok setinggi yang boleh.
+                <br><br>
+                Grasshopper akan
+                <b>melompat secara automatik.</b>
+                Anda hanya perlu kawal
+                <b>kiri dan kanan.</b>
+            </p>
+
+            <button
+                id="startBtn"
+                class="bigBtn"
+            >
+                MULA MENDAKI
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- question modal -->
+    <div id="questionModal">
+
+        <div class="questionCard">
+
+            <div class="questionTop">
 
-<div id="titleWrap">
+                <span id="questionNumber">
+                    Soalan 1 / 25
+                </span>
 
-<div id="title">
-Connect Match Tumbuhan
-</div>
+                <span id="tpBadge">
+                    TP1
+                </span>
 
-<div id="subtitle">
-Penuhkan semua petak tanpa laluan bertindih
-</div>
+            </div>
 
-</div>
+            <div id="questionText"></div>
 
+            <div
+                id="answerList"
+                class="answers"
+            ></div>
 
-<div id="stagePill">
-Stage 1/25
-</div>
+            <div id="feedback"></div>
 
-</div>
+        </div>
 
+    </div>
 
+    <!-- complete -->
+    <div id="completeModal">
 
-<!-- ============================================================
-     GAME
-============================================================ -->
+        <div class="completeCard">
 
-<div id="gameArea">
+            <div class="completeEmoji">
+                🦗🌳🏆
+            </div>
 
-<div id="game"></div>
+            <h2>
+                Tahniah!
+            </h2>
 
+            <p>
+                Semua 25 soalan telah berjaya diselesaikan.
+                <br><br>
+                Pokok ini masih belum berakhir.
+                Grasshopper boleh terus mendaki
+                setinggi yang anda mahu!
+            </p>
 
-<div id="elementCounter">
-8 Elemen
-</div>
+            <button
+                id="continueBtn"
+                class="bigBtn"
+            >
+                TERUS MENDAKI
+            </button>
 
+        </div>
 
-<div id="fillCounter">
-0 / 25
-</div>
-
-
-<div id="miniMessage"></div>
-
-
-<div id="instruction">
-Sambungkan pasangan dan penuhkan semua 25 petak
-</div>
-
-
-
-<!-- ============================================================
-     START
-============================================================ -->
-
-<div
-class="overlay show"
-id="startOverlay">
-
-<div class="card">
-
-<h2>
-🌱 Connect Tumbuhan
-</h2>
-
-<p style="
-text-align:center;
-font-weight:900;
-">
-
-Sambungkan pasangan
-<b>Daun, Bunga, Akar dan Batang</b>.
-
-</p>
-
-<p>
-
-Tekan satu elemen dan terus drag ke elemen
-yang mempunyai <b>simbol dan warna yang sama</b>.
-
-</p>
-
-<p>
-
-<b>
-Semua 25 petak mesti dipenuhi.
-</b>
-
-Laluan tidak boleh bersilang atau melalui
-laluan pasangan lain.
-
-</p>
-
-<p>
-
-Setiap stage menggunakan
-<b>susunan elemen yang berbeza</b>.
-Pattern yang sudah digunakan tidak digunakan
-semula pada stage akan datang.
-
-</p>
-
-<p>
-
-Setiap 5 soalan, satu pasangan baharu akan
-ditambah ke dalam grid.
-
-</p>
-
-<button
-class="primary"
-id="startBtn">
-
-MULA GAME
-
-</button>
-
-</div>
-
-</div>
-
-
-
-<!-- ============================================================
-     QUESTION
-============================================================ -->
-
-<div
-class="overlay"
-id="questionOverlay">
-
-<div class="card">
-
-<div id="questionMeta"></div>
-
-<div id="questionText"></div>
-
-<div id="answers"></div>
-
-<div id="feedback"></div>
-
-</div>
-
-</div>
-
-
-
-<!-- ============================================================
-     WIN
-============================================================ -->
-
-<div
-class="overlay"
-id="winOverlay">
-
-<div class="card">
-
-<div id="winIcon">
-🌻
-</div>
-
-<h2>
-Tahniah!
-</h2>
-
-<p style="font-weight:900;">
-
-Anda berjaya melengkapkan semua 25 stage.
-
-</p>
-
-<button
-class="primary"
-id="againBtn">
-
-MAIN SEMULA
-
-</button>
-
-</div>
+    </div>
 
 </div>
 
 
-</div>
-</div>
-
-
+<!-- PHASER 3 -->
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <script>
-
-/* ============================================================
-   QUESTIONS SET 5
-============================================================ */
+/* =========================================================
+   QUESTION DATA
+========================================================= */
 
 const QUESTIONS = [
 
 {
-tp:"TP1",
-q:"Apakah bahagian tumbuhan yang biasanya berwarna hijau dan terdapat pada ranting?",
-o:["Daun","Batang","Akar","Bunga"],
-a:0
+    tp:"TP1",
+    q:"Bahagian tumbuhan yang tumbuh di atas akar ialah ____.",
+    options:[
+        "Daun",
+        "Batang",
+        "Bunga",
+        "Akar"
+    ],
+    correct:1
 },
 
 {
-tp:"TP1",
-q:"Pada pokok berbunga, bahagian yang disebut sebagai bunga ialah salah satu daripada ____ utama tumbuhan.",
-o:["Bunyi","Haiwan","Bahagian","Rasa"],
-a:2
+    tp:"TP2",
+    q:"Lina mahu melabel bahagian pokok yang berada di bawah batang. Label yang betul ialah ____.",
+    options:[
+        "Buah",
+        "Bunga",
+        "Daun",
+        "Akar"
+    ],
+    correct:3
 },
 
 {
-tp:"TP2",
-q:"Bahagian tumbuhan yang boleh dikenal pasti pada pokok bunga raya ialah ____.",
-o:["Paruh","Kepak","Sirip","Bunga"],
-a:3
+    tp:"TP2",
+    q:"Jika bahagian tumbuhan ditunjukkan di tengah-tengah pokok dan menyokong cabang, apakah labelnya?",
+    options:[
+        "Daun",
+        "Bunga",
+        "Batang",
+        "Akar"
+    ],
+    correct:2
 },
 
 {
-tp:"TP2",
-q:"Bahagian tumbuhan yang menghubungkan bahagian bawah dan bahagian atas pokok ialah ____.",
-o:["Akar","Batang","Daun","Bunga"],
-a:1
+    tp:"TP1",
+    q:"Apakah nama bahagian pokok yang biasanya mempunyai banyak helaian hijau?",
+    options:[
+        "Daun",
+        "Batang",
+        "Tanah",
+        "Akar"
+    ],
+    correct:0
 },
 
 {
-tp:"TP1",
-q:"Pilih kumpulan yang semuanya merupakan bahagian tumbuhan.",
-o:[
-"Bunga, daun, batang, akar",
-"Mata, telinga, hidung, kulit",
-"Kepak, sirip, paruh, tanduk",
-"Roda, pintu, tingkap, bumbung"
-],
-a:0
+    tp:"TP2",
+    q:"Jika satu gambar menunjukkan akar, batang dan daun tetapi satu label belum diisi pada bahagian berkelopak, label itu ialah ____.",
+    options:[
+        "Batang",
+        "Bunga",
+        "Daun",
+        "Akar"
+    ],
+    correct:1
 },
 
 {
-tp:"TP2",
-q:"Amin melihat satu bahagian tumbuhan di bawah tanah. Bahagian itu ialah ____.",
-o:["Batang","Akar","Daun","Bunga"],
-a:1
+    tp:"TP1",
+    q:"Pokok bunga raya mempunyai bahagian seperti bunga, daun, batang dan ____.",
+    options:[
+        "Akar",
+        "Kepak",
+        "Cangkerang",
+        "Paruh"
+    ],
+    correct:0
 },
 
 {
-tp:"TP2",
-q:"Apabila mengelaskan tumbuhan mengikut batang, dua kumpulan yang sesuai ialah ____.",
-o:[
-"Jejala dan selari",
-"Tunjang dan serabut",
-"Berbunga dan tidak berbunga",
-"Berkayu dan tidak berkayu"
-],
-a:3
+    tp:"TP2",
+    q:"Jika satu tumbuhan mempunyai batang seperti pokok betik, batang itu dikelaskan sebagai ____.",
+    options:[
+        "Jejala",
+        "Berkayu",
+        "Tidak berkayu",
+        "Tunjang"
+    ],
+    correct:2
 },
 
 {
-tp:"TP2",
-q:"Rina membandingkan pokok teratai dengan paku pakis. Perbezaan yang dinyatakan dalam buku ialah ____.",
-o:[
-"Teratai berbunga, paku pakis tidak berbunga",
-"Kedua-duanya berbunga",
-"Teratai tidak berdaun",
-"Kedua-duanya tidak berbunga"
-],
-a:0
+    tp:"TP1",
+    q:"Antara berikut, yang manakah ciri urat daun?",
+    options:[
+        "Berbunga atau tidak berbunga",
+        "Jejala atau selari",
+        "Tunjang atau serabut",
+        "Berkayu atau tidak berkayu"
+    ],
+    correct:1
 },
 
 {
-tp:"TP1",
-q:"Batang pokok betik ialah jenis ____.",
-o:["Jejala","Berkayu","Tidak berkayu","Tunjang"],
-a:2
+    tp:"TP1",
+    q:"Pokok paku pakis ialah tumbuhan yang ____.",
+    options:[
+        "Berbunga",
+        "Berbuah besar",
+        "Berbatang berkayu",
+        "Tidak berbunga"
+    ],
+    correct:3
 },
 
 {
-tp:"TP2",
-q:"Apakah ciri yang digunakan untuk membezakan pokok durian dengan pokok betik dalam buku?",
-o:[
-"Berbunga atau tidak berbunga",
-"Tunjang atau serabut",
-"Jejala atau selari",
-"Berkayu atau tidak berkayu"
-],
-a:3
+    tp:"TP1",
+    q:"Antara berikut, yang manakah ciri batang?",
+    options:[
+        "Berkayu atau tidak berkayu",
+        "Berbunga atau tidak berbunga",
+        "Jejala atau selari",
+        "Tunjang atau serabut"
+    ],
+    correct:0
 },
 
 {
-tp:"TP1",
-q:"Pokok pandan mempunyai akar ____.",
-o:["Serabut","Jejala","Selari","Tunjang"],
-a:0
+    tp:"TP2",
+    q:"Aina membandingkan bunga ros dengan pandan. Perbezaan akar yang betul ialah ____.",
+    options:[
+        "Bunga ros serabut, pandan tunjang",
+        "Kedua-duanya tunjang",
+        "Kedua-duanya serabut",
+        "Bunga ros tunjang, pandan serabut"
+    ],
+    correct:3
 },
 
 {
-tp:"TP1",
-q:"Batang pokok durian ialah jenis ____.",
-o:["Serabut","Berkayu","Tidak berkayu","Jejala"],
-a:1
+    tp:"TP2",
+    q:"Daun yang mempunyai corak urat seperti jaring dikelaskan sebagai urat daun ____.",
+    options:[
+        "Tunjang",
+        "Serabut",
+        "Jejala",
+        "Selari"
+    ],
+    correct:2
 },
 
 {
-tp:"TP2",
-q:"Apakah bahagian yang membantu tumbuhan berdiri kukuh di dalam tanah?",
-o:["Buah","Bunga","Daun","Akar"],
-a:3
+    tp:"TP1",
+    q:"Apakah fungsi utama bunga yang dinyatakan dalam Unit 6?",
+    options:[
+        "Bahagian pembiakan tumbuhan",
+        "Menyerap air daripada tanah",
+        "Membuat makanan",
+        "Menyokong pokok"
+    ],
+    correct:0
 },
 
 {
-tp:"TP1",
-q:"Batang membawa makanan dari daun ke ____.",
-o:[
-"Pasu",
-"Langit",
-"Bahagian tumbuhan yang lain",
-"Batu"
-],
-a:2
+    tp:"TP2",
+    q:"Apakah yang berlaku kepada bunga seperti yang diterangkan dalam buku?",
+    options:[
+        "Bertukar menjadi batu",
+        "Bertukar menjadi buah dan biji benih",
+        "Bertukar menjadi tanah",
+        "Bertukar menjadi akar"
+    ],
+    correct:1
 },
 
 {
-tp:"TP1",
-q:"Akar mengambil air dan nutrien terus daripada ____.",
-o:["Tanah","Buah","Daun","Bunga"],
-a:0
+    tp:"TP2",
+    q:"Daun telah membuat makanan. Bahagian yang mengangkut makanan itu ialah ____.",
+    options:[
+        "Akar",
+        "Bunga",
+        "Buah",
+        "Batang"
+    ],
+    correct:3
 },
 
 {
-tp:"TP2",
-q:"Air dan nutrien bergerak dari akar ke daun melalui ____.",
-o:["Buah","Bunga","Batang","Biji benih"],
-a:2
+    tp:"TP2",
+    q:"Makanan yang dibuat oleh daun dihantar ke bahagian lain melalui ____.",
+    options:[
+        "Akar sahaja",
+        "Tanah",
+        "Batang",
+        "Bunga sahaja"
+    ],
+    correct:2
 },
 
 {
-tp:"TP2",
-q:"Mengapakah akar penting kepada pokok?",
-o:[
-"Membuat bunga berwarna",
-"Menyokong pokok dan menyerap air serta nutrien",
-"Menarik cahaya",
-"Menghasilkan bunyi"
-],
-a:1
+    tp:"TP1",
+    q:"Bahagian tumbuhan yang digunakan untuk membuat makanan ialah ____.",
+    options:[
+        "Akar",
+        "Batang",
+        "Bunga",
+        "Daun"
+    ],
+    correct:3
 },
 
 {
-tp:"TP2",
-q:"Jika akar rosak, fungsi yang mungkin terganggu ialah ____.",
-o:[
-"Menghasilkan bunyi",
-"Melihat cahaya",
-"Mendengar bunyi",
-"Menyerap air dan nutrien"
-],
-a:3
+    tp:"TP1",
+    q:"Apakah hasil yang boleh terbentuk selepas bunga berkembang seperti diterangkan dalam buku?",
+    options:[
+        "Batang dan akar",
+        "Buah dan biji benih",
+        "Air dan nutrien",
+        "Daun dan tanah"
+    ],
+    correct:1
 },
 
 {
-tp:"TP1",
-q:"Daun penting kerana daun ____.",
-o:[
-"Membuat makanan",
-"Menjadi akar",
-"Menjadi biji benih",
-"Menyerap air dari tanah"
-],
-a:0
+    tp:"TP2",
+    q:"Pokok tanpa akar mudah tumbang kerana akar membantu ____.",
+    options:[
+        "Menyokong pokok",
+        "Menukar warna daun",
+        "Membuat bunyi",
+        "Menghasilkan cahaya"
+    ],
+    correct:0
 },
 
 {
-tp:"TP2",
-q:"Pokok A dan B mempunyai batang berkayu. Apakah ciri yang serupa?",
-o:[
-"Jenis urat daun",
-"Jenis tanah",
-"Jenis batang",
-"Jenis akar"
-],
-a:2
+    tp:"TP1",
+    q:"Daun pokok bunga raya dan bunga ros sama-sama berurat ____.",
+    options:[
+        "Selari",
+        "Serabut",
+        "Jejala",
+        "Tunjang"
+    ],
+    correct:2
 },
 
 {
-tp:"TP1",
-q:"Batang pokok bunga raya dan bunga ros sama-sama jenis ____.",
-o:[
-"Serabut",
-"Berkayu",
-"Tidak berkayu",
-"Selari"
-],
-a:1
+    tp:"TP2",
+    q:"Apabila dua tumbuhan mempunyai batang berkayu yang sama, kita mengatakan ciri batangnya ____.",
+    options:[
+        "Berbeza sepenuhnya",
+        "Serupa",
+        "Tiada",
+        "Tidak dapat dibandingkan"
+    ],
+    correct:1
 },
 
 {
-tp:"TP2",
-q:"Bunga raya dan bunga ros mempunyai batang berkayu. Pernyataan ini menunjukkan ____.",
-o:[
-"Perbezaan akar",
-"Perbezaan bunga",
-"Tiada batang",
-"Persamaan ciri batang"
-],
-a:3
+    tp:"TP2",
+    q:"Apabila dua tumbuhan mempunyai akar tunjang yang sama, kita mengatakan ciri akarnya ____.",
+    options:[
+        "Bertentangan",
+        "Tidak wujud",
+        "Hilang",
+        "Serupa"
+    ],
+    correct:3
 },
 
 {
-tp:"TP1",
-q:"Bunga raya dan bunga ros mempunyai tiga ciri yang sama: urat daun jejala, batang berkayu dan akar ____.",
-o:[
-"Serabut",
-"Tunjang",
-"Selari",
-"Tidak berkayu"
-],
-a:1
+    tp:"TP1",
+    q:"Dalam subtopik 'Berbeza Tapi Serupa', kita mengenal pasti ____ antara tumbuhan berlainan.",
+    options:[
+        "Rasa makanan",
+        "Ciri bahagian yang sama",
+        "Bunyi haiwan",
+        "Warna pakaian"
+    ],
+    correct:1
 },
 
 {
-tp:"TP2",
-q:"Pokok A dan B mempunyai urat daun jejala. Apakah ciri yang serupa?",
-o:[
-"Warna tanah",
-"Jenis buah",
-"Jenis urat daun",
-"Jenis bunga"
-],
-a:2
+    tp:"TP2",
+    q:"Bunga raya dan bunga ros mempunyai akar tunjang. Pernyataan ini menunjukkan ____.",
+    options:[
+        "Perbezaan bunga",
+        "Perbezaan daun",
+        "Persamaan ciri akar",
+        "Tiada akar"
+    ],
+    correct:2
 },
 
 {
-tp:"TP1",
-q:"Selain sama-sama berbunga, bunga raya dan bunga ros juga sama-sama mempunyai batang ____.",
-o:[
-"Berkayu",
-"Tidak berkayu",
-"Selari",
-"Serabut"
-],
-a:0
+    tp:"TP1",
+    q:"Dua tumbuhan boleh dibandingkan berdasarkan bunga, daun, batang dan ____.",
+    options:[
+        "Akar",
+        "Sirip",
+        "Sayap",
+        "Paruh"
+    ],
+    correct:0
 }
 
 ];
 
 
-/* ============================================================
-   GRID
-============================================================ */
-
-const GRID_SIZE = 5;
-
-const TOTAL_CELLS = 25;
-
-
-/* ============================================================
-   PAIRS
-
-   Semua masih hanya guna:
-   DAUN
-   BUNGA
-   AKAR
-   BATANG
-
-   Pair tambahan menggunakan warna lain.
-============================================================ */
-
-const PAIR_LIBRARY = [
-
-{
-id:"leaf_green",
-type:"leaf",
-color:0x48aa50
-},
-
-{
-id:"flower_pink",
-type:"flower",
-color:0xeb58a4
-},
-
-{
-id:"root_orange",
-type:"root",
-color:0xd88c38
-},
-
-{
-id:"stem_blue",
-type:"stem",
-color:0x438fc6
-},
-
-{
-id:"flower_purple",
-type:"flower",
-color:0x8d61d4
-},
-
-{
-id:"leaf_teal",
-type:"leaf",
-color:0x18a68c
-},
-
-{
-id:"root_brown",
-type:"root",
-color:0xa7663e
-},
-
-{
-id:"stem_lime",
-type:"stem",
-color:0x7b9f36
-}
-
-];
-
-
-/* ============================================================
-   FULL GRID ROUTES
-
-   Setiap route menggunakan semua 25 petak.
-   Route ini hanya untuk jana puzzle.
-
-   Pemain TAK nampak solution.
-============================================================ */
-
-const ROW_SNAKE = [
-
-[0,0],[1,0],[2,0],[3,0],[4,0],
-
-[4,1],[3,1],[2,1],[1,1],[0,1],
-
-[0,2],[1,2],[2,2],[3,2],[4,2],
-
-[4,3],[3,3],[2,3],[1,3],[0,3],
-
-[0,4],[1,4],[2,4],[3,4],[4,4]
-
-];
-
-
-const COLUMN_SNAKE = [
-
-[0,0],[0,1],[0,2],[0,3],[0,4],
-
-[1,4],[1,3],[1,2],[1,1],[1,0],
-
-[2,0],[2,1],[2,2],[2,3],[2,4],
-
-[3,4],[3,3],[3,2],[3,1],[3,0],
-
-[4,0],[4,1],[4,2],[4,3],[4,4]
-
-];
-
-
-const SPIRAL_PATH = [
-
-[0,0],[1,0],[2,0],[3,0],[4,0],
-
-[4,1],[4,2],[4,3],[4,4],
-
-[3,4],[2,4],[1,4],[0,4],
-
-[0,3],[0,2],[0,1],
-
-[1,1],[2,1],[3,1],
-
-[3,2],[3,3],
-
-[2,3],[1,3],
-
-[1,2],
-
-[2,2]
-
-];
-
-
-const REVERSE_SPIRAL = [
-
-[2,2],
-
-[1,2],
-
-[1,3],[2,3],
-
-[3,3],[3,2],
-
-[3,1],[2,1],[1,1],
-
-[0,1],[0,2],[0,3],
-
-[0,4],[1,4],[2,4],[3,4],[4,4],
-
-[4,3],[4,2],[4,1],
-
-[4,0],[3,0],[2,0],[1,0],[0,0]
-
-];
-
-
-const FULL_PATH_LIBRARY = [
-
-ROW_SNAKE,
-COLUMN_SNAKE,
-SPIRAL_PATH,
-REVERSE_SPIRAL
-
-];
-
-
-/* ============================================================
-   GLOBAL PATTERN MEMORY
-
-   Susunan endpoint yang pernah digunakan
-   disimpan di sini.
-
-   Jadi pattern yang sama tidak digunakan lagi
-   dalam sesi permainan ini.
-============================================================ */
-
-const USED_PATTERN_SIGNATURES =
-new Set();
-
-
-let STAGE_PATTERNS = [];
-
-
-/* ============================================================
-   GLOBAL
-============================================================ */
-
-let currentStage = 0;
-
-let gameScene = null;
-
-let answerLocked = false;
-
-let miniTimer = null;
-
-
-const stagePill =
-document.getElementById(
-"stagePill"
-);
+/* =========================================================
+   DOM
+========================================================= */
 
 const startOverlay =
-document.getElementById(
-"startOverlay"
-);
+    document.getElementById("startOverlay");
 
-const questionOverlay =
-document.getElementById(
-"questionOverlay"
-);
+const startBtn =
+    document.getElementById("startBtn");
 
-const winOverlay =
-document.getElementById(
-"winOverlay"
-);
+const leftBtn =
+    document.getElementById("leftBtn");
 
-const questionMeta =
-document.getElementById(
-"questionMeta"
-);
+const rightBtn =
+    document.getElementById("rightBtn");
+
+const questionModal =
+    document.getElementById("questionModal");
+
+const questionNumber =
+    document.getElementById("questionNumber");
+
+const tpBadge =
+    document.getElementById("tpBadge");
 
 const questionText =
-document.getElementById(
-"questionText"
-);
+    document.getElementById("questionText");
 
-const answers =
-document.getElementById(
-"answers"
-);
+const answerList =
+    document.getElementById("answerList");
 
 const feedback =
-document.getElementById(
-"feedback"
-);
+    document.getElementById("feedback");
 
-const miniMessage =
-document.getElementById(
-"miniMessage"
-);
+const questionProgress =
+    document.getElementById("questionProgress");
 
-const fillCounter =
-document.getElementById(
-"fillCounter"
-);
+const heightText =
+    document.getElementById("heightText");
 
-const elementCounter =
-document.getElementById(
-"elementCounter"
-);
+const completeModal =
+    document.getElementById("completeModal");
 
-const instruction =
-document.getElementById(
-"instruction"
-);
+const continueBtn =
+    document.getElementById("continueBtn");
+
+const controlHint =
+    document.getElementById("controlHint");
+
+const toast =
+    document.getElementById("toast");
 
 
-/* ============================================================
-   HELPERS
-============================================================ */
+/* =========================================================
+   INPUT STATE
+========================================================= */
 
-function cellKey(
-    col,
-    row
-){
+let mobileLeft = false;
+let mobileRight = false;
 
-    return `${col},${row}`;
+let sceneRef = null;
 
+let toastTimer = null;
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function showToast(text){
+
+    toast.textContent = text;
+
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(()=>{
+        toast.classList.remove("show");
+    },1300);
 }
 
 
-/* ============================================================
-   RANDOM
-============================================================ */
+/* =========================================================
+   MOBILE BUTTON EVENTS
+========================================================= */
 
-function seededRandom(seed){
+function pressButton(
+    element,
+    setter
+){
 
-    return function(){
+    const down = e => {
 
-        seed |= 0;
+        e.preventDefault();
 
-        seed =
-        seed +
-        0x6D2B79F5 |
-        0;
+        setter(true);
+
+        element.classList.add("active");
+    };
+
+    const up = e => {
+
+        e.preventDefault();
+
+        setter(false);
+
+        element.classList.remove("active");
+    };
+
+    element.addEventListener(
+        "pointerdown",
+        down
+    );
+
+    element.addEventListener(
+        "pointerup",
+        up
+    );
+
+    element.addEventListener(
+        "pointercancel",
+        up
+    );
+
+    element.addEventListener(
+        "pointerleave",
+        up
+    );
+}
 
 
-        let t =
-        Math.imul(
+pressButton(
+    leftBtn,
+    value => mobileLeft = value
+);
 
-            seed ^
-            seed >>> 15,
+pressButton(
+    rightBtn,
+    value => mobileRight = value
+);
 
-            1 |
-            seed
 
+/* =========================================================
+   PHASER SCENE
+========================================================= */
+
+class TreeHopScene extends Phaser.Scene{
+
+    constructor(){
+
+        super("TreeHopScene");
+
+    }
+
+
+    /* =====================================================
+       CREATE
+    ===================================================== */
+
+    create(){
+
+        sceneRef = this;
+
+        this.TREE_X = 450;
+
+        this.START_Y = 1370;
+
+        this.gameStarted = false;
+
+        this.questionActive = false;
+
+        this.completedQuestions = 0;
+
+        this.uniquePlatformsSinceQuestion = 0;
+
+        this.platformID = 0;
+
+        this.lastGeneratedY =
+            this.START_Y;
+
+        this.lastSide =
+            Phaser.Math.Between(0,1) === 0
+            ? -1
+            : 1;
+
+        this.sameSideCount = 0;
+
+        this.lastSafeX =
+            this.TREE_X;
+
+        this.lastSafeY =
+            this.START_Y - 80;
+
+        this.startWorldY =
+            this.START_Y;
+
+        this.bestHeight = 0;
+
+        this.lastBounceTime = 0;
+
+        this.finishedSet = false;
+
+
+        /* ---------------------------------------------
+           PHYSICS WORLD
+        --------------------------------------------- */
+
+        this.physics.world.setBounds(
+            0,
+            -10000000,
+            900,
+            10002000
         );
 
 
-        t =
-        t +
-        Math.imul(
+        /* ---------------------------------------------
+           BACKGROUND
+        --------------------------------------------- */
 
-            t ^
-            t >>> 7,
+        this.createFixedBackground();
 
-            61 |
-            t
 
+        /* ---------------------------------------------
+           TEXTURES
+        --------------------------------------------- */
+
+        this.createGrasshopperTexture();
+
+
+        /* ---------------------------------------------
+           TRUNK SEGMENTS
+        --------------------------------------------- */
+
+        this.trunkSegments =
+            new Map();
+
+
+        /* ---------------------------------------------
+           PLATFORM GROUP
+        --------------------------------------------- */
+
+        this.platformGroup =
+            this.physics.add.staticGroup();
+
+
+        /* ---------------------------------------------
+           START PLATFORM
+        --------------------------------------------- */
+
+        this.createStartPlatform();
+
+
+        /* ---------------------------------------------
+           INITIAL ENDLESS PLATFORMS
+        --------------------------------------------- */
+
+        for(
+            let i = 0;
+            i < 34;
+            i++
+        ){
+
+            this.createNextPlatform();
+
+        }
+
+
+        /* ---------------------------------------------
+           PLAYER
+        --------------------------------------------- */
+
+        this.player =
+            this.physics.add.sprite(
+                this.TREE_X,
+                this.START_Y - 75,
+                "grasshopper"
+            );
+
+        this.player
+            .setDepth(30)
+            .setScale(0.82);
+
+        this.player.body.setSize(
+            56,
+            58
+        );
+
+        this.player.body.setOffset(
+            27,
+            26
+        );
+
+        this.player.setBounce(0);
+
+        this.player.setCollideWorldBounds(false);
+
+        this.player.body.setMaxVelocity(
+            390,
+            950
+        );
+
+        this.player.body.setGravityY(
+            1550
+        );
+
+
+        /* ---------------------------------------------
+           PLATFORM COLLIDER
+        --------------------------------------------- */
+
+        this.physics.add.collider(
+            this.player,
+            this.platformGroup,
+            this.landOnPlatform,
+            this.canLandOnPlatform,
+            this
+        );
+
+
+        /* ---------------------------------------------
+           KEYBOARD
+        --------------------------------------------- */
+
+        this.cursors =
+            this.input.keyboard.createCursorKeys();
+
+        this.keyA =
+            this.input.keyboard.addKey(
+                Phaser.Input.Keyboard.KeyCodes.A
+            );
+
+        this.keyD =
+            this.input.keyboard.addKey(
+                Phaser.Input.Keyboard.KeyCodes.D
+            );
+
+
+        /* ---------------------------------------------
+           CAMERA
+        --------------------------------------------- */
+
+        this.cameras.main
+            .startFollow(
+                this.player,
+                true,
+                0.09,
+                0.09
+            );
+
+        this.cameras.main.setDeadzone(
+            180,
+            390
+        );
+
+        this.cameras.main.setZoom(1);
+
+
+        /* ---------------------------------------------
+           START PAUSED
+        --------------------------------------------- */
+
+        this.physics.world.pause();
+
+
+        /* ---------------------------------------------
+           DOM START
+        --------------------------------------------- */
+
+        startBtn.onclick = ()=>{
+
+            this.startGame();
+
+        };
+
+
+        continueBtn.onclick = ()=>{
+
+            completeModal.style.display =
+                "none";
+
+            this.questionActive = false;
+
+            this.physics.world.resume();
+
+            this.player.setVelocityY(-770);
+
+        };
+
+    }
+
+
+    /* =====================================================
+       FIXED BACKGROUND
+    ===================================================== */
+
+    createFixedBackground(){
+
+        /* sky */
+        this.add.rectangle(
+            0,
+            0,
+            900,
+            1600,
+            0xcff7c9
         )
-        ^
-        t;
+        .setOrigin(0)
+        .setScrollFactor(0)
+        .setDepth(-100);
+
+
+        /* sky strips */
+        this.add.rectangle(
+            0,
+            0,
+            900,
+            400,
+            0xe7ffda,
+            .72
+        )
+        .setOrigin(0)
+        .setScrollFactor(0)
+        .setDepth(-99);
+
+
+        /* distant leaves left */
+        const bg =
+            this.add.graphics()
+                .setScrollFactor(0)
+                .setDepth(-90);
+
+        const greens = [
+            0x9bd86c,
+            0x7fc85c,
+            0xaddf7e
+        ];
+
+        for(
+            let i = 0;
+            i < 18;
+            i++
+        ){
+
+            const color =
+                greens[
+                    Phaser.Math.Between(
+                        0,
+                        greens.length - 1
+                    )
+                ];
+
+            bg.fillStyle(
+                color,
+                0.48
+            );
+
+            let x;
+
+            if(i < 9){
+
+                x =
+                    Phaser.Math.Between(
+                        -70,
+                        90
+                    );
+
+            }else{
+
+                x =
+                    Phaser.Math.Between(
+                        810,
+                        970
+                    );
+
+            }
+
+            const y =
+                Phaser.Math.Between(
+                    20,
+                    1550
+                );
+
+            const r =
+                Phaser.Math.Between(
+                    55,
+                    115
+                );
+
+            bg.fillCircle(
+                x,
+                y,
+                r
+            );
+
+        }
+
+
+        /* floating sunlight */
+        const sun =
+            this.add.graphics()
+                .setScrollFactor(0)
+                .setDepth(-89);
+
+        sun.fillStyle(
+            0xffffff,
+            .16
+        );
+
+        sun.fillTriangle(
+            90,
+            0,
+            410,
+            0,
+            160,
+            1600
+        );
+
+    }
+
+
+    /* =====================================================
+       GRASSHOPPER TEXTURE
+    ===================================================== */
+
+    createGrasshopperTexture(){
+
+        if(
+            this.textures.exists(
+                "grasshopper"
+            )
+        ){
+            return;
+        }
+
+        const g =
+            this.make.graphics({
+                x:0,
+                y:0,
+                add:false
+            });
+
+
+        /* shadow/back legs */
+        g.lineStyle(
+            10,
+            0x285b20,
+            1
+        );
+
+        g.beginPath();
+
+        g.moveTo(48,62);
+        g.lineTo(18,82);
+        g.lineTo(6,105);
+
+        g.moveTo(66,65);
+        g.lineTo(96,88);
+        g.lineTo(108,107);
+
+        g.strokePath();
+
+
+        /* lower legs */
+        g.lineStyle(
+            7,
+            0x4a8c2f,
+            1
+        );
+
+        g.beginPath();
+
+        g.moveTo(34,67);
+        g.lineTo(16,56);
+
+        g.moveTo(80,67);
+        g.lineTo(101,54);
+
+        g.strokePath();
+
+
+        /* body */
+        g.fillStyle(
+            0x69b93c,
+            1
+        );
+
+        g.fillEllipse(
+            58,
+            61,
+            54,
+            73
+        );
+
+
+        /* belly */
+        g.fillStyle(
+            0xa3de56,
+            1
+        );
+
+        g.fillEllipse(
+            58,
+            70,
+            34,
+            50
+        );
+
+
+        /* head */
+        g.fillStyle(
+            0x7bd047,
+            1
+        );
+
+        g.fillCircle(
+            58,
+            31,
+            25
+        );
+
+
+        /* eyes */
+        g.fillStyle(
+            0xffffff,
+            1
+        );
+
+        g.fillCircle(
+            48,
+            25,
+            10
+        );
+
+        g.fillCircle(
+            69,
+            25,
+            10
+        );
+
+        g.fillStyle(
+            0x172114,
+            1
+        );
+
+        g.fillCircle(
+            49,
+            27,
+            4
+        );
+
+        g.fillCircle(
+            68,
+            27,
+            4
+        );
+
+
+        /* smile */
+        g.lineStyle(
+            3,
+            0x345224,
+            1
+        );
+
+        g.beginPath();
+
+        g.arc(
+            58,
+            36,
+            10,
+            0.15,
+            Math.PI - 0.15
+        );
+
+        g.strokePath();
+
+
+        /* antennas */
+        g.lineStyle(
+            4,
+            0x3c782a,
+            1
+        );
+
+        g.beginPath();
+
+        g.moveTo(48,13);
+        g.lineTo(35,0);
+
+        g.moveTo(68,13);
+        g.lineTo(82,0);
+
+        g.strokePath();
+
+
+        /* feet */
+        g.fillStyle(
+            0x294d20,
+            1
+        );
+
+        g.fillEllipse(
+            7,
+            107,
+            17,
+            8
+        );
+
+        g.fillEllipse(
+            108,
+            108,
+            17,
+            8
+        );
+
+
+        g.generateTexture(
+            "grasshopper",
+            116,
+            116
+        );
+
+        g.destroy();
+
+    }
+
+
+    /* =====================================================
+       TREE TRUNK SEGMENT
+    ===================================================== */
+
+    ensureTrunkAt(y){
+
+        const segmentHeight = 700;
+
+        const segmentIndex =
+            Math.floor(
+                y / segmentHeight
+            );
+
+        if(
+            this.trunkSegments.has(
+                segmentIndex
+            )
+        ){
+            return;
+        }
+
+        const centerY =
+            segmentIndex *
+            segmentHeight +
+            segmentHeight / 2;
+
+        const container =
+            this.add.container(
+                0,
+                0
+            )
+            .setDepth(0);
+
+
+        /* main trunk */
+        const trunk =
+            this.add.rectangle(
+                this.TREE_X,
+                centerY,
+                245,
+                segmentHeight + 8,
+                0x995823
+            );
+
+        container.add(trunk);
+
+
+        /* darker left */
+        const leftShade =
+            this.add.rectangle(
+                this.TREE_X - 101,
+                centerY,
+                35,
+                segmentHeight + 8,
+                0x754019
+            );
+
+        container.add(leftShade);
+
+
+        /* dark right */
+        const rightShade =
+            this.add.rectangle(
+                this.TREE_X + 102,
+                centerY,
+                31,
+                segmentHeight + 8,
+                0x693717
+            );
+
+        container.add(rightShade);
+
+
+        /* center highlight */
+        const centerLight =
+            this.add.rectangle(
+                this.TREE_X - 25,
+                centerY,
+                35,
+                segmentHeight + 8,
+                0xb86e2d,
+                .55
+            );
+
+        container.add(centerLight);
+
+
+        /* bark */
+        const bark =
+            this.add.graphics();
+
+        bark.lineStyle(
+            7,
+            0x673516,
+            .65
+        );
+
+        for(
+            let i = 0;
+            i < 8;
+            i++
+        ){
+
+            const x =
+                this.TREE_X +
+                Phaser.Math.Between(
+                    -85,
+                    85
+                );
+
+            const yy =
+                centerY -
+                segmentHeight/2 +
+                Phaser.Math.Between(
+                    30,
+                    segmentHeight - 120
+                );
+
+            bark.beginPath();
+
+            bark.moveTo(
+                x,
+                yy
+            );
+
+            bark.lineTo(
+                x +
+                Phaser.Math.Between(
+                    -14,
+                    14
+                ),
+                yy + 55
+            );
+
+            bark.lineTo(
+                x +
+                Phaser.Math.Between(
+                    -10,
+                    18
+                ),
+                yy + 105
+            );
+
+            bark.strokePath();
+
+        }
+
+        container.add(bark);
+
+
+        /* knot */
+        const knotY =
+            centerY +
+            Phaser.Math.Between(
+                -220,
+                220
+            );
+
+        const knot =
+            this.add.ellipse(
+                this.TREE_X +
+                Phaser.Math.Between(
+                    -60,
+                    60
+                ),
+                knotY,
+                43,
+                66,
+                0x593017
+            );
+
+        container.add(knot);
+
+
+        const knotInner =
+            this.add.ellipse(
+                knot.x,
+                knotY,
+                20,
+                38,
+                0x2f1d10
+            );
+
+        container.add(knotInner);
+
+
+        /* small moss */
+        if(
+            Math.abs(segmentIndex) % 2 === 0
+        ){
+
+            const moss =
+                this.add.graphics();
+
+            moss.fillStyle(
+                0x55a632,
+                1
+            );
+
+            const mossY =
+                centerY +
+                Phaser.Math.Between(
+                    -260,
+                    260
+                );
+
+            for(
+                let m = 0;
+                m < 5;
+                m++
+            ){
+
+                moss.fillCircle(
+                    this.TREE_X -
+                    115 +
+                    m * 12,
+                    mossY +
+                    Phaser.Math.Between(
+                        -5,
+                        5
+                    ),
+                    Phaser.Math.Between(
+                        11,
+                        17
+                    )
+                );
+
+            }
+
+            container.add(moss);
+
+        }
+
+
+        this.trunkSegments.set(
+            segmentIndex,
+            container
+        );
+
+    }
+
+
+    /* =====================================================
+       START PLATFORM
+    ===================================================== */
+
+    createStartPlatform(){
+
+        this.ensureTrunkAt(
+            this.START_Y
+        );
+
+        const platform =
+            this.createLeafPlatform(
+                this.TREE_X,
+                this.START_Y,
+                0,
+                true
+            );
+
+        platform.setData(
+            "visited",
+            true
+        );
+
+        this.lastSafeX =
+            platform.x;
+
+        this.lastSafeY =
+            platform.y - 70;
+
+    }
+
+
+    /* =====================================================
+       CREATE NEXT PLATFORM
+    ===================================================== */
+
+    createNextPlatform(){
+
+        const gap =
+            Phaser.Math.Between(
+                135,
+                167
+            );
+
+        this.lastGeneratedY -= gap;
+
+
+        /* prevent too many platforms same side */
+        let side;
+
+        if(
+            this.sameSideCount >= 2
+        ){
+
+            side =
+                -this.lastSide;
+
+        }else{
+
+            side =
+                Math.random() < .5
+                ? -1
+                : 1;
+
+        }
+
+
+        if(
+            side === this.lastSide
+        ){
+
+            this.sameSideCount++;
+
+        }else{
+
+            this.sameSideCount = 1;
+
+        }
+
+        this.lastSide = side;
+
+
+        const distance =
+            Phaser.Math.Between(
+                132,
+                185
+            );
+
+        let x =
+            this.TREE_X +
+            side *
+            distance;
+
+
+        /* occasional almost-centre leaf */
+        if(
+            Math.random() < .14
+        ){
+
+            x =
+                this.TREE_X +
+                Phaser.Math.Between(
+                    -85,
+                    85
+                );
+
+        }
+
+
+        this.createLeafPlatform(
+            x,
+            this.lastGeneratedY,
+            side,
+            false
+        );
+
+
+        this.ensureTrunkAt(
+            this.lastGeneratedY
+        );
+
+    }
+
+
+    /* =====================================================
+       CREATE LEAF PLATFORM
+    ===================================================== */
+
+    createLeafPlatform(
+        x,
+        y,
+        side,
+        startPlatform
+    ){
+
+        this.platformID++;
+
+
+        /* branch */
+        if(!startPlatform){
+
+            const trunkEdge =
+                side < 0
+                ? this.TREE_X - 96
+                : this.TREE_X + 96;
+
+            const branchLength =
+                Math.abs(
+                    x - trunkEdge
+                ) + 50;
+
+            const branchCenter =
+                (
+                    x +
+                    trunkEdge
+                ) / 2;
+
+            this.add.rectangle(
+                branchCenter,
+                y + 10,
+                branchLength,
+                17,
+                0x693b17
+            )
+            .setDepth(2);
+
+
+            this.add.rectangle(
+                branchCenter,
+                y + 6,
+                branchLength - 12,
+                6,
+                0xb27230
+            )
+            .setDepth(3);
+
+        }
+
+
+        /* leaves */
+        const leafGraphics =
+            this.add.graphics()
+                .setDepth(4);
+
+        const greenChoices = [
+            0x4baa32,
+            0x58bc38,
+            0x68c846,
+            0x37962d
+        ];
+
+        const green =
+            greenChoices[
+                Phaser.Math.Between(
+                    0,
+                    greenChoices.length - 1
+                )
+            ];
+
+
+        leafGraphics.fillStyle(
+            green,
+            1
+        );
+
+        leafGraphics.fillEllipse(
+            x,
+            y - 4,
+            176,
+            54
+        );
+
+        leafGraphics.fillEllipse(
+            x - 47,
+            y - 6,
+            82,
+            45
+        );
+
+        leafGraphics.fillEllipse(
+            x + 47,
+            y - 6,
+            82,
+            45
+        );
+
+
+        /* highlight */
+        leafGraphics.fillStyle(
+            0x92df63,
+            .75
+        );
+
+        leafGraphics.fillEllipse(
+            x - 20,
+            y - 14,
+            105,
+            16
+        );
+
+
+        /* vein */
+        leafGraphics.lineStyle(
+            4,
+            0x267d27,
+            1
+        );
+
+        leafGraphics.beginPath();
+
+        leafGraphics.moveTo(
+            x - 75,
+            y
+        );
+
+        leafGraphics.lineTo(
+            x + 75,
+            y
+        );
+
+        leafGraphics.strokePath();
+
+
+        /* little flower decoration sometimes */
+        if(
+            !startPlatform &&
+            Math.random() < .16
+        ){
+
+            const flower =
+                this.add.graphics()
+                    .setDepth(5);
+
+            const fx =
+                x +
+                Phaser.Math.Between(
+                    -45,
+                    45
+                );
+
+            const fy =
+                y - 30;
+
+            flower.fillStyle(
+                0xff77b9,
+                1
+            );
+
+            flower.fillCircle(
+                fx - 9,
+                fy,
+                9
+            );
+
+            flower.fillCircle(
+                fx + 9,
+                fy,
+                9
+            );
+
+            flower.fillCircle(
+                fx,
+                fy - 9,
+                9
+            );
+
+            flower.fillCircle(
+                fx,
+                fy + 9,
+                9
+            );
+
+            flower.fillStyle(
+                0xffda42,
+                1
+            );
+
+            flower.fillCircle(
+                fx,
+                fy,
+                7
+            );
+
+        }
+
+
+        /* physics surface */
+        const platform =
+            this.add.rectangle(
+                x,
+                y,
+                158,
+                18,
+                0x754419,
+                1
+            )
+            .setDepth(3);
+
+
+        this.platformGroup.add(
+            platform
+        );
+
+
+        platform.body.setSize(
+            158,
+            18
+        );
+
+
+        platform.body.checkCollision.down =
+            false;
+
+        platform.body.checkCollision.left =
+            false;
+
+        platform.body.checkCollision.right =
+            false;
+
+        platform.body.checkCollision.up =
+            true;
+
+
+        platform.setData(
+            "id",
+            this.platformID
+        );
+
+        platform.setData(
+            "visited",
+            false
+        );
+
+        platform.setData(
+            "leafGraphics",
+            leafGraphics
+        );
+
+
+        return platform;
+
+    }
+
+
+    /* =====================================================
+       LAND PROCESS
+    ===================================================== */
+
+    canLandOnPlatform(
+        player,
+        platform
+    ){
+
+        if(
+            this.questionActive ||
+            !this.gameStarted
+        ){
+
+            return false;
+
+        }
+
+
+        if(
+            player.body.velocity.y <= 20
+        ){
+
+            return false;
+
+        }
+
+
+        const playerBottom =
+            player.body.bottom;
+
+        const platformTop =
+            platform.body.top;
 
 
         return (
-
-            (
-                t ^
-                t >>> 14
-            )
-            >>> 0
-
-        )
-        /
-        4294967296;
-
-    };
-
-}
-
-
-/* ============================================================
-   SHUFFLE
-============================================================ */
-
-function shuffleArray(
-    source,
-    random
-){
-
-    const arr =
-        source.slice();
-
-
-    for(
-        let i =
-        arr.length - 1;
-
-        i > 0;
-
-        i--
-    ){
-
-        const j =
-        Math.floor(
-
-            random() *
-            (
-                i + 1
-            )
-
+            playerBottom <=
+            platformTop + 40
         );
-
-
-        [
-            arr[i],
-            arr[j]
-        ]
-        =
-        [
-            arr[j],
-            arr[i]
-        ];
 
     }
 
 
-    return arr;
+    /* =====================================================
+       LAND ON PLATFORM
+    ===================================================== */
 
-}
-
-
-/* ============================================================
-   TRANSFORM BOARD
-============================================================ */
-
-function transformCell(
-    cell,
-    variant
-){
-
-    const x =
-        cell[0];
-
-    const y =
-        cell[1];
-
-    const n =
-        GRID_SIZE - 1;
-
-
-    switch(
-        variant % 8
+    landOnPlatform(
+        player,
+        platform
     ){
-
-        case 0:
-
-            return [
-                x,
-                y
-            ];
-
-
-        case 1:
-
-            return [
-                n - x,
-                y
-            ];
-
-
-        case 2:
-
-            return [
-                x,
-                n - y
-            ];
-
-
-        case 3:
-
-            return [
-                n - x,
-                n - y
-            ];
-
-
-        case 4:
-
-            return [
-                y,
-                x
-            ];
-
-
-        case 5:
-
-            return [
-                n - y,
-                x
-            ];
-
-
-        case 6:
-
-            return [
-                y,
-                n - x
-            ];
-
-
-        default:
-
-            return [
-                n - y,
-                n - x
-            ];
-
-    }
-
-}
-
-
-/* ============================================================
-   PAIR COUNT
-
-   SOALAN 1-5   = 4 pasangan = 8 elemen
-   SOALAN 6-10  = 5 pasangan = 10 elemen
-   SOALAN 11-15 = 6 pasangan = 12 elemen
-   SOALAN 16-20 = 7 pasangan = 14 elemen
-   SOALAN 21-25 = 8 pasangan = 16 elemen
-============================================================ */
-
-function getPairCount(stageIndex){
-
-    return 4 +
-    Math.floor(
-        stageIndex / 5
-    );
-
-}
-
-
-/* ============================================================
-   RANDOM SPLIT
-
-   Pecahkan 25 petak kepada beberapa pasangan.
-
-   Setiap pasangan minimum 2 petak.
-============================================================ */
-
-function createRandomSplit(
-    pairCount,
-    random
-){
-
-    const minimum =
-        2;
-
-
-    const lengths =
-        new Array(
-            pairCount
-        )
-        .fill(
-            minimum
-        );
-
-
-    let remaining =
-        TOTAL_CELLS -
-        pairCount *
-        minimum;
-
-
-    /*
-    Edarkan baki secara rawak.
-    */
-
-    while(
-        remaining >
-        0
-    ){
-
-        const target =
-            Math.floor(
-
-                random() *
-                pairCount
-
-            );
-
-
-        lengths[target]++;
-
-        remaining--;
-
-    }
-
-
-    /*
-    Random susunan panjang.
-    */
-
-    return shuffleArray(
-        lengths,
-        random
-    );
-
-}
-
-
-/* ============================================================
-   PATTERN SIGNATURE
-
-   Pattern dianggap sama jika endpoint berada
-   di petak yang sama.
-
-   Warna / jenis simbol tidak digunakan untuk
-   "menipu" sistem pattern unik.
-============================================================ */
-
-function createPatternSignature(pairs){
-
-    const endpointPositions =
-        [];
-
-
-    pairs.forEach(
-        pair => {
-
-            endpointPositions.push(
-                cellKey(
-                    pair.start.col,
-                    pair.start.row
-                )
-            );
-
-
-            endpointPositions.push(
-                cellKey(
-                    pair.end.col,
-                    pair.end.row
-                )
-            );
-
-        }
-    );
-
-
-    endpointPositions.sort();
-
-
-    return endpointPositions.join(
-        "|"
-    );
-
-}
-
-
-/* ============================================================
-   GENERATE ONE UNIQUE STAGE
-============================================================ */
-
-function generateUniquePattern(
-    stageIndex
-){
-
-    const pairCount =
-        getPairCount(
-            stageIndex
-        );
-
-
-    /*
-    Seed stage berbeza.
-    */
-
-    const random =
-        seededRandom(
-
-            78391 +
-            stageIndex *
-            93731 +
-            USED_PATTERN_SIGNATURES.size *
-            1777
-
-        );
-
-
-    /*
-    Cuba sehingga jumpa susunan endpoint
-    yang belum pernah digunakan.
-    */
-
-    for(
-        let attempt = 0;
-        attempt < 1000;
-        attempt++
-    ){
-
-        /*
-        Pilih route penuh.
-        */
-
-        const basePath =
-            FULL_PATH_LIBRARY[
-                Math.floor(
-
-                    random() *
-                    FULL_PATH_LIBRARY.length
-
-                )
-            ];
-
-
-        /*
-        Rotate / mirror.
-        */
-
-        const transform =
-            Math.floor(
-                random() *
-                8
-            );
-
-
-        let fullPath =
-            basePath.map(
-                cell => {
-
-                    const transformed =
-                        transformCell(
-                            cell,
-                            transform
-                        );
-
-
-                    return {
-
-                        col:
-                        transformed[0],
-
-                        row:
-                        transformed[1]
-
-                    };
-
-                }
-            );
-
-
-        /*
-        Kadang-kadang reverse.
-        */
 
         if(
-            random() >
-            .5
+            !this.gameStarted ||
+            this.questionActive
         ){
-
-            fullPath.reverse();
-
+            return;
         }
 
 
-        /*
-        Pecah 25 petak.
-        */
-
-        const lengths =
-            createRandomSplit(
-                pairCount,
-                random
-            );
-
-
-        /*
-        Random pair colours/symbols.
-        */
-
-        const pairStyles =
-            shuffleArray(
-                PAIR_LIBRARY,
-                random
-            )
-            .slice(
-                0,
-                pairCount
-            );
-
-
-        const pairs =
-            [];
-
-
-        let cursor =
-            0;
-
-
-        for(
-            let i = 0;
-            i < pairCount;
-            i++
-        ){
-
-            const length =
-                lengths[i];
-
-
-            let solution =
-                fullPath.slice(
-
-                    cursor,
-
-                    cursor +
-                    length
-
-                );
-
-
-            cursor +=
-                length;
-
-
-            /*
-            Random direction pair.
-            */
-
-            if(
-                random() >
-                .5
-            ){
-
-                solution.reverse();
-
-            }
-
-
-            const style =
-                pairStyles[i];
-
-
-            pairs.push({
-
-                id:
-                `${style.id}_s${stageIndex}_${i}`,
-
-                type:
-                style.type,
-
-                color:
-                style.color,
-
-                solution,
-
-                start:
-                solution[0],
-
-                end:
-                solution[
-                    solution.length - 1
-                ]
-
-            });
-
-        }
-
-
-        const signature =
-            createPatternSignature(
-                pairs
-            );
-
-
-        /*
-        Pattern belum pernah digunakan.
-        */
-
-        if(
-            !USED_PATTERN_SIGNATURES.has(
-                signature
-            )
-        ){
-
-            USED_PATTERN_SIGNATURES.add(
-                signature
-            );
-
-
-            return {
-
-                pairCount,
-
-                pairs,
-
-                signature
-
-            };
-
-        }
-
-    }
-
-
-    /*
-    Sangat jarang sampai sini.
-    Fallback dengan seed berbeza.
-    */
-
-    throw new Error(
-        "Tidak dapat menghasilkan pattern unik."
-    );
-
-}
-
-
-/* ============================================================
-   GENERATE 25 UNIQUE PATTERNS
-
-   Semua dibuat terlebih dahulu.
-
-   Stage akan datang tak boleh ambil
-   pattern yang sama dengan stage lama.
-============================================================ */
-
-function generateStagePatterns(){
-
-    const stages =
-        [];
-
-
-    for(
-        let stage = 0;
-        stage < 25;
-        stage++
-    ){
-
-        stages.push(
-            generateUniquePattern(
-                stage
-            )
-        );
-
-    }
-
-
-    return stages;
-
-}
-
-
-/* ============================================================
-   INITIAL PATTERNS
-============================================================ */
-
-STAGE_PATTERNS =
-generateStagePatterns();
-
-
-/* ============================================================
-   MESSAGE
-============================================================ */
-
-function showMiniMessage(text){
-
-    miniMessage.textContent =
-        text;
-
-
-    miniMessage
-    .classList
-    .add(
-        "show"
-    );
-
-
-    clearTimeout(
-        miniTimer
-    );
-
-
-    miniTimer =
-    setTimeout(
-        () => {
-
-            miniMessage
-            .classList
-            .remove(
-                "show"
-            );
-
-        },
-        1400
-    );
-
-}
-
-
-/* ============================================================
-   BUTTONS
-============================================================ */
-
-document
-.getElementById(
-"homeBtn"
-)
-.onclick = () => {
-
-    window.location.href =
-        "index.html";
-
-};
-
-
-document
-.getElementById(
-"startBtn"
-)
-.onclick = () => {
-
-    startOverlay
-    .classList
-    .remove(
-        "show"
-    );
-
-
-    gameScene.loadStage(
-        0
-    );
-
-};
-
-
-document
-.getElementById(
-"againBtn"
-)
-.onclick = () => {
-
-    currentStage =
-        0;
-
-
-    winOverlay
-    .classList
-    .remove(
-        "show"
-    );
-
-
-    /*
-    MAIN SEMULA pun jana set baharu.
-
-    Pattern lama masih berada dalam
-    USED_PATTERN_SIGNATURES.
-
-    Jadi susunan sesi sebelumnya
-    tak digunakan lagi selagi page
-    belum ditutup/reload.
-    */
-
-    STAGE_PATTERNS =
-        generateStagePatterns();
-
-
-    gameScene.loadStage(
-        0
-    );
-
-};
-
-
-/* ============================================================
-   PHASER
-============================================================ */
-
-class ConnectScene
-extends Phaser.Scene{
-
-constructor(){
-
-    super(
-        "ConnectScene"
-    );
-
-}
-
-
-/* ============================================================
-   CREATE
-============================================================ */
-
-create(){
-
-    gameScene =
-        this;
-
-
-    this.bgG =
-        this.add.graphics();
-
-
-    this.gridG =
-        this.add.graphics();
-
-
-    this.pathFillG =
-        this.add.graphics();
-
-
-    this.pathG =
-        this.add.graphics();
-
-
-    this.tempFillG =
-        this.add.graphics();
-
-
-    this.tempG =
-        this.add.graphics();
-
-
-    this.symbolLayer =
-        this.add.container(
-            0,
-            0
-        );
-
-
-    this.nodes =
-        [];
-
-
-    this.pairs =
-        [];
-
-
-    this.paths =
-        {};
-
-
-    this.occupied =
-        new Map();
-
-
-    this.currentDrag =
-        null;
-
-
-    this.stageLocked =
-        true;
-
-
-    this.input.on(
-        "pointerdown",
-        pointer => {
-
-            this.pointerDown(
-                pointer
-            );
-
-        }
-    );
-
-
-    this.input.on(
-        "pointermove",
-        pointer => {
-
-            this.pointerMove(
-                pointer
-            );
-
-        }
-    );
-
-
-    this.input.on(
-        "pointerup",
-        pointer => {
-
-            this.pointerUp(
-                pointer
-            );
-
-        }
-    );
-
-
-    this.input.on(
-        "pointerupoutside",
-        pointer => {
-
-            this.pointerUp(
-                pointer
-            );
-
-        }
-    );
-
-
-    this.scale.on(
-        "resize",
-        () => {
-
-            if(
-                this.pairs.length
-            ){
-
-                this.loadStage(
-                    currentStage
-                );
-
-            }
-
-            else{
-
-                this.drawBoard();
-
-            }
-
-        }
-    );
-
-
-    this.drawBoard();
-
-}
-
-
-/* ============================================================
-   BOARD SIZE
-============================================================ */
-
-calculateBoard(){
-
-    const width =
-        this.scale.width;
-
-
-    const height =
-        this.scale.height;
-
-
-    this.boardSize =
-        Math.min(
-
-            width *
-            .90,
-
-            height *
-            .80,
-
-            570
-
-        );
-
-
-    if(
-        width <
-        500
-    ){
-
-        this.boardSize =
-            Math.min(
-
-                width - 16,
-
-                height *
-                .77
-
-            );
-
-    }
-
-
-    this.cellSize =
-        this.boardSize /
-        GRID_SIZE;
-
-
-    this.boardX =
-        (
-            width -
-            this.boardSize
-        )
-        /
-        2;
-
-
-    this.boardY =
-        Math.max(
-
-            25,
-
-            (
-                height -
-                this.boardSize
-            )
-            /
-            2
-
-        );
-
-}
-
-
-/* ============================================================
-   BOARD
-============================================================ */
-
-drawBoard(){
-
-    this.calculateBoard();
-
-
-    const bg =
-        this.bgG;
-
-
-    bg.clear();
-
-
-    bg.fillStyle(
-        0xddefc0,
-        1
-    );
-
-
-    bg.fillRect(
-
-        0,
-        0,
-
-        this.scale.width,
-        this.scale.height
-
-    );
-
-
-    /*
-    soft garden decoration
-    */
-
-    bg.fillStyle(
-        0xffffff,
-        .13
-    );
-
-
-    for(
-        let i = 0;
-        i < 14;
-        i++
-    ){
-
-        const x =
-            (
-                i *
-                127 +
-                31
-            )
-            %
-            Math.max(
-                1,
-                this.scale.width
-            );
-
-
-        const y =
-            (
-                i *
-                89 +
-                26
-            )
-            %
-            Math.max(
-                1,
-                this.scale.height
-            );
-
-
-        bg.fillCircle(
-
-            x,
-            y,
-
-            15 +
-            (
-                i %
-                3
-            )
-            *
-            7
-
-        );
-
-    }
-
-
-    /*
-    shadow
-    */
-
-    bg.fillStyle(
-        0x355a39,
-        .17
-    );
-
-
-    bg.fillRoundedRect(
-
-        this.boardX +
-        7,
-
-        this.boardY +
-        8,
-
-        this.boardSize,
-        this.boardSize,
-
-        18
-
-    );
-
-
-    /*
-    base
-    */
-
-    bg.fillStyle(
-        0xfffbed,
-        1
-    );
-
-
-    bg.fillRoundedRect(
-
-        this.boardX,
-        this.boardY,
-
-        this.boardSize,
-        this.boardSize,
-
-        18
-
-    );
-
-
-    this.drawGrid();
-
-}
-
-
-/* ============================================================
-   GRID
-============================================================ */
-
-drawGrid(){
-
-    const g =
-        this.gridG;
-
-
-    g.clear();
-
-
-    for(
-        let row = 0;
-        row < GRID_SIZE;
-        row++
-    ){
-
-        for(
-            let col = 0;
-            col < GRID_SIZE;
-            col++
-        ){
-
-            const x =
-                this.boardX +
-                col *
-                this.cellSize;
-
-
-            const y =
-                this.boardY +
-                row *
-                this.cellSize;
-
-
-            const light =
-                (
-                    col +
-                    row
-                )
-                %
-                2 ===
-                0;
-
-
-            g.fillStyle(
-
-                light
-                ? 0xf8f4df
-                : 0xeee9cd,
-
-                1
-
-            );
-
-
-            g.fillRect(
-
-                x + 1,
-                y + 1,
-
-                this.cellSize - 2,
-                this.cellSize - 2
-
-            );
-
-
-            g.lineStyle(
-
-                1.8,
-
-                0xa5b783,
-
-                .92
-
-            );
-
-
-            g.strokeRect(
-
-                x,
-                y,
-
-                this.cellSize,
-                this.cellSize
-
-            );
-
-        }
-
-    }
-
-
-    g.lineStyle(
-        5,
-        0x648b52,
-        1
-    );
-
-
-    g.strokeRoundedRect(
-
-        this.boardX,
-        this.boardY,
-
-        this.boardSize,
-        this.boardSize,
-
-        18
-
-    );
-
-}
-
-
-/* ============================================================
-   LOAD STAGE
-============================================================ */
-
-loadStage(index){
-
-    currentStage =
-        index;
-
-
-    const stageData =
-        STAGE_PATTERNS[
-            index
-        ];
-
-
-    this.pairs =
-        stageData.pairs;
-
-
-    const pairCount =
-        stageData.pairCount;
-
-
-    const elementCount =
-        pairCount *
-        2;
-
-
-    stagePill.textContent =
-        `Stage ${index + 1}/25`;
-
-
-    elementCounter.textContent =
-        `${elementCount} Elemen`;
-
-
-    instruction.textContent =
-        `Sambungkan ${pairCount} pasangan dan penuhkan semua 25 petak`;
-
-
-    this.calculateBoard();
-
-    this.drawBoard();
-
-
-    this.symbolLayer
-    .removeAll(
-        true
-    );
-
-
-    this.pathFillG.clear();
-
-    this.pathG.clear();
-
-    this.tempFillG.clear();
-
-    this.tempG.clear();
-
-
-    this.nodes =
-        [];
-
-
-    this.paths =
-        {};
-
-
-    this.occupied.clear();
-
-
-    this.currentDrag =
-        null;
-
-
-    this.stageLocked =
-        false;
-
-
-    this.pairs.forEach(
-        pair => {
-
-            this.paths[
-                pair.id
-            ] =
-                null;
-
-
-            this.createNode(
-
-                pair,
-
-                pair.start
-
-            );
-
-
-            this.createNode(
-
-                pair,
-
-                pair.end
-
-            );
-
-        }
-    );
-
-
-    this.updateCounter();
-
-}
-
-
-/* ============================================================
-   CENTER
-============================================================ */
-
-cellCenter(
-    col,
-    row
-){
-
-    return {
-
-        x:
-        this.boardX +
-        col *
-        this.cellSize +
-        this.cellSize /
-        2,
-
-        y:
-        this.boardY +
-        row *
-        this.cellSize +
-        this.cellSize /
-        2
-
-    };
-
-}
-
-
-/* ============================================================
-   NODE
-============================================================ */
-
-createNode(
-    pair,
-    cell
-){
-
-    const position =
-        this.cellCenter(
-
-            cell.col,
-            cell.row
-
-        );
-
-
-    const container =
-        this.add.container(
-
-            position.x,
-            position.y
-
-        );
-
-
-    container.pairId =
-        pair.id;
-
-
-    container.plantType =
-        pair.type;
-
-
-    container.col =
-        cell.col;
-
-
-    container.row =
-        cell.row;
-
-
-    const radius =
-        Math.min(
-
-            this.cellSize *
-            .34,
-
-            36
-
-        );
-
-
-    const shadow =
-        this.add.ellipse(
-
-            0,
-
-            this.cellSize *
-            .24,
-
-            this.cellSize *
-            .49,
-
-            this.cellSize *
-            .12,
-
-            0x395839,
-
-            .15
-
-        );
-
-
-    const circle =
-        this.add.circle(
-
-            0,
-            0,
-
-            radius,
-
-            0xffffff,
-
-            .96
-
-        );
-
-
-    const ring =
-        this.add.graphics();
-
-
-    ring.lineStyle(
-
-        Math.max(
-
-            3,
-
-            this.cellSize *
-            .038
-
-        ),
-
-        pair.color,
-
-        1
-
-    );
-
-
-    ring.strokeCircle(
-
-        0,
-        0,
-
-        radius
-
-    );
-
-
-    const symbol =
-        this.createPlantSymbol(
-
-            pair.type,
-            pair.color
-
-        );
-
-
-    container.add([
-
-        shadow,
-        circle,
-        ring,
-        symbol
-
-    ]);
-
-
-    this.symbolLayer.add(
-        container
-    );
-
-
-    this.nodes.push(
-        container
-    );
-
-}
-
-
-/* ============================================================
-   PLANT SYMBOL
-============================================================ */
-
-createPlantSymbol(
-    type,
-    color
-){
-
-    const g =
-        this.add.graphics();
-
-
-    const s =
-        Math.min(
-
-            this.cellSize /
-            90,
-
-            1.12
-
-        );
-
-
-    /* ========================================================
-       DAUN
-    ======================================================== */
-
-    if(
-        type ===
-        "leaf"
-    ){
-
-        g.fillStyle(
-            color,
-            1
-        );
-
-
-        g.fillEllipse(
-
-            -3 * s,
-            0,
-
-            43 * s,
-            27 * s
-
-        );
-
-
-        g.lineStyle(
-
-            3 * s,
-
-            0x245f35,
-
-            1
-
-        );
-
-
-        g.lineBetween(
-
-            -22 * s,
-            12 * s,
-
-            19 * s,
-            -11 * s
-
-        );
-
-
-        g.lineBetween(
-
-            -6 * s,
-            3 * s,
-
-            -10 * s,
-            -8 * s
-
-        );
-
-
-        g.lineBetween(
-
-            4 * s,
-            -3 * s,
-
-            10 * s,
-            6 * s
-
-        );
-
-    }
-
-
-    /* ========================================================
-       BUNGA
-    ======================================================== */
-
-    else if(
-        type ===
-        "flower"
-    ){
-
-        g.fillStyle(
-            color,
-            1
-        );
-
-
-        for(
-            let i = 0;
-            i < 6;
-            i++
-        ){
-
-            const angle =
-                Phaser.Math
-                .DegToRad(
-                    i *
-                    60
-                );
-
-
-            g.fillCircle(
-
-                Math.cos(
-                    angle
-                )
-                *
-                14
-                *
-                s,
-
-                Math.sin(
-                    angle
-                )
-                *
-                14
-                *
-                s,
-
-                10 *
-                s
-
-            );
-
-        }
-
-
-        g.fillStyle(
-            0xffcd45,
-            1
-        );
-
-
-        g.fillCircle(
-
-            0,
-            0,
-
-            10 * s
-
-        );
-
-
-        g.lineStyle(
-
-            2 * s,
-
-            0x8c671d,
-
-            1
-
-        );
-
-
-        g.strokeCircle(
-
-            0,
-            0,
-
-            10 * s
-
-        );
-
-    }
-
-
-    /* ========================================================
-       AKAR
-    ======================================================== */
-
-    else if(
-        type ===
-        "root"
-    ){
-
-        g.lineStyle(
-
-            7 * s,
-
-            color,
-
-            1
-
-        );
-
-
-        g.lineBetween(
-
-            0,
-            -22 * s,
-
-            0,
-            10 * s
-
-        );
-
-
-        g.lineStyle(
-
-            5 * s,
-
-            color,
-
-            1
-
-        );
-
-
-        g.lineBetween(
-
-            0,
-            4 * s,
-
-            -18 * s,
-            24 * s
-
-        );
-
-
-        g.lineBetween(
-
-            0,
-            5 * s,
-
-            18 * s,
-            24 * s
-
-        );
-
-
-        g.lineBetween(
-
-            -7 * s,
-            13 * s,
-
-            -22 * s,
-            11 * s
-
-        );
-
-
-        g.lineBetween(
-
-            7 * s,
-            14 * s,
-
-            22 * s,
-            11 * s
-
-        );
-
-
-        g.lineBetween(
-
-            0,
-            9 * s,
-
-            0,
-            29 * s
-
-        );
-
-
-        g.lineStyle(
-
-            3 * s,
-
-            color,
-
-            1
-
-        );
-
-
-        g.lineBetween(
-
-            -18 * s,
-            24 * s,
-
-            -25 * s,
-            30 * s
-
-        );
-
-
-        g.lineBetween(
-
-            18 * s,
-            24 * s,
-
-            25 * s,
-            30 * s
-
-        );
-
-    }
-
-
-    /* ========================================================
-       BATANG
-    ======================================================== */
-
-    else if(
-        type ===
-        "stem"
-    ){
-
-        g.fillStyle(
-            color,
-            1
-        );
-
-
-        g.fillRoundedRect(
-
-            -7 * s,
-            -28 * s,
-
-            14 * s,
-            57 * s,
-
-            5 * s
-
-        );
-
-
-        g.fillEllipse(
-
-            -14 * s,
-            -9 * s,
-
-            21 * s,
-            12 * s
-
-        );
-
-
-        g.fillEllipse(
-
-            14 * s,
-            8 * s,
-
-            21 * s,
-            12 * s
-
-        );
-
-
-        g.lineStyle(
-
-            2 * s,
-
-            0x285a48,
-
-            .8
-
-        );
-
-
-        g.lineBetween(
-
-            0,
-            -26 * s,
-
-            0,
-            26 * s
-
-        );
-
-    }
-
-
-    return g;
-
-}
-
-
-/* ============================================================
-   GET PAIR
-============================================================ */
-
-getPair(pairId){
-
-    return this.pairs.find(
-        pair =>
-        pair.id ===
-        pairId
-    );
-
-}
-
-
-/* ============================================================
-   FIND NODE
-============================================================ */
-
-findNodeAt(
-    x,
-    y
-){
-
-    let selected =
-        null;
-
-
-    let closest =
-        Infinity;
-
-
-    const radius =
-        Math.max(
-
-            29,
-
-            this.cellSize *
-            .44
-
-        );
-
-
-    this.nodes.forEach(
-        node => {
-
-            const distance =
-                Phaser.Math
-                .Distance
-                .Between(
-
-                    x,
-                    y,
-
-                    node.x,
-                    node.y
-
-                );
-
-
-            if(
-
-                distance <
-                radius &&
-
-                distance <
-                closest
-
-            ){
-
-                closest =
-                    distance;
-
-
-                selected =
-                    node;
-
-            }
-
-        }
-    );
-
-
-    return selected;
-
-}
-
-
-/* ============================================================
-   NODE AT CELL
-============================================================ */
-
-nodeAtCell(
-    col,
-    row
-){
-
-    return this.nodes.find(
-        node =>
-
-        node.col ===
-        col &&
-
-        node.row ===
-        row
-    );
-
-}
-
-
-/* ============================================================
-   POINTER TO CELL
-============================================================ */
-
-pointerToCell(
-    x,
-    y
-){
-
-    if(
-
-        x <
-        this.boardX ||
-
-        y <
-        this.boardY ||
-
-        x >=
-        this.boardX +
-        this.boardSize ||
-
-        y >=
-        this.boardY +
-        this.boardSize
-
-    ){
-
-        return null;
-
-    }
-
-
-    return {
-
-        col:
-        Math.floor(
-
-            (
-                x -
-                this.boardX
-            )
-            /
-            this.cellSize
-
-        ),
-
-        row:
-        Math.floor(
-
-            (
-                y -
-                this.boardY
-            )
-            /
-            this.cellSize
-
-        )
-
-    };
-
-}
-
-
-/* ============================================================
-   COUNTER
-============================================================ */
-
-updateCounter(){
-
-    const filled =
-        this.occupied.size;
-
-
-    fillCounter.textContent =
-        `${filled} / 25`;
-
-
-    if(
-        filled ===
-        25
-    ){
-
-        fillCounter.style.background =
-            "#d7f5d9";
-
-    }
-
-    else{
-
-        fillCounter.style.background =
-            "rgba(255,255,245,.95)";
-
-    }
-
-}
-
-
-/* ============================================================
-   CLEAR ROUTE
-============================================================ */
-
-clearPairPath(pairId){
-
-    const route =
-        this.paths[
-            pairId
-        ];
-
-
-    if(!route){
-        return;
-    }
-
-
-    route.forEach(
-        cell => {
-
-            const key =
-                cellKey(
-
-                    cell.col,
-                    cell.row
-
-                );
-
-
-            if(
-                this.occupied.get(
-                    key
-                )
-                ===
-                pairId
-            ){
-
-                this.occupied.delete(
-                    key
-                );
-
-            }
-
-        }
-    );
-
-
-    this.paths[
-        pairId
-    ] =
-        null;
-
-
-    this.renderCompletedPaths();
-
-    this.updateCounter();
-
-}
-
-
-/* ============================================================
-   POINTER DOWN
-============================================================ */
-
-pointerDown(pointer){
-
-    if(
-        this.stageLocked ||
-        this.currentDrag
-    ){
-
-        return;
-
-    }
-
-
-    const node =
-        this.findNodeAt(
-
-            pointer.x,
-            pointer.y
-
-        );
-
-
-    if(!node){
-        return;
-    }
-
-
-    /*
-    Route siap boleh dibuat semula.
-    */
-
-    if(
-        this.paths[
-            node.pairId
-        ]
-    ){
-
-        this.clearPairPath(
-            node.pairId
-        );
-
-    }
-
-
-    const pair =
-        this.getPair(
-            node.pairId
-        );
-
-
-    this.currentDrag = {
-
-        pair,
-
-        startNode:
-        node,
-
-        cells:[
-            {
-
-                col:
-                node.col,
-
-                row:
-                node.row
-
-            }
-        ]
-
-    };
-
-
-    this.tweens.add({
-
-        targets:
-        node,
-
-        scaleX:
-        1.12,
-
-        scaleY:
-        1.12,
-
-        duration:
-        70
-
-    });
-
-
-    this.renderTemp();
-
-}
-
-
-/* ============================================================
-   CAN ENTER
-============================================================ */
-
-canEnterCell(
-    pair,
-    col,
-    row
-){
-
-    if(
-
-        col < 0 ||
-
-        row < 0 ||
-
-        col >=
-        GRID_SIZE ||
-
-        row >=
-        GRID_SIZE
-
-    ){
-
-        return false;
-
-    }
-
-
-    const key =
-        cellKey(
-            col,
-            row
-        );
-
-
-    /*
-    Laluan pasangan lain.
-    */
-
-    const occupiedBy =
-        this.occupied.get(
-            key
-        );
-
-
-    if(
-
-        occupiedBy &&
-
-        occupiedBy !==
-        pair.id
-
-    ){
-
-        return false;
-
-    }
-
-
-    /*
-    Simbol pasangan lain.
-    */
-
-    const node =
-        this.nodeAtCell(
-            col,
-            row
-        );
-
-
-    if(
-
-        node &&
-
-        node.pairId !==
-        pair.id
-
-    ){
-
-        return false;
-
-    }
-
-
-    return true;
-
-}
-
-
-/* ============================================================
-   POINTER MOVE
-============================================================ */
-
-pointerMove(pointer){
-
-    if(
-        !this.currentDrag
-    ){
-
-        return;
-
-    }
-
-
-    const target =
-        this.pointerToCell(
-
-            pointer.x,
-            pointer.y
-
-        );
-
-
-    if(!target){
-        return;
-    }
-
-
-    this.moveTowards(
-
-        target.col,
-        target.row
-
-    );
-
-
-    this.renderTemp();
-
-}
-
-
-/* ============================================================
-   MOVE
-============================================================ */
-
-moveTowards(
-    targetCol,
-    targetRow
-){
-
-    const drag =
-        this.currentDrag;
-
-
-    const cells =
-        drag.cells;
-
-
-    let safety =
-        0;
-
-
-    while(
-        safety <
-        25
-    ){
-
-        safety++;
-
-
-        const last =
-            cells[
-                cells.length -
-                1
-            ];
+        const now =
+            this.time.now;
 
 
         if(
-
-            last.col ===
-            targetCol &&
-
-            last.row ===
-            targetRow
-
+            now -
+            this.lastBounceTime <
+            110
         ){
-
-            break;
-
+            return;
         }
 
 
-        const dx =
-            targetCol -
-            last.col;
+        this.lastBounceTime =
+            now;
 
 
-        const dy =
-            targetRow -
-            last.row;
+        /* last safe position */
+        this.lastSafeX =
+            platform.x;
+
+        this.lastSafeY =
+            platform.y - 68;
 
 
-        let candidates =
-            [];
-
-
-        /*
-        Tentukan arah ikut posisi pointer.
-        */
-
+        /* first time landing platform */
         if(
-            Math.abs(dx) >=
-            Math.abs(dy)
+            !platform.getData(
+                "visited"
+            )
         ){
 
-            if(
-                dx !== 0
-            ){
-
-                candidates.push(
-                    [
-                        Math.sign(dx),
-                        0
-                    ]
-                );
-
-            }
-
-
-            if(
-                dy !== 0
-            ){
-
-                candidates.push(
-                    [
-                        0,
-                        Math.sign(dy)
-                    ]
-                );
-
-            }
-
-        }
-
-        else{
-
-            if(
-                dy !== 0
-            ){
-
-                candidates.push(
-                    [
-                        0,
-                        Math.sign(dy)
-                    ]
-                );
-
-            }
-
-
-            if(
-                dx !== 0
-            ){
-
-                candidates.push(
-                    [
-                        Math.sign(dx),
-                        0
-                    ]
-                );
-
-            }
-
-        }
-
-
-        let moved =
-            false;
-
-
-        for(
-            const direction
-            of
-            candidates
-        ){
-
-            const nextCol =
-                last.col +
-                direction[0];
-
-
-            const nextRow =
-                last.row +
-                direction[1];
-
-
-            /*
-            Backtrack.
-            */
-
-            if(
-                cells.length >
-                1
-            ){
-
-                const previous =
-                    cells[
-                        cells.length -
-                        2
-                    ];
-
-
-                if(
-
-                    previous.col ===
-                    nextCol &&
-
-                    previous.row ===
-                    nextRow
-
-                ){
-
-                    cells.pop();
-
-                    moved =
-                        true;
-
-                    break;
-
-                }
-
-            }
-
-
-            /*
-            Sentuh route sendiri.
-            */
-
-            const ownIndex =
-                cells.findIndex(
-                    cell =>
-
-                    cell.col ===
-                    nextCol &&
-
-                    cell.row ===
-                    nextRow
-                );
-
-
-            if(
-                ownIndex !==
-                -1
-            ){
-
-                cells.splice(
-                    ownIndex +
-                    1
-                );
-
-
-                moved =
-                    true;
-
-
-                break;
-
-            }
-
-
-            /*
-            Empty / allowed.
-            */
-
-            if(
-                this.canEnterCell(
-
-                    drag.pair,
-
-                    nextCol,
-                    nextRow
-
-                )
-            ){
-
-                cells.push({
-
-                    col:
-                    nextCol,
-
-                    row:
-                    nextRow
-
-                });
-
-
-                moved =
-                    true;
-
-
-                break;
-
-            }
-
-        }
-
-
-        if(
-            !moved
-        ){
-
-            break;
-
-        }
-
-    }
-
-}
-
-
-/* ============================================================
-   POINTER UP
-============================================================ */
-
-pointerUp(){
-
-    if(
-        !this.currentDrag
-    ){
-
-        return;
-
-    }
-
-
-    const drag =
-        this.currentDrag;
-
-
-    const route =
-        drag.cells;
-
-
-    const last =
-        route[
-            route.length -
-            1
-        ];
-
-
-    const targetNode =
-        this.nodeAtCell(
-
-            last.col,
-            last.row
-
-        );
-
-
-    drag.startNode
-    .setScale(
-        1
-    );
-
-
-    const success =
-
-        targetNode &&
-
-        targetNode.pairId ===
-        drag.pair.id &&
-
-        targetNode !==
-        drag.startNode;
-
-
-    /*
-    SUCCESS
-    */
-
-    if(success){
-
-        this.paths[
-            drag.pair.id
-        ] =
-            route.slice();
-
-
-        route.forEach(
-            cell => {
-
-                this.occupied.set(
-
-                    cellKey(
-
-                        cell.col,
-                        cell.row
-
-                    ),
-
-                    drag.pair.id
-
-                );
-
-            }
-        );
-
-
-        this.currentDrag =
-            null;
-
-
-        this.tempG.clear();
-
-        this.tempFillG.clear();
-
-
-        this.renderCompletedPaths();
-
-        this.updateCounter();
-
-
-        this.flashPair(
-            drag.pair.id
-        );
-
-
-        this.checkComplete();
-
-    }
-
-
-    /*
-    FAIL
-    */
-
-    else{
-
-        this.currentDrag =
-            null;
-
-
-        this.tempG.clear();
-
-        this.tempFillG.clear();
-
-
-        this.shakeNode(
-            drag.startNode
-        );
-
-    }
-
-}
-
-
-/* ============================================================
-   TEMP ROUTE
-============================================================ */
-
-renderTemp(){
-
-    const line =
-        this.tempG;
-
-
-    const fill =
-        this.tempFillG;
-
-
-    line.clear();
-
-    fill.clear();
-
-
-    if(
-        !this.currentDrag
-    ){
-
-        return;
-
-    }
-
-
-    const drag =
-        this.currentDrag;
-
-
-    /*
-    cell highlight
-    */
-
-    drag.cells.forEach(
-        cell => {
-
-            const x =
-                this.boardX +
-                cell.col *
-                this.cellSize;
-
-
-            const y =
-                this.boardY +
-                cell.row *
-                this.cellSize;
-
-
-            fill.fillStyle(
-
-                drag.pair.color,
-
-                .25
-
-            );
-
-
-            fill.fillRoundedRect(
-
-                x + 4,
-                y + 4,
-
-                this.cellSize - 8,
-                this.cellSize - 8,
-
-                10
-
-            );
-
-        }
-    );
-
-
-    const points =
-        drag.cells.map(
-            cell => {
-
-                const p =
-                    this.cellCenter(
-
-                        cell.col,
-                        cell.row
-
-                    );
-
-
-                return new Phaser.Math.Vector2(
-
-                    p.x,
-                    p.y
-
-                );
-
-            }
-        );
-
-
-    if(
-        !points.length
-    ){
-
-        return;
-
-    }
-
-
-    line.lineStyle(
-
-        Math.max(
-
-            18,
-
-            this.cellSize *
-            .28
-
-        ),
-
-        0xffffff,
-
-        .74
-
-    );
-
-
-    line.strokePoints(
-
-        points,
-        false,
-        false
-
-    );
-
-
-    line.lineStyle(
-
-        Math.max(
-
-            11,
-
-            this.cellSize *
-            .18
-
-        ),
-
-        drag.pair.color,
-
-        .95
-
-    );
-
-
-    line.strokePoints(
-
-        points,
-        false,
-        false
-
-    );
-
-
-    points.forEach(
-        point => {
-
-            line.fillStyle(
-                drag.pair.color,
-                1
-            );
-
-
-            line.fillCircle(
-
-                point.x,
-                point.y,
-
-                Math.max(
-
-                    5,
-
-                    this.cellSize *
-                    .09
-
-                )
-
-            );
-
-        }
-    );
-
-}
-
-
-/* ============================================================
-   COMPLETED ROUTES
-============================================================ */
-
-renderCompletedPaths(){
-
-    const fill =
-        this.pathFillG;
-
-
-    const line =
-        this.pathG;
-
-
-    fill.clear();
-
-    line.clear();
-
-
-    this.pairs.forEach(
-        pair => {
-
-            const route =
-                this.paths[
-                    pair.id
-                ];
-
-
-            if(!route){
-                return;
-            }
-
-
-            route.forEach(
-                cell => {
-
-                    const x =
-                        this.boardX +
-                        cell.col *
-                        this.cellSize;
-
-
-                    const y =
-                        this.boardY +
-                        cell.row *
-                        this.cellSize;
-
-
-                    fill.fillStyle(
-
-                        pair.color,
-
-                        .30
-
-                    );
-
-
-                    fill.fillRoundedRect(
-
-                        x + 4,
-                        y + 4,
-
-                        this.cellSize - 8,
-                        this.cellSize - 8,
-
-                        10
-
-                    );
-
-                }
-            );
-
-
-            const points =
-                route.map(
-                    cell => {
-
-                        const p =
-                            this.cellCenter(
-
-                                cell.col,
-                                cell.row
-
-                            );
-
-
-                        return new Phaser.Math.Vector2(
-
-                            p.x,
-                            p.y
-
-                        );
-
-                    }
-                );
-
-
-            /*
-            white edge
-            */
-
-            line.lineStyle(
-
-                Math.max(
-
-                    19,
-
-                    this.cellSize *
-                    .30
-
-                ),
-
-                0xffffff,
-
-                .77
-
-            );
-
-
-            line.strokePoints(
-
-                points,
-                false,
-                false
-
-            );
-
-
-            /*
-            main
-            */
-
-            line.lineStyle(
-
-                Math.max(
-
-                    12,
-
-                    this.cellSize *
-                    .19
-
-                ),
-
-                pair.color,
-
-                1
-
-            );
-
-
-            line.strokePoints(
-
-                points,
-                false,
-                false
-
-            );
-
-
-            points.forEach(
-                point => {
-
-                    line.fillStyle(
-                        pair.color,
-                        1
-                    );
-
-
-                    line.fillCircle(
-
-                        point.x,
-                        point.y,
-
-                        Math.max(
-
-                            6,
-
-                            this.cellSize *
-                            .095
-
-                        )
-
-                    );
-
-                }
-            );
-
-        }
-    );
-
-}
-
-
-/* ============================================================
-   FLASH
-============================================================ */
-
-flashPair(pairId){
-
-    this.nodes
-
-    .filter(
-        node =>
-        node.pairId ===
-        pairId
-    )
-
-    .forEach(
-        node => {
-
-            this.tweens.add({
-
-                targets:
-                node,
-
-                scaleX:
-                1.18,
-
-                scaleY:
-                1.18,
-
-                duration:
-                110,
-
-                yoyo:
+            platform.setData(
+                "visited",
                 true
-
-            });
-
-        }
-    );
-
-}
-
-
-/* ============================================================
-   SHAKE
-============================================================ */
-
-shakeNode(node){
-
-    const originalX =
-        node.x;
-
-
-    this.tweens.add({
-
-        targets:
-        node,
-
-        x:
-        originalX +
-        7,
-
-        duration:
-        45,
-
-        yoyo:
-        true,
-
-        repeat:
-        3,
-
-        onComplete:
-        () => {
-
-            node.x =
-                originalX;
-
-
-            node.setScale(
-                1
             );
 
-        }
-
-    });
-
-}
+            this.uniquePlatformsSinceQuestion++;
 
 
-/* ============================================================
-   COMPLETE
-============================================================ */
+            /* question after every 4 NEW platforms */
+            if(
+                this.completedQuestions <
+                QUESTIONS.length &&
+                this.uniquePlatformsSinceQuestion >= 4
+            ){
 
-checkComplete(){
+                this.uniquePlatformsSinceQuestion = 0;
 
-    const allConnected =
-        this.pairs.every(
-            pair =>
-            !!this.paths[
-                pair.id
-            ]
-        );
+                player.setVelocity(
+                    0,
+                    0
+                );
 
+                this.openQuestion(
+                    this.completedQuestions
+                );
 
-    if(
-        !allConnected
-    ){
-
-        return;
-
-    }
-
-
-    /*
-    Semua 25 petak wajib penuh.
-    */
-
-    if(
-        this.occupied.size !==
-        TOTAL_CELLS
-    ){
-
-        const missing =
-            TOTAL_CELLS -
-            this.occupied.size;
-
-
-        showMiniMessage(
-
-            `Masih ada ${missing} petak kosong. Ubah laluan.`
-
-        );
-
-
-        return;
-
-    }
-
-
-    this.stageLocked =
-        true;
-
-
-    const message =
-        this.add.text(
-
-            this.scale.width /
-            2,
-
-            this.boardY +
-            this.boardSize /
-            2,
-
-            "GRID PENUH! BERJAYA!",
-
-            {
-
-                fontFamily:
-                "Trebuchet MS, Arial",
-
-                fontStyle:
-                "bold",
-
-                fontSize:
-                Math.max(
-
-                    18,
-
-                    Math.min(
-
-                        32,
-
-                        this.scale.width *
-                        .048
-
-                    )
-
-                )
-                +
-                "px",
-
-                color:
-                "#28613d",
-
-                backgroundColor:
-                "#fff8ca",
-
-                padding:{
-
-                    x:15,
-
-                    y:10
-
-                },
-
-                stroke:
-                "#ffffff",
-
-                strokeThickness:
-                4
+                return;
 
             }
 
-        )
-        .setOrigin(
-            .5
-        )
-        .setDepth(
-            100
+        }
+
+
+        /* automatic hop */
+        this.autoJump();
+
+    }
+
+
+    /* =====================================================
+       AUTO JUMP
+    ===================================================== */
+
+    autoJump(){
+
+        if(
+            this.questionActive ||
+            !this.gameStarted
+        ){
+            return;
+        }
+
+
+        this.player.setVelocityY(
+            -775
         );
 
 
-    this.tweens.add({
+        /* little squash/stretch */
+        this.tweens.killTweensOf(
+            this.player
+        );
 
-        targets:
-        message,
+        this.player.setScale(
+            .88,
+            .74
+        );
 
-        scaleX:
-        1.08,
+        this.tweens.add({
 
-        scaleY:
-        1.08,
+            targets:
+                this.player,
 
-        duration:
-        180,
+            scaleX:
+                .82,
 
-        yoyo:
-        true,
+            scaleY:
+                .82,
 
-        repeat:
-        1
+            duration:
+                150,
 
-    });
+            ease:
+                "Back.Out"
 
+        });
 
-    this.time.delayedCall(
-        700,
-        () => {
-
-            message.destroy();
+    }
 
 
-            showQuestion(
-                currentStage
-            );
+    /* =====================================================
+       START GAME
+    ===================================================== */
 
+    startGame(){
+
+        if(
+            this.gameStarted
+        ){
+            return;
         }
-    );
-
-}
-
-}
 
 
-/* ============================================================
-   QUESTIONS
-============================================================ */
+        this.gameStarted = true;
 
-function showQuestion(index){
+        startOverlay.style.display =
+            "none";
 
-    const q =
-        QUESTIONS[
-            index
-        ];
+        this.physics.world.resume();
 
-
-    answerLocked =
-        false;
+        controlHint.style.opacity =
+            "1";
 
 
-    questionMeta.textContent =
-        `Soalan ${index + 1}/25 • ${q.tp}`;
+        this.time.delayedCall(
+            5000,
+            ()=>{
+
+                controlHint.style.opacity =
+                    "0";
+
+            }
+        );
 
 
-    questionText.textContent =
-        q.q;
+        this.autoJump();
+
+    }
 
 
-    answers.innerHTML =
-        "";
+    /* =====================================================
+       OPEN QUESTION
+    ===================================================== */
+
+    openQuestion(index){
+
+        this.questionActive = true;
+
+        this.physics.world.pause();
 
 
-    feedback.textContent =
-        "";
+        const item =
+            QUESTIONS[index];
 
 
-    const letters =
-        [
+        questionNumber.textContent =
+            `Soalan ${index + 1} / ${QUESTIONS.length}`;
+
+        tpBadge.textContent =
+            item.tp;
+
+        questionText.textContent =
+            item.q;
+
+        feedback.textContent =
+            "";
+
+        feedback.style.color =
+            "#4e3519";
+
+
+        answerList.innerHTML =
+            "";
+
+
+        const labels = [
             "A",
             "B",
             "C",
@@ -4837,259 +2878,595 @@ function showQuestion(index){
         ];
 
 
-    q.o.forEach(
-        (option,i) => {
+        item.options.forEach(
+            (option,i)=>{
 
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-
-            button.className =
-                "answer";
-
-
-            button.textContent =
-                `${letters[i]}. ${option}`;
-
-
-            button.onclick =
-                () => {
-
-                    checkAnswer(
-
-                        index,
-                        i,
-                        button
-
+                const btn =
+                    document.createElement(
+                        "button"
                     );
 
-                };
+                btn.className =
+                    "answerBtn";
 
+                btn.innerHTML =
+                    `<b>${labels[i]}.</b> ${option}`;
 
-            answers.appendChild(
-                button
-            );
+                btn.onclick =
+                    ()=>{
 
-        }
-    );
+                        this.selectAnswer(
+                            index,
+                            i,
+                            btn
+                        );
 
+                    };
 
-    questionOverlay
-    .classList
-    .add(
-        "show"
-    );
-
-}
-
-
-/* ============================================================
-   ANSWER
-============================================================ */
-
-function checkAnswer(
-    questionIndex,
-    selected,
-    button
-){
-
-    if(
-        answerLocked
-    ){
-
-        return;
-
-    }
-
-
-    const q =
-        QUESTIONS[
-            questionIndex
-        ];
-
-
-    if(
-        selected ===
-        q.a
-    ){
-
-        answerLocked =
-            true;
-
-
-        button
-        .classList
-        .add(
-            "correct"
-        );
-
-
-        feedback.textContent =
-            "✅ Betul!";
-
-
-        [
-            ...answers.children
-        ]
-        .forEach(
-            answerButton => {
-
-                answerButton.disabled =
-                    true;
+                answerList.appendChild(
+                    btn
+                );
 
             }
         );
 
 
-        setTimeout(
-            () => {
+        questionModal.style.display =
+            "flex";
 
-                questionOverlay
-                .classList
-                .remove(
-                    "show"
-                );
+    }
 
 
-                /*
-                Last question
-                */
+    /* =====================================================
+       ANSWER
+    ===================================================== */
 
-                if(
-                    questionIndex ===
-                    QUESTIONS.length -
-                    1
-                ){
+    selectAnswer(
+        questionIndex,
+        answerIndex,
+        button
+    ){
 
-                    winOverlay
-                    .classList
-                    .add(
-                        "show"
+        if(
+            !this.questionActive
+        ){
+            return;
+        }
+
+
+        const item =
+            QUESTIONS[
+                questionIndex
+            ];
+
+
+        const buttons =
+            [
+                ...answerList
+                    .querySelectorAll(
+                        ".answerBtn"
+                    )
+            ];
+
+
+        if(
+            answerIndex ===
+            item.correct
+        ){
+
+            buttons.forEach(
+                b=>{
+                    b.disabled = true;
+                }
+            );
+
+
+            button.classList.add(
+                "correct"
+            );
+
+
+            feedback.textContent =
+                "✓ Betul! Teruskan mendaki!";
+
+            feedback.style.color =
+                "#23721f";
+
+
+            this.completedQuestions++;
+
+            questionProgress.textContent =
+                `${this.completedQuestions} / ${QUESTIONS.length}`;
+
+
+            this.time.delayedCall(
+                750,
+                ()=>{
+
+                    questionModal.style.display =
+                        "none";
+
+
+                    if(
+                        this.completedQuestions >=
+                        QUESTIONS.length
+                    ){
+
+                        this.finishedSet =
+                            true;
+
+                        this.showCompleteScreen();
+
+                    }else{
+
+                        this.questionActive =
+                            false;
+
+                        this.physics.world.resume();
+
+                        this.player.setVelocityY(
+                            -785
+                        );
+
+                    }
+
+                }
+            );
+
+        }else{
+
+            button.classList.add(
+                "wrong"
+            );
+
+            button.disabled =
+                true;
+
+
+            feedback.textContent =
+                "Belum tepat. Cuba jawapan lain.";
+
+            feedback.style.color =
+                "#a32c27";
+
+
+            this.cameras.main.shake(
+                110,
+                .005
+            );
+
+
+            this.time.delayedCall(
+                500,
+                ()=>{
+
+                    button.classList.remove(
+                        "wrong"
                     );
 
+                    button.disabled =
+                        false;
 
-                    return;
+                }
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       COMPLETE
+    ===================================================== */
+
+    showCompleteScreen(){
+
+        this.questionActive =
+            true;
+
+        this.physics.world.pause();
+
+        completeModal.style.display =
+            "flex";
+
+    }
+
+
+    /* =====================================================
+       RESPAWN
+    ===================================================== */
+
+    respawnPlayer(){
+
+        if(
+            this.questionActive
+        ){
+            return;
+        }
+
+
+        showToast(
+            "Grasshopper kembali ke dahan terakhir!"
+        );
+
+
+        this.player.setPosition(
+            this.lastSafeX,
+            this.lastSafeY
+        );
+
+        this.player.setVelocity(
+            0,
+            0
+        );
+
+
+        this.time.delayedCall(
+            140,
+            ()=>{
+
+                if(
+                    !this.questionActive
+                ){
+
+                    this.player.setVelocityY(
+                        -760
+                    );
 
                 }
 
-
-                currentStage =
-                    questionIndex +
-                    1;
-
-
-                gameScene.loadStage(
-                    currentStage
-                );
-
-            },
-            750
+            }
         );
 
     }
 
-    else{
 
-        button
-        .classList
-        .add(
-            "wrong"
-        );
+    /* =====================================================
+       ENDLESS GENERATION
+    ===================================================== */
 
+    generateAhead(){
 
-        feedback.textContent =
-            "❌ Belum tepat. Cuba lagi.";
-
-
-        button.disabled =
-            true;
+        const targetY =
+            this.player.y -
+            4100;
 
 
-        setTimeout(
-            () => {
+        while(
+            this.lastGeneratedY >
+            targetY
+        ){
 
-                button
-                .classList
-                .remove(
-                    "wrong"
-                );
+            this.createNextPlatform();
 
+        }
 
-                button.disabled =
-                    false;
+    }
 
 
-                feedback.textContent =
-                    "";
+    /* =====================================================
+       UPDATE
+    ===================================================== */
 
-            },
-            650
-        );
+    update(){
+
+        if(
+            !this.player
+        ){
+            return;
+        }
+
+
+        /* keep endless world generated */
+        this.generateAhead();
+
+
+        if(
+            !this.gameStarted ||
+            this.questionActive
+        ){
+
+            return;
+
+        }
+
+
+        /* ---------------------------------------------
+           INPUT
+        --------------------------------------------- */
+
+        const moveLeft =
+            this.cursors.left.isDown ||
+            this.keyA.isDown ||
+            mobileLeft;
+
+        const moveRight =
+            this.cursors.right.isDown ||
+            this.keyD.isDown ||
+            mobileRight;
+
+
+        const MOVE_SPEED = 300;
+
+
+        if(
+            moveLeft &&
+            !moveRight
+        ){
+
+            this.player.setVelocityX(
+                -MOVE_SPEED
+            );
+
+            this.player.setFlipX(
+                true
+            );
+
+        }else if(
+            moveRight &&
+            !moveLeft
+        ){
+
+            this.player.setVelocityX(
+                MOVE_SPEED
+            );
+
+            this.player.setFlipX(
+                false
+            );
+
+        }else{
+
+            this.player.setVelocityX(
+                this.player.body.velocity.x *
+                0.82
+            );
+
+        }
+
+
+        /* ---------------------------------------------
+           PLAYER ROTATION
+        --------------------------------------------- */
+
+        const targetRotation =
+            Phaser.Math.Clamp(
+                this.player.body.velocity.x /
+                1300,
+                -.20,
+                .20
+            );
+
+
+        this.player.rotation =
+            Phaser.Math.Linear(
+                this.player.rotation,
+                targetRotation,
+                .12
+            );
+
+
+        /* ---------------------------------------------
+           HORIZONTAL LIMIT
+        --------------------------------------------- */
+
+        if(
+            this.player.x < 55
+        ){
+
+            this.player.x =
+                55;
+
+            this.player.setVelocityX(
+                Math.abs(
+                    this.player.body.velocity.x
+                )
+            );
+
+        }
+
+
+        if(
+            this.player.x > 845
+        ){
+
+            this.player.x =
+                845;
+
+            this.player.setVelocityX(
+                -Math.abs(
+                    this.player.body.velocity.x
+                )
+            );
+
+        }
+
+
+        /* ---------------------------------------------
+           HEIGHT
+        --------------------------------------------- */
+
+        const climbed =
+            Math.max(
+                0,
+                this.startWorldY -
+                this.player.y
+            );
+
+
+        const metres =
+            Math.floor(
+                climbed / 55
+            );
+
+
+        if(
+            metres >
+            this.bestHeight
+        ){
+
+            this.bestHeight =
+                metres;
+
+        }
+
+
+        heightText.textContent =
+            `🌳 Ketinggian: ${this.bestHeight} m`;
+
+
+        /* ---------------------------------------------
+           FALL CHECK
+        --------------------------------------------- */
+
+        const cameraBottom =
+            this.cameras.main.scrollY +
+            this.cameras.main.height;
+
+
+        if(
+            this.player.y >
+            cameraBottom + 220
+        ){
+
+            this.respawnPlayer();
+
+        }
 
     }
 
 }
 
 
-/* ============================================================
+/* =========================================================
    PHASER CONFIG
-============================================================ */
+========================================================= */
 
 const config = {
 
     type:
-    Phaser.AUTO,
+        Phaser.AUTO,
 
     parent:
-    "game",
+        "game",
+
+    width:
+        900,
+
+    height:
+        1600,
 
     backgroundColor:
-    "#ddefc0",
+        "#d5f6cb",
+
+    physics:{
+
+        default:
+            "arcade",
+
+        arcade:{
+
+            gravity:{
+                y:0
+            },
+
+            debug:false
+
+        }
+
+    },
 
     scale:{
 
         mode:
-        Phaser.Scale.RESIZE,
+            Phaser.Scale.FIT,
+
+        autoCenter:
+            Phaser.Scale.CENTER_BOTH,
 
         width:
-        "100%",
+            900,
 
         height:
-        "100%"
-
-    },
-
-    input:{
-
-        activePointers:
-        3
+            1600
 
     },
 
     render:{
 
-        antialias:
-        true,
+        antialias:true,
 
-        pixelArt:
-        false,
+        pixelArt:false,
 
-        roundPixels:
-        false
+        roundPixels:false
 
     },
 
     scene:[
-        ConnectScene
+        TreeHopScene
     ]
 
 };
 
 
-new Phaser.Game(
-    config
+/* =========================================================
+   START PHASER
+========================================================= */
+
+const game =
+    new Phaser.Game(
+        config
+    );
+
+
+/* =========================================================
+   PREVENT PAGE MOVEMENT
+========================================================= */
+
+document.addEventListener(
+    "touchmove",
+    function(e){
+
+        if(
+            e.target.closest(
+                ".questionCard"
+            )
+        ){
+            return;
+        }
+
+        e.preventDefault();
+
+    },
+    {
+        passive:false
+    }
+);
+
+
+/* =========================================================
+   RESET BUTTON STATE IF TAB LOSES FOCUS
+========================================================= */
+
+window.addEventListener(
+    "blur",
+    ()=>{
+
+        mobileLeft =
+            false;
+
+        mobileRight =
+            false;
+
+        leftBtn.classList.remove(
+            "active"
+        );
+
+        rightBtn.classList.remove(
+            "active"
+        );
+
+    }
 );
 
 </script>
