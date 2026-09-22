@@ -14,904 +14,1071 @@ viewport-fit=cover">
 
 <style>
 
-/* =========================================================
-   GLOBAL
-========================================================= */
-
 *{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
 }
 
 html,body{
-  margin:0;
-  width:100%;
-  min-height:100%;
-  font-family:"Trebuchet MS",Arial,sans-serif;
-  background:
+    margin:0;
+    width:100%;
+    min-height:100%;
+    font-family:"Trebuchet MS",Arial,sans-serif;
+    background:
     linear-gradient(
-      135deg,
-      #c8e6a8,
-      #9dcf78
+        135deg,
+        #cce8ae,
+        #98c870
     );
 }
 
 body{
-  min-height:100svh;
+    min-height:100svh;
 
-  display:flex;
-  align-items:center;
-  justify-content:center;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 
-  padding:18px;
+    padding:18px;
 
-  overflow:auto;
+    overflow:auto;
 }
 
-/* =========================================================
-   GAME CONTAINER
+/* ======================================================
+   MAIN GAME CONTAINER
+====================================================== */
 
-   LAPTOP:
-   Maksimum 980px sahaja.
+#gameShell{
 
-   TABLET:
-   Ikut ruang skrin.
+    width:min(
+        980px,
+        calc(100vw - 24px)
+    );
 
-   PHONE:
-   Lebih tinggi sedikit supaya control & HUD tak terlalu kecil.
-========================================================= */
+    background:#f7e6b1;
 
-#gameWrap{
-  position:relative;
+    border:4px solid #664326;
 
-  width:min(
-    980px,
-    calc(100vw - 30px),
-    calc((100svh - 45px) * 1.7778)
-  );
+    border-radius:20px;
 
-  aspect-ratio:16 / 9;
+    padding:10px;
 
-  overflow:hidden;
-
-  background:#78ad57;
-
-  border:5px solid #58381f;
-
-  border-radius:16px;
-
-  box-shadow:
-    0 0 0 4px #c08a4b,
-    0 10px 25px rgba(0,0,0,.25);
-
-  touch-action:none;
+    box-shadow:
+    0 8px 0 #8c6338,
+    0 18px 35px rgba(0,0,0,.2);
 }
 
-/* Phaser */
+/* ======================================================
+   TOP CONTAINERS
+====================================================== */
 
-#game{
-  position:absolute;
-  inset:0;
+#topUI{
+
+    display:grid;
+
+    grid-template-columns:
+    auto
+    1fr
+    auto;
+
+    gap:8px;
+
+    margin-bottom:10px;
+
+    align-items:stretch;
 }
 
-#game canvas{
-  display:block;
-  width:100% !important;
-  height:100% !important;
+.uiContainer{
 
-  image-rendering:pixelated;
-  image-rendering:crisp-edges;
+    background:#fff6cf;
+
+    border:3px solid #694720;
+
+    border-radius:13px;
+
+    box-shadow:
+    0 4px 0 #95662f;
+
+    min-height:48px;
 }
 
-/* =========================================================
-   HUD
-========================================================= */
+#homeContainer{
 
-#hud{
-  position:absolute;
+    display:flex;
 
-  z-index:30;
+    align-items:center;
 
-  top:10px;
-  left:10px;
-  right:10px;
+    justify-content:center;
 
-  pointer-events:none;
-}
-
-#topbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:10px;
+    padding:5px;
 }
 
 #homeBtn{
-  pointer-events:auto;
 
-  border:3px solid #58391f;
+    border:0;
 
-  background:#ffe4a0;
+    background:transparent;
 
-  color:#4c311d;
+    padding:8px 10px;
 
-  border-radius:11px;
+    font-size:13px;
 
-  padding:7px 12px;
+    font-weight:1000;
 
-  font-size:13px;
-  font-weight:1000;
+    color:#4e321d;
 
-  cursor:pointer;
-
-  box-shadow:0 4px 0 #88592f;
+    cursor:pointer;
 }
 
-#homeBtn:active{
-  transform:translateY(3px);
-  box-shadow:0 1px 0 #88592f;
+#missionContainer{
+
+    padding:8px 12px;
+
+    overflow:hidden;
 }
 
-#progress{
-  background:#fff4c8;
+#missionTitle{
 
-  border:3px solid #5b3b20;
+    font-size:10px;
 
-  border-radius:12px;
+    font-weight:1000;
 
-  padding:7px 11px;
-
-  font-size:13px;
-  font-weight:1000;
-
-  color:#4d331e;
-
-  box-shadow:0 4px 0 #81532a;
-}
-
-/* =========================================================
-   CLUE
-========================================================= */
-
-#clueBox{
-  margin-top:8px;
-
-  width:min(
-    500px,
-    70%
-  );
-
-  background:rgba(
-    255,
-    249,
-    216,
-    .96
-  );
-
-  border:3px solid #67441f;
-
-  border-radius:13px;
-
-  padding:8px 11px;
-
-  box-shadow:0 4px 0 #51341a;
-}
-
-#clueTitle{
-  font-size:10px;
-  font-weight:1000;
-
-  color:#956129;
+    color:#a06a30;
 }
 
 #clueArea{
-  margin-top:2px;
 
-  font-size:13px;
-  font-weight:1000;
+    color:#39702f;
 
-  color:#35652d;
+    font-size:13px;
+
+    font-weight:1000;
+
+    margin-top:2px;
 }
 
 #clueText{
-  margin-top:3px;
 
-  font-size:12px;
-  font-weight:800;
+    color:#453721;
 
-  line-height:1.25;
+    font-size:11px;
 
-  color:#43351f;
+    line-height:1.25;
+
+    font-weight:800;
+
+    margin-top:2px;
 }
 
-/* =========================================================
-   INTERACTION
-========================================================= */
+#progressContainer{
 
-#interact{
-  position:absolute;
+    display:flex;
 
-  z-index:40;
+    align-items:center;
 
-  left:50%;
-  bottom:100px;
+    justify-content:center;
 
-  transform:translateX(-50%);
+    padding:8px 12px;
 
-  display:none;
+    font-size:12px;
 
-  white-space:nowrap;
+    font-weight:1000;
 
-  background:#ffe49a;
+    color:#4e321d;
 
-  border:3px solid #5a391f;
-
-  border-radius:999px;
-
-  padding:6px 12px;
-
-  color:#4d311b;
-
-  font-size:11px;
-  font-weight:1000;
-
-  box-shadow:0 4px 0 #754a26;
+    white-space:nowrap;
 }
 
-/* =========================================================
-   CONTROLS
-========================================================= */
+/* ======================================================
+   GAME VIEWPORT CONTAINER
+====================================================== */
 
-#controls{
-  position:absolute;
+#gameContainer{
 
-  z-index:45;
+    position:relative;
 
-  left:10px;
-  right:10px;
-  bottom:8px;
+    width:100%;
 
-  display:flex;
+    aspect-ratio:16 / 9;
 
-  justify-content:space-between;
+    overflow:hidden;
 
-  align-items:flex-end;
+    border:4px solid #52351f;
 
-  pointer-events:none;
+    border-radius:16px;
+
+    background:#73aa54;
+
+    box-shadow:
+    inset 0 0 0 3px #c08a4e;
+
+    touch-action:none;
 }
 
-#dpad{
-  position:relative;
+#game{
 
-  width:124px;
-  height:100px;
+    position:absolute;
 
-  pointer-events:auto;
+    inset:0;
+}
+
+#game canvas{
+
+    display:block;
+
+    width:100% !important;
+
+    height:100% !important;
+
+    image-rendering:pixelated;
+
+    image-rendering:crisp-edges;
+}
+
+/* ======================================================
+   INTERACT CONTAINER
+====================================================== */
+
+#interactContainer{
+
+    position:absolute;
+
+    z-index:30;
+
+    left:50%;
+
+    bottom:104px;
+
+    transform:translateX(-50%);
+
+    display:none;
+
+    background:#fff0aa;
+
+    border:3px solid #67451f;
+
+    border-radius:999px;
+
+    padding:6px 12px;
+
+    box-shadow:
+    0 4px 0 #80542b;
+
+    color:#4b301c;
+
+    font-size:11px;
+
+    font-weight:1000;
+
+    white-space:nowrap;
+}
+
+/* ======================================================
+   MOBILE CONTROL CONTAINERS
+====================================================== */
+
+#controlsLayer{
+
+    position:absolute;
+
+    z-index:35;
+
+    left:10px;
+
+    right:10px;
+
+    bottom:9px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-end;
+
+    pointer-events:none;
+}
+
+.controlContainer{
+
+    background:rgba(
+        255,
+        246,
+        207,
+        .90
+    );
+
+    border:3px solid #684521;
+
+    border-radius:16px;
+
+    box-shadow:
+    0 4px 0 rgba(92,57,28,.85);
+
+    pointer-events:auto;
+}
+
+#moveContainer{
+
+    width:132px;
+
+    height:108px;
+
+    position:relative;
+
+    padding:5px;
 }
 
 .moveBtn{
-  position:absolute;
 
-  width:40px;
-  height:40px;
+    position:absolute;
 
-  border:3px solid #4b311e;
+    width:39px;
 
-  border-radius:9px;
+    height:39px;
 
-  background:rgba(
-    255,
-    240,
-    183,
-    .94
-  );
+    background:#ffe69b;
 
-  color:#49301e;
+    border:2px solid #65421f;
 
-  font-size:18px;
-  font-weight:1000;
+    border-radius:9px;
 
-  box-shadow:0 4px 0 #694522;
+    color:#4b301c;
 
-  touch-action:none;
-  user-select:none;
+    font-size:18px;
+
+    font-weight:1000;
+
+    box-shadow:
+    0 3px 0 #815429;
+
+    touch-action:none;
+
+    user-select:none;
 }
 
 .moveBtn.active{
-  transform:translateY(3px);
 
-  box-shadow:0 1px 0 #694522;
+    background:#ffc957;
 
-  background:#ffd15b;
+    transform:translateY(2px);
+
+    box-shadow:
+    0 1px 0 #815429;
 }
 
 #upBtn{
-  top:0;
-  left:42px;
+
+    top:6px;
+
+    left:45px;
 }
 
 #leftBtn{
-  left:0;
-  top:43px;
+
+    top:49px;
+
+    left:4px;
 }
 
 #downBtn{
-  left:42px;
-  top:43px;
+
+    top:49px;
+
+    left:45px;
 }
 
 #rightBtn{
-  left:84px;
-  top:43px;
+
+    top:49px;
+
+    left:86px;
+}
+
+#actionContainer{
+
+    padding:5px;
+
+    border-radius:50%;
 }
 
 #actionBtn{
-  pointer-events:auto;
 
-  width:72px;
-  height:72px;
+    width:68px;
 
-  border:4px solid #53321c;
+    height:68px;
 
-  border-radius:50%;
+    border:0;
 
-  background:#ffc94a;
+    border-radius:50%;
 
-  color:#503019;
+    background:#ffc84a;
 
-  font-size:11px;
-  font-weight:1000;
+    color:#4d3019;
 
-  box-shadow:0 5px 0 #895627;
+    font-size:10px;
 
-  touch-action:none;
-  user-select:none;
+    font-weight:1000;
+
+    box-shadow:
+    inset 0 0 0 3px #744820;
+
+    touch-action:none;
 }
 
-#actionBtn:active{
-  transform:translateY(3px);
-  box-shadow:0 2px 0 #895627;
-}
-
-/* =========================================================
+/* ======================================================
    MODALS
-========================================================= */
+====================================================== */
 
 .modal{
-  position:absolute;
 
-  z-index:100;
+    position:absolute;
 
-  inset:0;
+    inset:0;
 
-  display:none;
+    z-index:100;
 
-  align-items:center;
-  justify-content:center;
+    display:none;
 
-  padding:15px;
+    align-items:center;
 
-  background:rgba(
-    18,
-    27,
-    13,
-    .73
-  );
+    justify-content:center;
 
-  backdrop-filter:blur(2px);
+    padding:14px;
+
+    background:rgba(19,29,14,.72);
+
+    backdrop-filter:blur(2px);
 }
 
-.card{
-  width:min(
-    590px,
-    94%
-  );
+.modalContainer{
 
-  max-height:91%;
+    width:min(
+        580px,
+        96%
+    );
 
-  overflow-y:auto;
+    max-height:93%;
 
-  background:#fff7d3;
+    overflow-y:auto;
 
-  border:4px solid #60401f;
+    background:#fff6cf;
 
-  border-radius:18px;
+    border:4px solid #67451f;
 
-  padding:16px;
+    border-radius:19px;
 
-  box-shadow:
-    0 7px 0 #3c2716,
-    0 18px 40px rgba(0,0,0,.4);
+    padding:15px;
+
+    box-shadow:
+    0 7px 0 #3f2917,
+    0 20px 40px rgba(0,0,0,.4);
 }
 
-.questionTop{
-  display:flex;
+/* separate inner containers */
 
-  align-items:center;
-  justify-content:space-between;
+.questionHeaderContainer{
 
-  gap:10px;
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:8px;
+
+    margin-bottom:10px;
 }
 
-#questionNumber{
-  background:#5c9d48;
+.questionBadge{
 
-  color:white;
+    background:#68a24e;
 
-  border-radius:999px;
+    color:white;
 
-  padding:5px 10px;
+    border:2px solid #3f6f31;
 
-  font-size:12px;
-  font-weight:1000;
+    border-radius:999px;
+
+    padding:5px 9px;
+
+    font-size:11px;
+
+    font-weight:1000;
 }
 
-#tp{
-  background:#efc85a;
+.tpBadge{
 
-  border:2px solid #936a29;
+    background:#f0ca5f;
 
-  border-radius:999px;
+    color:#4b321e;
 
-  padding:4px 8px;
+    border:2px solid #956a2b;
 
-  font-size:11px;
-  font-weight:1000;
+    border-radius:999px;
+
+    padding:4px 8px;
+
+    font-size:11px;
+
+    font-weight:1000;
+}
+
+.questionTextContainer{
+
+    background:#fffdf2;
+
+    border:3px solid #d7ae69;
+
+    border-radius:12px;
+
+    padding:11px;
+
+    margin-bottom:10px;
 }
 
 #questionText{
-  margin:13px 0;
 
-  font-size:17px;
-  font-weight:1000;
+    font-size:16px;
 
-  line-height:1.3;
+    line-height:1.3;
 
-  color:#3b301e;
+    font-weight:1000;
+
+    color:#3e311e;
 }
 
 #answers{
-  display:grid;
-  gap:8px;
+
+    display:grid;
+
+    gap:7px;
+}
+
+.answerContainer{
+
+    background:#fff;
+
+    border:3px solid #c89b59;
+
+    border-radius:11px;
+
+    overflow:hidden;
 }
 
 .answer{
-  width:100%;
 
-  text-align:left;
+    display:block;
 
-  border:3px solid #c69a5b;
+    width:100%;
 
-  border-radius:11px;
+    border:0;
 
-  background:white;
+    background:transparent;
 
-  padding:9px 12px;
+    color:#3b3124;
 
-  color:#3a3125;
+    text-align:left;
 
-  font-size:14px;
-  font-weight:800;
+    padding:10px 11px;
 
-  cursor:pointer;
+    font-size:13px;
+
+    line-height:1.25;
+
+    font-weight:800;
+
+    cursor:pointer;
 }
 
-.answer.correct{
-  background:#a9df89;
-  border-color:#39772e;
+.answerContainer.correct{
+
+    background:#a9df88;
+
+    border-color:#39752e;
 }
 
-.answer.wrong{
-  background:#ffa99d;
-  border-color:#a43c32;
+.answerContainer.wrong{
+
+    background:#ffaaa0;
+
+    border-color:#a63d33;
 }
 
 #answerStatus{
-  min-height:22px;
 
-  margin-top:9px;
+    min-height:22px;
 
-  text-align:center;
+    margin-top:8px;
 
-  font-size:13px;
-  font-weight:1000;
+    text-align:center;
+
+    font-size:12px;
+
+    font-weight:1000;
 }
 
-/* =========================================================
-   REWARD / COMPLETE
-========================================================= */
+/* ======================================================
+   REWARD CONTAINERS
+====================================================== */
 
-.rewardCard,
-.completeCard{
-  width:min(
-    520px,
-    94%
-  );
+.rewardIconContainer{
 
-  max-height:92%;
+    width:65px;
 
-  overflow-y:auto;
+    height:65px;
 
-  background:#fff5c7;
+    margin:0 auto 8px;
 
-  border:4px solid #65421f;
+    display:flex;
 
-  border-radius:20px;
+    align-items:center;
 
-  padding:19px;
+    justify-content:center;
 
-  text-align:center;
+    background:#fff2a6;
 
-  box-shadow:
-    0 7px 0 #3d2817,
-    0 18px 45px rgba(0,0,0,.42);
+    border:3px solid #a36b2f;
+
+    border-radius:15px;
+
+    font-size:35px;
 }
 
-.rewardIcon{
-  font-size:44px;
+.rewardTitleContainer{
+
+    background:#e5f5cd;
+
+    border:3px solid #74a64d;
+
+    border-radius:12px;
+
+    padding:8px;
+
+    margin-bottom:9px;
+
+    text-align:center;
 }
 
-.rewardCard h2,
-.completeCard h1{
-  margin:5px 0;
+.rewardTitleContainer h2{
 
-  color:#4e762f;
+    margin:0;
+
+    font-size:20px;
+
+    color:#4a742d;
 }
 
-.rewardCard p,
-.completeCard p{
-  font-size:14px;
+#nextClueContainer{
 
-  line-height:1.4;
+    background:white;
 
-  font-weight:700;
+    border:3px dashed #b57e36;
+
+    border-radius:12px;
+
+    padding:11px;
+
+    margin:10px 0;
+
+    text-align:center;
+
+    font-size:13px;
+
+    font-weight:900;
+
+    line-height:1.35;
 }
 
-#nextClue{
-  margin:12px 0;
+.buttonContainer{
 
-  padding:11px;
+    display:flex;
 
-  background:#fff;
+    justify-content:center;
 
-  border:3px dashed #b47d35;
-
-  border-radius:12px;
-
-  font-size:14px;
-  font-weight:900;
-
-  line-height:1.35;
-}
-
-.greenBtn,
-.completeCard button{
-  border:3px solid #53351d;
-
-  border-radius:11px;
-
-  padding:9px 17px;
-
-  font-size:13px;
-  font-weight:1000;
-
-  cursor:pointer;
+    margin-top:10px;
 }
 
 .greenBtn{
-  background:#74ad58;
 
-  color:white;
+    border:3px solid #4f361e;
 
-  box-shadow:0 4px 0 #436d34;
+    border-radius:11px;
+
+    background:#72ad57;
+
+    color:white;
+
+    padding:9px 16px;
+
+    font-size:12px;
+
+    font-weight:1000;
+
+    cursor:pointer;
+
+    box-shadow:
+    0 4px 0 #426c32;
 }
 
-/* =========================================================
+/* ======================================================
+   COMPLETE
+====================================================== */
+
+.completeTitleContainer{
+
+    background:#e7f4ca;
+
+    border:3px solid #74a650;
+
+    border-radius:13px;
+
+    padding:10px;
+
+    text-align:center;
+}
+
+.completeTitleContainer h1{
+
+    margin:0;
+
+    color:#4d762f;
+
+    font-size:22px;
+}
+
+.completeTextContainer{
+
+    background:white;
+
+    border:3px solid #d7ae69;
+
+    border-radius:12px;
+
+    padding:10px;
+
+    margin-top:10px;
+
+    text-align:center;
+
+    font-size:13px;
+
+    line-height:1.4;
+
+    font-weight:800;
+}
+
+.completeButtons{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:8px;
+
+    flex-wrap:wrap;
+
+    margin-top:10px;
+}
+
+.completeButtons button{
+
+    border:3px solid #54371f;
+
+    border-radius:10px;
+
+    padding:8px 13px;
+
+    font-size:11px;
+
+    font-weight:1000;
+
+    cursor:pointer;
+}
+
+/* ======================================================
    TOAST
-========================================================= */
+====================================================== */
 
 #toast{
-  position:absolute;
 
-  z-index:200;
+    position:absolute;
 
-  top:50%;
-  left:50%;
+    z-index:200;
 
-  transform:
+    left:50%;
+
+    top:50%;
+
+    transform:
     translate(-50%,-50%)
     scale(.9);
 
-  opacity:0;
+    opacity:0;
 
-  pointer-events:none;
+    pointer-events:none;
 
-  max-width:80%;
+    background:#fff2ad;
 
-  background:#fff1ad;
+    border:3px solid #61401f;
 
-  border:3px solid #60401f;
+    border-radius:12px;
 
-  border-radius:13px;
+    padding:8px 13px;
 
-  padding:9px 15px;
+    box-shadow:
+    0 4px 0 #412a17;
 
-  color:#50311a;
+    text-align:center;
 
-  text-align:center;
+    font-size:11px;
 
-  font-size:12px;
-  font-weight:1000;
+    font-weight:1000;
 
-  box-shadow:0 5px 0 #3e2816;
+    color:#50311b;
 
-  transition:.18s;
+    transition:.15s;
 }
 
 #toast.show{
-  opacity:1;
 
-  transform:
+    opacity:1;
+
+    transform:
     translate(-50%,-50%)
     scale(1);
 }
 
-/* =========================================================
-   TABLET / IPAD
-========================================================= */
+/* ======================================================
+   TABLET
+====================================================== */
 
 @media
-(min-width:601px)
-and
 (max-width:1024px){
 
-  body{
-    padding:10px;
-  }
+    body{
+        padding:10px;
+    }
 
-  #gameWrap{
-    width:min(
-      900px,
-      calc(100vw - 20px),
-      calc((100svh - 25px) * 1.7778)
-    );
-  }
+    #gameShell{
 
-  #clueBox{
-    width:min(
-      460px,
-      66%
-    );
-  }
+        width:min(
+            900px,
+            calc(100vw - 18px)
+        );
+    }
 
 }
 
-/* =========================================================
-   PHONE PORTRAIT
-========================================================= */
+/* ======================================================
+   PHONE
+====================================================== */
 
 @media
-(max-width:600px)
-and
-(orientation:portrait){
+(max-width:600px){
 
-  body{
-    padding:5px;
+    body{
 
-    align-items:center;
-  }
+        padding:5px;
 
-  #gameWrap{
-    width:calc(100vw - 10px);
+        align-items:center;
+    }
 
-    height:min(
-      72svh,
-      480px
-    );
+    #gameShell{
 
-    aspect-ratio:auto;
+        width:calc(
+            100vw - 10px
+        );
 
-    border-width:3px;
+        padding:6px;
 
-    border-radius:11px;
-  }
+        border-width:3px;
 
-  #hud{
-    top:5px;
-    left:5px;
-    right:5px;
-  }
+        border-radius:13px;
+    }
 
-  #homeBtn{
-    border-width:2px;
+    #topUI{
 
-    padding:5px 7px;
+        grid-template-columns:
+        auto
+        1fr
+        auto;
 
-    font-size:9px;
-  }
+        gap:4px;
 
-  #progress{
-    border-width:2px;
+        margin-bottom:6px;
+    }
 
-    padding:5px 7px;
+    .uiContainer{
 
-    font-size:9px;
-  }
+        border-width:2px;
 
-  #clueBox{
-    width:70%;
+        border-radius:9px;
 
-    margin-top:5px;
+        min-height:38px;
+    }
 
-    border-width:2px;
+    #homeBtn{
 
-    padding:5px 7px;
-  }
+        padding:5px;
 
-  #clueTitle{
-    font-size:7px;
-  }
+        font-size:8px;
+    }
 
-  #clueArea{
-    font-size:9px;
-  }
+    #progressContainer{
 
-  #clueText{
-    font-size:8px;
-  }
+        padding:5px;
 
-  #controls{
-    bottom:3px;
+        font-size:8px;
+    }
 
-    left:4px;
-    right:4px;
-  }
+    #missionContainer{
 
-  #dpad{
-    transform:scale(.72);
+        padding:4px 6px;
+    }
 
-    transform-origin:left bottom;
-  }
+    #missionTitle{
 
-  #actionBtn{
-    width:58px;
-    height:58px;
+        font-size:6px;
+    }
 
-    border-width:3px;
+    #clueArea{
 
-    font-size:9px;
-  }
+        font-size:8px;
+    }
 
-  #interact{
-    bottom:66px;
+    #clueText{
 
-    border-width:2px;
+        font-size:7px;
 
-    padding:4px 8px;
+        line-height:1.15;
+    }
 
-    font-size:8px;
-  }
+    #gameContainer{
 
-  .modal{
-    padding:8px;
-  }
+        border-width:3px;
 
-  .card{
-    padding:11px;
+        border-radius:10px;
+    }
 
-    border-width:3px;
-  }
+    #moveContainer{
 
-  #questionText{
-    margin:9px 0;
+        transform:scale(.70);
 
-    font-size:13px;
-  }
+        transform-origin:left bottom;
+    }
 
-  .answer{
-    padding:7px 8px;
+    #actionContainer{
 
-    border-width:2px;
+        transform:scale(.80);
 
-    font-size:11px;
-  }
+        transform-origin:right bottom;
+    }
 
-  #answerStatus{
-    font-size:10px;
-  }
+    #controlsLayer{
+
+        left:3px;
+
+        right:3px;
+
+        bottom:1px;
+    }
+
+    #interactContainer{
+
+        bottom:62px;
+
+        font-size:8px;
+
+        padding:4px 7px;
+
+        border-width:2px;
+    }
+
+    .modal{
+
+        padding:7px;
+    }
+
+    .modalContainer{
+
+        padding:10px;
+
+        border-width:3px;
+    }
+
+    #questionText{
+
+        font-size:12px;
+    }
+
+    .answer{
+
+        padding:7px;
+
+        font-size:10px;
+    }
 
 }
 
-/* =========================================================
-   PHONE LANDSCAPE
-========================================================= */
+/* ======================================================
+   LANDSCAPE PHONE
+====================================================== */
 
 @media
 (max-height:500px)
 and
 (orientation:landscape){
 
-  body{
-    padding:4px;
-  }
+    body{
 
-  #gameWrap{
-    width:min(
-      calc(100vw - 8px),
-      calc((100svh - 8px) * 1.7778),
-      850px
-    );
+        padding:3px;
+    }
 
-    aspect-ratio:16 / 9;
+    #gameShell{
 
-    border-width:3px;
+        width:min(
+            800px,
+            calc(100vw - 6px)
+        );
 
-    border-radius:9px;
-  }
+        padding:4px;
+    }
 
-  #hud{
-    top:4px;
-    left:4px;
-    right:4px;
-  }
+    #topUI{
 
-  #homeBtn,
-  #progress{
-    padding:4px 7px;
+        margin-bottom:4px;
+    }
 
-    border-width:2px;
+    .uiContainer{
 
-    font-size:9px;
-  }
+        min-height:31px;
+    }
 
-  #clueBox{
-    margin-top:4px;
+    #missionContainer{
 
-    width:58%;
+        padding:3px 5px;
+    }
 
-    padding:4px 6px;
+    #missionTitle{
 
-    border-width:2px;
-  }
+        font-size:6px;
+    }
 
-  #clueTitle{
-    font-size:7px;
-  }
+    #clueArea{
 
-  #clueArea{
-    font-size:8px;
-  }
+        font-size:7px;
+    }
 
-  #clueText{
-    font-size:7px;
-  }
+    #clueText{
 
-  #dpad{
-    transform:scale(.68);
+        font-size:6px;
+    }
 
-    transform-origin:left bottom;
-  }
+    #homeBtn,
+    #progressContainer{
 
-  #actionBtn{
-    width:55px;
-    height:55px;
-
-    font-size:8px;
-
-    border-width:3px;
-  }
-
-  #controls{
-    bottom:1px;
-  }
-
-  #interact{
-    bottom:58px;
-
-    font-size:8px;
-
-    padding:3px 7px;
-  }
+        font-size:7px;
+    }
 
 }
 
@@ -920,60 +1087,92 @@ and
 
 <body>
 
-<div id="gameWrap">
+<div id="gameShell">
 
-<div id="game"></div>
+<!-- ======================================================
+     EACH UI DESIGN HAS ITS OWN CONTAINER
+====================================================== -->
 
-<!-- ===========================================
-     HUD
-=========================================== -->
+<div id="topUI">
 
-<div id="hud">
-
-<div id="topbar">
+<div
+class="uiContainer"
+id="homeContainer">
 
 <button
 id="homeBtn"
 onclick="window.location.href='index.html'">
+
 🏠 HOME
+
 </button>
 
-<div id="progress">
-🧰 PETI
-<span id="currentNum">1</span>/25
 </div>
 
-</div>
 
-<div id="clueBox">
+<div
+class="uiContainer"
+id="missionContainer">
 
-<div id="clueTitle">
+<div id="missionTitle">
 🗺️ PETUNJUK MISI
 </div>
 
-<div id="clueArea"></div>
+<div id="clueArea">
+📍 Kebun Bunga Pekebun
+</div>
 
-<div id="clueText"></div>
+<div id="clueText">
+Cari peti pertama di kebun bunga sebelah Rumah Pekebun.
+</div>
+
+</div>
+
+
+<div
+class="uiContainer"
+id="progressContainer">
+
+🧰 PETI&nbsp;
+
+<span id="currentNum">
+1
+</span>
+
+/25
 
 </div>
 
 </div>
 
-<!-- ===========================================
-     INTERACTION
-=========================================== -->
 
-<div id="interact">
+<!-- ======================================================
+     GAME CONTAINER
+====================================================== -->
+
+<div id="gameContainer">
+
+<div id="game"></div>
+
+
+<!-- interaction own container -->
+
+<div id="interactContainer">
+
 🧰 Tekan E / SPACE atau CARI
+
 </div>
 
-<!-- ===========================================
-     MOBILE CONTROLS
-=========================================== -->
 
-<div id="controls">
+<!-- ======================================================
+     CONTROL CONTAINERS
+====================================================== -->
 
-<div id="dpad">
+<div id="controlsLayer">
+
+<div
+class="controlContainer"
+id="moveContainer">
 
 <button
 class="moveBtn"
@@ -1001,33 +1200,64 @@ id="rightBtn">
 
 </div>
 
+
+<div
+class="controlContainer"
+id="actionContainer">
+
 <button id="actionBtn">
-CARI<br>🧰
+
+CARI<br>
+🧰
+
 </button>
 
 </div>
 
-<!-- ===========================================
-     QUESTION
-=========================================== -->
+</div>
+
+
+<!-- ======================================================
+     QUESTION MODAL
+====================================================== -->
 
 <div
 class="modal"
 id="questionModal">
 
-<div class="card">
+<div class="modalContainer">
 
-<div class="questionTop">
 
-<div id="questionNumber"></div>
+<div class="questionHeaderContainer">
 
-<div id="tp"></div>
+<div
+class="questionBadge"
+id="questionNumber">
+
+Soalan 1 / 25
 
 </div>
 
+<div
+class="tpBadge"
+id="tp">
+
+TP2
+
+</div>
+
+</div>
+
+
+<div class="questionTextContainer">
+
 <div id="questionText"></div>
 
+</div>
+
+
 <div id="answers"></div>
+
 
 <div id="answerStatus"></div>
 
@@ -1035,86 +1265,115 @@ id="questionModal">
 
 </div>
 
-<!-- ===========================================
-     REWARD
-=========================================== -->
+
+<!-- ======================================================
+     REWARD MODAL
+====================================================== -->
 
 <div
 class="modal"
 id="rewardModal">
 
-<div class="rewardCard">
+<div class="modalContainer">
 
-<div class="rewardIcon">
-🗝️🧰
+
+<div class="rewardIconContainer">
+
+🗝️
+
 </div>
 
+
+<div class="rewardTitleContainer">
+
 <h2>
-Peti Berjaya Dibuka!
+Petunjuk Baru!
 </h2>
 
-<p>
-Kamu menjumpai petunjuk lokasi seterusnya.
-</p>
+</div>
+
+
+<div id="nextClueContainer">
 
 <div id="nextClue"></div>
+
+</div>
+
+
+<div class="buttonContainer">
 
 <button
 class="greenBtn"
 id="continueBtn">
+
 TERUSKAN JELAJAH
+
 </button>
 
 </div>
 
 </div>
 
-<!-- ===========================================
+</div>
+
+
+<!-- ======================================================
      COMPLETE
-=========================================== -->
+====================================================== -->
 
 <div
 class="modal"
 id="completeModal">
 
-<div class="completeCard">
+<div class="modalContainer">
 
-<div style="font-size:55px">
-🏆🌱
+
+<div class="rewardIconContainer">
+
+🏆
+
 </div>
 
+
+<div class="completeTitleContainer">
+
 <h1>
-Misi Pekebun Selesai!
+Misi Selesai!
 </h1>
 
-<p>
-Tahniah! Kamu berjaya mencari semua
-25 peti harta karun di Kampung Seri Hijau
-dan menjawab semua soalan tumbuhan.
-</p>
+</div>
 
-<div
-style="
-display:flex;
-justify-content:center;
-gap:8px;
-flex-wrap:wrap;
-margin-top:12px;
-">
+
+<div class="completeTextContainer">
+
+Tahniah! Kamu berjaya menjelajah
+Kampung Seri Hijau, mencari kesemua
+25 peti harta karun dan menjawab
+semua soalan tumbuhan.
+
+</div>
+
+
+<div class="completeButtons">
 
 <button
 id="restartBtn"
-style="background:#f3c655;">
+style="background:#f3ca61;">
+
 🔄 MAIN SEMULA
+
 </button>
+
 
 <button
 onclick="window.location.href='index.html'"
 style="
-background:#73ad58;
+background:#72ad57;
 color:white;
 ">
+
 🏠 HOME
+
 </button>
 
 </div>
@@ -1123,7 +1382,10 @@ color:white;
 
 </div>
 
+
 <div id="toast"></div>
+
+</div>
 
 </div>
 
@@ -1133,7 +1395,7 @@ color:white;
 <script>
 
 /* =========================================================
-   QUESTIONS SET 3
+   QUESTIONS
 ========================================================= */
 
 const QUESTIONS=[
@@ -1354,7 +1616,12 @@ a:2
 {
 tp:"TP1",
 q:"Pokok yang berlainan tidak semestinya mempunyai semua ciri yang ____.",
-o:["Sama sekali","Berbeza","Tiada","Hilang"],
+o:[
+"Sama sekali",
+"Berbeza",
+"Tiada",
+"Hilang"
+],
 a:1
 }
 
@@ -1362,156 +1629,156 @@ a:1
 
 
 /* =========================================================
-   25 CHESTS
+   CHEST LOCATIONS
 ========================================================= */
 
 const CHESTS=[
 
 {
 x:760,
-y:575,
+y:570,
 area:"Kebun Bunga Pekebun",
-clue:"Peti pertama tersembunyi di kebun bunga di sebelah kanan Rumah Pekebun."
+clue:"Cari peti pertama di dalam kawasan Kebun Bunga sebelah Rumah Pekebun."
 },
 
 {
 x:1100,
-y:470,
+y:445,
 area:"Kebun Sayur",
-clue:"Cari batas sayur di sebelah timur Rumah Pekebun."
+clue:"Pergi ke container Kebun Sayur di sebelah timur."
 },
 
 {
 x:1450,
-y:390,
+y:385,
 area:"Dusun Buah",
-clue:"Cari kawasan yang mempunyai deretan pokok buah."
+clue:"Cari kawasan Dusun Buah yang mempunyai deretan pokok."
 },
 
 {
 x:1900,
-y:430,
+y:425,
 area:"Kedai Kampung",
-clue:"Cari kedai yang mempunyai awning merah dan kuning."
+clue:"Cari container Kedai Kampung dengan awning merah dan kuning."
 },
 
 {
 x:2300,
-y:430,
+y:425,
 area:"Bangsal Ladang",
-clue:"Terus ke timur sehingga kamu menemui bangsal merah."
+clue:"Terus ke timur sehingga menjumpai kawasan Bangsal Ladang."
 },
 
 {
-x:2700,
+x:2690,
 y:650,
 area:"Hutan Timur",
-clue:"Ikut laluan ke timur dan cari ruang di antara pokok-pokok hutan."
+clue:"Masuk ke kawasan Hutan Timur dan cari ruang di antara pokok."
 },
 
 {
-x:2500,
+x:2490,
 y:850,
 area:"Padang Bunga Liar",
-clue:"Turun dari hutan dan cari padang yang dipenuhi bunga."
+clue:"Cari kawasan bunga liar di bawah Hutan Timur."
 },
 
 {
 x:2000,
 y:780,
 area:"Dataran Kampung",
-clue:"Kembali ke kampung dan cari peti berhampiran telaga."
+clue:"Kembali ke Dataran Kampung dan cari peti berhampiran telaga."
 },
 
 {
 x:1500,
-y:820,
+y:810,
 area:"Rumah Hijau",
-clue:"Cari rumah tanaman berkaca di sebelah barat dataran."
+clue:"Cari kawasan Rumah Hijau di sebelah barat dataran."
 },
 
 {
 x:900,
 y:850,
 area:"Kolam Kampung",
-clue:"Bergerak ke barat sehingga kamu menemui kolam."
+clue:"Pergi ke kawasan Kolam Kampung di bahagian barat."
 },
 
 {
 x:450,
 y:1040,
 area:"Tebing Sungai Barat",
-clue:"Pergi ke selatan dari kolam sehingga sampai ke sungai."
+clue:"Bergerak ke selatan sehingga kamu sampai ke sungai."
 },
 
 {
 x:1500,
 y:1080,
 area:"Jambatan Kampung",
-clue:"Ikut sungai ke timur dan cari jambatan kayu."
+clue:"Ikut sungai dan cari jambatan kayu."
 },
 
 {
-x:2270,
+x:2260,
 y:1050,
 area:"Tebing Sungai Timur",
-clue:"Teruskan perjalanan ke timur di sepanjang sungai."
+clue:"Teruskan ke tebing sungai bahagian timur."
 },
 
 {
 x:1500,
 y:1290,
 area:"Pintu Kampung Selatan",
-clue:"Lintasi jambatan dan cari laluan menuju Kampung Selatan."
+clue:"Lintasi jambatan dan cari laluan Kampung Selatan."
 },
 
 {
 x:520,
 y:1450,
 area:"Ladang Barat",
-clue:"Pergi ke barat daya dan cari ladang tanah coklat yang besar."
+clue:"Cari kawasan Ladang Barat yang mempunyai tanah coklat."
 },
 
 {
 x:1000,
 y:1580,
 area:"Dusun Selatan",
-clue:"Cari pokok buah yang tersusun dalam barisan."
+clue:"Cari deretan pokok buah di Dusun Selatan."
 },
 
 {
 x:1500,
 y:1580,
 area:"Kampung Selatan",
-clue:"Cari rumah-rumah kecil di kawasan selatan."
+clue:"Cari kawasan rumah di Kampung Selatan."
 },
 
 {
 x:2050,
 y:1500,
 area:"Bukit Batu",
-clue:"Pergi ke timur sehingga menemui kawasan berbatu."
+clue:"Bergerak ke timur sehingga menjumpai kawasan berbatu."
 },
 
 {
 x:2550,
 y:1480,
 area:"Hutan Tenggara",
-clue:"Teruskan ke timur sehingga masuk ke kawasan hutan."
+clue:"Masuk ke kawasan Hutan Tenggara."
 },
 
 {
 x:2740,
 y:1820,
 area:"Taman Batu",
-clue:"Turun ke selatan dan cari batu yang tersusun membentuk taman."
+clue:"Cari kawasan Taman Batu di bahagian selatan."
 },
 
 {
 x:2300,
 y:1880,
 area:"Padang Bunga Selatan",
-clue:"Pergi ke barat dari taman batu dan cari padang bunga."
+clue:"Pergi ke padang bunga di sebelah barat Taman Batu."
 },
 
 {
@@ -1525,28 +1792,28 @@ clue:"Cari pokok paling besar di kawasan selatan."
 x:1210,
 y:1880,
 area:"Runtuhan Lama",
-clue:"Pergi ke barat dari Pokok Tua dan cari dinding batu lama."
+clue:"Pergi ke barat dari Pokok Tua dan cari Runtuhan Lama."
 },
 
 {
 x:650,
 y:1850,
 area:"Hutan Barat",
-clue:"Terus ke barat sehingga kamu masuk ke kawasan hutan."
+clue:"Teruskan ke kawasan Hutan Barat."
 },
 
 {
 x:850,
 y:2070,
 area:"Taman Rahsia",
-clue:"Peti terakhir tersembunyi di taman bunga rahsia."
+clue:"Peti terakhir berada di dalam container Taman Rahsia."
 }
 
 ];
 
 
 /* =========================================================
-   GAME STATE
+   STATE
 ========================================================= */
 
 let sceneRef=null;
@@ -1557,7 +1824,7 @@ let questionOpen=false;
 
 let rewardOpen=false;
 
-let gameComplete=false;
+let complete=false;
 
 
 const mobile={
@@ -1615,8 +1882,8 @@ $("clueArea");
 const clueText=
 $("clueText");
 
-const interact=
-$("interact");
+const interactContainer=
+$("interactContainer");
 
 const nextClue=
 $("nextClue");
@@ -1631,41 +1898,39 @@ $("toast");
 
 function bindMove(
 id,
-direction
+key
 ){
 
 const button=
 $(id);
 
 
-function press(
-event
-){
+const press=
+e=>{
 
-event.preventDefault();
+e.preventDefault();
 
-mobile[direction]=true;
+mobile[key]=true;
 
 button.classList.add(
 "active"
 );
 
-}
+};
 
 
-function release(
-event
-){
+const release=
+e=>{
 
-event.preventDefault();
+e.preventDefault();
 
-mobile[direction]=false;
+mobile[key]=false;
 
 button.classList.remove(
 "active"
 );
 
-}
+};
 
 
 button.addEventListener(
@@ -1715,9 +1980,9 @@ bindMove(
 $("actionBtn")
 .addEventListener(
 "pointerdown",
-event=>{
+e=>{
 
-event.preventDefault();
+e.preventDefault();
 
 if(sceneRef){
 
@@ -1732,10 +1997,7 @@ sceneRef
 
 
 /* =========================================================
-   PHASER
-
-   RESIZE:
-   Game ikut container laptop / tablet / phone.
+   PHASER CONFIG
 ========================================================= */
 
 const config={
@@ -1744,7 +2006,11 @@ type:Phaser.AUTO,
 
 parent:"game",
 
-backgroundColor:"#78af57",
+width:960,
+
+height:540,
+
+backgroundColor:"#76ad55",
 
 pixelArt:true,
 
@@ -1768,7 +2034,7 @@ debug:false
 
 scale:{
 
-mode:Phaser.Scale.RESIZE,
+mode:Phaser.Scale.FIT,
 
 autoCenter:
 Phaser.Scale.CENTER_BOTH
@@ -1821,73 +2087,71 @@ this.worldH
 );
 
 
-/* textures */
-
 createTextures(
 this
 );
 
 
-/* collision */
-
 this.blockers=
 this.physics.add.staticGroup();
 
 
-/* grass background */
+/* MAIN GRASS */
 
 this.add.rectangle(
-
-this.worldW/2,
-
-this.worldH/2,
-
-this.worldW,
-
-this.worldH,
-
-0x79b257
-
+1500,
+1100,
+3000,
+2200,
+0x78b057
 )
 .setDepth(
 -100
 );
 
 
-/* map */
-
-createGrassDetails(
+createGrass(
 this
 );
+
 
 createRoads(
 this
 );
 
+
 createRiver(
 this
 );
 
-createMainVillage(
+
+/* ======================================================
+   EACH DESIGN / ZONE IS ITS OWN PHASER CONTAINER
+====================================================== */
+
+createMainVillageContainers(
 this
 );
 
-createSouthArea(
+
+createSouthContainers(
 this
 );
+
 
 createForest(
 this
 );
 
-createSecretGarden(
+
+createSecretGardenContainer(
 this
 );
 
 
-/* =====================================================
+/* ======================================================
    CHESTS
-===================================================== */
+====================================================== */
 
 this.chests=[];
 
@@ -1903,11 +2167,12 @@ c.y,
 );
 
 
-chest
-.setDepth(
-c.y+15
-)
-.setVisible(
+chest.setDepth(
+c.y+20
+);
+
+
+chest.setVisible(
 false
 );
 
@@ -1929,31 +2194,31 @@ this
 );
 
 
-/* =====================================================
-   SHADOW
-===================================================== */
+/* ======================================================
+   PLAYER SHADOW
+====================================================== */
 
 this.shadow=
 this.add.ellipse(
-560,
+550,
 565,
-31,
+32,
 11,
-0x26331d,
-.27
+0x25331d,
+.28
 )
 .setDepth(
 540
 );
 
 
-/* =====================================================
-   PLAYER - PEKEBUN
-===================================================== */
+/* ======================================================
+   PEKEBUN CHARACTER
+====================================================== */
 
 this.player=
 this.physics.add.sprite(
-560,
+550,
 540,
 "gardener"
 );
@@ -1976,17 +2241,13 @@ this.player.body.setOffset(
 );
 
 
-/* collision */
-
 this.physics.add.collider(
 this.player,
 this.blockers
 );
 
 
-/* =====================================================
-   CAMERA
-===================================================== */
+/* CAMERA */
 
 this.cameras.main.startFollow(
 this.player,
@@ -1996,26 +2257,12 @@ true,
 );
 
 
-setResponsiveCameraZoom(
-this
+this.cameras.main.setZoom(
+1.15
 );
 
 
-this.scale.on(
-"resize",
-()=>{
-
-setResponsiveCameraZoom(
-this
-);
-
-}
-);
-
-
-/* =====================================================
-   KEYBOARD
-===================================================== */
+/* CONTROLS */
 
 this.cursors=
 this.input.keyboard.createCursorKeys();
@@ -2067,86 +2314,7 @@ updateHUD();
 
 
 showToast(
-"🌱 Jelajah Kampung Seri Hijau dan cari peti pertama!"
-);
-
-}
-
-
-/* =========================================================
-   RESPONSIVE CAMERA
-========================================================= */
-
-function setResponsiveCameraZoom(
-scene
-){
-
-const width=
-scene.scale.width;
-
-
-const height=
-scene.scale.height;
-
-
-let zoom=1.15;
-
-
-/* PHONE */
-
-if(
-width<500
-){
-
-zoom=.82;
-
-}
-
-
-/* SMALL TABLET */
-
-else if(
-width<750
-){
-
-zoom=.95;
-
-}
-
-
-/* IPAD */
-
-else if(
-width<950
-){
-
-zoom=1.08;
-
-}
-
-
-/* LAPTOP */
-
-else{
-
-zoom=1.17;
-
-}
-
-
-/* portrait phone */
-
-if(
-height>width
-){
-
-zoom=.78;
-
-}
-
-
-scene.cameras.main.setZoom(
-zoom
+"🌱 Jelajah setiap kawasan Kampung Seri Hijau!"
 );
 
 }
@@ -2168,7 +2336,7 @@ return;
 if(
 questionOpen ||
 rewardOpen ||
-gameComplete
+complete
 ){
 
 this.player.setVelocity(
@@ -2232,8 +2400,8 @@ dy++;
 /* MOVEMENT */
 
 if(
-dx!==0 ||
-dy!==0
+dx ||
+dy
 ){
 
 const length=
@@ -2272,8 +2440,6 @@ false
 }
 
 
-/* walking bounce */
-
 this.player.angle=
 
 Math.sin(
@@ -2292,22 +2458,20 @@ this.player.angle=0;
 }
 
 
-/* depth */
+/* DEPTH */
 
 this.player.setDepth(
 this.player.y+30
 );
 
 
-/* shadow */
+/* SHADOW */
 
-this.shadow.setPosition(
+this.shadow.x=
+this.player.x;
 
-this.player.x,
-
-this.player.y+23
-
-);
+this.shadow.y=
+this.player.y+23;
 
 
 this.shadow.setDepth(
@@ -2315,7 +2479,7 @@ this.player.y+10
 );
 
 
-/* current chest */
+/* CHEST DISTANCE */
 
 const chest=
 this.chests[
@@ -2342,9 +2506,9 @@ chest.y
 );
 
 
-interact.style.display=
+interactContainer.style.display=
 
-distance<80
+distance<82
 
 ?
 
@@ -2357,8 +2521,2868 @@ distance<80
 }
 else{
 
-interact.style.display=
+interactContainer.style.display=
 "none";
+
+}
+
+}
+
+
+/* =========================================================
+   MAIN VILLAGE CONTAINERS
+========================================================= */
+
+function createMainVillageContainers(
+scene
+){
+
+/* ======================================================
+   VILLAGE TITLE
+====================================================== */
+
+scene.add.text(
+1500,
+515,
+"KAMPUNG SERI HIJAU",
+{
+fontFamily:"monospace",
+fontSize:"28px",
+fontStyle:"bold",
+color:"#fff3b9",
+stroke:"#3f5e2d",
+strokeThickness:8
+}
+)
+.setOrigin(.5)
+.setDepth(900);
+
+
+/* ======================================================
+   1. RUMAH PEKEBUN CONTAINER
+====================================================== */
+
+createZoneContainer(
+
+scene,
+
+430,
+
+350,
+
+350,
+
+330,
+
+"RUMAH PEKEBUN",
+
+0xb6d47c,
+
+(container)=>{
+
+addHouseToContainer(
+
+scene,
+
+container,
+
+0,
+
+0,
+
+0xdcb46b,
+
+0x7d4d2e
+
+);
+
+
+addFenceAround(
+
+scene,
+
+container,
+
+0,
+
+75,
+
+280,
+
+180
+
+);
+
+}
+
+);
+
+
+/* ======================================================
+   2. KEBUN BUNGA CONTAINER
+====================================================== */
+
+createZoneContainer(
+
+scene,
+
+760,
+
+565,
+
+260,
+
+220,
+
+"KEBUN BUNGA",
+
+0xbadf83,
+
+(container)=>{
+
+addFlowersToContainer(
+
+scene,
+
+container,
+
+0,
+
+15,
+
+6,
+
+4
+
+);
+
+}
+
+);
+
+
+/* ======================================================
+   3. KEBUN SAYUR CONTAINER
+====================================================== */
+
+createZoneContainer(
+
+scene,
+
+1100,
+
+410,
+
+350,
+
+290,
+
+"KEBUN SAYUR",
+
+0xc8d58a,
+
+(container)=>{
+
+addFarmToContainer(
+
+scene,
+
+container,
+
+0,
+
+20,
+
+290,
+
+185
+
+);
+
+}
+
+);
+
+
+/* ======================================================
+   4. DUSUN BUAH CONTAINER
+====================================================== */
+
+createZoneContainer(
+
+scene,
+
+1450,
+
+385,
+
+390,
+
+320,
+
+"DUSUN BUAH",
+
+0xa9d073,
+
+(container)=>{
+
+for(
+let row=0;
+row<2;
+row++
+){
+
+for(
+let col=0;
+col<4;
+col++
+){
+
+const x=
+-135+
+col*90;
+
+
+const y=
+-40+
+row*115;
+
+
+const tree=
+scene.add.image(
+x,
+y,
+"fruitTree"
+);
+
+
+tree.setDepth(
+20+y
+);
+
+
+container.add(
+tree
+);
+
+
+addBlock(
+
+scene,
+
+1450+x,
+
+385+y+28,
+
+38,
+
+28
+
+);
+
+}
+
+}
+
+}
+
+);
+
+
+/* ======================================================
+   5. RUMAH PAK MAIL
+====================================================== */
+
+createZoneContainer(
+
+scene,
+
+1710,
+
+355,
+
+310,
+
+320,
+
+"RUMAH PAK MAIL",
+
+0xaed27b,
+
+(container)=>{
+
+addHouseToContainer(
+
+scene,
+
+container,
+
+0,
+
+5,
+
+0xc97d5c,
+
+0x71442d
+
+);
+
+}
+
+);
+
+
+/* ======================================================
+   6. KEDAI KAMPUNG
+====================================================== */
+
+createZoneContainer(
+
+scene,
+
+1950,
+
+420,
+
+330,
+
+330,
+
+"KEDAI KAMPUNG",
+
+0xd6d88b,
+
+(container)=>{
+
+addShopToContainer(
+
+scene,
+
+container,
+
+0,
+
+0
+
+);
+
+}
+
+);
+
+
+/* ======================================================
+   7. BANGSAL LADANG
+====================================================== */
+
+createZoneContainer(
+
+scene,
+
+2320,
+
+420,
+
+350,
+
+350,
+
+"BANGSAL LADANG",
+
+0xc8d081,
+
+(container)=>{
+
+addBarnToContainer(
+
+scene,
+
+container,
+
+0,
+
+0
+
+);
+
+}
+
+);
+
+
+/* ======================================================
+   8. DATARAN KAMPUNG
+====================================================== */
+
+createZoneContainer(
+
+scene,
+
+2010,
+
+790,
+
+540,
+
+350,
+
+"DATARAN KAMPUNG",
+
+0xe0c98e,
+
+(container)=>{
+
+addWellToContainer(
+
+scene,
+
+container,
+
+0,
+
+0
+
+);
+
+
+addBenchToContainer(
+
+scene,
+
+container,
+
+-150,
+
+95
+
+);
+
+
+addBenchToContainer(
+
+scene,
+
+container,
+
+150,
+
+95
+
+);
+
+}
+
+);
+
+
+/* ======================================================
+   9. RUMAH HIJAU
+====================================================== */
+
+createZoneContainer(
+
+scene,
+
+1500,
+
+810,
+
+380,
+
+300,
+
+"RUMAH HIJAU",
+
+0xb6dc96,
+
+(container)=>{
+
+addGreenhouseToContainer(
+
+scene,
+
+container,
+
+0,
+
+10
+
+);
+
+}
+
+);
+
+
+/* ======================================================
+   10. KOLAM KAMPUNG
+====================================================== */
+
+createZoneContainer(
+
+scene,
+
+900,
+
+850,
+
+480,
+
+340,
+
+"KOLAM KAMPUNG",
+
+0x9bd387,
+
+(container)=>{
+
+const pondBorder=
+scene.add.ellipse(
+
+0,
+
+10,
+
+390,
+
+245,
+
+0x436f50
+
+);
+
+
+const pond=
+scene.add.ellipse(
+
+0,
+
+5,
+
+350,
+
+205,
+
+0x66b7c6
+
+);
+
+
+const water=
+scene.add.ellipse(
+
+0,
+
+0,
+
+315,
+
+170,
+
+0x82ced7
+
+);
+
+
+container.add([
+
+pondBorder,
+
+pond,
+
+water
+
+]);
+
+
+for(
+let i=0;
+i<10;
+i++
+){
+
+const angle=
+
+i/10*
+Math.PI*
+2;
+
+
+const rock=
+scene.add.image(
+
+Math.cos(angle)*195,
+
+10+
+Math.sin(angle)*122,
+
+"rock"
+
+);
+
+
+container.add(
+rock
+);
+
+}
+
+}
+
+);
+
+}
+
+
+/* =========================================================
+   SOUTH CONTAINERS
+========================================================= */
+
+function createSouthContainers(
+scene
+){
+
+/* LADANG BARAT */
+
+createZoneContainer(
+
+scene,
+
+520,
+
+1450,
+
+560,
+
+360,
+
+"LADANG BARAT",
+
+0xb5d17d,
+
+(container)=>{
+
+addFarmToContainer(
+
+scene,
+
+container,
+
+0,
+
+15,
+
+470,
+
+245
+
+);
+
+}
+
+);
+
+
+/* DUSUN SELATAN */
+
+createZoneContainer(
+
+scene,
+
+1000,
+
+1580,
+
+500,
+
+350,
+
+"DUSUN SELATAN",
+
+0xadd174,
+
+(container)=>{
+
+for(
+let row=0;
+row<2;
+row++
+){
+
+for(
+let col=0;
+col<4;
+col++
+){
+
+const x=
+-150+
+col*100;
+
+
+const y=
+-55+
+row*130;
+
+
+const tree=
+scene.add.image(
+x,
+y,
+"fruitTree"
+);
+
+
+container.add(
+tree
+);
+
+
+addBlock(
+
+scene,
+
+1000+x,
+
+1580+y+28,
+
+38,
+
+28
+
+);
+
+}
+
+}
+
+}
+
+);
+
+
+/* KAMPUNG SELATAN */
+
+createZoneContainer(
+
+scene,
+
+1510,
+
+1580,
+
+580,
+
+360,
+
+"KAMPUNG SELATAN",
+
+0xc4d889,
+
+(container)=>{
+
+addHouseToContainer(
+
+scene,
+
+container,
+
+-140,
+
+0,
+
+0xd59a5e,
+
+0x79482c
+
+);
+
+
+addHouseToContainer(
+
+scene,
+
+container,
+
+140,
+
+0,
+
+0xc6725e,
+
+0x643b2e
+
+);
+
+}
+
+);
+
+
+/* BUKIT BATU */
+
+createZoneContainer(
+
+scene,
+
+2050,
+
+1500,
+
+420,
+
+330,
+
+"BUKIT BATU",
+
+0xb9c887,
+
+(container)=>{
+
+for(
+let i=0;
+i<15;
+i++
+){
+
+const rock=
+scene.add.image(
+
+Phaser.Math.Between(
+-155,
+155
+),
+
+Phaser.Math.Between(
+-90,
+90
+),
+
+"rock"
+
+);
+
+
+container.add(
+rock
+);
+
+}
+
+}
+
+);
+
+
+/* PADANG BUNGA */
+
+createZoneContainer(
+
+scene,
+
+2300,
+
+1880,
+
+500,
+
+320,
+
+"PADANG BUNGA",
+
+0xbbe38a,
+
+(container)=>{
+
+addFlowersToContainer(
+
+scene,
+
+container,
+
+0,
+
+10,
+
+9,
+
+5
+
+);
+
+}
+
+);
+
+
+/* POKOK TUA */
+
+createZoneContainer(
+
+scene,
+
+1760,
+
+1850,
+
+400,
+
+360,
+
+"POKOK TUA",
+
+0xa2ce74,
+
+(container)=>{
+
+const tree=
+scene.add.image(
+0,
+0,
+"giantTree"
+);
+
+
+container.add(
+tree
+);
+
+
+addBlock(
+
+scene,
+
+1760,
+
+1900,
+
+90,
+
+48
+
+);
+
+}
+
+);
+
+
+/* RUNTUHAN */
+
+createZoneContainer(
+
+scene,
+
+1210,
+
+1880,
+
+430,
+
+330,
+
+"RUNTUHAN LAMA",
+
+0xbecb91,
+
+(container)=>{
+
+createRuinsInContainer(
+
+scene,
+
+container
+
+);
+
+}
+
+);
+
+
+/* TAMAN BATU */
+
+createZoneContainer(
+
+scene,
+
+2740,
+
+1820,
+
+380,
+
+320,
+
+"TAMAN BATU",
+
+0xbac98c,
+
+(container)=>{
+
+for(
+let i=0;
+i<12;
+i++
+){
+
+const angle=
+
+i/12*
+Math.PI*
+2;
+
+
+const rock=
+scene.add.image(
+
+Math.cos(angle)*120,
+
+Math.sin(angle)*90,
+
+"rock"
+
+);
+
+
+container.add(
+rock
+);
+
+}
+
+}
+
+);
+
+}
+
+
+/* =========================================================
+   GENERIC ZONE CONTAINER
+========================================================= */
+
+function createZoneContainer(
+scene,
+x,
+y,
+width,
+height,
+title,
+backgroundColor,
+contentCallback
+){
+
+const container=
+scene.add.container(
+x,
+y
+);
+
+
+/* shadow */
+
+const shadow=
+scene.add.rectangle(
+
+8,
+
+8,
+
+width,
+
+height,
+
+0x29411f,
+
+.18
+
+);
+
+
+shadow.setStrokeStyle(
+0,
+0
+);
+
+
+/* panel */
+
+const panel=
+scene.add.rectangle(
+
+0,
+
+0,
+
+width,
+
+height,
+
+backgroundColor,
+
+.92
+
+);
+
+
+panel.setStrokeStyle(
+5,
+0x5e7d3a,
+1
+);
+
+
+/* inner border */
+
+const inner=
+scene.add.rectangle(
+
+0,
+
+0,
+
+width-18,
+
+height-18
+
+);
+
+
+inner.setFillStyle(
+0xffffff,
+0
+);
+
+
+inner.setStrokeStyle(
+2,
+0xe2efb6,
+.65
+);
+
+
+/* label background */
+
+const labelBg=
+scene.add.rectangle(
+
+0,
+
+-height/2+20,
+
+Math.min(
+width-35,
+190
+),
+
+30,
+
+0x5b783b,
+
+.96
+
+);
+
+
+/* label */
+
+const label=
+scene.add.text(
+
+0,
+
+-height/2+20,
+
+title,
+
+{
+
+fontFamily:
+"monospace",
+
+fontSize:
+"12px",
+
+fontStyle:
+"bold",
+
+color:
+"#fff7cd"
+
+}
+
+);
+
+
+label.setOrigin(
+.5
+);
+
+
+container.add([
+
+shadow,
+
+panel,
+
+inner,
+
+labelBg,
+
+label
+
+]);
+
+
+/* build content */
+
+contentCallback(
+container
+);
+
+
+container.setDepth(
+y-80
+);
+
+
+return container;
+
+}
+
+
+/* =========================================================
+   HOUSE INSIDE CONTAINER
+========================================================= */
+
+function addHouseToContainer(
+scene,
+container,
+x,
+y,
+wallColor,
+roofColor
+){
+
+const shadow=
+scene.add.ellipse(
+
+x+6,
+
+y+75,
+
+225,
+
+60,
+
+0x26331d,
+
+.15
+
+);
+
+
+const wall=
+scene.add.rectangle(
+
+x,
+
+y+25,
+
+185,
+
+120,
+
+wallColor
+
+);
+
+
+const roof=
+scene.add.triangle(
+
+x,
+
+y-75,
+
+0,
+
+100,
+
+92,
+
+0,
+
+184,
+
+100,
+
+roofColor
+
+);
+
+
+const roofLine=
+scene.add.rectangle(
+
+x,
+
+y-18,
+
+200,
+
+35,
+
+roofColor
+
+);
+
+
+const door=
+scene.add.rectangle(
+
+x,
+
+y+55,
+
+36,
+
+66,
+
+0x6f472c
+
+);
+
+
+const win1=
+makeWindowGroup(
+
+scene,
+
+x-52,
+
+y+18
+
+);
+
+
+const win2=
+makeWindowGroup(
+
+scene,
+
+x+52,
+
+y+18
+
+);
+
+
+container.add([
+
+shadow,
+
+wall,
+
+roof,
+
+roofLine,
+
+door,
+
+...win1,
+
+...win2
+
+]);
+
+
+addBlock(
+
+scene,
+
+container.x+x,
+
+container.y+y+35,
+
+190,
+
+105
+
+);
+
+}
+
+
+/* =========================================================
+   WINDOW GROUP
+========================================================= */
+
+function makeWindowGroup(
+scene,
+x,
+y
+){
+
+const border=
+scene.add.rectangle(
+
+x,
+
+y,
+
+38,
+
+36,
+
+0x674a35
+
+);
+
+
+const glass=
+scene.add.rectangle(
+
+x,
+
+y,
+
+29,
+
+27,
+
+0x8cd2d8
+
+);
+
+
+const v=
+scene.add.rectangle(
+
+x,
+
+y,
+
+3,
+
+27,
+
+0xe9e2bc
+
+);
+
+
+const h=
+scene.add.rectangle(
+
+x,
+
+y,
+
+29,
+
+3,
+
+0xe9e2bc
+
+);
+
+
+return[
+border,
+glass,
+v,
+h
+];
+
+}
+
+
+/* =========================================================
+   SHOP IN CONTAINER
+========================================================= */
+
+function addShopToContainer(
+scene,
+container,
+x,
+y
+){
+
+const wall=
+scene.add.rectangle(
+
+x,
+
+y+20,
+
+205,
+
+120,
+
+0xd8bb70
+
+);
+
+
+const roof=
+scene.add.rectangle(
+
+x,
+
+y-48,
+
+225,
+
+55,
+
+0x6c4330
+
+);
+
+
+container.add([
+
+wall,
+
+roof
+
+]);
+
+
+/* awning */
+
+for(
+let i=0;
+i<6;
+i++
+){
+
+const awning=
+scene.add.rectangle(
+
+x-85+
+i*34,
+
+y-12,
+
+34,
+
+24,
+
+i%2
+?
+0xf2d78a
+:
+0xe26350
+
+);
+
+
+container.add(
+awning
+);
+
+}
+
+
+const door=
+scene.add.rectangle(
+
+x,
+
+y+55,
+
+42,
+
+65,
+
+0x755036
+
+);
+
+
+container.add(
+door
+);
+
+
+const wins1=
+makeWindowGroup(
+
+scene,
+
+x-62,
+
+y+35
+
+);
+
+
+const wins2=
+makeWindowGroup(
+
+scene,
+
+x+62,
+
+y+35
+
+);
+
+
+container.add([
+...wins1,
+...wins2
+]);
+
+
+addBlock(
+
+scene,
+
+container.x+x,
+
+container.y+y+30,
+
+210,
+
+115
+
+);
+
+}
+
+
+/* =========================================================
+   BARN IN CONTAINER
+========================================================= */
+
+function addBarnToContainer(
+scene,
+container,
+x,
+y
+){
+
+const wall=
+scene.add.rectangle(
+
+x,
+
+y+30,
+
+220,
+
+150,
+
+0xb9523e
+
+);
+
+
+const roof=
+scene.add.triangle(
+
+x,
+
+y-85,
+
+0,
+
+110,
+
+110,
+
+0,
+
+220,
+
+110,
+
+0x713d2e
+
+);
+
+
+const door=
+scene.add.rectangle(
+
+x,
+
+y+55,
+
+85,
+
+95,
+
+0x6c4429
+
+);
+
+
+const crossV=
+scene.add.rectangle(
+
+x,
+
+y+55,
+
+7,
+
+88,
+
+0xba8953
+
+);
+
+
+const crossH=
+scene.add.rectangle(
+
+x,
+
+y+55,
+
+78,
+
+7,
+
+0xba8953
+
+);
+
+
+container.add([
+
+wall,
+
+roof,
+
+door,
+
+crossV,
+
+crossH
+
+]);
+
+
+addBlock(
+
+scene,
+
+container.x+x,
+
+container.y+y+40,
+
+225,
+
+140
+
+);
+
+}
+
+
+/* =========================================================
+   WELL
+========================================================= */
+
+function addWellToContainer(
+scene,
+container,
+x,
+y
+){
+
+const base=
+scene.add.ellipse(
+
+x,
+
+y+15,
+
+105,
+
+64,
+
+0x77766f
+
+);
+
+
+const hole=
+scene.add.ellipse(
+
+x,
+
+y+10,
+
+75,
+
+38,
+
+0x263d43
+
+);
+
+
+const left=
+scene.add.rectangle(
+
+x-47,
+
+y-40,
+
+9,
+
+100,
+
+0x754927
+
+);
+
+
+const right=
+scene.add.rectangle(
+
+x+47,
+
+y-40,
+
+9,
+
+100,
+
+0x754927
+
+);
+
+
+const top=
+scene.add.rectangle(
+
+x,
+
+y-88,
+
+120,
+
+16,
+
+0x80532d
+
+);
+
+
+container.add([
+
+base,
+
+hole,
+
+left,
+
+right,
+
+top
+
+]);
+
+
+addBlock(
+
+scene,
+
+container.x+x,
+
+container.y+y+15,
+
+105,
+
+60
+
+);
+
+}
+
+
+/* =========================================================
+   BENCH
+========================================================= */
+
+function addBenchToContainer(
+scene,
+container,
+x,
+y
+){
+
+const seat=
+scene.add.rectangle(
+
+x,
+
+y,
+
+90,
+
+14,
+
+0x8d5c2e
+
+);
+
+
+const leg1=
+scene.add.rectangle(
+
+x-30,
+
+y+16,
+
+8,
+
+30,
+
+0x63401f
+
+);
+
+
+const leg2=
+scene.add.rectangle(
+
+x+30,
+
+y+16,
+
+8,
+
+30,
+
+0x63401f
+
+);
+
+
+container.add([
+
+seat,
+
+leg1,
+
+leg2
+
+]);
+
+}
+
+
+/* =========================================================
+   GREENHOUSE
+========================================================= */
+
+function addGreenhouseToContainer(
+scene,
+container,
+x,
+y
+){
+
+const glass=
+scene.add.rectangle(
+
+x,
+
+y+15,
+
+240,
+
+140,
+
+0xb8dfcb,
+
+.85
+
+);
+
+
+container.add(
+glass
+);
+
+
+for(
+let i=-2;
+i<=2;
+i++
+){
+
+const bar=
+scene.add.rectangle(
+
+x+i*45,
+
+y+15,
+
+4,
+
+135,
+
+0x557c65
+
+);
+
+
+container.add(
+bar
+);
+
+}
+
+
+const roof=
+scene.add.triangle(
+
+x,
+
+y-95,
+
+0,
+
+65,
+
+120,
+
+0,
+
+240,
+
+65,
+
+0x98c9b3,
+
+.9
+
+);
+
+
+container.add(
+roof
+);
+
+
+addBlock(
+
+scene,
+
+container.x+x,
+
+container.y+y+20,
+
+240,
+
+125
+
+);
+
+}
+
+
+/* =========================================================
+   FARM IN CONTAINER
+========================================================= */
+
+function addFarmToContainer(
+scene,
+container,
+x,
+y,
+width,
+height
+){
+
+const soil=
+scene.add.rectangle(
+
+x,
+
+y,
+
+width,
+
+height,
+
+0x986438
+
+);
+
+
+container.add(
+soil
+);
+
+
+for(
+let yy=
+y-height/2+30;
+
+yy<
+y+height/2-15;
+
+yy+=42
+){
+
+const row=
+scene.add.rectangle(
+
+x,
+
+yy,
+
+width-25,
+
+12,
+
+0x714824
+
+);
+
+
+container.add(
+row
+);
+
+
+for(
+let xx=
+x-width/2+30;
+
+xx<
+x+width/2-20;
+
+xx+=50
+){
+
+const crop=
+scene.add.image(
+
+xx,
+
+yy,
+
+"crop"
+
+);
+
+
+container.add(
+crop
+);
+
+}
+
+}
+
+}
+
+
+/* =========================================================
+   FLOWERS IN CONTAINER
+========================================================= */
+
+function addFlowersToContainer(
+scene,
+container,
+x,
+y,
+cols,
+rows
+){
+
+for(
+let row=0;
+row<rows;
+row++
+){
+
+for(
+let col=0;
+col<cols;
+col++
+){
+
+const flower=
+scene.add.image(
+
+x+
+(col-(cols-1)/2)*32,
+
+y+
+(row-(rows-1)/2)*27,
+
+"flower"
+
+);
+
+
+container.add(
+flower
+);
+
+}
+
+}
+
+}
+
+
+/* =========================================================
+   FENCE
+========================================================= */
+
+function addFenceAround(
+scene,
+container,
+x,
+y,
+width,
+height
+){
+
+for(
+let px=
+-width/2;
+
+px<=
+width/2;
+
+px+=38
+){
+
+const top=
+scene.add.image(
+
+x+px,
+
+y-height/2,
+
+"fence"
+
+);
+
+
+const bottom=
+scene.add.image(
+
+x+px,
+
+y+height/2,
+
+"fence"
+
+);
+
+
+container.add([
+top,
+bottom
+]);
+
+}
+
+}
+
+
+/* =========================================================
+   RUINS IN CONTAINER
+========================================================= */
+
+function createRuinsInContainer(
+scene,
+container
+){
+
+for(
+let i=0;
+i<6;
+i++
+){
+
+const stone=
+scene.add.rectangle(
+
+-135+
+i*54,
+
+70,
+
+45,
+
+36,
+
+0x85837a
+
+);
+
+
+container.add(
+stone
+);
+
+}
+
+
+for(
+let i=0;
+i<4;
+i++
+){
+
+const left=
+scene.add.rectangle(
+
+-135,
+
+-45+
+i*42,
+
+42,
+
+36,
+
+0x85837a
+
+);
+
+
+const right=
+scene.add.rectangle(
+
+135,
+
+-45+
+i*42,
+
+42,
+
+36,
+
+0x85837a
+
+);
+
+
+container.add([
+left,
+right
+]);
+
+}
+
+}
+
+
+/* =========================================================
+   FOREST
+========================================================= */
+
+function createForest(
+scene
+){
+
+/* north */
+
+for(
+let x=80;
+x<2950;
+x+=110
+){
+
+addWorldTree(
+
+scene,
+
+x,
+
+95+
+Phaser.Math.Between(
+-15,
+15
+)
+
+);
+
+}
+
+
+/* east */
+
+for(
+let row=0;
+row<5;
+row++
+){
+
+for(
+let col=0;
+col<5;
+col++
+){
+
+const x=
+
+2600+
+col*95;
+
+
+const y=
+
+620+
+row*120;
+
+
+if(
+x<2950
+){
+
+addWorldTree(
+scene,
+x,
+y
+);
+
+}
+
+}
+
+}
+
+
+/* west */
+
+for(
+let y=720;
+y<2110;
+y+=115
+){
+
+addWorldTree(
+
+scene,
+
+100,
+
+y
+
+);
+
+}
+
+
+/* south east */
+
+for(
+let row=0;
+row<4;
+row++
+){
+
+for(
+let col=0;
+col<5;
+col++
+){
+
+const x=
+
+2450+
+col*105;
+
+
+const y=
+
+1370+
+row*115;
+
+
+if(
+x<2950
+){
+
+addWorldTree(
+scene,
+x,
+y
+);
+
+}
+
+}
+
+}
+
+
+/* southwest */
+
+for(
+let row=0;
+row<4;
+row++
+){
+
+for(
+let col=0;
+col<5;
+col++
+){
+
+addWorldTree(
+
+scene,
+
+280+
+col*100,
+
+1780+
+row*105
+
+);
+
+}
+
+}
+
+}
+
+
+/* =========================================================
+   WORLD TREE
+========================================================= */
+
+function addWorldTree(
+scene,
+x,
+y
+){
+
+scene.add.image(
+x,
+y,
+"tree"
+)
+.setDepth(
+y
+);
+
+
+addBlock(
+scene,
+x,
+y+28,
+38,
+28
+);
+
+}
+
+
+/* =========================================================
+   SECRET GARDEN CONTAINER
+========================================================= */
+
+function createSecretGardenContainer(
+scene
+){
+
+createZoneContainer(
+
+scene,
+
+850,
+
+2070,
+
+520,
+
+270,
+
+"TAMAN RAHSIA",
+
+0x9bd678,
+
+(container)=>{
+
+for(
+let i=0;
+i<30;
+i++
+){
+
+const angle=
+
+Math.random()*
+Math.PI*
+2;
+
+
+const radius=
+
+Phaser.Math.Between(
+60,
+200
+);
+
+
+const flower=
+scene.add.image(
+
+Math.cos(angle)*
+radius,
+
+Math.sin(angle)*
+radius*.42,
+
+"flower"
+
+);
+
+
+container.add(
+flower
+);
+
+}
+
+}
+
+);
+
+}
+
+
+/* =========================================================
+   ROADS
+========================================================= */
+
+function createRoads(
+scene
+){
+
+scene.add.rectangle(
+1500,
+610,
+2450,
+170,
+0xd4b173
+)
+.setDepth(
+-70
+);
+
+
+scene.add.rectangle(
+1500,
+920,
+165,
+700,
+0xd4b173
+)
+.setDepth(
+-70
+);
+
+
+scene.add.rectangle(
+1500,
+1510,
+2550,
+165,
+0xcda468
+)
+.setDepth(
+-70
+);
+
+
+scene.add.rectangle(
+700,
+1060,
+135,
+900,
+0xcda468
+)
+.setDepth(
+-70
+);
+
+
+scene.add.rectangle(
+2470,
+1060,
+135,
+900,
+0xcda468
+)
+.setDepth(
+-70
+);
+
+}
+
+
+/* =========================================================
+   RIVER
+========================================================= */
+
+function createRiver(
+scene
+){
+
+const y=
+1120;
+
+
+scene.add.rectangle(
+1500,
+y,
+3000,
+185,
+0x4da3ba
+)
+.setDepth(
+-60
+);
+
+
+for(
+let x=20;
+x<3000;
+x+=90
+){
+
+scene.add.rectangle(
+
+x,
+
+y+
+Phaser.Math.Between(
+-60,
+60
+),
+
+40,
+
+3,
+
+0x92dae1,
+
+.8
+
+)
+.setDepth(
+-59
+);
+
+}
+
+
+/* bridge */
+
+scene.add.rectangle(
+1500,
+y,
+185,
+220,
+0x704724
+)
+.setDepth(
+-40
+);
+
+
+for(
+let py=
+y-90;
+
+py<=
+y+90;
+
+py+=27
+){
+
+scene.add.rectangle(
+1500,
+py,
+171,
+19,
+0xb97b3f
+)
+.setDepth(
+-39
+);
+
+}
+
+
+addBlock(
+scene,
+700,
+y,
+1400,
+170
+);
+
+
+addBlock(
+scene,
+2350,
+y,
+1300,
+170
+);
+
+}
+
+
+/* =========================================================
+   GRASS
+========================================================= */
+
+function createGrass(
+scene
+){
+
+for(
+let i=0;
+i<450;
+i++
+){
+
+scene.add.image(
+
+Phaser.Math.Between(
+20,
+2980
+),
+
+Phaser.Math.Between(
+20,
+2180
+),
+
+"grass"
+
+)
+.setDepth(
+-90
+)
+.setAlpha(
+.7
+);
 
 }
 
@@ -2394,7 +5418,7 @@ data.clue;
 
 
 /* =========================================================
-   CHEST
+   SHOW CURRENT CHEST
 ========================================================= */
 
 function showCurrentChest(
@@ -2421,11 +5445,6 @@ chest.setTexture(
 
 chest.setVisible(
 true
-);
-
-
-chest.setScale(
-1
 );
 
 
@@ -2465,7 +5484,7 @@ scene
 if(
 questionOpen ||
 rewardOpen ||
-gameComplete
+complete
 ){
 
 return;
@@ -2477,13 +5496,6 @@ const chest=
 scene.chests[
 currentChest
 ];
-
-
-if(!chest){
-
-return;
-
-}
 
 
 const distance=
@@ -2521,7 +5533,7 @@ showToast(
 
 
 /* =========================================================
-   QUESTION
+   OPEN QUESTION
 ========================================================= */
 
 function openQuestion(
@@ -2539,11 +5551,11 @@ scene.player.setVelocity(
 scene.physics.pause();
 
 
-interact.style.display=
+interactContainer.style.display=
 "none";
 
 
-const data=
+const q=
 QUESTIONS[
 currentChest
 ];
@@ -2557,11 +5569,11 @@ questionNumber.textContent=
 
 
 tp.textContent=
-data.tp;
+q.tp;
 
 
 questionText.textContent=
-data.q;
+q.q;
 
 
 answers.innerHTML=
@@ -2580,8 +5592,18 @@ const letters=[
 ];
 
 
-data.o.forEach(
+q.o.forEach(
 (option,index)=>{
+
+const answerContainer=
+document.createElement(
+"div"
+);
+
+
+answerContainer.className=
+"answerContainer";
+
 
 const button=
 document.createElement(
@@ -2605,16 +5627,25 @@ button.onclick=
 ()=>{
 
 checkAnswer(
+
 scene,
-button,
+
+answerContainer,
+
 index
+
 );
 
 };
 
 
-answers.appendChild(
+answerContainer.appendChild(
 button
+);
+
+
+answers.appendChild(
+answerContainer
 );
 
 }
@@ -2628,26 +5659,26 @@ questionModal.style.display=
 
 
 /* =========================================================
-   ANSWER
+   CHECK ANSWER
 ========================================================= */
 
 function checkAnswer(
 scene,
-button,
+container,
 choice
 ){
 
-const data=
+const q=
 QUESTIONS[
 currentChest
 ];
 
 
 if(
-choice!==data.a
+choice!==q.a
 ){
 
-button.classList.add(
+container.classList.add(
 "wrong"
 );
 
@@ -2658,13 +5689,13 @@ answerStatus.textContent=
 
 
 answerStatus.style.color=
-"#9b3028";
+"#9c3028";
 
 
 setTimeout(
 ()=>{
 
-button.classList.remove(
+container.classList.remove(
 "wrong"
 );
 
@@ -2680,7 +5711,7 @@ return;
 
 /* correct */
 
-button.classList.add(
+container.classList.add(
 "correct"
 );
 
@@ -2690,9 +5721,9 @@ answers
 "button"
 )
 .forEach(
-b=>{
+button=>{
 
-b.disabled=true;
+button.disabled=true;
 
 }
 );
@@ -2704,7 +5735,7 @@ answerStatus.textContent=
 
 
 answerStatus.style.color=
-"#36702d";
+"#39712e";
 
 
 setTimeout(
@@ -2722,7 +5753,7 @@ scene
 
 
 /* =========================================================
-   COMPLETE QUESTION
+   FINISH
 ========================================================= */
 
 function finishQuestion(
@@ -2755,14 +5786,14 @@ oldChest.setTexture(
 oldChest.y+=5;
 
 
-/* LAST */
+/* final */
 
 if(
 currentChest===
 QUESTIONS.length-1
 ){
 
-gameComplete=true;
+complete=true;
 
 
 scene.physics.resume();
@@ -2784,7 +5815,7 @@ return;
 }
 
 
-/* NEXT */
+/* next */
 
 currentChest++;
 
@@ -2797,7 +5828,7 @@ scene
 updateHUD();
 
 
-const data=
+const next=
 CHESTS[
 currentChest
 ];
@@ -2806,9 +5837,9 @@ currentChest
 nextClue.innerHTML=
 
 "<strong>📍 "+
-data.area+
+next.area+
 "</strong><br><br>"+
-data.clue;
+next.clue;
 
 
 rewardOpen=true;
@@ -2861,7 +5892,7 @@ questionOpen=false;
 
 rewardOpen=false;
 
-gameComplete=false;
+complete=false;
 
 
 questionModal.style.display=
@@ -2918,2078 +5949,7 @@ toast.classList.remove(
 );
 
 },
-1800
-);
-
-}
-
-
-/* =========================================================
-   GRASS
-========================================================= */
-
-function createGrassDetails(
-scene
-){
-
-for(
-let i=0;
-i<500;
-i++
-){
-
-scene.add.image(
-
-Phaser.Math.Between(
-20,
-scene.worldW-20
-),
-
-Phaser.Math.Between(
-20,
-scene.worldH-20
-),
-
-"grass"
-
-)
-.setDepth(
--90
-)
-.setAlpha(
-.75
-);
-
-}
-
-}
-
-
-/* =========================================================
-   ROADS
-========================================================= */
-
-function createRoads(
-scene
-){
-
-/* MAIN VILLAGE ROAD */
-
-scene.add.rectangle(
-1500,
-610,
-2450,
-170,
-0xd5b274
-)
-.setDepth(
--50
-);
-
-
-/* CENTRAL ROAD */
-
-scene.add.rectangle(
-1500,
-920,
-165,
-700,
-0xd5b274
-)
-.setDepth(
--50
-);
-
-
-/* SOUTH ROAD */
-
-scene.add.rectangle(
-1500,
-1510,
-2550,
-160,
-0xcfa76a
-)
-.setDepth(
--50
-);
-
-
-/* WEST */
-
-scene.add.rectangle(
-700,
-1060,
-135,
-900,
-0xcfa76a
-)
-.setDepth(
--50
-);
-
-
-/* EAST */
-
-scene.add.rectangle(
-2470,
-1060,
-135,
-900,
-0xcfa76a
-)
-.setDepth(
--50
-);
-
-
-/* DETAILS */
-
-for(
-let i=0;
-i<140;
-i++
-){
-
-scene.add.image(
-
-Phaser.Math.Between(
-250,
-2750
-),
-
-Phaser.Math.Between(
-540,
-1580
-),
-
-"pebble"
-
-)
-.setDepth(
--45
-)
-.setAlpha(
-.55
-);
-
-}
-
-}
-
-
-/* =========================================================
-   RIVER
-========================================================= */
-
-function createRiver(
-scene
-){
-
-const riverY=
-1120;
-
-
-/* WATER */
-
-scene.add.rectangle(
-1500,
-riverY,
-3000,
-185,
-0x4ca2b9
-)
-.setDepth(
--35
-);
-
-
-/* WATER LINES */
-
-for(
-let x=25;
-x<3000;
-x+=90
-){
-
-scene.add.rectangle(
-
-x,
-
-riverY+
-Phaser.Math.Between(
--60,
-60
-),
-
-42,
-
-3,
-
-0x94dce2,
-
-.75
-
-)
-.setDepth(
--34
-);
-
-}
-
-
-/* BRIDGE */
-
-scene.add.rectangle(
-1500,
-riverY,
-185,
-220,
-0x704724
-)
-.setDepth(
--20
-);
-
-
-for(
-let y=
-riverY-90;
-
-y<=
-riverY+90;
-
-y+=27
-){
-
-scene.add.rectangle(
-1500,
-y,
-171,
-19,
-0xb97c40
-)
-.setDepth(
--19
-);
-
-}
-
-
-/* COLLISION */
-
-addBlock(
-scene,
-700,
-riverY,
-1400,
-170
-);
-
-
-addBlock(
-scene,
-2350,
-riverY,
-1300,
-170
-);
-
-}
-
-
-/* =========================================================
-   MAIN VILLAGE
-========================================================= */
-
-function createMainVillage(
-scene
-){
-
-/* TITLE */
-
-scene.add.text(
-1500,
-520,
-"KAMPUNG SERI HIJAU",
-{
-fontFamily:"monospace",
-fontSize:"28px",
-fontStyle:"bold",
-color:"#fff4bd",
-stroke:"#3f5d2c",
-strokeThickness:8
-}
-)
-.setOrigin(.5)
-.setDepth(900);
-
-
-/* FARMER HOUSE */
-
-addHouse(
-scene,
-430,
-330,
-"RUMAH PEKEBUN",
-0xd8b16b,
-0x7b4c2d
-);
-
-
-/* FLOWER GARDEN */
-
-addGarden(
-scene,
-760,
-565,
-7,
-5
-);
-
-
-/* VEGETABLE FARM */
-
-addFarm(
-scene,
-1080,
-400,
-390,
-250
-);
-
-
-/* ORCHARD */
-
-for(
-let row=0;
-row<2;
-row++
-){
-
-for(
-let col=0;
-col<4;
-col++
-){
-
-addTree(
-scene,
-1370+
-col*105,
-305+
-row*140,
-true
-);
-
-}
-
-}
-
-
-/* HOUSE */
-
-addHouse(
-scene,
-1700,
-350,
-"RUMAH PAK MAIL",
-0xc77d5b,
-0x74432d
-);
-
-
-/* SHOP */
-
-addShop(
-scene,
-1940,
-350
-);
-
-
-/* BARN */
-
-addBarn(
-scene,
-2330,
-350
-);
-
-
-/* HOUSE */
-
-addHouse(
-scene,
-2700,
-380,
-"RUMAH MAK CIK",
-0xd6a761,
-0x6d4630
-);
-
-
-/* VILLAGE SQUARE */
-
-scene.add.rectangle(
-2010,
-780,
-500,
-330,
-0xd8bd87
-)
-.setDepth(
--22
-);
-
-
-addWell(
-scene,
-2010,
-785
-);
-
-
-addBench(
-scene,
-1870,
-885
-);
-
-
-addBench(
-scene,
-2150,
-885
-);
-
-
-/* GREENHOUSE */
-
-addGreenhouse(
-scene,
-1500,
-805
-);
-
-
-/* POND */
-
-scene.add.ellipse(
-900,
-850,
-390,
-245,
-0x4d9db5
-)
-.setDepth(
--25
-);
-
-
-scene.add.ellipse(
-900,
-845,
-330,
-195,
-0x72bfcb
-)
-.setDepth(
--24
-);
-
-
-/* POND ROCK */
-
-for(
-let i=0;
-i<10;
-i++
-){
-
-const angle=
-
-i/10*
-Math.PI*
-2;
-
-
-scene.add.image(
-
-900+
-Math.cos(angle)*195,
-
-850+
-Math.sin(angle)*122,
-
-"rock"
-
-)
-.setDepth(
-850
-);
-
-}
-
-
-/* SIGNS */
-
-addSign(
-scene,
-610,
-620,
-"KEBUN"
-);
-
-
-addSign(
-scene,
-1420,
-620,
-"DUSUN"
-);
-
-
-addSign(
-scene,
-2060,
-610,
-"KEDAI"
-);
-
-
-/* NPC */
-
-addNPC(
-scene,
-610,
-700,
-"Pak Kebun"
-);
-
-}
-
-
-/* =========================================================
-   SOUTH
-========================================================= */
-
-function createSouthArea(
-scene
-){
-
-addFarm(
-scene,
-520,
-1450,
-500,
-290
-);
-
-
-/* ORCHARD */
-
-for(
-let row=0;
-row<2;
-row++
-){
-
-for(
-let col=0;
-col<4;
-col++
-){
-
-addTree(
-scene,
-900+
-col*115,
-1450+
-row*150,
-true
-);
-
-}
-
-}
-
-
-/* HOUSES */
-
-addHouse(
-scene,
-1400,
-1490,
-"RUMAH HANA",
-0xd49b5d,
-0x79482c
-);
-
-
-addHouse(
-scene,
-1700,
-1490,
-"RUMAH AMIR",
-0xc7735e,
-0x633b2f
-);
-
-
-/* ROCK AREA */
-
-for(
-let i=0;
-i<14;
-i++
-){
-
-addRock(
-scene,
-2050+
-Phaser.Math.Between(
--170,
-170
-),
-1450+
-Phaser.Math.Between(
--120,
-120
-)
-);
-
-}
-
-
-/* FLOWERS */
-
-addGarden(
-scene,
-2300,
-1880,
-10,
-6
-);
-
-
-/* GIANT TREE */
-
-addGiantTree(
-scene,
-1760,
-1815
-);
-
-
-/* RUINS */
-
-createRuins(
-scene,
-1210,
-1850
-);
-
-
-/* STONE CIRCLE */
-
-for(
-let i=0;
-i<12;
-i++
-){
-
-const angle=
-
-i/12*
-Math.PI*
-2;
-
-
-addRock(
-scene,
-2740+
-Math.cos(angle)*115,
-1815+
-Math.sin(angle)*88
-);
-
-}
-
-
-/* labels */
-
-mapLabel(
-scene,
-520,
-1655,
-"LADANG BARAT"
-);
-
-
-mapLabel(
-scene,
-1050,
-1740,
-"DUSUN SELATAN"
-);
-
-
-mapLabel(
-scene,
-1540,
-1735,
-"KAMPUNG SELATAN"
-);
-
-}
-
-
-/* =========================================================
-   FOREST
-========================================================= */
-
-function createForest(
-scene
-){
-
-/* NORTH */
-
-for(
-let x=100;
-x<2950;
-x+=110
-){
-
-addTree(
-scene,
-x,
-95+
-Phaser.Math.Between(
--15,
-20
-)
-);
-
-}
-
-
-/* EAST */
-
-for(
-let row=0;
-row<5;
-row++
-){
-
-for(
-let col=0;
-col<5;
-col++
-){
-
-const x=
-
-2600+
-col*95+
-Phaser.Math.Between(
--15,
-15
-);
-
-
-const y=
-
-620+
-row*120+
-Phaser.Math.Between(
--15,
-15
-);
-
-
-if(
-x<2940
-){
-
-addTree(
-scene,
-x,
-y
-);
-
-}
-
-}
-
-}
-
-
-/* WEST */
-
-for(
-let y=720;
-y<2120;
-y+=115
-){
-
-addTree(
-scene,
-110+
-Phaser.Math.Between(
--15,
-20
-),
-y
-);
-
-}
-
-
-/* SOUTHEAST */
-
-for(
-let row=0;
-row<4;
-row++
-){
-
-for(
-let col=0;
-col<5;
-col++
-){
-
-const x=
-
-2450+
-col*110+
-Phaser.Math.Between(
--20,
-20
-);
-
-
-const y=
-
-1370+
-row*120+
-Phaser.Math.Between(
--20,
-20
-);
-
-
-if(
-x<2940
-){
-
-addTree(
-scene,
-x,
-y
-);
-
-}
-
-}
-
-}
-
-
-/* SOUTHWEST */
-
-for(
-let row=0;
-row<4;
-row++
-){
-
-for(
-let col=0;
-col<5;
-col++
-){
-
-addTree(
-scene,
-280+
-col*105+
-Phaser.Math.Between(
--15,
-15
-),
-1770+
-row*110+
-Phaser.Math.Between(
--15,
-15
-)
-);
-
-}
-
-}
-
-
-/* BUSH */
-
-for(
-let i=0;
-i<65;
-i++
-){
-
-const x=
-Phaser.Math.Between(
-180,
-2850
-);
-
-
-const y=
-Phaser.Math.Between(
-150,
-2050
-);
-
-
-if(
-Math.abs(
-y-1120
-)>130
-){
-
-scene.add.image(
-x,
-y,
-"bush"
-)
-.setDepth(
-y
-);
-
-}
-
-}
-
-}
-
-
-/* =========================================================
-   SECRET GARDEN
-========================================================= */
-
-function createSecretGarden(
-scene
-){
-
-scene.add.rectangle(
-850,
-2070,
-520,
-230,
-0x8dca66
-)
-.setDepth(
--22
-);
-
-
-for(
-let i=0;
-i<34;
-i++
-){
-
-const angle=
-
-Math.random()*
-Math.PI*
-2;
-
-
-const radius=
-
-Phaser.Math.Between(
-90,
-225
-);
-
-
-scene.add.image(
-850+
-Math.cos(angle)*radius,
-2070+
-Math.sin(angle)*radius*.45,
-"flower"
-)
-.setDepth(
-2070
-);
-
-}
-
-
-mapLabel(
-scene,
-850,
-2145,
-"TAMAN RAHSIA"
-);
-
-}
-
-
-/* =========================================================
-   HOUSE
-========================================================= */
-
-function addHouse(
-scene,
-x,
-y,
-label,
-wall,
-roof
-){
-
-scene.add.ellipse(
-x+8,
-y+95,
-235,
-70,
-0x26331d,
-.14
-)
-.setDepth(
-y-10
-);
-
-
-scene.add.rectangle(
-x,
-y+42,
-210,
-138,
-wall
-)
-.setDepth(
-y
-);
-
-
-scene.add.triangle(
-x,
-y-86,
-0,
-110,
-105,
-0,
-210,
-110,
-roof
-)
-.setDepth(
-y+1
-);
-
-
-scene.add.rectangle(
-x,
-y-24,
-225,
-44,
-roof
-)
-.setDepth(
-y+2
-);
-
-
-/* DOOR */
-
-scene.add.rectangle(
-x,
-y+78,
-40,
-76,
-0x70482b
-)
-.setDepth(
-y+4
-);
-
-
-addWindow(
-scene,
-x-60,
-y+30,
-y+4
-);
-
-
-addWindow(
-scene,
-x+60,
-y+30,
-y+4
-);
-
-
-scene.add.text(
-x,
-y+132,
-label,
-{
-fontFamily:"monospace",
-fontSize:"12px",
-fontStyle:"bold",
-color:"#fff7cf",
-stroke:"#405b31",
-strokeThickness:5
-}
-)
-.setOrigin(.5)
-.setDepth(
-y+10
-);
-
-
-addBlock(
-scene,
-x,
-y+52,
-215,
-120
-);
-
-}
-
-
-/* =========================================================
-   WINDOW
-========================================================= */
-
-function addWindow(
-scene,
-x,
-y,
-depth
-){
-
-scene.add.rectangle(
-x,
-y,
-42,
-40,
-0x6d4d36
-)
-.setDepth(
-depth
-);
-
-
-scene.add.rectangle(
-x,
-y,
-32,
-30,
-0x8ed2d8
-)
-.setDepth(
-depth+1
-);
-
-
-scene.add.rectangle(
-x,
-y,
-3,
-30,
-0xe9e4c2
-)
-.setDepth(
-depth+2
-);
-
-
-scene.add.rectangle(
-x,
-y,
-32,
-3,
-0xe9e4c2
-)
-.setDepth(
-depth+2
-);
-
-}
-
-
-/* =========================================================
-   SHOP
-========================================================= */
-
-function addShop(
-scene,
-x,
-y
-){
-
-scene.add.rectangle(
-x,
-y+45,
-235,
-145,
-0xd6ba71
-)
-.setDepth(
-y
-);
-
-
-scene.add.rectangle(
-x,
-y-35,
-255,
-63,
-0x6c4330
-)
-.setDepth(
-y+1
-);
-
-
-/* awning */
-
-for(
-let i=0;
-i<6;
-i++
-){
-
-scene.add.rectangle(
-x-100+
-i*40,
-y+4,
-40,
-26,
-i%2
-?
-0xf2d78b
-:
-0xe16450
-)
-.setDepth(
-y+3
-);
-
-}
-
-
-/* door */
-
-scene.add.rectangle(
-x,
-y+80,
-46,
-78,
-0x775135
-)
-.setDepth(
-y+4
-);
-
-
-addWindow(
-scene,
-x-70,
-y+55,
-y+4
-);
-
-
-addWindow(
-scene,
-x+70,
-y+55,
-y+4
-);
-
-
-scene.add.text(
-x,
-y-70,
-"KEDAI KAMPUNG",
-{
-fontFamily:"monospace",
-fontSize:"14px",
-fontStyle:"bold",
-color:"#fff2b9",
-backgroundColor:"#764529",
-padding:{
-x:7,
-y:4
-}
-}
-)
-.setOrigin(.5)
-.setDepth(
-y+5
-);
-
-
-addBlock(
-scene,
-x,
-y+50,
-240,
-135
-);
-
-}
-
-
-/* =========================================================
-   BARN
-========================================================= */
-
-function addBarn(
-scene,
-x,
-y
-){
-
-scene.add.rectangle(
-x,
-y+60,
-255,
-188,
-0xb6523d
-)
-.setDepth(
-y
-);
-
-
-scene.add.triangle(
-x,
-y-84,
-0,
-118,
-128,
-0,
-255,
-118,
-0x713c2d
-)
-.setDepth(
-y+1
-);
-
-
-scene.add.rectangle(
-x,
-y+78,
-94,
-118,
-0x6c4429
-)
-.setDepth(
-y+3
-);
-
-
-scene.add.rectangle(
-x,
-y+78,
-8,
-108,
-0xb98853
-)
-.setDepth(
-y+4
-);
-
-
-scene.add.rectangle(
-x,
-y+78,
-84,
-8,
-0xb98853
-)
-.setDepth(
-y+4
-);
-
-
-scene.add.text(
-x,
-y+177,
-"BANGSAL LADANG",
-{
-fontFamily:"monospace",
-fontSize:"13px",
-fontStyle:"bold",
-color:"#fff4cb",
-stroke:"#4d5f30",
-strokeThickness:5
-}
-)
-.setOrigin(.5)
-.setDepth(
-y+10
-);
-
-
-addBlock(
-scene,
-x,
-y+60,
-260,
-180
-);
-
-}
-
-
-/* =========================================================
-   FARM
-========================================================= */
-
-function addFarm(
-scene,
-x,
-y,
-width,
-height
-){
-
-scene.add.rectangle(
-x,
-y,
-width,
-height,
-0x9c6839
-)
-.setDepth(
--16
-);
-
-
-for(
-let yy=
-y-height/2+34;
-
-yy<
-y+height/2-20;
-
-yy+=45
-){
-
-scene.add.rectangle(
-x,
-yy,
-width-28,
-13,
-0x714824
-)
-.setDepth(
--15
-);
-
-
-for(
-let xx=
-x-width/2+35;
-
-xx<
-x+width/2-25;
-
-xx+=55
-){
-
-scene.add.image(
-xx,
-yy,
-"crop"
-)
-.setDepth(
-yy
-);
-
-}
-
-}
-
-}
-
-
-/* =========================================================
-   FLOWERS
-========================================================= */
-
-function addGarden(
-scene,
-x,
-y,
-cols,
-rows
-){
-
-for(
-let row=0;
-row<rows;
-row++
-){
-
-for(
-let col=0;
-col<cols;
-col++
-){
-
-scene.add.image(
-x+
-(col-(cols-1)/2)*34+
-Phaser.Math.Between(
--3,
-3
-),
-
-y+
-(row-(rows-1)/2)*29+
-Phaser.Math.Between(
--3,
-3
-),
-
-"flower"
-)
-.setDepth(
-y+
-row*29
-);
-
-}
-
-}
-
-}
-
-
-/* =========================================================
-   TREE
-========================================================= */
-
-function addTree(
-scene,
-x,
-y,
-fruit=false
-){
-
-scene.add.image(
-x,
-y,
-fruit
-?
-"fruitTree"
-:
-"tree"
-)
-.setDepth(
-y
-);
-
-
-addBlock(
-scene,
-x,
-y+28,
-38,
-28
-);
-
-}
-
-
-/* =========================================================
-   GIANT TREE
-========================================================= */
-
-function addGiantTree(
-scene,
-x,
-y
-){
-
-scene.add.image(
-x,
-y,
-"giantTree"
-)
-.setDepth(
-y
-);
-
-
-addBlock(
-scene,
-x,
-y+58,
-92,
-48
-);
-
-}
-
-
-/* =========================================================
-   ROCK
-========================================================= */
-
-function addRock(
-scene,
-x,
-y
-){
-
-scene.add.image(
-x,
-y,
-"rock"
-)
-.setDepth(
-y
-);
-
-
-addBlock(
-scene,
-x,
-y+8,
-32,
-20
-);
-
-}
-
-
-/* =========================================================
-   GREENHOUSE
-========================================================= */
-
-function addGreenhouse(
-scene,
-x,
-y
-){
-
-scene.add.rectangle(
-x,
-y,
-265,
-170,
-0xb8dfcb,
-.84
-)
-.setDepth(
-y
-);
-
-
-for(
-let i=-2;
-i<=2;
-i++
-){
-
-scene.add.rectangle(
-x+i*50,
-y,
-5,
-166,
-0x557c65
-)
-.setDepth(
-y+1
-);
-
-}
-
-
-scene.add.triangle(
-x,
-y-128,
-0,
-76,
-132,
-0,
-264,
-76,
-0x98c9b3,
-.9
-)
-.setDepth(
-y+1
-);
-
-
-scene.add.text(
-x,
-y+112,
-"RUMAH HIJAU",
-{
-fontFamily:"monospace",
-fontSize:"12px",
-fontStyle:"bold",
-color:"#fff7cb",
-stroke:"#49603c",
-strokeThickness:5
-}
-)
-.setOrigin(.5)
-.setDepth(
-y+10
-);
-
-
-addBlock(
-scene,
-x,
-y+15,
-265,
-135
-);
-
-}
-
-
-/* =========================================================
-   WELL
-========================================================= */
-
-function addWell(
-scene,
-x,
-y
-){
-
-scene.add.ellipse(
-x,
-y,
-105,
-64,
-0x74746f
-)
-.setDepth(
-y
-);
-
-
-scene.add.ellipse(
-x,
-y-5,
-76,
-40,
-0x253c43
-)
-.setDepth(
-y+1
-);
-
-
-scene.add.rectangle(
-x-48,
-y-64,
-10,
-118,
-0x754927
-)
-.setDepth(
-y-1
-);
-
-
-scene.add.rectangle(
-x+48,
-y-64,
-10,
-118,
-0x754927
-)
-.setDepth(
-y-1
-);
-
-
-scene.add.rectangle(
-x,
-y-114,
-124,
-18,
-0x80532d
-)
-.setDepth(
-y-1
-);
-
-
-addBlock(
-scene,
-x,
-y,
-105,
-62
-);
-
-}
-
-
-/* =========================================================
-   BENCH
-========================================================= */
-
-function addBench(
-scene,
-x,
-y
-){
-
-scene.add.rectangle(
-x,
-y,
-100,
-16,
-0x8d5b2e
-)
-.setDepth(
-y
-);
-
-
-scene.add.rectangle(
-x-35,
-y+18,
-9,
-34,
-0x63401f
-)
-.setDepth(
-y
-);
-
-
-scene.add.rectangle(
-x+35,
-y+18,
-9,
-34,
-0x63401f
-)
-.setDepth(
-y
-);
-
-}
-
-
-/* =========================================================
-   SIGN
-========================================================= */
-
-function addSign(
-scene,
-x,
-y,
-text
-){
-
-scene.add.rectangle(
-x,
-y,
-90,
-42,
-0x946135
-)
-.setDepth(
-y
-);
-
-
-scene.add.rectangle(
-x,
-y+42,
-10,
-70,
-0x6b4729
-)
-.setDepth(
-y-2
-);
-
-
-scene.add.text(
-x,
-y,
-text,
-{
-fontFamily:"monospace",
-fontSize:"11px",
-fontStyle:"bold",
-color:"#fff1b7"
-}
-)
-.setOrigin(.5)
-.setDepth(
-y+1
-);
-
-}
-
-
-/* =========================================================
-   NPC
-========================================================= */
-
-function addNPC(
-scene,
-x,
-y,
-name
-){
-
-scene.add.image(
-x,
-y,
-"npc"
-)
-.setDepth(
-y
-);
-
-
-scene.add.text(
-x,
-y+48,
-name,
-{
-fontFamily:"monospace",
-fontSize:"10px",
-fontStyle:"bold",
-color:"#fff",
-stroke:"#394c2c",
-strokeThickness:4
-}
-)
-.setOrigin(.5)
-.setDepth(
-y+2
-);
-
-}
-
-
-/* =========================================================
-   RUINS
-========================================================= */
-
-function createRuins(
-scene,
-x,
-y
-){
-
-for(
-let i=0;
-i<6;
-i++
-){
-
-scene.add.rectangle(
-x-145+
-i*54,
-y+65,
-46,
-38,
-0x807f76
-)
-.setDepth(
-y+65
-);
-
-}
-
-
-for(
-let i=0;
-i<4;
-i++
-){
-
-scene.add.rectangle(
-x-145,
-y-48+
-i*44,
-42,
-38,
-0x807f76
-)
-.setDepth(
-y+
-i*44
-);
-
-
-scene.add.rectangle(
-x+145,
-y-48+
-i*44,
-42,
-38,
-0x807f76
-)
-.setDepth(
-y+
-i*44
-);
-
-}
-
-}
-
-
-/* =========================================================
-   LABEL
-========================================================= */
-
-function mapLabel(
-scene,
-x,
-y,
-text
-){
-
-scene.add.text(
-x,
-y,
-text,
-{
-fontFamily:"monospace",
-fontSize:"13px",
-fontStyle:"bold",
-color:"#fff2b3",
-stroke:"#40582e",
-strokeThickness:6
-}
-)
-.setOrigin(.5)
-.setDepth(
-y+10
+1700
 );
 
 }
@@ -5039,7 +5999,7 @@ function createTextures(
 scene
 ){
 
-/* block */
+/* BLOCK */
 
 let g=
 scene.add.graphics();
@@ -5050,6 +6010,7 @@ g.fillStyle(
 1
 );
 
+
 g.fillRect(
 0,
 0,
@@ -5057,24 +6018,27 @@ g.fillRect(
 4
 );
 
+
 g.generateTexture(
 "block",
 4,
 4
 );
 
+
 g.destroy();
 
 
-/* grass */
+/* GRASS */
 
 g=
 scene.add.graphics();
 
 
 g.fillStyle(
-0x4c943f
+0x4d943f
 );
+
 
 g.fillRect(
 4,
@@ -5083,6 +6047,7 @@ g.fillRect(
 7
 );
 
+
 g.fillRect(
 1,
 7,
@@ -5090,6 +6055,7 @@ g.fillRect(
 4
 );
 
+
 g.fillRect(
 7,
 8,
@@ -5097,50 +6063,13 @@ g.fillRect(
 3
 );
 
+
 g.generateTexture(
 "grass",
 10,
 12
 );
 
-g.destroy();
-
-
-/* pebble */
-
-g=
-scene.add.graphics();
-
-
-g.fillStyle(
-0xa77b49
-);
-
-g.fillRect(
-1,
-2,
-5,
-3
-);
-
-
-g.fillStyle(
-0xc49a62
-);
-
-g.fillRect(
-4,
-0,
-3,
-2
-);
-
-
-g.generateTexture(
-"pebble",
-8,
-6
-);
 
 g.destroy();
 
@@ -5149,31 +6078,33 @@ createGardenerTexture(
 scene
 );
 
-createNPCTexture(
-scene
-);
 
 createChestTextures(
 scene
 );
 
+
 createTreeTextures(
 scene
 );
+
 
 createFlowerTexture(
 scene
 );
 
+
 createCropTexture(
 scene
 );
+
 
 createRockTexture(
 scene
 );
 
-createBushTexture(
+
+createFenceTexture(
 scene
 );
 
@@ -5195,8 +6126,9 @@ scene.add.graphics();
 /* boots */
 
 g.fillStyle(
-0x4f3624
+0x4e3524
 );
+
 
 g.fillRect(
 11,
@@ -5204,6 +6136,7 @@ g.fillRect(
 10,
 6
 );
+
 
 g.fillRect(
 26,
@@ -5213,11 +6146,12 @@ g.fillRect(
 );
 
 
-/* legs */
+/* trousers */
 
 g.fillStyle(
-0x435f80
+0x425f80
 );
+
 
 g.fillRect(
 12,
@@ -5225,6 +6159,7 @@ g.fillRect(
 9,
 11
 );
+
 
 g.fillRect(
 26,
@@ -5237,8 +6172,9 @@ g.fillRect(
 /* shirt */
 
 g.fillStyle(
-0x4d9a50
+0x4c9c51
 );
+
 
 g.fillRect(
 9,
@@ -5254,6 +6190,7 @@ g.fillStyle(
 0x47789a
 );
 
+
 g.fillRect(
 14,
 24,
@@ -5261,12 +6198,14 @@ g.fillRect(
 16
 );
 
+
 g.fillRect(
 14,
 19,
 4,
 9
 );
+
 
 g.fillRect(
 29,
@@ -5279,8 +6218,9 @@ g.fillRect(
 /* pocket */
 
 g.fillStyle(
-0x6b9fba
+0x72a4be
 );
+
 
 g.fillRect(
 20,
@@ -5296,12 +6236,14 @@ g.fillStyle(
 0xf1bd8a
 );
 
+
 g.fillRect(
 5,
 25,
 5,
 12
 );
+
 
 g.fillRect(
 38,
@@ -5317,6 +6259,7 @@ g.fillStyle(
 0xf1bd8a
 );
 
+
 g.fillRect(
 12,
 10,
@@ -5330,6 +6273,7 @@ g.fillRect(
 g.fillStyle(
 0x5b3924
 );
+
 
 g.fillRect(
 13,
@@ -5345,12 +6289,14 @@ g.fillStyle(
 0x30291f
 );
 
+
 g.fillRect(
 16,
 15,
 2,
 3
 );
+
 
 g.fillRect(
 30,
@@ -5366,6 +6312,7 @@ g.fillStyle(
 0xe3b952
 );
 
+
 g.fillRect(
 5,
 6,
@@ -5377,6 +6324,7 @@ g.fillRect(
 g.fillStyle(
 0xf0ca67
 );
+
 
 g.fillRect(
 11,
@@ -5392,6 +6340,7 @@ g.fillStyle(
 0x8c5a2b
 );
 
+
 g.fillRect(
 11,
 6,
@@ -5406,6 +6355,7 @@ g.fillStyle(
 0x718c98
 );
 
+
 g.fillRect(
 40,
 28,
@@ -5413,12 +6363,14 @@ g.fillRect(
 10
 );
 
+
 g.fillRect(
 44,
 25,
 4,
 5
 );
+
 
 g.fillRect(
 46,
@@ -5441,111 +6393,6 @@ g.destroy();
 
 
 /* =========================================================
-   NPC
-========================================================= */
-
-function createNPCTexture(
-scene
-){
-
-const g=
-scene.add.graphics();
-
-
-g.fillStyle(
-0x553a26
-);
-
-g.fillRect(
-11,
-38,
-8,
-6
-);
-
-g.fillRect(
-23,
-38,
-8,
-6
-);
-
-
-g.fillStyle(
-0x6e8041
-);
-
-g.fillRect(
-9,
-22,
-24,
-18
-);
-
-
-g.fillStyle(
-0xeab985
-);
-
-g.fillRect(
-10,
-10,
-22,
-13
-);
-
-
-g.fillStyle(
-0xd6aa49
-);
-
-g.fillRect(
-4,
-6,
-34,
-6
-);
-
-g.fillRect(
-10,
-0,
-22,
-9
-);
-
-
-g.fillStyle(
-0x30291f
-);
-
-g.fillRect(
-14,
-15,
-2,
-3
-);
-
-g.fillRect(
-26,
-15,
-2,
-3
-);
-
-
-g.generateTexture(
-"npc",
-42,
-45
-);
-
-
-g.destroy();
-
-}
-
-
-/* =========================================================
    CHEST
 ========================================================= */
 
@@ -5553,7 +6400,7 @@ function createChestTextures(
 scene
 ){
 
-/* CLOSED */
+/* closed */
 
 let g=
 scene.add.graphics();
@@ -5562,6 +6409,7 @@ scene.add.graphics();
 g.fillStyle(
 0x59361b
 );
+
 
 g.fillRect(
 2,
@@ -5575,6 +6423,7 @@ g.fillStyle(
 0xb8752f
 );
 
+
 g.fillRect(
 5,
 8,
@@ -5586,6 +6435,7 @@ g.fillRect(
 g.fillStyle(
 0x69411e
 );
+
 
 g.fillRect(
 5,
@@ -5599,6 +6449,7 @@ g.fillStyle(
 0xe6ae43
 );
 
+
 g.fillRect(
 5,
 19,
@@ -5611,6 +6462,7 @@ g.fillStyle(
 0xffd968
 );
 
+
 g.fillRect(
 21,
 18,
@@ -5622,6 +6474,7 @@ g.fillRect(
 g.fillStyle(
 0x3e2715
 );
+
 
 g.fillRect(
 24,
@@ -5641,7 +6494,7 @@ g.generateTexture(
 g.destroy();
 
 
-/* OPEN */
+/* opened */
 
 g=
 scene.add.graphics();
@@ -5650,6 +6503,7 @@ scene.add.graphics();
 g.fillStyle(
 0x59361b
 );
+
 
 g.fillRect(
 2,
@@ -5663,6 +6517,7 @@ g.fillStyle(
 0xb8752f
 );
 
+
 g.fillRect(
 5,
 20,
@@ -5675,12 +6530,14 @@ g.fillStyle(
 0x69411e
 );
 
+
 g.fillRect(
 6,
 3,
 38,
 9
 );
+
 
 g.fillRect(
 4,
@@ -5693,6 +6550,7 @@ g.fillRect(
 g.fillStyle(
 0xffdf69
 );
+
 
 g.fillRect(
 12,
@@ -5715,14 +6573,14 @@ g.destroy();
 
 
 /* =========================================================
-   TREES
+   TREE
 ========================================================= */
 
 function createTreeTextures(
 scene
 ){
 
-/* TREE */
+/* tree */
 
 let g=
 scene.add.graphics();
@@ -5731,6 +6589,7 @@ scene.add.graphics();
 g.fillStyle(
 0x654125
 );
+
 
 g.fillRect(
 32,
@@ -5744,6 +6603,7 @@ g.fillStyle(
 0x2f6e32
 );
 
+
 g.fillCircle(
 40,
 43,
@@ -5755,17 +6615,20 @@ g.fillStyle(
 0x458c3d
 );
 
+
 g.fillCircle(
 23,
 39,
 22
 );
 
+
 g.fillCircle(
 57,
 40,
 22
 );
+
 
 g.fillCircle(
 41,
@@ -5778,12 +6641,14 @@ g.fillStyle(
 0x65a94d
 );
 
+
 g.fillRect(
 18,
 22,
 10,
 8
 );
+
 
 g.fillRect(
 49,
@@ -5803,7 +6668,7 @@ g.generateTexture(
 g.destroy();
 
 
-/* FRUIT TREE */
+/* fruit tree */
 
 g=
 scene.add.graphics();
@@ -5812,6 +6677,7 @@ scene.add.graphics();
 g.fillStyle(
 0x654125
 );
+
 
 g.fillRect(
 32,
@@ -5825,6 +6691,7 @@ g.fillStyle(
 0x337633
 );
 
+
 g.fillCircle(
 40,
 43,
@@ -5836,17 +6703,20 @@ g.fillStyle(
 0x4d9b42
 );
 
+
 g.fillCircle(
 23,
 39,
 22
 );
 
+
 g.fillCircle(
 57,
 40,
 22
 );
+
 
 g.fillCircle(
 41,
@@ -5868,11 +6738,11 @@ g.fillStyle(
 [42,14]
 ]
 .forEach(
-point=>{
+p=>{
 
 g.fillCircle(
-point[0],
-point[1],
+p[0],
+p[1],
 4
 );
 
@@ -5890,7 +6760,7 @@ g.generateTexture(
 g.destroy();
 
 
-/* GIANT */
+/* giant tree */
 
 g=
 scene.add.graphics();
@@ -5900,6 +6770,7 @@ g.fillStyle(
 0x654125
 );
 
+
 g.fillRect(
 72,
 110,
@@ -5907,12 +6778,14 @@ g.fillRect(
 90
 );
 
+
 g.fillRect(
 46,
 130,
 42,
 21
 );
+
 
 g.fillRect(
 102,
@@ -5926,6 +6799,7 @@ g.fillStyle(
 0x28652e
 );
 
+
 g.fillCircle(
 95,
 82,
@@ -5937,17 +6811,20 @@ g.fillStyle(
 0x3a8238
 );
 
+
 g.fillCircle(
 48,
 78,
 44
 );
 
+
 g.fillCircle(
 142,
 78,
 44
 );
+
 
 g.fillCircle(
 95,
@@ -5960,11 +6837,13 @@ g.fillStyle(
 0x5ba348
 );
 
+
 g.fillCircle(
 65,
 45,
 18
 );
+
 
 g.fillCircle(
 127,
@@ -6001,6 +6880,7 @@ g.fillStyle(
 0x397e38
 );
 
+
 g.fillRect(
 8,
 11,
@@ -6013,6 +6893,7 @@ g.fillStyle(
 0xf3d24b
 );
 
+
 g.fillCircle(
 9,
 9,
@@ -6024,23 +6905,27 @@ g.fillStyle(
 0xf2769d
 );
 
+
 g.fillCircle(
 9,
 4,
 4
 );
 
+
 g.fillCircle(
 4,
 9,
 4
 );
+
 
 g.fillCircle(
 14,
 9,
 4
 );
+
 
 g.fillCircle(
 9,
@@ -6077,6 +6962,7 @@ g.fillStyle(
 0x3f8338
 );
 
+
 g.fillRect(
 9,
 8,
@@ -6089,6 +6975,7 @@ g.fillStyle(
 0x6cb24a
 );
 
+
 g.fillTriangle(
 10,
 14,
@@ -6097,6 +6984,7 @@ g.fillTriangle(
 8,
 19
 );
+
 
 g.fillTriangle(
 12,
@@ -6136,6 +7024,7 @@ g.fillStyle(
 0x5e625e
 );
 
+
 g.fillRect(
 4,
 16,
@@ -6148,6 +7037,7 @@ g.fillStyle(
 0x7d827b
 );
 
+
 g.fillTriangle(
 4,
 17,
@@ -6156,6 +7046,7 @@ g.fillTriangle(
 25,
 17
 );
+
 
 g.fillTriangle(
 17,
@@ -6170,6 +7061,7 @@ g.fillTriangle(
 g.fillStyle(
 0xa4aaa1
 );
+
 
 g.fillRect(
 13,
@@ -6192,10 +7084,10 @@ g.destroy();
 
 
 /* =========================================================
-   BUSH
+   FENCE
 ========================================================= */
 
-function createBushTexture(
+function createFenceTexture(
 scene
 ){
 
@@ -6204,49 +7096,51 @@ scene.add.graphics();
 
 
 g.fillStyle(
-0x316b34
+0x724829
 );
 
-g.fillCircle(
-20,
-20,
-16
+
+g.fillRect(
+3,
+3,
+7,
+32
 );
 
-g.fillCircle(
-36,
-18,
-17
-);
 
-g.fillCircle(
-28,
-10,
-16
+g.fillRect(
+33,
+3,
+7,
+32
 );
 
 
 g.fillStyle(
-0x4d9746
+0xa56e39
 );
 
-g.fillCircle(
-18,
-13,
-8
+
+g.fillRect(
+0,
+10,
+43,
+7
 );
 
-g.fillCircle(
-36,
-12,
+
+g.fillRect(
+0,
+23,
+43,
 7
 );
 
 
 g.generateTexture(
-"bush",
-55,
-42
+"fence",
+43,
+37
 );
 
 
