@@ -2,910 +2,3038 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Kampung Seri Hijau — Misi Harta Tumbuhan</title>
+
+<meta
+  name="viewport"
+  content="width=device-width,
+  initial-scale=1,
+  maximum-scale=1,
+  user-scalable=no,
+  viewport-fit=cover"
+>
+
+<title>Cup Find — Kenali Tumbuhan</title>
+
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;font-family:"Trebuchet MS",Arial,sans-serif;background:linear-gradient(#b8dfa0,#79ad62)}
+:root{
+    --dark:#254432;
+    --green:#4f8a56;
+    --green2:#7fbf69;
+    --cream:#fffaf0;
+    --yellow:#ffd96a;
+    --orange:#f5a94d;
+    --panel:#fffdf5;
+    --border:#d5b36a;
+}
+
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+    margin:0;
+    width:100%;
+    min-height:100%;
+    font-family:"Trebuchet MS",Arial,sans-serif;
+}
+
 body{
- min-height:100dvh;display:flex;align-items:center;justify-content:center;overflow:hidden;
- padding:max(5px,env(safe-area-inset-top)) max(5px,env(safe-area-inset-right))
- max(5px,env(safe-area-inset-bottom)) max(5px,env(safe-area-inset-left))
-}
-#shell{
- width:min(1000px,calc(100vw - 10px));padding:7px;background:#f3dca1;
- border:4px solid #65411f;border-radius:17px;
- box-shadow:0 7px 0 #8b5d2f,0 15px 30px #0003
-}
-#top{display:grid;grid-template-columns:auto 1fr auto;gap:6px;margin-bottom:6px}
-.box{
- background:linear-gradient(#fff9dc,#f5e4a9);border:3px solid #684621;border-radius:11px;
- padding:6px 9px;color:#4b301a;font-weight:900;box-shadow:0 2px 0 #9d713c
-}
-#home{border:0;background:none;color:#4b301a;font-weight:1000;cursor:pointer}
-#area{font-size:12px;color:#347030}
-#clue{font-size:9px;margin-top:2px}
-#progress{display:flex;align-items:center;white-space:nowrap;font-size:10px}
+    min-height:100vh;
+    min-height:100svh;
+    color:var(--dark);
 
-#gameContainer{
- position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;
- border:4px solid #50331d;border-radius:13px;background:#75ad57;
- box-shadow:inset 0 0 0 2px #c58a4a;touch-action:none
-}
-#game,#game canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block;image-rendering:pixelated}
+    background:
+    radial-gradient(
+        circle at 15% 15%,
+        rgba(255,255,255,.8),
+        transparent 25%
+    ),
+    linear-gradient(
+        135deg,
+        #dff2c7,
+        #9ed187
+    );
 
-/* COMPASS */
-#compass{
- position:absolute;z-index:50;right:9px;top:9px;width:76px;padding:5px;
- background:#fff6cfee;border:3px solid #5d3b20;border-radius:15px;
- box-shadow:0 4px 0 #4c301dbb;pointer-events:none
-}
-#dial{
- position:relative;width:60px;height:60px;margin:auto;border-radius:50%;
- background:radial-gradient(circle,#fff8d5,#ead493);border:2px solid #76502d
-}
-.dir{position:absolute;font:1000 8px monospace;color:#49301c}
-.n{top:3px;left:50%;transform:translateX(-50%);color:#c33b31}
-.e{right:4px;top:50%;transform:translateY(-50%)}
-.s{bottom:3px;left:50%;transform:translateX(-50%)}
-.w{left:4px;top:50%;transform:translateY(-50%)}
-#needle{
- position:absolute;left:50%;top:50%;width:5px;height:25px;margin-left:-2.5px;margin-top:-22px;
- transform-origin:50% 22px;background:#d84939;
- clip-path:polygon(50% 0,100% 100%,50% 78%,0 100%);
- transition:transform .08s linear
-}
-#center{position:absolute;left:50%;top:50%;width:9px;height:9px;transform:translate(-50%,-50%);border-radius:50%;background:#55351d;border:2px solid #f4ca59}
-#direction{text-align:center;font-size:8px;font-weight:1000;margin-top:2px}
-
-/* CONTROLS */
-#controls{
- position:absolute;z-index:45;left:10px;right:10px;bottom:8px;
- display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none
-}
-#joy{
- width:94px;height:94px;border-radius:50%;background:#fff4c8d9;border:3px solid #60401f;
- display:grid;place-items:center;pointer-events:auto;touch-action:none;box-shadow:0 4px 0 #4c321dcc
-}
-#base{position:relative;width:72px;height:72px;border-radius:50%;background:#688d4666;border:3px solid #58743b}
-#base:before,#base:after{content:"";position:absolute;background:#526b3733}
-#base:before{width:2px;height:54px;left:50%;top:6px}
-#base:after{height:2px;width:54px;top:50%;left:6px}
-#knob{
- position:absolute;left:50%;top:50%;width:34px;height:34px;border-radius:50%;
- background:radial-gradient(circle at 35% 30%,#ffe695,#dfaa3f);
- border:3px solid #65411e;transform:translate(-50%,-50%);box-shadow:0 3px 0 #7e4f25
-}
-#action{
- width:70px;height:70px;border-radius:50%;border:3px solid #61401f;
- background:linear-gradient(#ffdb68,#f2b62e);color:#4e3019;font-size:9px;font-weight:1000;
- pointer-events:auto;touch-action:none;box-shadow:0 4px 0 #6f4724
-}
-#interact{
- position:absolute;z-index:44;left:50%;bottom:90px;transform:translateX(-50%);
- display:none;background:#fff0a7;border:3px solid #67441f;border-radius:999px;
- padding:5px 9px;font-size:9px;font-weight:1000;white-space:nowrap
+    padding:
+        max(12px,env(safe-area-inset-top))
+        max(10px,env(safe-area-inset-right))
+        max(18px,env(safe-area-inset-bottom))
+        max(10px,env(safe-area-inset-left));
 }
 
-/* MODALS */
-.modal{
- position:absolute;z-index:100;inset:0;display:none;align-items:center;justify-content:center;
- padding:10px;background:#13200fc4;backdrop-filter:blur(2px)
+button{
+    font-family:inherit;
 }
-.card{
- width:min(570px,96%);max-height:94%;overflow:auto;background:#fff6cf;
- border:4px solid #66431f;border-radius:16px;padding:13px;box-shadow:0 7px 0 #3e2917
-}
-.head{display:flex;justify-content:space-between;margin-bottom:8px}
-.badge{padding:4px 8px;border-radius:999px;font-size:10px;font-weight:1000;background:#639e4a;color:#fff}
-#tp{background:#f1ca61;color:#4a311d}
-#qText{
- background:#fffdf2;border:3px solid #d4a963;border-radius:10px;padding:9px;
- font-size:14px;font-weight:1000;line-height:1.3;margin-bottom:8px
-}
-#answers{display:grid;gap:6px}
-.answer{
- width:100%;text-align:left;padding:8px;border:3px solid #c79a5a;border-radius:9px;
- background:#fff;font-weight:800;cursor:pointer;color:#3b3124
-}
-.answer.correct{background:#a9df88;border-color:#39752e}
-.answer.wrong{background:#ffaaa0;border-color:#a43b32}
-#status{text-align:center;min-height:18px;margin-top:6px;font-size:10px;font-weight:1000}
-.reward{text-align:center;font-size:18px;font-weight:1000;color:#4b742e}
-#nextClue,#finishText{
- margin-top:9px;padding:9px;background:white;border:3px dashed #b57c35;
- border-radius:10px;text-align:center;font-size:11px;font-weight:900;line-height:1.4
-}
-.btn{
- display:block;margin:10px auto 0;padding:7px 12px;border:3px solid #53351d;
- border-radius:9px;background:#73ad58;color:#fff;font-weight:1000;cursor:pointer
-}
-#toast{
- position:absolute;z-index:200;left:50%;top:50%;transform:translate(-50%,-50%) scale(.9);
- opacity:0;background:#fff1ac;border:3px solid #60401f;border-radius:10px;padding:7px 11px;
- font-size:9px;font-weight:1000;transition:.15s;pointer-events:none
-}
-#toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 
-@media(max-width:600px){
- #shell{width:calc(100vw - 6px);padding:4px;border-width:3px}
- #top{gap:3px;margin-bottom:3px}.box{padding:3px 5px;border-width:2px}
- #home,#progress,#area{font-size:7px}#clue{font-size:6px}
- #gameContainer{border-width:3px}
- #joy{width:68px;height:68px;border-width:2px}#base{width:52px;height:52px;border-width:2px}
- #knob{width:25px;height:25px;border-width:2px}
- #action{width:54px;height:54px;border-width:2px;font-size:7px}
- #interact{bottom:59px;font-size:6px}
- #compass{width:56px;right:5px;top:5px;padding:3px;border-width:2px}
- #dial{width:46px;height:46px}.dir{font-size:6px}
- #needle{height:18px;margin-top:-16px;transform-origin:50% 16px}
- #direction{font-size:6px}
- #qText{font-size:10px}.answer{font-size:8px;padding:5px}
+.main-wrap{
+    width:min(960px,100%);
+    margin:0 auto;
 }
-@media(orientation:landscape) and (max-height:600px){
- body{padding:3px}
- #shell{width:min(960px,calc((100dvh - 40px)*16/9));max-width:calc(100vw - 6px);padding:3px;border-width:3px}
- #top{margin-bottom:2px}.box{padding:2px 5px;border-width:2px}
- #home,#progress,#area{font-size:7px}#clue{font-size:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
- #joy{width:62px;height:62px}#base{width:47px;height:47px}#knob{width:23px;height:23px}
- #action{width:49px;height:49px}#interact{bottom:53px}
- #compass{width:53px;right:4px;top:4px}#dial{width:43px;height:43px}
- .card{padding:7px}#qText{font-size:9px;padding:5px}
- #answers{grid-template-columns:1fr 1fr;gap:4px}.answer{font-size:7px;padding:4px}
+
+.topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:10px;
+}
+
+.home-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:44px;
+    padding:8px 15px;
+    border-radius:14px;
+    text-decoration:none;
+    font-weight:900;
+    color:#fff;
+    background:#416b4c;
+    border:3px solid #2f5038;
+    box-shadow:0 5px 0 #284332;
+}
+
+.home-btn:active{
+    transform:translateY(3px);
+    box-shadow:0 2px 0 #284332;
+}
+
+.game-title{
+    flex:1;
+    text-align:center;
+    line-height:1.05;
+}
+
+.game-title h1{
+    margin:0;
+    font-size:clamp(21px,4vw,34px);
+    color:#355f40;
+    text-shadow:0 2px #fff;
+}
+
+.game-title span{
+    display:block;
+    margin-top:4px;
+    font-size:clamp(11px,2.2vw,15px);
+    font-weight:800;
+    color:#5e7c61;
+}
+
+.top-spacer{
+    width:78px;
+}
+
+.progress-box{
+    background:rgba(255,253,245,.92);
+    border:3px solid rgba(72,112,71,.3);
+    border-radius:18px;
+    padding:10px 13px;
+    box-shadow:0 6px 15px rgba(54,84,54,.14);
+    margin-bottom:10px;
+}
+
+.progress-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    margin-bottom:7px;
+    font-weight:900;
+    font-size:14px;
+}
+
+.progress-track{
+    height:13px;
+    border-radius:999px;
+    overflow:hidden;
+    background:#dce7d3;
+    border:2px solid #bdd2af;
+}
+
+.progress-fill{
+    width:4%;
+    height:100%;
+    border-radius:999px;
+    background:
+        linear-gradient(
+            90deg,
+            #6daa58,
+            #a4d268
+        );
+    transition:width .3s ease;
+}
+
+.question-card{
+    position:relative;
+    overflow:hidden;
+
+    background:
+        linear-gradient(
+            180deg,
+            #fffef9,
+            #fff8e8
+        );
+
+    border:4px solid #e1c47b;
+    border-radius:22px;
+    padding:15px;
+    box-shadow:
+        0 8px 0 #c6a85e,
+        0 14px 25px rgba(77,82,39,.12);
+
+    margin-bottom:16px;
+}
+
+.question-card::before,
+.question-card::after{
+    content:"";
+    position:absolute;
+    border-radius:50%;
+    background:rgba(131,183,92,.14);
+}
+
+.question-card::before{
+    width:120px;
+    height:120px;
+    right:-60px;
+    top:-60px;
+}
+
+.question-card::after{
+    width:80px;
+    height:80px;
+    left:-40px;
+    bottom:-40px;
+}
+
+.topic{
+    position:relative;
+    z-index:1;
+
+    display:inline-block;
+    padding:6px 12px;
+    border-radius:999px;
+
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:.3px;
+
+    color:#fff;
+    background:#648d55;
+
+    margin-bottom:9px;
+}
+
+.question-text{
+    position:relative;
+    z-index:1;
+
+    font-size:clamp(16px,3vw,21px);
+    font-weight:900;
+    line-height:1.4;
+    margin-bottom:12px;
+}
+
+.options-grid{
+    position:relative;
+    z-index:1;
+
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+}
+
+.option-item{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+
+    min-height:54px;
+
+    padding:9px 10px;
+    border-radius:13px;
+
+    background:#fff;
+    border:2px solid #e9dcba;
+    box-shadow:0 3px 0 #ded0ac;
+
+    font-size:14px;
+    font-weight:800;
+    line-height:1.25;
+}
+
+.option-letter{
+    flex:0 0 auto;
+
+    width:31px;
+    height:31px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    border-radius:9px;
+
+    color:#fff;
+    background:#678c57;
+
+    font-weight:1000;
+    font-size:16px;
+}
+
+.game-shell{
+    position:relative;
+    overflow:hidden;
+
+    border-radius:25px;
+    border:5px solid #476f49;
+
+    background:
+        linear-gradient(
+            #bce08f 0%,
+            #def0b7 35%,
+            #ead69a 35%,
+            #d3b777 100%
+        );
+
+    box-shadow:
+        0 10px 0 #36563a,
+        0 17px 28px rgba(52,77,45,.22);
+}
+
+#game-container{
+    width:100%;
+    min-height:200px;
+}
+
+#game-container canvas{
+    display:block !important;
+    width:100% !important;
+    height:auto !important;
+    margin:0 auto;
+}
+
+.status-area{
+    margin-top:15px;
+    text-align:center;
+}
+
+#statusText{
+    display:inline-flex;
+    justify-content:center;
+    align-items:center;
+
+    min-height:44px;
+    max-width:100%;
+
+    border-radius:15px;
+    padding:9px 17px;
+
+    background:rgba(255,255,255,.85);
+    border:2px solid rgba(72,112,71,.3);
+
+    font-weight:900;
+    font-size:14px;
+
+    box-shadow:0 4px 12px rgba(47,73,43,.12);
+}
+
+.rules{
+    margin-top:13px;
+
+    background:rgba(255,255,255,.67);
+    border-radius:15px;
+
+    padding:11px 14px;
+
+    font-size:12px;
+    line-height:1.45;
+    text-align:center;
+
+    color:#526c52;
+    font-weight:700;
+}
+
+.finish-overlay{
+    position:absolute;
+    inset:0;
+
+    display:none;
+    align-items:center;
+    justify-content:center;
+
+    z-index:50;
+
+    padding:20px;
+    background:rgba(28,48,30,.72);
+    backdrop-filter:blur(5px);
+}
+
+.finish-overlay.show{
+    display:flex;
+}
+
+.finish-card{
+    width:min(420px,100%);
+
+    text-align:center;
+
+    background:#fffdf0;
+    border:5px solid #f3cb66;
+    border-radius:25px;
+
+    padding:25px 18px;
+
+    box-shadow:
+        0 9px 0 #b58a38,
+        0 20px 45px rgba(0,0,0,.3);
+}
+
+.finish-icon{
+    font-size:60px;
+    margin-bottom:5px;
+}
+
+.finish-card h2{
+    margin:0 0 8px;
+    font-size:29px;
+    color:#477248;
+}
+
+.finish-card p{
+    margin:0 0 18px;
+    font-weight:800;
+    color:#5f725c;
+    line-height:1.45;
+}
+
+.restart-btn{
+    appearance:none;
+    border:0;
+
+    border-radius:14px;
+    padding:12px 22px;
+
+    color:#fff;
+    background:#639b52;
+
+    font-size:16px;
+    font-weight:1000;
+
+    border:3px solid #416e3d;
+    box-shadow:0 5px 0 #356032;
+
+    cursor:pointer;
+}
+
+.restart-btn:active{
+    transform:translateY(3px);
+    box-shadow:0 2px 0 #356032;
+}
+
+@media(max-width:620px){
+
+    body{
+        padding-left:7px;
+        padding-right:7px;
+    }
+
+    .topbar{
+        align-items:center;
+    }
+
+    .home-btn{
+        min-height:40px;
+        padding:7px 11px;
+        border-width:2px;
+        font-size:12px;
+    }
+
+    .top-spacer{
+        width:60px;
+    }
+
+    .question-card{
+        padding:11px;
+        border-width:3px;
+        border-radius:17px;
+    }
+
+    .options-grid{
+        gap:6px;
+    }
+
+    .option-item{
+        min-height:50px;
+        padding:7px;
+        font-size:12px;
+    }
+
+    .option-letter{
+        width:27px;
+        height:27px;
+        font-size:14px;
+    }
+
+    .game-shell{
+        border-width:3px;
+        border-radius:17px;
+        box-shadow:0 7px 0 #36563a;
+    }
+
+    .status-area{
+        margin-top:11px;
+    }
+
+    #statusText{
+        font-size:12px;
+        min-height:39px;
+    }
+}
+
+@media(max-width:400px){
+
+    .option-item{
+        font-size:11.5px;
+    }
+
+    .question-text{
+        font-size:15px;
+    }
+
+    .progress-head{
+        font-size:12px;
+    }
 }
 </style>
 </head>
 
 <body>
-<div id="shell">
 
-<div id="top">
- <div class="box"><button id="home" onclick="location.href='index.html'">🏠 HOME</button></div>
- <div class="box"><div id="area">📍 Kebun Bunga Pekebun</div><div id="clue"></div></div>
- <div class="box" id="progress">🧰 PETI&nbsp;<span id="num">1</span>/25</div>
+<div class="main-wrap">
+
+    <div class="topbar">
+
+        <a class="home-btn" href="index.html">
+            🏠 Home
+        </a>
+
+        <div class="game-title">
+            <h1>🌱 Cup Find</h1>
+            <span>Misi Rahsia Tumbuhan</span>
+        </div>
+
+        <div class="top-spacer"></div>
+
+    </div>
+
+
+    <div class="progress-box">
+
+        <div class="progress-head">
+            <span id="progressText">Soalan 1 / 25</span>
+            <span id="scoreText">Betul: 0</span>
+        </div>
+
+        <div class="progress-track">
+            <div
+                class="progress-fill"
+                id="progressFill">
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="question-card">
+
+        <div
+            class="topic"
+            id="topicText">
+            Kenali Bahagian Tumbuhan
+        </div>
+
+        <div
+            class="question-text"
+            id="questionText">
+        </div>
+
+        <div
+            class="options-grid"
+            id="optionsGrid">
+        </div>
+
+    </div>
+
+
+    <div class="game-shell">
+
+        <div id="game-container"></div>
+
+        <div
+            class="finish-overlay"
+            id="finishOverlay">
+
+            <div class="finish-card">
+
+                <div class="finish-icon">
+                    🏆
+                </div>
+
+                <h2>Misi Selesai!</h2>
+
+                <p>
+                    Tahniah! Semua 25 soalan
+                    tumbuhan telah berjaya
+                    diselesaikan.
+                </p>
+
+                <button
+                    class="restart-btn"
+                    id="restartBtn">
+                    Main Semula
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="status-area">
+        <div id="statusText">
+            Perhatikan jawapan di bawah setiap cup.
+        </div>
+    </div>
+
+
+    <div class="rules">
+        👀 Baca soalan → pilih jawapan yang betul dalam fikiran →
+        ingat cup yang menyimpan A, B, C atau D →
+        ikut cup semasa dicampur → tekan cup jawapan anda.
+    </div>
+
 </div>
 
-<div id="gameContainer">
-<div id="game"></div>
 
-<div id="compass">
- <div id="dial">
-  <span class="dir n">U</span><span class="dir e">T</span>
-  <span class="dir s">S</span><span class="dir w">B</span>
-  <div id="needle"></div><div id="center"></div>
- </div>
- <div id="direction">U</div>
-</div>
-
-<div id="interact">🧰 Dekati peti dan tekan CARI</div>
-
-<div id="controls">
- <div id="joy"><div id="base"><div id="knob"></div></div></div>
- <button id="action">CARI<br>🧰</button>
-</div>
-
-<div class="modal" id="questionModal"><div class="card">
- <div class="head"><span class="badge" id="qNum"></span><span class="badge" id="tp"></span></div>
- <div id="qText"></div><div id="answers"></div><div id="status"></div>
-</div></div>
-
-<div class="modal" id="rewardModal"><div class="card">
- <div class="reward">🗝️ Petunjuk Baru!</div>
- <div id="nextClue"></div>
- <button class="btn" id="continueBtn">TERUSKAN JELAJAH</button>
-</div></div>
-
-<div class="modal" id="completeModal"><div class="card">
- <div class="reward">🏆 Misi Pekebun Selesai!</div>
- <div id="finishText">Tahniah! Kamu berjaya menjelajah Kampung Seri Hijau, membuka 25 peti dan menjawab semua soalan tumbuhan.</div>
- <button class="btn" id="restartBtn">🔄 MAIN SEMULA</button>
- <button class="btn" onclick="location.href='index.html'">🏠 HOME</button>
-</div></div>
-
-<div id="toast"></div>
-</div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 <script>
-/* ===================== QUESTIONS ===================== */
-const Q=[
-["TP2","Siti menunjuk bahagian tumbuhan yang lebar dan hijau. Bahagian itu ialah ____.","Batang|Akar|Daun|Bunga",2],
-["TP1","Bahagian tumbuhan yang disebut bersama bunga, daun dan akar ialah ____.","Sayap|Sirip|Kulit|Batang",3],
-["TP1","Apakah nama bahagian tumbuhan yang memegang daun dan bunga?","Batang|Bunga|Akar|Daun",0],
-["TP2","Bahagian yang boleh dilihat pada pokok keembung dan juga pokok bunga raya ialah ____.","Tanduk|Cangkerang|Daun|Sumbu",2],
-["TP1","Apakah bahagian tumbuhan yang boleh berkembang menjadi buah dan biji benih?","Daun|Bunga|Akar|Batang",1],
-["TP2","Nina mahu melabel bahagian pokok dari atas hingga bawah. Antara label yang sesuai ialah ____.","Sayap|Telinga|Sirip|Bunga",3],
-["TP2","Daun yang uratnya bergerak sehala dan hampir sejajar dikelaskan sebagai urat daun ____.","Tunjang|Serabut|Selari|Jejala",2],
-["TP1","Pokok durian dan pokok betik berbeza dari segi ____.","Jenis batang|Bilangan pasu|Jenis haiwan|Warna tanah",0],
-["TP1","Daun pokok pandan mempunyai urat daun ____.","Jejala|Selari|Serabut|Tunjang",1],
-["TP2","Jika akar tumbuhan menyerupai akar pokok pandan, jenis akarnya ialah ____.","Jejala|Tunjang|Berkayu|Serabut",3],
-["TP2","Apakah ciri yang digunakan untuk membezakan daun bunga ros dengan daun pandan?","Jejala atau selari|Berbunga atau tidak berbunga|Tunjang atau serabut|Berkayu atau tidak berkayu",0],
-["TP1","Daun pokok bunga ros mempunyai urat daun ____.","Tunjang|Selari|Jejala|Serabut",2],
-["TP1","Bahagian pembiakan tumbuhan ialah ____.","Daun|Bunga|Batang|Akar",1],
-["TP1","Bahagian tumbuhan manakah menghasilkan makanan yang kemudiannya diangkut oleh batang?","Akar|Buah|Daun|Bunga",2],
-["TP2","Bahagian manakah bekerja bersama dalam laluan air daripada tanah ke daun?","Akar dan batang|Buah dan biji benih sahaja|Daun dan bunga sahaja|Bunga dan buah",0],
-["TP1","Bahagian yang menyerap air dan nutrien daripada tanah ialah ____.","Bunga|Akar|Batang|Daun",1],
-["TP2","Jika makanan telah dihasilkan oleh daun, batang membawanya ke ____.","Akar sahaja|Bunga sahaja|Tanah sahaja|Semua bahagian tumbuhan",3],
-["TP2","Apakah dua fungsi akar yang dinyatakan dalam Unit 6?","Menyokong pokok dan menyerap air serta nutrien|Mengangkut makanan dan menjadi buah|Membuat makanan dan berbunga|Menghasilkan bunyi dan warna",0],
-["TP1","Bunga penting kerana boleh membentuk ____.","Akar dan tanah|Air dan nutrien|Batang dan daun|Buah dan biji benih",3],
-["TP2","Pokok A dan B mempunyai akar tunjang. Apakah ciri yang serupa?","Jenis bunga|Warna daun|Jenis akar|Jenis batang tidak berkayu",2],
-["TP1","Ciri yang boleh dibandingkan pada daun ialah jenis ____.","Bunga|Batang|Akar|Urat daun",3],
-["TP2","Jika dua tumbuhan berlainan sama-sama berakar tunjang, apakah persamaan mereka?","Warna pasu|Ciri akar|Saiz tanah|Ciri bunga sahaja",1],
-["TP1","Apakah persamaan kedua-dua pokok bunga raya dan bunga ros dari segi akar?","Akar tunjang|Batang tidak berkayu|Akar serabut|Urat jejala",0],
-["TP2","Jika dua pokok mempunyai daun berurat jejala tetapi nama pokok berbeza, kedua-duanya tetap mempunyai ____.","Akar yang pasti serabut|Tiada persamaan|Satu ciri yang serupa|Semua ciri yang sama",2],
-["TP1","Pokok yang berlainan tidak semestinya mempunyai semua ciri yang ____.","Sama sekali|Berbeza|Tiada|Hilang",1]
+/* =========================================================
+   SOALAN SET 4
+========================================================= */
+
+const QUESTIONS = [
+
+{
+    topic:"Kenali Bahagian Tumbuhan",
+    question:"Apakah nama bahagian tumbuhan yang kelihatan seperti kelopak pada pokok berbunga?",
+    options:{
+        A:"Daun",
+        B:"Batang",
+        C:"Akar",
+        D:"Bunga"
+    },
+    correct:"D"
+},
+
+{
+    topic:"Kenali Bahagian Tumbuhan",
+    question:"Apakah bahagian utama tumbuhan yang biasanya berada di dalam tanah?",
+    options:{
+        A:"Akar",
+        B:"Bunga",
+        C:"Batang",
+        D:"Daun"
+    },
+    correct:"A"
+},
+
+{
+    topic:"Kenali Bahagian Tumbuhan",
+    question:"Dalam gambar sebatang pokok, bahagian yang bercabang daripada batang dan berwarna hijau biasanya ialah ____.",
+    options:{
+        A:"Bunga",
+        B:"Tanah",
+        C:"Daun",
+        D:"Akar"
+    },
+    correct:"C"
+},
+
+{
+    topic:"Kenali Bahagian Tumbuhan",
+    question:"Antara berikut, yang manakah ialah bahagian tumbuhan?",
+    options:{
+        A:"Sirip",
+        B:"Telinga",
+        C:"Paruh",
+        D:"Akar"
+    },
+    correct:"D"
+},
+
+{
+    topic:"Kenali Bahagian Tumbuhan",
+    question:"Mira melihat bahagian tumbuhan yang cantik dan berwarna-warni. Bahagian itu ialah ____.",
+    options:{
+        A:"Daun",
+        B:"Bunga",
+        C:"Akar",
+        D:"Batang"
+    },
+    correct:"B"
+},
+
+{
+    topic:"Kenali Bahagian Tumbuhan",
+    question:"Ali memegang bahagian pokok yang keras dan tegak di tengah pokok. Bahagian itu ialah ____.",
+    options:{
+        A:"Daun",
+        B:"Akar",
+        C:"Batang",
+        D:"Bunga"
+    },
+    correct:"C"
+},
+
+{
+    topic:"Ciri Bahagian yang Berbeza",
+    question:"Jika akar tumbuhan menyerupai akar pokok bunga ros, jenis akarnya ialah ____.",
+    options:{
+        A:"Serabut",
+        B:"Tunjang",
+        C:"Jejala",
+        D:"Selari"
+    },
+    correct:"B"
+},
+
+{
+    topic:"Ciri Bahagian yang Berbeza",
+    question:"Faiz membandingkan durian dengan betik. Perbezaan yang betul ialah ____.",
+    options:{
+        A:"Durian tidak berkayu, betik berkayu",
+        B:"Kedua-duanya berakar serabut",
+        C:"Kedua-duanya tidak berkayu",
+        D:"Durian berkayu, betik tidak berkayu"
+    },
+    correct:"D"
+},
+
+{
+    topic:"Ciri Bahagian yang Berbeza",
+    question:"Urat daun jejala terdapat pada daun pokok ____.",
+    options:{
+        A:"Bunga ros",
+        B:"Paku pakis",
+        C:"Betik",
+        D:"Pandan"
+    },
+    correct:"A"
+},
+
+{
+    topic:"Ciri Bahagian yang Berbeza",
+    question:"Pokok bunga ros berbeza daripada pokok pandan dari segi urat daun. Bunga ros berurat ____.",
+    options:{
+        A:"Selari",
+        B:"Tunjang",
+        C:"Serabut",
+        D:"Jejala"
+    },
+    correct:"D"
+},
+
+{
+    topic:"Ciri Bahagian yang Berbeza",
+    question:"Pokok bunga ros mempunyai akar ____.",
+    options:{
+        A:"Jejala",
+        B:"Tunjang",
+        C:"Serabut",
+        D:"Selari"
+    },
+    correct:"B"
+},
+
+{
+    topic:"Ciri Bahagian yang Berbeza",
+    question:"Aina membandingkan daun bunga ros dengan daun pandan. Perbezaan yang betul ialah ____.",
+    options:{
+        A:"Bunga ros jejala, pandan selari",
+        B:"Kedua-duanya jejala",
+        C:"Bunga ros selari, pandan jejala",
+        D:"Kedua-duanya selari"
+    },
+    correct:"A"
+},
+
+{
+    topic:"Pentingnya Bahagian Tumbuhan",
+    question:"Antara berikut, yang manakah padanan fungsi yang betul?",
+    options:{
+        A:"Daun – menyerap air dari tanah",
+        B:"Batang – membuat makanan",
+        C:"Akar – menyerap air dan nutrien",
+        D:"Bunga – mengangkut air ke daun"
+    },
+    correct:"C"
+},
+
+{
+    topic:"Pentingnya Bahagian Tumbuhan",
+    question:"Apakah bahagian yang membawa air dan nutrien naik daripada akar?",
+    options:{
+        A:"Bunga",
+        B:"Batang",
+        C:"Buah",
+        D:"Daun"
+    },
+    correct:"B"
+},
+
+{
+    topic:"Pentingnya Bahagian Tumbuhan",
+    question:"Makanan yang dihasilkan daun digunakan oleh ____.",
+    options:{
+        A:"Tanah sahaja",
+        B:"Pasu sahaja",
+        C:"Batu di sekeliling pokok",
+        D:"Bahagian tumbuhan yang lain"
+    },
+    correct:"D"
+},
+
+{
+    topic:"Pentingnya Bahagian Tumbuhan",
+    question:"Apakah bahan yang diserap akar daripada tanah?",
+    options:{
+        A:"Air dan nutrien",
+        B:"Buah dan bunga",
+        C:"Warna dan bentuk",
+        D:"Cahaya dan bunyi"
+    },
+    correct:"A"
+},
+
+{
+    topic:"Pentingnya Bahagian Tumbuhan",
+    question:"Makanan tumbuhan dihasilkan oleh ____.",
+    options:{
+        A:"Bunga",
+        B:"Akar",
+        C:"Daun",
+        D:"Batang"
+    },
+    correct:"C"
+},
+
+{
+    topic:"Pentingnya Bahagian Tumbuhan",
+    question:"Mengapakah bunga penting kepada tumbuhan?",
+    options:{
+        A:"Bunga terlibat dalam pembiakan",
+        B:"Bunga menyerap air",
+        C:"Bunga membawa air dari akar",
+        D:"Bunga membuat tanah"
+    },
+    correct:"A"
+},
+
+{
+    topic:"Pentingnya Bahagian Tumbuhan",
+    question:"Jika pokok perlu menghasilkan buah dan biji benih, bahagian yang penting ialah ____.",
+    options:{
+        A:"Batang",
+        B:"Akar",
+        C:"Daun",
+        D:"Bunga"
+    },
+    correct:"D"
+},
+
+{
+    topic:"Berbeza Tapi Serupa",
+    question:"Ciri yang boleh dibandingkan pada batang ialah sama ada ____.",
+    options:{
+        A:"Jejala atau selari",
+        B:"Berkayu atau tidak berkayu",
+        C:"Berbunga atau tidak berbunga",
+        D:"Tunjang atau serabut"
+    },
+    correct:"B"
+},
+
+{
+    topic:"Berbeza Tapi Serupa",
+    question:"Selain sama-sama berbunga, bunga raya dan bunga ros juga sama-sama mempunyai urat daun ____.",
+    options:{
+        A:"Serabut",
+        B:"Selari",
+        C:"Jejala",
+        D:"Tunjang"
+    },
+    correct:"C"
+},
+
+{
+    topic:"Berbeza Tapi Serupa",
+    question:"Jika dua tumbuhan berlainan sama-sama berurat jejala, apakah kesimpulan yang betul?",
+    options:{
+        A:"Mereka pasti tidak berbunga",
+        B:"Mereka mempunyai persamaan pada urat daun",
+        C:"Mereka tiada akar",
+        D:"Mereka pasti tumbuhan yang sama"
+    },
+    correct:"B"
+},
+
+{
+    topic:"Berbeza Tapi Serupa",
+    question:"Jika dua tumbuhan berlainan sama-sama berbatang berkayu, apakah persamaan mereka?",
+    options:{
+        A:"Ciri pasu",
+        B:"Ciri tanah",
+        C:"Ciri buah",
+        D:"Ciri batang"
+    },
+    correct:"D"
+},
+
+{
+    topic:"Berbeza Tapi Serupa",
+    question:"Ciri yang boleh dibandingkan pada akar ialah jenis ____.",
+    options:{
+        A:"Akar",
+        B:"Buah",
+        C:"Urat daun",
+        D:"Bunga"
+    },
+    correct:"A"
+},
+
+{
+    topic:"Berbeza Tapi Serupa",
+    question:"Antara berikut, yang manakah persamaan bunga raya dan bunga ros?",
+    options:{
+        A:"Kedua-duanya berurat selari",
+        B:"Kedua-duanya berakar serabut",
+        C:"Kedua-duanya berakar tunjang",
+        D:"Kedua-duanya tidak berbunga"
+    },
+    correct:"C"
+}
+
 ];
 
-/* ===================== 25 CHESTS ===================== */
-const C=[
-[730,570,"Kebun Bunga Pekebun","Peti pertama berada di kebun bunga di sebelah kanan Rumah Pekebun."],
-[1080,455,"Kebun Sayur","Pergi ke kebun sayur dan cari peti berhampiran batas tanaman."],
-[1440,390,"Dusun Buah","Cari kawasan yang mempunyai banyak pokok buah."],
-[1880,430,"Kedai Kampung","Cari kedai dengan bumbung dan awning merah kuning."],
-[2270,430,"Bangsal Ladang","Bergerak ke timur sehingga kamu menemui bangsal merah."],
-[2690,650,"Hutan Timur","Terus ke timur dan cari peti di celah pokok."],
-[2500,850,"Padang Bunga Liar","Turun dari hutan dan cari kawasan bunga liar."],
-[1990,780,"Dataran Kampung","Kembali ke dataran kampung dan cari telaga."],
-[1500,810,"Rumah Hijau","Cari rumah tanaman berkaca di sebelah barat dataran."],
-[900,850,"Kolam Kampung","Pergi ke barat sehingga menjumpai kolam."],
-[450,1040,"Tebing Sungai Barat","Pergi ke selatan sehingga sampai ke tebing sungai."],
-[1500,1080,"Jambatan Kampung","Ikut sungai ke timur sehingga menjumpai jambatan kayu."],
-[2260,1050,"Tebing Sungai Timur","Teruskan perjalanan di sepanjang tebing timur."],
-[1500,1290,"Laluan Kampung Selatan","Lintasi jambatan dan cari laluan menuju Kampung Selatan."],
-[520,1450,"Ladang Barat","Pergi ke barat daya dan cari ladang tanah coklat."],
-[1000,1580,"Dusun Selatan","Cari pokok buah yang tersusun dalam barisan."],
-[1500,1580,"Kampung Selatan","Cari rumah-rumah di tengah Kampung Selatan."],
-[2050,1500,"Bukit Batu","Bergerak ke timur sehingga menjumpai kawasan berbatu."],
-[2550,1480,"Hutan Tenggara","Teruskan ke timur sehingga masuk ke hutan."],
-[2740,1820,"Taman Batu","Turun ke selatan sehingga menjumpai susunan batu."],
-[2300,1880,"Padang Bunga Selatan","Pergi ke barat dan cari padang bunga besar."],
-[1760,1850,"Pokok Tua","Cari pokok paling besar di kawasan selatan."],
-[1210,1880,"Runtuhan Lama","Pergi ke barat dari Pokok Tua dan cari runtuhan batu."],
-[650,1850,"Hutan Barat","Teruskan ke barat sehingga memasuki kawasan hutan."],
-[850,2070,"Taman Rahsia","Peti terakhir tersembunyi di taman bunga rahsia."]
-];
 
-const $=id=>document.getElementById(id);
-let scene,current=0,qOpen=false,reward=false,complete=false;
-const analog={x:0,y:0,on:false,id:null};
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
 
-/* ===================== JOYSTICK ===================== */
-const base=$("base"),knob=$("knob"),joy=$("joy");
-function moveJoy(x,y){
- const r=base.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
- let dx=x-cx,dy=y-cy,max=r.width*.31,d=Math.hypot(dx,dy);
- if(d>max){dx=dx/d*max;dy=dy/d*max}
- analog.x=Math.abs(dx/max)<.08?0:dx/max;
- analog.y=Math.abs(dy/max)<.08?0:dy/max;
- knob.style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;
-}
-function resetJoy(){analog.x=analog.y=0;analog.on=false;analog.id=null;knob.style.transform="translate(-50%,-50%)"}
-joy.onpointerdown=e=>{e.preventDefault();analog.on=true;analog.id=e.pointerId;try{joy.setPointerCapture(e.pointerId)}catch{}moveJoy(e.clientX,e.clientY)}
-joy.onpointermove=e=>{if(analog.on&&e.pointerId===analog.id)moveJoy(e.clientX,e.clientY)}
-joy.onpointerup=joy.onpointercancel=resetJoy;
+let currentQuestion = 0;
+let correctTotal = 0;
+let sceneRef = null;
+let gameFinished = false;
 
-/* ===================== PHASER ===================== */
-const game=new Phaser.Game({
- type:Phaser.AUTO,parent:"game",width:960,height:540,pixelArt:true,roundPixels:true,
- backgroundColor:"#76ad55",
- physics:{default:"arcade",arcade:{gravity:{y:0},debug:false}},
- scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH,width:960,height:540},
- scene:{create,update}
-});
 
-function create(){
- scene=this;
- this.physics.world.setBounds(0,0,3000,2200);
- this.cameras.main.setBounds(0,0,3000,2200);
- makeTextures(this);
- this.blockers=this.physics.add.staticGroup();
+/* =========================================================
+   HTML UI
+========================================================= */
 
- /* grass base */
- this.add.rectangle(1500,1100,3000,2200,0x79ad55).setDepth(-100);
+const questionText =
+    document.getElementById("questionText");
 
- /* grass patches */
- for(let i=0;i<380;i++){
-  let x=Phaser.Math.Between(25,2975),y=Phaser.Math.Between(25,2175);
-  this.add.image(x,y,Math.random()>.65?"grass2":"grass").setDepth(-95).setAlpha(.75);
- }
+const topicText =
+    document.getElementById("topicText");
 
- makeRoads(this);
- makeRiver(this);
+const optionsGrid =
+    document.getElementById("optionsGrid");
 
- /* TOP VILLAGE */
- makeHouse(this,430,355,0xe0b76d,0x805039,"RUMAH PEKEBUN");
- makeFlowerGarden(this,730,570,7,5); sign(this,730,680,"KEBUN BUNGA");
- makeFarm(this,1080,440,330,210); sign(this,1080,570,"KEBUN SAYUR");
- makeOrchard(this,1440,390); sign(this,1440,565,"DUSUN BUAH");
- makeHouse(this,1690,360,0xd99670,0x754331,"RUMAH PAK MAIL");
- makeShop(this,1900,420); sign(this,1900,590,"KEDAI KAMPUNG");
- makeBarn(this,2270,420); sign(this,2270,600,"BANGSAL LADANG");
+const progressText =
+    document.getElementById("progressText");
 
- /* square */
- this.add.ellipse(1990,790,360,250,0xd8bd82).setDepth(-20);
- makeWell(this,1990,780);
- makeBench(this,1850,870);makeBench(this,2130,870);
- sign(this,1990,970,"DATARAN KAMPUNG");
+const progressFill =
+    document.getElementById("progressFill");
 
- /* greenhouse */
- makeGreenhouse(this,1500,820);sign(this,1500,970,"RUMAH HIJAU");
+const scoreText =
+    document.getElementById("scoreText");
 
- /* pond */
- makePond(this,900,850);sign(this,900,1015,"KOLAM KAMPUNG");
+const statusText =
+    document.getElementById("statusText");
 
- /* decorative NPC */
- this.add.image(600,700,"npc").setDepth(700);
- this.add.text(600,742,"Pak Kebun",{font:"bold 9px monospace",color:"#fff",stroke:"#36522e",strokeThickness:4}).setOrigin(.5).setDepth(750);
+const finishOverlay =
+    document.getElementById("finishOverlay");
 
- /* SOUTH */
- makeFarm(this,520,1450,460,250);sign(this,520,1620,"LADANG BARAT");
- makeOrchard(this,1000,1580);sign(this,1000,1750,"DUSUN SELATAN");
- makeHouse(this,1430,1580,0xd69a61,0x754331,"");
- makeHouse(this,1610,1580,0xd37c67,0x68402e,"");
- sign(this,1520,1760,"KAMPUNG SELATAN");
+const restartBtn =
+    document.getElementById("restartBtn");
 
- makeRockHill(this,2050,1500);sign(this,2050,1650,"BUKIT BATU");
- makeFlowerGarden(this,2300,1880,10,6);sign(this,2300,2020,"PADANG BUNGA");
- this.add.image(1760,1850,"giantTree").setDepth(1900);block(this,1760,1900,95,45);sign(this,1760,2070,"POKOK TUA");
- makeRuins(this,1210,1880);sign(this,1210,2020,"RUNTUHAN LAMA");
- makeStoneGarden(this,2740,1820);sign(this,2740,1970,"TAMAN BATU");
- makeFlowerGarden(this,850,2070,9,5);sign(this,850,2170,"TAMAN RAHSIA");
 
- makeForests(this);
-
- /* map title */
- this.add.text(1500,520,"✿ KAMPUNG SERI HIJAU ✿",{
-  fontFamily:"monospace",fontSize:"25px",fontStyle:"bold",
-  color:"#fff4ba",stroke:"#385c2e",strokeThickness:8
- }).setOrigin(.5).setDepth(999);
-
- /* CHESTS */
- this.chests=C.map((c,i)=>{
-  const chest=this.add.image(c[0],c[1],"chest").setVisible(i===0).setDepth(c[1]+30);
-  return chest;
- });
- animateChest(this,this.chests[0]);
-
- /* PLAYER */
- this.shadow=this.add.ellipse(550,565,35,12,0x25321c,.25);
- this.player=this.physics.add.sprite(550,540,"player").setCollideWorldBounds(true);
- this.player.body.setSize(22,18).setOffset(15,38);
- this.physics.add.collider(this.player,this.blockers);
-
- this.cameras.main.startFollow(this.player,true,.12,.12);
- this.cameras.main.setZoom(1.15);
-
- this.cursors=this.input.keyboard.createCursorKeys();
- this.keys=this.input.keyboard.addKeys("W,A,S,D");
- this.input.keyboard.on("keydown-E",()=>searchChest(this));
- this.input.keyboard.on("keydown-SPACE",()=>searchChest(this));
-
- hud();
- toast("🌿 Cari peti pertama di Kebun Bunga!");
+function setStatus(text){
+    statusText.textContent = text;
 }
 
-/* ===================== MOVEMENT ===================== */
-function update(){
- if(!this.player)return;
- if(qOpen||reward||complete){this.player.setVelocity(0);return}
 
- let dx=analog.x,dy=analog.y;
- if(this.cursors.left.isDown||this.keys.A.isDown)dx--;
- if(this.cursors.right.isDown||this.keys.D.isDown)dx++;
- if(this.cursors.up.isDown||this.keys.W.isDown)dy--;
- if(this.cursors.down.isDown||this.keys.S.isDown)dy++;
+function updateHTMLQuestion(){
 
- let mag=Math.hypot(dx,dy);
- if(mag>.05){
-  if(mag>1){dx/=mag;dy/=mag}
-  this.player.setVelocity(dx*185,dy*185);
-  this.player.setFlipX(dx<-.08?true:dx>.08?false:this.player.flipX);
-  this.player.angle=Math.sin(this.time.now*.02)*1.5;
+    const q = QUESTIONS[currentQuestion];
 
-  let angle=(Phaser.Math.RadToDeg(Math.atan2(dx,-dy))+360)%360;
-  $("needle").style.transform=`rotate(${angle}deg)`;
-  $("direction").textContent=["U","UT","T","ST","S","SB","B","UB"][Math.round(angle/45)%8];
- }else{
-  this.player.setVelocity(0);this.player.angle=0;
- }
+    topicText.textContent = q.topic;
 
- this.player.setDepth(this.player.y+30);
- this.shadow.setPosition(this.player.x,this.player.y+23).setDepth(this.player.y+10);
+    questionText.textContent =
+        `${currentQuestion + 1}. ${q.question}`;
 
- const chest=this.chests[current];
- if(chest?.visible){
-  const d=Phaser.Math.Distance.Between(this.player.x,this.player.y,chest.x,chest.y);
-  $("interact").style.display=d<82?"block":"none";
- }else $("interact").style.display="none";
+    optionsGrid.innerHTML = "";
+
+    ["A","B","C","D"].forEach(letter=>{
+
+        const item =
+            document.createElement("div");
+
+        item.className = "option-item";
+
+        item.innerHTML = `
+            <div class="option-letter">
+                ${letter}
+            </div>
+
+            <div>
+                ${q.options[letter]}
+            </div>
+        `;
+
+        optionsGrid.appendChild(item);
+    });
+
+
+    progressText.textContent =
+        `Soalan ${currentQuestion + 1} / ${QUESTIONS.length}`;
+
+    scoreText.textContent =
+        `Betul: ${correctTotal}`;
+
+    progressFill.style.width =
+        `${((currentQuestion + 1) / QUESTIONS.length) * 100}%`;
 }
 
-$("action").onpointerdown=e=>{e.preventDefault();if(scene)searchChest(scene)};
 
-/* ===================== QUESTIONS ===================== */
-function searchChest(s){
- if(qOpen||reward||complete)return;
- const c=s.chests[current];
- if(Phaser.Math.Distance.Between(s.player.x,s.player.y,c.x,c.y)<=82)openQuestion(s);
- else toast("🔎 Ikut petunjuk untuk mencari peti!");
+/* =========================================================
+   PHASER GAME
+========================================================= */
+
+class CupFindScene extends Phaser.Scene{
+
+    constructor(){
+
+        super({
+            key:"CupFindScene"
+        });
+
+        this.cups = [];
+
+        this.canChoose = false;
+
+        this.shuffleRound = 0;
+
+        this.shuffleCount = 10;
+
+        this.baseY = 330;
+
+        this.slotPositions = [
+            100,
+            273,
+            447,
+            620
+        ];
+
+    }
+
+
+    create(){
+
+        sceneRef = this;
+
+        this.createBackground();
+
+        this.createInstructionPanel();
+
+        this.time.delayedCall(
+            350,
+            ()=>{
+                this.startQuestion();
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       BACKGROUND
+    ===================================================== */
+
+    createBackground(){
+
+        this.cameras.main.setBackgroundColor("#dff0b2");
+
+
+        /* LAND */
+
+        const land = this.add.graphics();
+
+        land.fillStyle(
+            0xd3b477,
+            1
+        );
+
+        land.fillRect(
+            0,
+            230,
+            720,
+            330
+        );
+
+
+        /* BACK HILLS */
+
+        const hills =
+            this.add.graphics();
+
+        hills.fillStyle(
+            0x9bc66d,
+            1
+        );
+
+        hills.fillCircle(
+            80,
+            245,
+            120
+        );
+
+        hills.fillCircle(
+            230,
+            255,
+            145
+        );
+
+        hills.fillCircle(
+            440,
+            245,
+            150
+        );
+
+        hills.fillCircle(
+            650,
+            250,
+            130
+        );
+
+
+        /* SECOND HILL LAYER */
+
+        hills.fillStyle(
+            0xb8db87,
+            1
+        );
+
+        hills.fillCircle(
+            0,
+            260,
+            110
+        );
+
+        hills.fillCircle(
+            170,
+            265,
+            100
+        );
+
+        hills.fillCircle(
+            360,
+            260,
+            125
+        );
+
+        hills.fillCircle(
+            560,
+            265,
+            110
+        );
+
+        hills.fillCircle(
+            720,
+            260,
+            100
+        );
+
+
+        /* TABLE */
+
+        const table =
+            this.add.graphics();
+
+        table.fillStyle(
+            0xb9804f,
+            1
+        );
+
+        table.fillRoundedRect(
+            20,
+            290,
+            680,
+            215,
+            30
+        );
+
+        table.lineStyle(
+            7,
+            0x7d5233,
+            1
+        );
+
+        table.strokeRoundedRect(
+            20,
+            290,
+            680,
+            215,
+            30
+        );
+
+
+        /* TABLE WOOD DETAILS */
+
+        table.lineStyle(
+            3,
+            0x986640,
+            .35
+        );
+
+        for(let y=325;y<490;y+=40){
+
+            table.lineBetween(
+                40,
+                y,
+                680,
+                y
+            );
+
+        }
+
+
+        /* PLANTS */
+
+        this.createPlant(
+            45,
+            235,
+            .9
+        );
+
+        this.createPlant(
+            670,
+            230,
+            1
+        );
+
+        this.createPlant(
+            120,
+            250,
+            .65
+        );
+
+        this.createPlant(
+            605,
+            252,
+            .7
+        );
+
+
+        /* SMALL FLOWERS */
+
+        this.createFlower(
+            190,
+            258,
+            0xffc3d8
+        );
+
+        this.createFlower(
+            535,
+            260,
+            0xffd261
+        );
+
+        this.createFlower(
+            340,
+            250,
+            0xeab5ff
+        );
+
+
+        /* SPARKLES */
+
+        for(let i=0;i<18;i++){
+
+            const sparkle =
+                this.add.circle(
+                    Phaser.Math.Between(
+                        20,
+                        700
+                    ),
+                    Phaser.Math.Between(
+                        30,
+                        210
+                    ),
+                    Phaser.Math.Between(
+                        2,
+                        4
+                    ),
+                    0xffffff,
+                    Phaser.Math.FloatBetween(
+                        .25,
+                        .65
+                    )
+                );
+
+            this.tweens.add({
+
+                targets:sparkle,
+
+                alpha:{
+                    from:.15,
+                    to:.8
+                },
+
+                duration:
+                    Phaser.Math.Between(
+                        700,
+                        1500
+                    ),
+
+                yoyo:true,
+                repeat:-1
+
+            });
+
+        }
+
+    }
+
+
+    createPlant(x,y,scale){
+
+        const pot =
+            this.add.graphics();
+
+        pot.fillStyle(
+            0xc66e47,
+            1
+        );
+
+        pot.fillRoundedRect(
+            x - 22 * scale,
+            y + 25 * scale,
+            44 * scale,
+            35 * scale,
+            8 * scale
+        );
+
+        pot.fillStyle(
+            0x9a4e38,
+            1
+        );
+
+        pot.fillRect(
+            x - 27 * scale,
+            y + 21 * scale,
+            54 * scale,
+            10 * scale
+        );
+
+
+        const stem =
+            this.add.graphics();
+
+        stem.lineStyle(
+            6 * scale,
+            0x4c853f,
+            1
+        );
+
+        stem.lineBetween(
+            x,
+            y + 25 * scale,
+            x,
+            y - 26 * scale
+        );
+
+
+        const leaves =
+            this.add.graphics();
+
+        leaves.fillStyle(
+            0x63a94f,
+            1
+        );
+
+        leaves.fillEllipse(
+            x - 14 * scale,
+            y - 8 * scale,
+            30 * scale,
+            17 * scale
+        );
+
+        leaves.fillEllipse(
+            x + 14 * scale,
+            y - 18 * scale,
+            31 * scale,
+            18 * scale
+        );
+
+        leaves.fillEllipse(
+            x - 10 * scale,
+            y - 31 * scale,
+            27 * scale,
+            18 * scale
+        );
+
+    }
+
+
+    createFlower(x,y,color){
+
+        const g =
+            this.add.graphics();
+
+        g.fillStyle(
+            color,
+            1
+        );
+
+        for(let i=0;i<5;i++){
+
+            const a =
+                (Math.PI * 2 / 5) * i;
+
+            g.fillCircle(
+                x + Math.cos(a) * 9,
+                y + Math.sin(a) * 9,
+                7
+            );
+
+        }
+
+        g.fillStyle(
+            0xffd74c,
+            1
+        );
+
+        g.fillCircle(
+            x,
+            y,
+            6
+        );
+
+    }
+
+
+    createInstructionPanel(){
+
+        const panel =
+            this.add.graphics();
+
+        panel.fillStyle(
+            0xffffff,
+            .9
+        );
+
+        panel.fillRoundedRect(
+            105,
+            32,
+            510,
+            104,
+            22
+        );
+
+        panel.lineStyle(
+            4,
+            0x71955c,
+            1
+        );
+
+        panel.strokeRoundedRect(
+            105,
+            32,
+            510,
+            104,
+            22
+        );
+
+
+        this.instructionTitle =
+            this.add.text(
+                360,
+                55,
+                "INGAT JAWAPAN!",
+                {
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+
+                    fontSize:"26px",
+
+                    fontStyle:"bold",
+
+                    color:"#41633e"
+                }
+            );
+
+        this.instructionTitle
+            .setOrigin(.5);
+
+
+        this.instructionText =
+            this.add.text(
+                360,
+                95,
+                "Lihat huruf di bawah cup sebelum ia ditutup.",
+                {
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+
+                    fontSize:"17px",
+
+                    fontStyle:"bold",
+
+                    color:"#687a5c",
+
+                    align:"center",
+
+                    wordWrap:{
+                        width:460
+                    }
+                }
+            );
+
+        this.instructionText
+            .setOrigin(.5);
+
+    }
+
+
+    /* =====================================================
+       START QUESTION
+    ===================================================== */
+
+    startQuestion(){
+
+        if(gameFinished){
+            return;
+        }
+
+        this.canChoose = false;
+
+        updateHTMLQuestion();
+
+        setStatus(
+            "👀 Ingat kedudukan jawapan A, B, C dan D."
+        );
+
+        this.instructionTitle
+            .setText(
+                "INGAT JAWAPAN!"
+            );
+
+        this.instructionText
+            .setText(
+                "Lihat huruf di bawah cup sebelum ia ditutup."
+            );
+
+
+        this.destroyCups();
+
+        this.buildCups();
+
+
+        /* SHOW ANSWERS FIRST */
+
+        this.cups.forEach(
+            cup=>{
+
+                cup.cupPart.y = -125;
+
+            }
+        );
+
+
+        this.time.delayedCall(
+            2200,
+            ()=>{
+
+                this.coverAnswers();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       CREATE CUP
+    ===================================================== */
+
+    buildCups(){
+
+        const answers =
+            ["A","B","C","D"];
+
+        answers.forEach(
+            (letter,index)=>{
+
+                const cup =
+                    this.createCup(
+                        this.slotPositions[index],
+                        this.baseY,
+                        letter,
+                        index
+                    );
+
+                this.cups.push(cup);
+
+            }
+        );
+
+    }
+
+
+    createCup(
+        x,
+        y,
+        answerLetter,
+        slot
+    ){
+
+        const group =
+            this.add.container(
+                x,
+                y
+            );
+
+
+        /* ===============================================
+           ANSWER CARD UNDER CUP
+        =============================================== */
+
+        const answerContainer =
+            this.add.container(
+                0,
+                35
+            );
+
+
+        const answerBg =
+            this.add.graphics();
+
+        this.drawAnswerCard(
+            answerBg,
+            "normal"
+        );
+
+
+        const answerText =
+            this.add.text(
+                0,
+                0,
+                answerLetter,
+                {
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+
+                    fontSize:"53px",
+
+                    fontStyle:"bold",
+
+                    color:"#35593c"
+                }
+            );
+
+        answerText.setOrigin(.5);
+
+
+        answerContainer.add([
+            answerBg,
+            answerText
+        ]);
+
+
+        /* ===============================================
+           CUP GRAPHICS
+        =============================================== */
+
+        const cupPart =
+            this.add.container(
+                0,
+                0
+            );
+
+
+        /* CUP SHADOW */
+
+        const shadow =
+            this.add.ellipse(
+                0,
+                87,
+                124,
+                22,
+                0x55391f,
+                .22
+            );
+
+
+        /* CUP BODY */
+
+        const body =
+            this.add.graphics();
+
+        body.fillStyle(
+            0xe95f4e,
+            1
+        );
+
+        body.lineStyle(
+            5,
+            0xa93931,
+            1
+        );
+
+
+        body.beginPath();
+
+        body.moveTo(
+            -46,
+            -72
+        );
+
+        body.lineTo(
+            46,
+            -72
+        );
+
+        body.lineTo(
+            63,
+            72
+        );
+
+        body.lineTo(
+            -63,
+            72
+        );
+
+        body.closePath();
+
+        body.fillPath();
+
+        body.strokePath();
+
+
+        /* HIGHLIGHT */
+
+        body.fillStyle(
+            0xff8c75,
+            .68
+        );
+
+        body.fillRoundedRect(
+            -31,
+            -55,
+            15,
+            101,
+            8
+        );
+
+
+        /* CUP TOP */
+
+        body.fillStyle(
+            0xf9826e,
+            1
+        );
+
+        body.fillEllipse(
+            0,
+            -72,
+            92,
+            22
+        );
+
+        body.lineStyle(
+            4,
+            0xa93931,
+            1
+        );
+
+        body.strokeEllipse(
+            0,
+            -72,
+            92,
+            22
+        );
+
+
+        /* CUP BOTTOM RIM */
+
+        body.fillStyle(
+            0xc8443b,
+            1
+        );
+
+        body.fillRoundedRect(
+            -68,
+            67,
+            136,
+            20,
+            10
+        );
+
+        body.lineStyle(
+            4,
+            0x96322e,
+            1
+        );
+
+        body.strokeRoundedRect(
+            -68,
+            67,
+            136,
+            20,
+            10
+        );
+
+
+        /* CUP ICON */
+
+        const leaf =
+            this.add.text(
+                0,
+                -5,
+                "🌿",
+                {
+                    fontSize:"31px"
+                }
+            );
+
+        leaf.setOrigin(.5);
+
+
+        cupPart.add([
+            shadow,
+            body,
+            leaf
+        ]);
+
+
+        /* answer goes first = behind cup */
+
+        group.add([
+            answerContainer,
+            cupPart
+        ]);
+
+
+        /* ===============================================
+           HIT AREA
+        =============================================== */
+
+        group.setSize(
+            150,
+            190
+        );
+
+        group.setInteractive(
+            new Phaser.Geom.Rectangle(
+                -75,
+                -95,
+                150,
+                190
+            ),
+            Phaser.Geom.Rectangle.Contains
+        );
+
+
+        group.on(
+            "pointerover",
+            ()=>{
+
+                if(!this.canChoose){
+                    return;
+                }
+
+                this.tweens.add({
+
+                    targets:group,
+
+                    scaleX:1.06,
+                    scaleY:1.06,
+
+                    duration:100
+
+                });
+
+            }
+        );
+
+
+        group.on(
+            "pointerout",
+            ()=>{
+
+                this.tweens.add({
+
+                    targets:group,
+
+                    scaleX:1,
+                    scaleY:1,
+
+                    duration:100
+
+                });
+
+            }
+        );
+
+
+        group.on(
+            "pointerdown",
+            ()=>{
+
+                this.chooseCup(
+                    cupObject
+                );
+
+            }
+        );
+
+
+        const cupObject = {
+
+            group:group,
+
+            cupPart:cupPart,
+
+            answerContainer:
+                answerContainer,
+
+            answerBg:
+                answerBg,
+
+            answerText:
+                answerText,
+
+            answer:
+                answerLetter,
+
+            slot:
+                slot
+
+        };
+
+
+        return cupObject;
+
+    }
+
+
+    drawAnswerCard(
+        graphics,
+        type
+    ){
+
+        graphics.clear();
+
+
+        let fill =
+            0xfff7cf;
+
+        let border =
+            0xd8ab50;
+
+
+        if(type === "correct"){
+
+            fill =
+                0xcff2bd;
+
+            border =
+                0x4d9b4c;
+
+        }
+
+
+        if(type === "wrong"){
+
+            fill =
+                0xffc4be;
+
+            border =
+                0xd7483e;
+
+        }
+
+
+        graphics.fillStyle(
+            fill,
+            1
+        );
+
+        graphics.fillRoundedRect(
+            -58,
+            -56,
+            116,
+            112,
+            20
+        );
+
+
+        graphics.lineStyle(
+            5,
+            border,
+            1
+        );
+
+        graphics.strokeRoundedRect(
+            -58,
+            -56,
+            116,
+            112,
+            20
+        );
+
+    }
+
+
+    /* =====================================================
+       COVER
+    ===================================================== */
+
+    coverAnswers(){
+
+        if(gameFinished){
+            return;
+        }
+
+        setStatus(
+            "🥤 Cup sedang menutup jawapan..."
+        );
+
+
+        this.instructionTitle
+            .setText(
+                "SEDIA!"
+            );
+
+        this.instructionText
+            .setText(
+                "Cup akan mula dicampur."
+            );
+
+
+        let completed = 0;
+
+
+        this.cups.forEach(
+            cup=>{
+
+                this.tweens.add({
+
+                    targets:
+                        cup.cupPart,
+
+                    y:0,
+
+                    duration:420,
+
+                    ease:"Back.easeOut",
+
+                    onComplete:()=>{
+
+                        completed++;
+
+                        if(
+                            completed ===
+                            this.cups.length
+                        ){
+
+                            this.time.delayedCall(
+                                350,
+                                ()=>{
+                                    this.startShuffle();
+                                }
+                            );
+
+                        }
+
+                    }
+
+                });
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       SHUFFLE
+    ===================================================== */
+
+    startShuffle(){
+
+        if(gameFinished){
+            return;
+        }
+
+        this.canChoose = false;
+
+        this.shuffleRound = 0;
+
+
+        setStatus(
+            "🔀 Ikut cup pilihan anda! Jangan hilang fokus."
+        );
+
+
+        this.instructionTitle
+            .setText(
+                "CUP SEDANG DICAMPUR!"
+            );
+
+        this.instructionText
+            .setText(
+                "Ikut cup yang menyimpan jawapan anda."
+            );
+
+
+        this.shuffleStep();
+
+    }
+
+
+    shuffleStep(){
+
+        if(gameFinished){
+            return;
+        }
+
+
+        if(
+            this.shuffleRound >=
+            this.shuffleCount
+        ){
+
+            this.finishShuffle();
+
+            return;
+        }
+
+
+        this.shuffleRound++;
+
+
+        let first =
+            Phaser.Math.Between(
+                0,
+                3
+            );
+
+        let second =
+            Phaser.Math.Between(
+                0,
+                3
+            );
+
+
+        while(second === first){
+
+            second =
+                Phaser.Math.Between(
+                    0,
+                    3
+                );
+
+        }
+
+
+        const cupA =
+            this.cups[first];
+
+        const cupB =
+            this.cups[second];
+
+
+        const xA =
+            cupA.group.x;
+
+        const xB =
+            cupB.group.x;
+
+
+        const slotA =
+            cupA.slot;
+
+        const slotB =
+            cupB.slot;
+
+
+        /* Alternate which cup appears on top */
+
+        if(
+            this.shuffleRound % 2 === 0
+        ){
+
+            cupA.group.setDepth(20);
+            cupB.group.setDepth(19);
+
+        }else{
+
+            cupA.group.setDepth(19);
+            cupB.group.setDepth(20);
+
+        }
+
+
+        const duration =
+            Math.max(
+                150,
+                270 -
+                this.shuffleRound * 9
+            );
+
+
+        /* CUP A */
+
+        this.tweens.add({
+
+            targets:
+                cupA.group,
+
+            x:xB,
+
+            duration:
+                duration,
+
+            ease:
+                "Sine.easeInOut",
+
+            onComplete:()=>{
+
+                cupA.slot =
+                    slotB;
+
+                cupB.slot =
+                    slotA;
+
+
+                cupA.group
+                    .setDepth(10);
+
+                cupB.group
+                    .setDepth(10);
+
+
+                this.time.delayedCall(
+                    65,
+                    ()=>{
+
+                        this.shuffleStep();
+
+                    }
+                );
+
+            }
+
+        });
+
+
+        /* CUP B */
+
+        this.tweens.add({
+
+            targets:
+                cupB.group,
+
+            x:xA,
+
+            duration:
+                duration,
+
+            ease:
+                "Sine.easeInOut"
+
+        });
+
+
+        /* LITTLE HOP A */
+
+        this.tweens.add({
+
+            targets:
+                cupA.group,
+
+            y:
+                this.baseY - 24,
+
+            duration:
+                duration / 2,
+
+            yoyo:true,
+
+            ease:
+                "Sine.easeOut"
+
+        });
+
+
+        /* LITTLE HOP B */
+
+        this.tweens.add({
+
+            targets:
+                cupB.group,
+
+            y:
+                this.baseY + 15,
+
+            duration:
+                duration / 2,
+
+            yoyo:true,
+
+            ease:
+                "Sine.easeInOut"
+
+        });
+
+    }
+
+
+    finishShuffle(){
+
+        this.canChoose = true;
+
+
+        this.cups.forEach(
+            cup=>{
+
+                cup.group.setDepth(10);
+
+            }
+        );
+
+
+        this.instructionTitle
+            .setText(
+                "PILIH CUP!"
+            );
+
+        this.instructionText
+            .setText(
+                "Tekan cup yang menyimpan jawapan betul."
+            );
+
+
+        setStatus(
+            "👆 Sekarang tekan cup jawapan anda!"
+        );
+
+    }
+
+
+    /* =====================================================
+       PLAYER CHOICE
+    ===================================================== */
+
+    chooseCup(cup){
+
+        if(
+            !this.canChoose ||
+            gameFinished
+        ){
+
+            return;
+        }
+
+
+        this.canChoose = false;
+
+
+        this.cups.forEach(
+            item=>{
+
+                item.group
+                    .setScale(1);
+
+                item.group
+                    .disableInteractive();
+
+            }
+        );
+
+
+        const q =
+            QUESTIONS[currentQuestion];
+
+
+        const isCorrect =
+            cup.answer === q.correct;
+
+
+        if(isCorrect){
+
+            this.handleCorrect(
+                cup
+            );
+
+        }else{
+
+            this.handleWrong(
+                cup
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       CORRECT
+    ===================================================== */
+
+    handleCorrect(cup){
+
+        this.drawAnswerCard(
+            cup.answerBg,
+            "correct"
+        );
+
+
+        this.tweens.add({
+
+            targets:
+                cup.cupPart,
+
+            y:-130,
+
+            duration:350,
+
+            ease:
+                "Back.easeOut"
+
+        });
+
+
+        this.tweens.add({
+
+            targets:
+                cup.group,
+
+            scaleX:1.1,
+            scaleY:1.1,
+
+            duration:180,
+
+            yoyo:true,
+
+            repeat:1
+
+        });
+
+
+        setStatus(
+            `✅ Betul! Jawapannya ${cup.answer}.`
+        );
+
+
+        this.instructionTitle
+            .setText(
+                "BETUL! 🎉"
+            );
+
+        this.instructionText
+            .setText(
+                `Jawapan ${cup.answer} berjaya ditemui.`
+            );
+
+
+        correctTotal++;
+
+
+        scoreText.textContent =
+            `Betul: ${correctTotal}`;
+
+
+        this.createMiniConfetti(
+            cup.group.x,
+            235
+        );
+
+
+        this.time.delayedCall(
+            1300,
+            ()=>{
+
+                currentQuestion++;
+
+
+                if(
+                    currentQuestion >=
+                    QUESTIONS.length
+                ){
+
+                    this.finishGame();
+
+                }else{
+
+                    this.startQuestion();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       WRONG
+    ===================================================== */
+
+    handleWrong(cup){
+
+        const q =
+            QUESTIONS[currentQuestion];
+
+
+        this.drawAnswerCard(
+            cup.answerBg,
+            "wrong"
+        );
+
+
+        this.tweens.add({
+
+            targets:
+                cup.cupPart,
+
+            y:-130,
+
+            duration:320,
+
+            ease:
+                "Back.easeOut"
+
+        });
+
+
+        this.tweens.add({
+
+            targets:
+                cup.group,
+
+            x:
+                cup.group.x - 8,
+
+            duration:60,
+
+            yoyo:true,
+
+            repeat:4
+
+        });
+
+
+        setStatus(
+            `❌ Itu jawapan ${cup.answer}. Cuba perhatikan jawapan yang betul.`
+        );
+
+
+        this.instructionTitle
+            .setText(
+                "BELUM TEPAT"
+            );
+
+        this.instructionText
+            .setText(
+                `Jawapan betul ialah ${q.correct}.`
+            );
+
+
+        /* Reveal the correct cup */
+
+        const correctCup =
+            this.cups.find(
+                item=>
+                    item.answer ===
+                    q.correct
+            );
+
+
+        if(
+            correctCup &&
+            correctCup !== cup
+        ){
+
+            this.time.delayedCall(
+                450,
+                ()=>{
+
+                    this.drawAnswerCard(
+                        correctCup.answerBg,
+                        "correct"
+                    );
+
+
+                    this.tweens.add({
+
+                        targets:
+                            correctCup.cupPart,
+
+                        y:-130,
+
+                        duration:350,
+
+                        ease:
+                            "Back.easeOut"
+
+                    });
+
+                }
+            );
+
+        }
+
+
+        /* Retry same question */
+
+        this.time.delayedCall(
+            2100,
+            ()=>{
+
+                setStatus(
+                    "🔁 Cuba lagi. Kedudukan cup akan dicampur semula."
+                );
+
+
+                this.startQuestion();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       CONFETTI
+    ===================================================== */
+
+    createMiniConfetti(
+        x,
+        y
+    ){
+
+        const symbols =
+            [
+                "🌿",
+                "🌼",
+                "✨",
+                "🍃",
+                "⭐"
+            ];
+
+
+        for(
+            let i=0;
+            i<14;
+            i++
+        ){
+
+            const symbol =
+                Phaser.Utils.Array.GetRandom(
+                    symbols
+                );
+
+
+            const piece =
+                this.add.text(
+                    x,
+                    y,
+                    symbol,
+                    {
+                        fontSize:
+                            Phaser.Math.Between(
+                                16,
+                                27
+                            ) + "px"
+                    }
+                );
+
+            piece.setOrigin(.5);
+
+            piece.setDepth(50);
+
+
+            this.tweens.add({
+
+                targets:
+                    piece,
+
+                x:
+                    x +
+                    Phaser.Math.Between(
+                        -160,
+                        160
+                    ),
+
+                y:
+                    y +
+                    Phaser.Math.Between(
+                        -170,
+                        30
+                    ),
+
+                angle:
+                    Phaser.Math.Between(
+                        -180,
+                        180
+                    ),
+
+                alpha:0,
+
+                duration:
+                    Phaser.Math.Between(
+                        700,
+                        1200
+                    ),
+
+                ease:
+                    "Quad.easeOut",
+
+                onComplete:()=>{
+
+                    piece.destroy();
+
+                }
+
+            });
+
+        }
+
+    }
+
+
+    /* =====================================================
+       DESTROY CURRENT CUPS
+    ===================================================== */
+
+    destroyCups(){
+
+        this.cups.forEach(
+            cup=>{
+
+                if(
+                    cup.group &&
+                    cup.group.active
+                ){
+
+                    cup.group.destroy(
+                        true
+                    );
+
+                }
+
+            }
+        );
+
+
+        this.cups = [];
+
+    }
+
+
+    /* =====================================================
+       FINISH GAME
+    ===================================================== */
+
+    finishGame(){
+
+        gameFinished = true;
+
+        this.canChoose = false;
+
+
+        progressFill.style.width =
+            "100%";
+
+        progressText.textContent =
+            "25 / 25 Selesai";
+
+        scoreText.textContent =
+            `Betul: ${correctTotal}`;
+
+
+        setStatus(
+            "🏆 Tahniah! Semua soalan telah berjaya diselesaikan."
+        );
+
+
+        this.instructionTitle
+            .setText(
+                "MISI SELESAI! 🏆"
+            );
+
+        this.instructionText
+            .setText(
+                "Anda berjaya menjawab semua soalan."
+            );
+
+
+        this.bigCelebration();
+
+
+        this.time.delayedCall(
+            700,
+            ()=>{
+
+                finishOverlay
+                    .classList
+                    .add(
+                        "show"
+                    );
+
+            }
+        );
+
+    }
+
+
+    bigCelebration(){
+
+        const symbols =
+            [
+                "🌼",
+                "🌿",
+                "⭐",
+                "✨",
+                "🍃",
+                "🌸"
+            ];
+
+
+        for(
+            let i=0;
+            i<45;
+            i++
+        ){
+
+            const symbol =
+                Phaser.Utils.Array.GetRandom(
+                    symbols
+                );
+
+
+            const x =
+                Phaser.Math.Between(
+                    20,
+                    700
+                );
+
+
+            const piece =
+                this.add.text(
+                    x,
+                    -30,
+                    symbol,
+                    {
+                        fontSize:
+                            Phaser.Math.Between(
+                                18,
+                                34
+                            ) + "px"
+                    }
+                );
+
+            piece.setDepth(100);
+
+
+            this.tweens.add({
+
+                targets:
+                    piece,
+
+                y:
+                    Phaser.Math.Between(
+                        500,
+                        650
+                    ),
+
+                x:
+                    x +
+                    Phaser.Math.Between(
+                        -70,
+                        70
+                    ),
+
+                angle:
+                    Phaser.Math.Between(
+                        -400,
+                        400
+                    ),
+
+                duration:
+                    Phaser.Math.Between(
+                        1600,
+                        2800
+                    ),
+
+                delay:
+                    Phaser.Math.Between(
+                        0,
+                        900
+                    ),
+
+                ease:
+                    "Linear",
+
+                onComplete:()=>{
+
+                    piece.destroy();
+
+                }
+
+            });
+
+        }
+
+    }
+
 }
 
-function openQuestion(s){
- resetJoy();qOpen=true;s.player.setVelocity(0);s.physics.pause();$("interact").style.display="none";
- const q=Q[current];
- $("qNum").textContent=`Soalan ${current+1} / 25`;
- $("tp").textContent=q[0];$("qText").textContent=q[1];$("answers").innerHTML="";$("status").textContent="";
- q[2].split("|").forEach((option,i)=>{
-  const b=document.createElement("button");
-  b.className="answer";b.innerHTML=`<b>${"ABCD"[i]}.</b> ${option}`;
-  b.onclick=()=>checkAnswer(s,b,i);
-  $("answers").appendChild(b);
- });
- $("questionModal").style.display="flex";
-}
 
-function checkAnswer(s,b,i){
- const q=Q[current];
- if(i!==q[3]){
-  b.classList.add("wrong");$("status").textContent="❌ Belum tepat. Cuba lagi.";$("status").style.color="#9c3028";
-  setTimeout(()=>b.classList.remove("wrong"),450);return;
- }
- b.classList.add("correct");
- $("answers").querySelectorAll("button").forEach(x=>x.disabled=true);
- $("status").textContent="✅ Betul! Peti berjaya dibuka.";$("status").style.color="#39712e";
- setTimeout(()=>finishQuestion(s),600);
-}
+/* =========================================================
+   PHASER CONFIG
+========================================================= */
 
-function finishQuestion(s){
- $("questionModal").style.display="none";qOpen=false;
- const old=s.chests[current];s.tweens.killTweensOf(old);old.setTexture("chestOpen");
+const gameConfig = {
 
- if(current===24){
-  complete=true;s.physics.resume();$("completeModal").style.display="flex";return;
- }
+    type:
+        Phaser.AUTO,
 
- current++;
- const chest=s.chests[current];chest.setVisible(true);animateChest(s,chest);hud();
+    parent:
+        "game-container",
 
- $("nextClue").innerHTML=`<b>📍 ${C[current][2]}</b><br><br>${C[current][3]}`;
- reward=true;$("rewardModal").style.display="flex";
-}
+    width:
+        720,
 
-$("continueBtn").onclick=()=>{
- $("rewardModal").style.display="none";reward=false;resetJoy();scene.physics.resume()
+    height:
+        560,
+
+    backgroundColor:
+        "#dff0b2",
+
+    transparent:
+        false,
+
+    render:{
+
+        antialias:true,
+
+        pixelArt:false,
+
+        roundPixels:false
+
+    },
+
+    scale:{
+
+        mode:
+            Phaser.Scale.FIT,
+
+        autoCenter:
+            Phaser.Scale.CENTER_BOTH,
+
+        width:
+            720,
+
+        height:
+            560
+
+    },
+
+    input:{
+
+        activePointers:
+            3
+
+    },
+
+    scene:[
+        CupFindScene
+    ]
+
 };
 
-$("restartBtn").onclick=()=>{
- current=0;qOpen=reward=complete=false;resetJoy();
- $("questionModal").style.display=$("rewardModal").style.display=$("completeModal").style.display="none";
- scene.scene.restart()
-};
-
-function hud(){
- $("num").textContent=current+1;
- $("area").textContent="📍 "+C[current][2];
- $("clue").textContent=C[current][3];
-}
-function animateChest(s,c){s.tweens.add({targets:c,y:c.y-5,duration:650,yoyo:true,repeat:-1,ease:"Sine.easeInOut"})}
-
-let toastTimer;
-function toast(t){
- $("toast").textContent=t;$("toast").classList.add("show");clearTimeout(toastTimer);
- toastTimer=setTimeout(()=>$("toast").classList.remove("show"),1700)
-}
-
-/* ===================== WORLD ===================== */
-function makeRoads(s){
- // main road shadows
- s.add.rectangle(1500,615,2470,176,0xb88c55).setDepth(-82);
- s.add.rectangle(1500,610,2450,152,0xd8b77b).setDepth(-81);
- s.add.rectangle(1500,900,175,700,0xb88c55).setDepth(-82);
- s.add.rectangle(1500,900,150,700,0xd8b77b).setDepth(-81);
- s.add.rectangle(1500,1510,2570,175,0xb88c55).setDepth(-82);
- s.add.rectangle(1500,1510,2550,150,0xd3ac70).setDepth(-81);
-
- for(let i=0;i<130;i++){
-  const x=Phaser.Math.Between(250,2750),y=Phaser.Math.Between(550,1580);
-  s.add.image(x,y,"pebble").setDepth(-79).setAlpha(.55);
- }
-}
-
-function makeRiver(s){
- s.add.rectangle(1500,1120,3000,205,0x347f9c).setDepth(-65);
- s.add.rectangle(1500,1120,3000,175,0x4ca6bf).setDepth(-64);
- s.add.rectangle(1500,1110,3000,135,0x64bed0).setDepth(-63);
-
- for(let x=25;x<3000;x+=80)
-  s.add.rectangle(x,1080+Phaser.Math.Between(-35,75),Phaser.Math.Between(28,55),3,0xb3e8e9,.7).setDepth(-62);
-
- // river bank
- for(let x=20;x<3000;x+=55){
-  s.add.image(x,1019,"riverRock").setDepth(-61);
-  s.add.image(x,1220,"riverRock").setDepth(-61);
- }
-
- // bridge
- s.add.rectangle(1500,1120,205,230,0x684323).setDepth(-45);
- for(let y=1025;y<=1215;y+=25){
-  s.add.rectangle(1500,y,180,20,0xb97a3e).setDepth(-44);
-  s.add.rectangle(1500,y-7,180,3,0xd69a57).setDepth(-43);
- }
- s.add.rectangle(1408,1120,9,225,0x62401f).setDepth(-42);
- s.add.rectangle(1592,1120,9,225,0x62401f).setDepth(-42);
-
- block(s,700,1120,1400,175);
- block(s,2350,1120,1300,175);
-}
-
-function makeHouse(s,x,y,wall,roof,name){
- s.add.ellipse(x+5,y+76,220,55,0x26341f,.18).setDepth(y-2);
- s.add.rectangle(x,y+25,185,118,wall).setDepth(y);
- s.add.rectangle(x,y+72,185,10,0xa66f42).setDepth(y+1);
-
- // timber lines
- s.add.rectangle(x-72,y+25,7,115,0xc18a51).setDepth(y+1);
- s.add.rectangle(x+72,y+25,7,115,0xc18a51).setDepth(y+1);
-
- s.add.triangle(x,y-76,0,102,94,0,188,102,roof).setDepth(y+3);
- s.add.rectangle(x,y-18,202,28,roof).setDepth(y+3);
-
- // roof highlight
- s.add.triangle(x,y-67,18,88,94,10,170,88,0x966144).setDepth(y+4).setAlpha(.45);
-
- // windows
- windowGraphic(s,x-53,y+18,y+5);windowGraphic(s,x+53,y+18,y+5);
-
- // door
- s.add.rectangle(x,y+54,38,68,0x684226).setDepth(y+6);
- s.add.rectangle(x+11,y+55,4,4,0xe9bd52).setDepth(y+7);
-
- // chimney
- s.add.rectangle(x+55,y-65,22,42,0x79503b).setDepth(y+2);
-
- // flower pots
- s.add.image(x-78,y+80,"pot").setDepth(y+9);
- s.add.image(x+78,y+80,"pot").setDepth(y+9);
-
- block(s,x,y+40,190,105);
- if(name)sign(s,x,y+145,name);
-}
-
-function windowGraphic(s,x,y,d){
- s.add.rectangle(x,y,42,38,0x674a35).setDepth(d);
- s.add.rectangle(x,y,32,28,0x91d6de).setDepth(d+1);
- s.add.rectangle(x,y,3,28,0xf5e6bd).setDepth(d+2);
- s.add.rectangle(x,y,32,3,0xf5e6bd).setDepth(d+2);
- s.add.rectangle(x-8,y-7,7,7,0xdaf6ee,.6).setDepth(d+3);
-}
-
-function makeShop(s,x,y){
- s.add.ellipse(x,y+80,240,55,0x26341f,.17);
- s.add.rectangle(x,y+28,210,125,0xe0c17a).setDepth(y);
- s.add.rectangle(x,y-48,230,54,0x714431).setDepth(y+2);
- for(let i=0;i<6;i++)s.add.rectangle(x-85+i*34,y-8,34,25,i%2?0xf4d986:0xdd6250).setDepth(y+3);
- windowGraphic(s,x-65,y+35,y+5);windowGraphic(s,x+65,y+35,y+5);
- s.add.rectangle(x,y+58,40,65,0x70482c).setDepth(y+6);
- block(s,x,y+40,215,115);
-}
-
-function makeBarn(s,x,y){
- s.add.ellipse(x,y+90,250,60,0x26341f,.17);
- s.add.rectangle(x,y+35,220,150,0xb94f3e).setDepth(y);
- s.add.triangle(x,y-85,0,110,110,0,220,110,0x713d2e).setDepth(y+2);
- s.add.rectangle(x,y+55,90,100,0x694126).setDepth(y+3);
- s.add.rectangle(x,y+55,7,95,0xc28a51).setDepth(y+4);
- s.add.rectangle(x,y+55,84,7,0xc28a51).setDepth(y+4);
- s.add.rectangle(x-68,y+22,38,34,0xf0d99c).setDepth(y+3);
- block(s,x,y+45,225,140);
-}
-
-function makeFarm(s,x,y,w,h){
- // border
- s.add.rectangle(x,y,w+20,h+20,0x76502d).setDepth(-10);
- s.add.rectangle(x,y,w,h,0x9b6638).setDepth(-9);
-
- for(let yy=y-h/2+28;yy<y+h/2-5;yy+=40){
-  s.add.rectangle(x,yy,w-22,16,0x704520).setDepth(-7);
-  s.add.rectangle(x,yy-5,w-22,3,0xb77d45).setDepth(-6);
-  for(let xx=x-w/2+30;xx<x+w/2-20;xx+=46)
-   s.add.image(xx,yy-8,"crop").setDepth(yy);
- }
-
- // corner posts
- [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>
-  s.add.image(x+a*(w/2+4),y+b*(h/2+4),"fencePost").setDepth(y+h/2+20)
- );
-}
-
-function makeFlowerGarden(s,x,y,cols,rows){
- // patches
- s.add.ellipse(x,y,cols*34+60,rows*29+50,0x6e9d4b,.45).setDepth(-15);
- const colors=["flowerPink","flowerYellow","flowerBlue"];
- for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
-  s.add.image(
-   x+(c-(cols-1)/2)*32+Phaser.Math.Between(-3,3),
-   y+(r-(rows-1)/2)*27+Phaser.Math.Between(-3,3),
-   colors[(r+c)%colors.length]
-  ).setDepth(y+r*28);
- }
-}
-
-function makeOrchard(s,x,y){
- for(let r=0;r<2;r++)for(let c=0;c<4;c++){
-  const tx=x-135+c*90,ty=y-45+r*115;
-  s.add.image(tx,ty,"fruitTree").setDepth(ty);
-  block(s,tx,ty+28,38,28);
- }
-}
-
-function makeGreenhouse(s,x,y){
- s.add.ellipse(x,y+75,280,55,0x26341f,.13);
- s.add.rectangle(x,y+15,240,140,0xb5e1ce,.72).setDepth(y);
- s.add.triangle(x,y-95,0,65,120,0,240,65,0x9fd2bc,.82).setDepth(y+1);
- for(let i=-2;i<=2;i++)s.add.rectangle(x+i*45,y+15,4,135,0x547b65).setDepth(y+2);
- s.add.rectangle(x,y+15,235,4,0x547b65).setDepth(y+2);
- s.add.rectangle(x,y+55,40,60,0x75a78c,.7).setDepth(y+3);
- block(s,x,y+25,240,125);
-}
-
-function makePond(s,x,y){
- s.add.ellipse(x,y+4,420,270,0x416d4d).setDepth(-20);
- s.add.ellipse(x,y,390,240,0x398fa1).setDepth(-19);
- s.add.ellipse(x,y-5,350,200,0x63bcc7).setDepth(-18);
- s.add.ellipse(x-40,y-35,130,45,0x9edee0,.32).setDepth(-17);
-
- for(let i=0;i<14;i++){
-  const a=i/14*Math.PI*2;
-  s.add.image(x+Math.cos(a)*202,y+Math.sin(a)*128,"riverRock").setDepth(y+Math.sin(a)*128);
- }
-
- // lily pads
- [[-90,-25],[65,30],[105,-35],[-20,50]].forEach(([a,b],i)=>{
-  s.add.ellipse(x+a,y+b,30,15,0x4c9b4a).setDepth(-15);
-  if(i===1)s.add.image(x+a,y+b-6,"flowerPink").setScale(.65).setDepth(-14);
- });
-}
-
-function makeWell(s,x,y){
- s.add.ellipse(x,y+15,112,68,0x62645f).setDepth(y);
- s.add.ellipse(x,y+8,82,42,0x253a40).setDepth(y+1);
- for(let i=0;i<7;i++)s.add.rectangle(x-42+i*14,y+20,12,14,0x89877d).setDepth(y+2);
- s.add.rectangle(x-48,y-42,9,105,0x704627).setDepth(y+3);
- s.add.rectangle(x+48,y-42,9,105,0x704627).setDepth(y+3);
- s.add.rectangle(x,y-91,120,16,0x81522c).setDepth(y+4);
- s.add.triangle(x,y-112,0,40,60,0,120,40,0x9b5538).setDepth(y+5);
- block(s,x,y+15,105,60);
-}
-
-function makeBench(s,x,y){
- s.add.rectangle(x,y,90,14,0x8e5c2e).setDepth(y);
- s.add.rectangle(x,y-19,90,12,0xa26b36).setDepth(y);
- s.add.rectangle(x-30,y+17,8,30,0x63401f).setDepth(y+1);
- s.add.rectangle(x+30,y+17,8,30,0x63401f).setDepth(y+1);
-}
-
-function makeRockHill(s,x,y){
- s.add.ellipse(x,y+30,370,230,0x66834d,.45).setDepth(-12);
- for(let i=0;i<18;i++)
-  s.add.image(x+Phaser.Math.Between(-150,150),y+Phaser.Math.Between(-85,85),i%4===0?"rockBig":"rock").setDepth(y+Phaser.Math.Between(-80,90));
-}
-
-function makeRuins(s,x,y){
- s.add.rectangle(x,y+50,320,150,0x66834d,.35).setDepth(-10);
- for(let i=0;i<6;i++)s.add.image(x-130+i*52,y+60,"ruin").setDepth(y+65);
- for(let i=0;i<3;i++){
-  s.add.image(x-135,y-55+i*45,"ruin").setDepth(y+i);
-  s.add.image(x+135,y-55+i*45,"ruin").setDepth(y+i);
- }
-}
-
-function makeStoneGarden(s,x,y){
- for(let i=0;i<12;i++){
-  const a=i/12*Math.PI*2;
-  s.add.image(x+Math.cos(a)*120,y+Math.sin(a)*85,i%3===0?"rockBig":"rock").setDepth(y+Math.sin(a)*85);
- }
-}
-
-function makeForests(s){
- // North tree line
- for(let x=80;x<2950;x+=110)worldTree(s,x,95+Phaser.Math.Between(-12,12));
-
- // east
- forestPatch(s,2690,680,5,5,95,115);
- // south-east
- forestPatch(s,2570,1480,5,4,100,110);
- // west
- for(let y=700;y<2100;y+=115)worldTree(s,100+Phaser.Math.Between(-8,8),y);
- // south-west
- forestPatch(s,480,1900,5,4,95,105);
-}
-
-function forestPatch(s,cx,cy,cols,rows,gx,gy){
- for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
-  const x=cx+(c-(cols-1)/2)*gx+Phaser.Math.Between(-9,9);
-  const y=cy+(r-(rows-1)/2)*gy+Phaser.Math.Between(-9,9);
-  worldTree(s,x,y);
- }
-}
-
-function worldTree(s,x,y){
- s.add.image(x,y,"tree").setDepth(y);
- block(s,x,y+28,38,28);
- // occasional bush
- if(Math.random()>.65)s.add.image(x+Phaser.Math.Between(-35,35),y+45,"bush").setDepth(y+45);
-}
-
-function sign(s,x,y,text){
- const width=Math.max(88,text.length*7);
- s.add.rectangle(x,y+18,7,40,0x674323).setDepth(y);
- s.add.rectangle(x,y,width,27,0x8e5e32).setDepth(y+1);
- s.add.rectangle(x,y-8,width-8,3,0xb77d46).setDepth(y+2);
- s.add.text(x,y,text,{font:"bold 9px monospace",color:"#fff0b1"}).setOrigin(.5).setDepth(y+3);
-}
-
-function block(s,x,y,w,h){
- const b=s.blockers.create(x,y,"block");
- b.setDisplaySize(w,h).setVisible(false).refreshBody();
-}
-
-/* ===================== TEXTURES ===================== */
-function makeTextures(s){
- let g=s.add.graphics();
-
- const tex=(name,w,h)=>{g.generateTexture(name,w,h);g.clear()};
-
- g.fillStyle(0xffffff).fillRect(0,0,4,4);tex("block",4,4);
-
- // grass 1
- g.fillStyle(0x43833a).fillRect(5,5,2,9).fillRect(2,8,2,5).fillRect(8,7,2,5);
- g.fillStyle(0x65a74c).fillRect(6,3,2,6);tex("grass",12,14);
-
- // grass 2
- g.fillStyle(0x5a9944).fillRect(4,6,2,7).fillRect(8,4,2,9);
- g.fillStyle(0xd6d35d).fillRect(7,2,3,3);tex("grass2",13,14);
-
- // pebble
- g.fillStyle(0x9c754c).fillEllipse(5,4,8,5);g.fillStyle(0xc49a68).fillEllipse(4,3,4,2);tex("pebble",10,8);
-
- // player
- g.fillStyle(0x25351f).fillEllipse(26,50,31,8);
- g.fillStyle(0x533723).fillRect(10,44,11,7).fillRect(29,44,11,7);
- g.fillStyle(0x3e6e8e).fillRect(12,28,27,18);
- g.fillStyle(0x68a858).fillRect(9,25,33,10);
- g.fillStyle(0xf0bc87).fillRect(13,11,24,17).fillRect(6,28,6,13).fillRect(42,28,6,13);
- g.fillStyle(0x573823).fillRect(14,8,22,6);
- g.fillStyle(0x2a271e).fillRect(17,17,3,3).fillRect(30,17,3,3);
- g.fillStyle(0xd98d77).fillRect(23,22,5,2);
- g.fillStyle(0xe7bd50).fillRect(6,5,39,7).fillRect(12,0,27,9);
- g.fillStyle(0x8c5a2b).fillRect(12,7,27,3);
- tex("player",52,55);
-
- // NPC
- g.fillStyle(0x553a26).fillRect(10,39,9,6).fillRect(24,39,9,6);
- g.fillStyle(0x718449).fillRect(9,22,25,19);
- g.fillStyle(0xe9b783).fillRect(10,10,23,14);
- g.fillStyle(0xd6aa49).fillRect(4,6,35,6).fillRect(10,0,23,9);
- g.fillStyle(0x30291f).fillRect(14,15,2,3).fillRect(27,15,2,3);
- tex("npc",43,46);
-
- // chest
- g.fillStyle(0x342114).fillRect(1,12,49,29);
- g.fillStyle(0x9d5d26).fillRect(4,9,43,28);
- g.fillStyle(0xd08b35).fillRect(7,11,37,8);
- g.fillStyle(0x5e381c).fillRect(4,18,43,6);
- g.fillStyle(0xf2c14d).fillRect(21,18,9,14);
- g.fillStyle(0xffe77a).fillRect(23,20,5,5);
- tex("chest",52,43);
-
- // open chest
- g.fillStyle(0x342114).fillRect(2,21,48,20);
- g.fillStyle(0xa86529).fillRect(5,21,42,17);
- g.fillStyle(0x5e381c).fillRect(6,3,40,9).fillRect(4,10,44,7);
- g.fillStyle(0xffd75c).fillRect(12,17,29,5);
- tex("chestOpen",52,44);
-
- // tree
- drawTree(g,false);tex("tree",84,104);
- drawTree(g,true);tex("fruitTree",84,104);
-
- // giant tree
- g.fillStyle(0x55371f).fillRect(70,105,50,100).fillRect(45,130,50,20).fillRect(100,130,50,20);
- g.fillStyle(0x1f5a2b).fillCircle(95,75,73);
- g.fillStyle(0x327a35).fillCircle(48,76,45).fillCircle(143,76,45).fillCircle(95,34,50);
- g.fillStyle(0x4d9640).fillCircle(65,45,22).fillCircle(125,52,22);
- tex("giantTree",195,208);
-
- // flowers
- flowerTex(g,0xef719a,0xffb2c7);tex("flowerPink",19,26);
- flowerTex(g,0xf0c94d,0xffe887);tex("flowerYellow",19,26);
- flowerTex(g,0x739ee8,0xaec8ff);tex("flowerBlue",19,26);
-
- // crop
- g.fillStyle(0x2f7135).fillRect(9,8,3,18);
- g.fillStyle(0x65ad49).fillTriangle(10,15,0,7,8,20).fillTriangle(12,14,22,6,13,20);
- g.fillStyle(0x8ac45b).fillTriangle(11,11,4,3,10,16);
- tex("crop",23,27);
-
- // rock
- g.fillStyle(0x565b57).fillRect(4,16,37,18);
- g.fillStyle(0x7e837d).fillTriangle(4,17,14,5,25,17).fillTriangle(17,17,29,2,42,17);
- g.fillStyle(0xa6aca3).fillRect(13,10,8,4);
- tex("rock",46,36);
-
- g.fillStyle(0x4f5551).fillRect(3,22,58,25);
- g.fillStyle(0x767c75).fillTriangle(3,24,18,5,34,24).fillTriangle(24,24,42,1,61,24);
- g.fillStyle(0xa5aaa2).fillRect(16,12,13,5);
- tex("rockBig",64,49);
-
- // river rock
- g.fillStyle(0x69736c).fillEllipse(10,7,19,12);
- g.fillStyle(0x909b91).fillEllipse(8,5,10,5);
- tex("riverRock",21,14);
-
- // bush
- g.fillStyle(0x245f2e).fillCircle(19,20,17).fillCircle(38,19,18).fillCircle(29,10,17);
- g.fillStyle(0x438b3e).fillCircle(17,13,9).fillCircle(36,12,8);
- tex("bush",58,43);
-
- // fence post
- g.fillStyle(0x684326).fillRect(4,3,9,34);
- g.fillStyle(0xa46e3b).fillTriangle(4,4,8,0,13,4);
- tex("fencePost",17,38);
-
- // ruins
- g.fillStyle(0x656861).fillRect(2,6,42,31);
- g.fillStyle(0x898d84).fillRect(4,4,18,15).fillRect(24,8,18,14);
- g.fillStyle(0xa6aaa0).fillRect(7,7,10,4);
- tex("ruin",46,39);
-
- // pot
- g.fillStyle(0x8d4d2d).fillRect(3,9,18,14);
- g.fillStyle(0xb8673a).fillRect(1,6,22,6);
- g.fillStyle(0x3e8138).fillRect(10,0,3,9);
- g.fillStyle(0x6eb04d).fillCircle(7,3,5).fillCircle(15,3,5);
- tex("pot",24,24);
-
- g.destroy();
-}
-
-function drawTree(g,fruit){
- g.fillStyle(0x51351f).fillRect(33,59,18,40);
- g.fillStyle(0x235e2d).fillCircle(42,43,35);
- g.fillStyle(0x367d37).fillCircle(23,40,23).fillCircle(61,40,23).fillCircle(42,22,24);
- g.fillStyle(0x4c9741).fillCircle(27,27,12).fillCircle(53,25,11);
- g.fillStyle(0x69aa4c).fillCircle(22,23,6).fillCircle(49,17,7);
- if(fruit){
-  g.fillStyle(0xd84e3d);
-  [[25,29],[54,31],[63,49],[37,52],[44,13]].forEach(p=>g.fillCircle(p[0],p[1],4));
-  g.fillStyle(0xf08c4e);g.fillCircle(25,28,2).fillCircle(54,30,2);
- }
-}
-
-function flowerTex(g,c1,c2){
- g.fillStyle(0x347a37).fillRect(8,11,3,15);
- g.fillStyle(c1).fillCircle(9,4,4).fillCircle(4,9,4).fillCircle(14,9,4).fillCircle(9,14,4);
- g.fillStyle(c2).fillCircle(7,6,2);
- g.fillStyle(0xf4d34d).fillCircle(9,9,3);
-}
-
-/* ===================== RESPONSIVE ROTATION ===================== */
-let resizeTimer;
-function resizeGame(){
- clearTimeout(resizeTimer);
- resizeTimer=setTimeout(()=>{
-  resetJoy();
-  game.scale.refresh();
-  window.scrollTo(0,0);
- },120);
-}
-window.addEventListener("resize",resizeGame);
-window.addEventListener("orientationchange",()=>{
- resetJoy();
- setTimeout(resizeGame,100);
- setTimeout(resizeGame,350);
-});
-window.visualViewport?.addEventListener("resize",resizeGame);
+
+const game =
+    new Phaser.Game(
+        gameConfig
+    );
+
+
+/* =========================================================
+   RESTART
+========================================================= */
+
+restartBtn.addEventListener(
+    "click",
+    ()=>{
+
+        finishOverlay
+            .classList
+            .remove(
+                "show"
+            );
+
+
+        currentQuestion = 0;
+
+        correctTotal = 0;
+
+        gameFinished = false;
+
+
+        if(sceneRef){
+
+            sceneRef.scene.restart();
+
+        }
+
+
+        setStatus(
+            "Perhatikan jawapan di bawah setiap cup."
+        );
+
+    }
+);
+
+
+/* Prevent unwanted mobile zoom */
+
+document.addEventListener(
+    "gesturestart",
+    event=>{
+        event.preventDefault();
+    }
+);
+
 </script>
+
 </body>
 </html>
