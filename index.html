@@ -3,4406 +3,7369 @@
 <head>
 <meta charset="UTF-8">
 
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1,
-  maximum-scale=1, user-scalable=no, viewport-fit=cover"
->
+<meta name="viewport"
+content="width=device-width,
+initial-scale=1,
+maximum-scale=1,
+user-scalable=no,
+viewport-fit=cover">
 
-<title>Kampung Harta Karun — Kenali Tumbuhan</title>
+<title>Kampung Seri Hijau — Misi Harta Tumbuhan</title>
 
 <style>
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
+
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #14261e;
-  font-family: Arial, Helvetica, sans-serif;
-  touch-action: none;
+html,body{
+    margin:0;
+    width:100%;
+    min-height:100%;
+    font-family:"Trebuchet MS",Arial,sans-serif;
+    background:
+    linear-gradient(
+        135deg,
+        #cce8ae,
+        #97c870
+    );
 }
 
-body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overscroll-behavior: none;
+html{
+    height:100%;
 }
 
-/* =========================================================
-   GAME SHELL
-========================================================= */
+body{
+    min-height:100vh;
+    min-height:100svh;
+    min-height:100dvh;
 
-#game-shell {
-  position: relative;
-  width: min(1180px, 100vw);
-  height: min(760px, 100dvh);
-  overflow: hidden;
-  background: #75c96a;
-  border-radius: 24px;
-  box-shadow:
-    0 18px 50px rgba(0,0,0,.35),
-    inset 0 0 0 1px rgba(255,255,255,.15);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    padding:
+    max(14px, env(safe-area-inset-top))
+    max(14px, env(safe-area-inset-right))
+    max(14px, env(safe-area-inset-bottom))
+    max(14px, env(safe-area-inset-left));
+
+    overflow:auto;
 }
 
-#game-shell canvas {
-  display: block;
-  width: 100% !important;
-  height: 100% !important;
+/* =====================================================
+   OUTER GAME SHELL
+===================================================== */
+
+#gameShell{
+
+    width:min(
+        980px,
+        calc(100vw - 20px)
+    );
+
+    background:#f6e4ad;
+
+    border:4px solid #674326;
+
+    border-radius:18px;
+
+    padding:9px;
+
+    box-shadow:
+    0 7px 0 #8d6338,
+    0 18px 35px rgba(0,0,0,.20);
 }
 
-/* Tablet / phone */
-@media (max-width: 900px), (max-height: 760px) {
-  #game-shell {
-    width: 100vw;
-    height: 100dvh;
-    border-radius: 0;
-  }
+/* =====================================================
+   TOP UI
+===================================================== */
+
+#topUI{
+
+    display:grid;
+
+    grid-template-columns:
+    auto
+    1fr
+    auto;
+
+    gap:7px;
+
+    margin-bottom:8px;
 }
 
-/* =========================================================
-   LOADING
-========================================================= */
+.uiBox{
 
-#loading {
-  position: absolute;
-  inset: 0;
-  z-index: 1000;
+    background:#fff6cf;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    border:3px solid #684621;
 
-  background:
-    radial-gradient(circle at center, #b9ec91 0%, #62b85e 55%, #315b3c 100%);
+    border-radius:12px;
 
-  color: white;
-  font-weight: 900;
-  font-size: clamp(18px, 3vw, 28px);
-  text-align: center;
-
-  transition: opacity .35s ease;
+    box-shadow:
+    0 3px 0 #976832;
 }
 
-#loading.hide {
-  opacity: 0;
-  pointer-events: none;
+#homeBox{
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:4px;
 }
 
-/* =========================================================
-   HUD
-========================================================= */
+#homeBtn{
 
-.hud-card {
-  position: absolute;
-  z-index: 50;
+    border:0;
+    background:transparent;
 
-  background: rgba(255,255,255,.94);
-  color: #244032;
+    padding:7px 9px;
 
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.22);
+    color:#50331d;
 
-  border: 2px solid rgba(255,255,255,.75);
+    font-size:12px;
+    font-weight:1000;
 
-  backdrop-filter: blur(6px);
+    cursor:pointer;
 }
 
-#quest-card {
-  left: calc(12px + env(safe-area-inset-left));
-  top: calc(12px + env(safe-area-inset-top));
+#clueBox{
 
-  width: min(355px, calc(100% - 120px));
+    padding:7px 10px;
 
-  padding: 12px 14px;
+    min-width:0;
 }
 
-.quest-title {
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: .8px;
-  color: #628b3f;
-  margin-bottom: 4px;
+#clueTitle{
+
+    font-size:9px;
+
+    font-weight:1000;
+
+    color:#9d692e;
 }
 
-#quest-text {
-  font-size: clamp(12px, 1.55vw, 15px);
-  line-height: 1.35;
-  font-weight: 700;
+#clueArea{
+
+    margin-top:2px;
+
+    color:#39702f;
+
+    font-size:12px;
+
+    font-weight:1000;
 }
 
-#progress {
-  margin-top: 7px;
-  font-size: 11px;
-  font-weight: 900;
-  color: #986d27;
+#clueText{
+
+    margin-top:2px;
+
+    color:#443721;
+
+    font-size:10px;
+
+    font-weight:800;
+
+    line-height:1.25;
 }
 
-/* =========================================================
-   COMPASS
-========================================================= */
+#progressBox{
 
-#compass-card {
-  right: calc(12px + env(safe-area-inset-right));
-  top: calc(12px + env(safe-area-inset-top));
+    display:flex;
 
-  width: 104px;
-  height: 126px;
+    align-items:center;
+    justify-content:center;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+    padding:7px 10px;
 
-  padding: 7px;
+    color:#4c311c;
+
+    font-size:11px;
+
+    font-weight:1000;
+
+    white-space:nowrap;
 }
 
-.compass-ring {
-  position: relative;
+/* =====================================================
+   GAME VIEWPORT
+===================================================== */
 
-  width: 76px;
-  height: 76px;
+#gameContainer{
 
-  border-radius: 50%;
+    position:relative;
 
-  background:
-    radial-gradient(circle, #fffdf1 0%, #f5e4ae 62%, #d3a94c 100%);
+    width:100%;
 
-  border: 4px solid #8e6828;
+    aspect-ratio:16 / 9;
 
-  box-shadow:
-    inset 0 0 0 2px rgba(255,255,255,.6),
-    0 4px 10px rgba(0,0,0,.2);
+    overflow:hidden;
+
+    background:#75ab55;
+
+    border:4px solid #54361f;
+
+    border-radius:14px;
+
+    box-shadow:
+    inset 0 0 0 2px #bd8448;
+
+    touch-action:none;
 }
 
-.compass-label {
-  position: absolute;
-  font-size: 9px;
-  font-weight: 900;
-  color: #503d1e;
+#game{
+
+    position:absolute;
+
+    inset:0;
+
+    width:100%;
+    height:100%;
 }
 
-.compass-n {
-  left: 50%;
-  top: 3px;
-  transform: translateX(-50%);
+#game canvas{
+
+    display:block;
+
+    width:100% !important;
+
+    height:100% !important;
+
+    image-rendering:pixelated;
+
+    image-rendering:crisp-edges;
 }
 
-.compass-e {
-  right: 3px;
-  top: 50%;
-  transform: translateY(-50%);
+/* =====================================================
+   INTERACTION PROMPT
+===================================================== */
+
+#interact{
+
+    position:absolute;
+
+    z-index:35;
+
+    left:50%;
+
+    bottom:105px;
+
+    transform:translateX(-50%);
+
+    display:none;
+
+    background:#fff0a7;
+
+    border:3px solid #67441f;
+
+    border-radius:999px;
+
+    padding:6px 11px;
+
+    color:#4c301b;
+
+    font-size:10px;
+
+    font-weight:1000;
+
+    white-space:nowrap;
+
+    box-shadow:
+    0 4px 0 #80532a;
 }
 
-.compass-s {
-  left: 50%;
-  bottom: 3px;
-  transform: translateX(-50%);
+/* =====================================================
+   CONTROLS
+===================================================== */
+
+#controls{
+
+    position:absolute;
+
+    z-index:40;
+
+    left:11px;
+    right:11px;
+    bottom:10px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-end;
+
+    pointer-events:none;
 }
 
-.compass-w {
-  left: 3px;
-  top: 50%;
-  transform: translateY(-50%);
+/* =====================================================
+   ANALOG JOYSTICK
+===================================================== */
+
+#analogWrap{
+
+    width:104px;
+    height:104px;
+
+    border-radius:50%;
+
+    background:rgba(
+        255,
+        245,
+        201,
+        .82
+    );
+
+    border:3px solid #61401f;
+
+    box-shadow:
+    0 4px 0 rgba(74,45,23,.80);
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    pointer-events:auto;
+
+    touch-action:none;
+
+    user-select:none;
 }
 
-#compass-needle {
-  position: absolute;
-  left: 50%;
-  top: 50%;
+#analogBase{
 
-  width: 4px;
-  height: 27px;
+    position:relative;
 
-  transform-origin: 50% 90%;
-  transform: translate(-50%, -90%) rotate(0deg);
+    width:82px;
+    height:82px;
 
-  background: #d94c3d;
+    border-radius:50%;
 
-  border-radius: 5px;
+    background:rgba(
+        113,
+        149,
+        72,
+        .35
+    );
 
-  box-shadow: 0 1px 3px rgba(0,0,0,.25);
+    border:3px solid #5d7a3e;
+
+    box-shadow:
+    inset 0 0 0 4px rgba(255,255,255,.22);
 }
 
-#compass-needle::after {
-  content: "";
+#analogBase::before{
 
-  position: absolute;
+    content:"";
 
-  left: 50%;
-  top: -7px;
+    position:absolute;
 
-  transform: translateX(-50%);
+    left:50%;
+    top:9px;
 
-  width: 0;
-  height: 0;
+    width:2px;
+    height:60px;
 
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-bottom: 13px solid #d94c3d;
+    transform:translateX(-50%);
+
+    background:rgba(70,89,47,.20);
 }
 
-#heading {
-  margin-top: 3px;
+#analogBase::after{
 
-  font-size: 10px;
-  font-weight: 900;
+    content:"";
 
-  color: #59441f;
+    position:absolute;
+
+    top:50%;
+    left:9px;
+
+    width:60px;
+    height:2px;
+
+    transform:translateY(-50%);
+
+    background:rgba(70,89,47,.20);
 }
 
-/* =========================================================
-   JOYSTICK
-========================================================= */
+#analogKnob{
 
-#joystick {
-  position: absolute;
-  z-index: 60;
+    position:absolute;
 
-  left: calc(18px + env(safe-area-inset-left));
-  bottom: calc(18px + env(safe-area-inset-bottom));
+    left:50%;
+    top:50%;
 
-  width: clamp(105px, 14vw, 136px);
-  height: clamp(105px, 14vw, 136px);
+    width:38px;
+    height:38px;
 
-  border-radius: 50%;
+    transform:
+    translate(-50%,-50%);
 
-  background: rgba(25,55,39,.30);
+    border-radius:50%;
 
-  border: 3px solid rgba(255,255,255,.55);
+    background:
+    radial-gradient(
+        circle at 35% 30%,
+        #ffe39a,
+        #e8b94e
+    );
 
-  box-shadow:
-    0 7px 18px rgba(0,0,0,.22),
-    inset 0 0 0 2px rgba(255,255,255,.1);
+    border:3px solid #65411e;
 
-  touch-action: none;
-  user-select: none;
+    box-shadow:
+    0 3px 0 #825326;
+
+    pointer-events:none;
 }
 
-#joystick.disabled {
-  opacity: .35;
-  pointer-events: none;
+/* =====================================================
+   ACTION BUTTON
+===================================================== */
+
+#actionWrap{
+
+    width:80px;
+    height:80px;
+
+    padding:5px;
+
+    border-radius:50%;
+
+    background:rgba(
+        255,
+        245,
+        201,
+        .90
+    );
+
+    border:3px solid #61401f;
+
+    box-shadow:
+    0 4px 0 #6f4724;
+
+    pointer-events:auto;
 }
 
-#joystick::after {
-  content: "GERAK";
+#actionBtn{
 
-  position: absolute;
-  left: 50%;
-  bottom: -21px;
+    width:100%;
+    height:100%;
 
-  transform: translateX(-50%);
+    border:0;
 
-  font-size: 9px;
-  font-weight: 900;
+    border-radius:50%;
 
-  color: rgba(255,255,255,.85);
+    background:#ffc84b;
 
-  text-shadow: 0 1px 3px rgba(0,0,0,.7);
+    color:#4e3019;
+
+    font-size:10px;
+
+    font-weight:1000;
+
+    box-shadow:
+    inset 0 0 0 3px #805027;
+
+    touch-action:none;
 }
 
-#joystick-thumb {
-  position: absolute;
+/* =====================================================
+   MODAL
+===================================================== */
 
-  left: 50%;
-  top: 50%;
+.modal{
 
-  width: 48%;
-  height: 48%;
+    position:absolute;
 
-  border-radius: 50%;
+    z-index:100;
 
-  transform:
-    translate(-50%, -50%)
-    translate(0px, 0px);
+    inset:0;
 
-  background:
-    radial-gradient(circle at 35% 30%, #fff7bd, #dca93d 65%, #9a6a21);
+    display:none;
 
-  border: 3px solid rgba(255,255,255,.7);
+    align-items:center;
+    justify-content:center;
 
-  box-shadow:
-    0 5px 12px rgba(0,0,0,.3),
-    inset 0 2px 5px rgba(255,255,255,.35);
+    padding:14px;
 
-  pointer-events: none;
+    background:rgba(
+        19,
+        29,
+        14,
+        .73
+    );
+
+    backdrop-filter:blur(2px);
 }
 
-/* =========================================================
-   INTERACT
-========================================================= */
+.modalCard{
 
-#interact-area {
-  position: absolute;
-  z-index: 65;
+    width:min(
+        580px,
+        96%
+    );
 
-  right: calc(18px + env(safe-area-inset-right));
-  bottom: calc(24px + env(safe-area-inset-bottom));
+    max-height:93%;
 
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 7px;
+    overflow-y:auto;
 
-  pointer-events: none;
+    background:#fff6cf;
+
+    border:4px solid #66431f;
+
+    border-radius:18px;
+
+    padding:15px;
+
+    box-shadow:
+    0 7px 0 #3e2917,
+    0 18px 42px rgba(0,0,0,.4);
 }
 
-#near-hint {
-  display: none;
+.questionHeader{
 
-  padding: 7px 11px;
+    display:flex;
 
-  background: rgba(20,38,30,.78);
-  color: white;
+    justify-content:space-between;
 
-  border-radius: 12px;
+    gap:8px;
 
-  font-size: 11px;
-  font-weight: 900;
+    align-items:center;
 
-  box-shadow: 0 5px 15px rgba(0,0,0,.2);
+    margin-bottom:9px;
 }
 
-#interact-btn {
-  display: none;
+.badge{
 
-  pointer-events: auto;
+    border-radius:999px;
 
-  border: none;
+    padding:5px 9px;
 
-  min-width: 120px;
-  min-height: 48px;
+    font-size:11px;
 
-  padding: 10px 16px;
-
-  border-radius: 16px;
-
-  background:
-    linear-gradient(#ffd978, #dca335);
-
-  color: #513813;
-
-  font-size: 13px;
-  font-weight: 900;
-
-  box-shadow:
-    0 7px 0 #8e6828,
-    0 10px 20px rgba(0,0,0,.25);
-
-  cursor: pointer;
-  touch-action: manipulation;
+    font-weight:1000;
 }
 
-#interact-btn:active {
-  transform: translateY(5px);
-  box-shadow:
-    0 2px 0 #8e6828,
-    0 5px 10px rgba(0,0,0,.2);
+#questionNumber{
+
+    color:white;
+
+    background:#639e4a;
+
+    border:2px solid #427332;
 }
 
-/* =========================================================
+#tp{
+
+    color:#4a311d;
+
+    background:#f1ca61;
+
+    border:2px solid #93682a;
+}
+
+#questionBox{
+
+    background:#fffdf2;
+
+    border:3px solid #d4a963;
+
+    border-radius:11px;
+
+    padding:10px;
+
+    margin-bottom:9px;
+}
+
+#questionText{
+
+    color:#3d301e;
+
+    font-size:15px;
+
+    line-height:1.3;
+
+    font-weight:1000;
+}
+
+#answers{
+
+    display:grid;
+
+    gap:7px;
+}
+
+.answerWrap{
+
+    overflow:hidden;
+
+    border:3px solid #c79a5a;
+
+    border-radius:10px;
+
+    background:#fff;
+}
+
+.answer{
+
+    display:block;
+
+    width:100%;
+
+    border:0;
+
+    background:transparent;
+
+    text-align:left;
+
+    padding:9px 10px;
+
+    color:#3b3124;
+
+    font-size:13px;
+
+    font-weight:800;
+
+    line-height:1.25;
+
+    cursor:pointer;
+}
+
+.answerWrap.correct{
+
+    background:#a9df88;
+
+    border-color:#39752e;
+}
+
+.answerWrap.wrong{
+
+    background:#ffaaa0;
+
+    border-color:#a43b32;
+}
+
+#answerStatus{
+
+    min-height:21px;
+
+    margin-top:8px;
+
+    text-align:center;
+
+    font-size:11px;
+
+    font-weight:1000;
+}
+
+/* =====================================================
+   REWARD
+===================================================== */
+
+.rewardIcon{
+
+    width:64px;
+    height:64px;
+
+    margin:0 auto 8px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    border-radius:15px;
+
+    background:#fff0a7;
+
+    border:3px solid #a36b2e;
+
+    font-size:34px;
+}
+
+.rewardTitle{
+
+    text-align:center;
+
+    padding:8px;
+
+    background:#e5f4ce;
+
+    border:3px solid #73a64e;
+
+    border-radius:11px;
+
+    color:#4b742e;
+
+    font-size:18px;
+
+    font-weight:1000;
+}
+
+#nextClue{
+
+    margin-top:10px;
+
+    padding:10px;
+
+    text-align:center;
+
+    background:#fff;
+
+    border:3px dashed #b57c35;
+
+    border-radius:11px;
+
+    font-size:12px;
+
+    line-height:1.35;
+
+    font-weight:900;
+}
+
+.modalButtons{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:8px;
+
+    flex-wrap:wrap;
+
+    margin-top:10px;
+}
+
+.modalButtons button{
+
+    border:3px solid #53351d;
+
+    border-radius:10px;
+
+    padding:8px 14px;
+
+    font-size:11px;
+
+    font-weight:1000;
+
+    cursor:pointer;
+}
+
+.greenBtn{
+
+    color:white;
+
+    background:#73ad58;
+
+    box-shadow:
+    0 4px 0 #426c33;
+}
+
+/* =====================================================
    TOAST
-========================================================= */
+===================================================== */
 
-#toast {
-  position: absolute;
+#toast{
 
-  left: 50%;
-  top: calc(15px + env(safe-area-inset-top));
+    position:absolute;
 
-  z-index: 100;
+    z-index:200;
 
-  transform: translate(-50%, -130%);
+    left:50%;
+    top:50%;
 
-  max-width: min(600px, 82%);
+    transform:
+    translate(-50%,-50%)
+    scale(.9);
 
-  padding: 10px 17px;
+    opacity:0;
 
-  border-radius: 14px;
+    pointer-events:none;
 
-  background: rgba(24,44,34,.92);
-  color: white;
+    max-width:75%;
 
-  font-size: 13px;
-  font-weight: 800;
-  text-align: center;
+    background:#fff1ac;
 
-  box-shadow: 0 8px 22px rgba(0,0,0,.3);
+    border:3px solid #60401f;
 
-  transition: transform .3s ease;
+    border-radius:11px;
+
+    padding:8px 13px;
+
+    color:#4e311a;
+
+    text-align:center;
+
+    font-size:10px;
+
+    font-weight:1000;
+
+    box-shadow:
+    0 4px 0 #412a17;
+
+    transition:.15s;
 }
 
-#toast.show {
-  transform: translate(-50%, 0);
+#toast.show{
+
+    opacity:1;
+
+    transform:
+    translate(-50%,-50%)
+    scale(1);
 }
 
-/* =========================================================
-   QUESTION MODAL
-========================================================= */
+/* =====================================================
+   TABLET / IPAD
+===================================================== */
 
-#question-modal {
-  position: absolute;
-  inset: 0;
+@media (max-width:1024px){
 
-  z-index: 200;
+    body{
+        padding:
+        max(9px, env(safe-area-inset-top))
+        max(9px, env(safe-area-inset-right))
+        max(9px, env(safe-area-inset-bottom))
+        max(9px, env(safe-area-inset-left));
+    }
 
-  display: none;
-
-  align-items: center;
-  justify-content: center;
-
-  padding:
-    calc(18px + env(safe-area-inset-top))
-    calc(18px + env(safe-area-inset-right))
-    calc(18px + env(safe-area-inset-bottom))
-    calc(18px + env(safe-area-inset-left));
-
-  background: rgba(10,25,18,.54);
-
-  backdrop-filter: blur(5px);
-
-  touch-action: none;
+    #gameShell{
+        width:min(
+            900px,
+            calc(100vw - 14px)
+        );
+    }
 }
 
-#question-modal.show {
-  display: flex;
+/* =====================================================
+   PHONE PORTRAIT
+===================================================== */
+
+@media (max-width:600px) and (orientation:portrait){
+
+    body{
+        padding:
+        max(4px, env(safe-area-inset-top))
+        max(4px, env(safe-area-inset-right))
+        max(4px, env(safe-area-inset-bottom))
+        max(4px, env(safe-area-inset-left));
+
+        align-items:center;
+    }
+
+    #gameShell{
+        width:calc(100vw - 8px);
+        padding:5px;
+        border-width:3px;
+        border-radius:12px;
+    }
+
+    #topUI{
+        gap:4px;
+        margin-bottom:5px;
+    }
+
+    .uiBox{
+        border-width:2px;
+        border-radius:8px;
+        box-shadow:0 2px 0 #976832;
+    }
+
+    #homeBtn{
+        padding:4px;
+        font-size:7px;
+    }
+
+    #progressBox{
+        padding:4px 5px;
+        font-size:7px;
+    }
+
+    #clueBox{
+        padding:4px 5px;
+    }
+
+    #clueTitle{
+        font-size:6px;
+    }
+
+    #clueArea{
+        font-size:7px;
+    }
+
+    #clueText{
+        font-size:6px;
+        line-height:1.15;
+    }
+
+    #gameContainer{
+        border-width:3px;
+        border-radius:9px;
+    }
+
+    #controls{
+        left:3px;
+        right:3px;
+        bottom:2px;
+    }
+
+    #analogWrap{
+        width:74px;
+        height:74px;
+        border-width:2px;
+    }
+
+    #analogBase{
+        width:59px;
+        height:59px;
+        border-width:2px;
+    }
+
+    #analogBase::before{
+        top:7px;
+        height:41px;
+    }
+
+    #analogBase::after{
+        left:7px;
+        width:41px;
+    }
+
+    #analogKnob{
+        width:29px;
+        height:29px;
+        border-width:2px;
+    }
+
+    #actionWrap{
+        width:60px;
+        height:60px;
+        border-width:2px;
+        padding:4px;
+    }
+
+    #actionBtn{
+        font-size:8px;
+    }
+
+    #interact{
+        bottom:66px;
+        border-width:2px;
+        padding:4px 7px;
+        font-size:7px;
+    }
+
+    .modal{
+        padding:6px;
+    }
+
+    .modalCard{
+        padding:9px;
+        border-width:3px;
+    }
+
+    #questionText{
+        font-size:11px;
+    }
+
+    .answer{
+        padding:6px 7px;
+        font-size:9px;
+    }
 }
 
-.question-card {
-  width: min(760px, 94%);
-  max-height: 94%;
+/* =====================================================
+   PHONE LANDSCAPE / ROTATION FRIENDLY
+===================================================== */
 
-  overflow-y: auto;
+@media (orientation:landscape) and (max-height:600px){
 
-  padding: clamp(18px, 3vw, 28px);
+    html,
+    body{
+        width:100%;
+        height:100%;
+        min-height:100dvh;
+    }
 
-  border-radius: 24px;
+    body{
+        padding:
+        max(3px, env(safe-area-inset-top))
+        max(5px, env(safe-area-inset-right))
+        max(3px, env(safe-area-inset-bottom))
+        max(5px, env(safe-area-inset-left));
 
-  background:
-    linear-gradient(145deg, #fffdf3, #fff6d7);
+        align-items:center;
 
-  border: 3px solid #e1bb63;
+        overflow:hidden;
+    }
 
-  box-shadow:
-    0 18px 55px rgba(0,0,0,.4);
+    #gameShell{
+        width:min(
+            980px,
+            calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right) - 10px)
+        );
 
-  touch-action: pan-y;
+        max-height:calc(
+            100dvh -
+            env(safe-area-inset-top) -
+            env(safe-area-inset-bottom) -
+            6px
+        );
+
+        padding:4px;
+
+        border-width:3px;
+
+        border-radius:11px;
+    }
+
+    #topUI{
+        gap:4px;
+        margin-bottom:4px;
+    }
+
+    .uiBox{
+        border-width:2px;
+        border-radius:8px;
+        box-shadow:0 2px 0 #976832;
+    }
+
+    #homeBox{
+        padding:2px;
+    }
+
+    #homeBtn{
+        padding:3px 6px;
+        font-size:7px;
+    }
+
+    #clueBox{
+        padding:3px 6px;
+    }
+
+    #clueTitle{
+        font-size:6px;
+    }
+
+    #clueArea{
+        margin-top:1px;
+        font-size:7px;
+    }
+
+    #clueText{
+        margin-top:1px;
+        font-size:6px;
+        line-height:1.1;
+
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+    }
+
+    #progressBox{
+        padding:3px 7px;
+        font-size:7px;
+    }
+
+    #gameContainer{
+        /*
+        16:9 is maintained, but the game can never become
+        taller than the available landscape screen.
+        */
+        width:100%;
+        aspect-ratio:16 / 9;
+
+        max-height:calc(
+            100dvh -
+            env(safe-area-inset-top) -
+            env(safe-area-inset-bottom) -
+            50px
+        );
+
+        margin-inline:auto;
+
+        border-width:3px;
+        border-radius:8px;
+    }
+
+    #controls{
+        left:5px;
+        right:5px;
+        bottom:4px;
+    }
+
+    #analogWrap{
+        width:66px;
+        height:66px;
+        border-width:2px;
+    }
+
+    #analogBase{
+        width:51px;
+        height:51px;
+        border-width:2px;
+    }
+
+    #analogBase::before{
+        top:6px;
+        height:35px;
+    }
+
+    #analogBase::after{
+        left:6px;
+        width:35px;
+    }
+
+    #analogKnob{
+        width:25px;
+        height:25px;
+        border-width:2px;
+    }
+
+    #actionWrap{
+        width:53px;
+        height:53px;
+        border-width:2px;
+        padding:3px;
+    }
+
+    #actionBtn{
+        font-size:7px;
+    }
+
+    #interact{
+        bottom:58px;
+        padding:3px 7px;
+        border-width:2px;
+        font-size:7px;
+    }
+
+    .modal{
+        padding:5px;
+    }
+
+    .modalCard{
+        width:min(560px,94%);
+        max-height:94%;
+        padding:8px;
+        border-width:3px;
+        border-radius:12px;
+    }
+
+    .questionHeader{
+        margin-bottom:5px;
+    }
+
+    .badge{
+        padding:3px 7px;
+        font-size:8px;
+    }
+
+    #questionBox{
+        padding:6px;
+        margin-bottom:5px;
+        border-width:2px;
+    }
+
+    #questionText{
+        font-size:10px;
+        line-height:1.2;
+    }
+
+    #answers{
+        grid-template-columns:1fr 1fr;
+        gap:4px;
+    }
+
+    .answerWrap{
+        border-width:2px;
+        border-radius:7px;
+    }
+
+    .answer{
+        padding:5px 6px;
+        font-size:8px;
+    }
+
+    #answerStatus{
+        min-height:14px;
+        margin-top:4px;
+        font-size:8px;
+    }
+
+    .rewardIcon{
+        width:44px;
+        height:44px;
+        margin-bottom:5px;
+        font-size:24px;
+    }
+
+    .rewardTitle{
+        padding:5px;
+        font-size:13px;
+    }
+
+    #nextClue{
+        margin-top:6px;
+        padding:6px;
+        font-size:9px;
+    }
+
+    .modalButtons{
+        margin-top:6px;
+    }
+
+    .modalButtons button{
+        padding:5px 10px;
+        font-size:8px;
+    }
 }
 
-.question-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+/* =====================================================
+   VERY SHORT LANDSCAPE PHONE
+===================================================== */
 
-  margin-bottom: 12px;
+@media (orientation:landscape) and (max-height:430px){
+
+    #gameShell{
+        width:min(
+            760px,
+            calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right) - 8px)
+        );
+    }
+
+    #topUI{
+        margin-bottom:2px;
+    }
+
+    #clueText{
+        display:none;
+    }
+
+    #clueBox{
+        display:flex;
+        align-items:center;
+        gap:6px;
+    }
+
+    #clueArea{
+        margin:0;
+    }
+
+    #gameContainer{
+        max-height:calc(
+            100dvh -
+            env(safe-area-inset-top) -
+            env(safe-area-inset-bottom) -
+            38px
+        );
+    }
+
+    #analogWrap{
+        width:58px;
+        height:58px;
+    }
+
+    #analogBase{
+        width:45px;
+        height:45px;
+    }
+
+    #analogBase::before{
+        top:5px;
+        height:31px;
+    }
+
+    #analogBase::after{
+        left:5px;
+        width:31px;
+    }
+
+    #analogKnob{
+        width:23px;
+        height:23px;
+    }
+
+    #actionWrap{
+        width:48px;
+        height:48px;
+    }
+
+    #interact{
+        bottom:50px;
+    }
 }
 
-.question-badge {
-  display: inline-block;
-
-  padding: 6px 10px;
-
-  border-radius: 10px;
-
-  background: #6e9d4c;
-  color: white;
-
-  font-size: 11px;
-  font-weight: 900;
-}
-
-.question-count {
-  color: #8b713a;
-
-  font-size: 11px;
-  font-weight: 900;
-}
-
-#question-text {
-  margin: 8px 0 18px;
-
-  color: #294334;
-
-  font-size: clamp(16px, 2.5vw, 23px);
-  line-height: 1.35;
-  font-weight: 900;
-}
-
-.answers {
-  display: grid;
-
-  grid-template-columns: 1fr 1fr;
-
-  gap: 11px;
-}
-
-.answer-btn {
-  min-height: 64px;
-
-  padding: 12px 13px;
-
-  border-radius: 15px;
-
-  border: 2px solid #e1ca91;
-
-  background: #fff;
-
-  color: #344d3b;
-
-  text-align: left;
-
-  font-size: clamp(13px, 1.7vw, 16px);
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition:
-    transform .12s ease,
-    background .12s ease,
-    border-color .12s ease;
-
-  touch-action: manipulation;
-}
-
-.answer-btn:active {
-  transform: scale(.98);
-}
-
-.answer-btn:hover {
-  border-color: #bf963f;
-  background: #fff8df;
-}
-
-.answer-btn.correct {
-  background: #dff4c9;
-  border-color: #65a746;
-  color: #28532a;
-}
-
-.answer-btn.wrong {
-  background: #ffe0dc;
-  border-color: #d96659;
-  color: #7a2c25;
-}
-
-.answer-letter {
-  display: inline-flex;
-
-  align-items: center;
-  justify-content: center;
-
-  width: 28px;
-  height: 28px;
-
-  margin-right: 7px;
-
-  border-radius: 50%;
-
-  background: #efd18a;
-
-  color: #684b1b;
-
-  font-size: 12px;
-  font-weight: 900;
-}
-
-#feedback {
-  min-height: 24px;
-
-  margin-top: 14px;
-
-  font-size: 14px;
-  line-height: 1.4;
-  font-weight: 800;
-}
-
-.feedback-correct {
-  color: #3e7d37;
-}
-
-.feedback-wrong {
-  color: #b3483e;
-}
-
-#continue-btn {
-  display: none;
-
-  width: 100%;
-
-  margin-top: 15px;
-
-  padding: 13px;
-
-  border: none;
-  border-radius: 14px;
-
-  background: #6d9e4c;
-  color: white;
-
-  font-size: 14px;
-  font-weight: 900;
-
-  cursor: pointer;
-}
-
-/* =========================================================
-   MOBILE PORTRAIT
-========================================================= */
-
-@media (orientation: portrait) and (max-width: 700px) {
-
-  #quest-card {
-    width: calc(100% - 128px);
-    padding: 9px 10px;
-  }
-
-  #quest-text {
-    font-size: 11px;
-  }
-
-  #progress {
-    font-size: 9px;
-  }
-
-  #compass-card {
-    width: 88px;
-    height: 108px;
-  }
-
-  .compass-ring {
-    width: 66px;
-    height: 66px;
-  }
-
-  .answers {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
-  .answer-btn {
-    min-height: 58px;
-  }
-
-  #question-modal {
-    padding: 10px;
-  }
-
-  .question-card {
-    width: 96%;
-    max-height: 96%;
-    border-radius: 19px;
-    padding: 16px;
-  }
-}
-
-/* =========================================================
-   VERY SMALL PHONE
-========================================================= */
-
-@media (max-width: 390px) {
-
-  #quest-card {
-    width: calc(100% - 110px);
-  }
-
-  #compass-card {
-    width: 78px;
-    height: 96px;
-  }
-
-  .compass-ring {
-    width: 58px;
-    height: 58px;
-  }
-
-  .compass-label {
-    font-size: 7px;
-  }
-
-  #heading {
-    font-size: 8px;
-  }
-
-  #interact-btn {
-    min-width: 105px;
-    min-height: 44px;
-    font-size: 11px;
-  }
-}
 </style>
 </head>
 
 <body>
 
-<div id="game-shell">
+<div id="gameShell">
 
-  <div id="loading">
-    🌿 Memuat Kampung Harta Karun...
-  </div>
+<!-- =====================================================
+     TOP UI
+===================================================== -->
 
-  <!-- QUEST -->
-  <div id="quest-card" class="hud-card">
-    <div class="quest-title">🧭 PETUNJUK PETI</div>
-    <div id="quest-text">
-      Cari peti pertama di sebelah timur rumah pekebun.
-    </div>
-    <div id="progress">
-      PETI 1 / 25
-    </div>
-  </div>
+<div id="topUI">
 
-  <!-- COMPASS -->
-  <div id="compass-card" class="hud-card">
+<div
+class="uiBox"
+id="homeBox">
 
-    <div class="compass-ring">
+<button
+id="homeBtn"
+onclick="window.location.href='index.html'">
 
-      <div class="compass-label compass-n">U</div>
-      <div class="compass-label compass-e">T</div>
-      <div class="compass-label compass-s">S</div>
-      <div class="compass-label compass-w">B</div>
+🏠 HOME
 
-      <div id="compass-needle"></div>
-
-    </div>
-
-    <div id="heading">UTARA</div>
-
-  </div>
-
-  <!-- JOYSTICK -->
-  <div id="joystick">
-    <div id="joystick-thumb"></div>
-  </div>
-
-  <!-- INTERACTION -->
-  <div id="interact-area">
-
-    <div id="near-hint">
-      Anda berhampiran peti!
-    </div>
-
-    <button id="interact-btn">
-      🧰 BUKA PETI
-    </button>
-
-  </div>
-
-  <!-- TOAST -->
-  <div id="toast"></div>
-
-  <!-- QUESTION -->
-  <div id="question-modal">
-
-    <div class="question-card">
-
-      <div class="question-top">
-
-        <div class="question-badge" id="question-badge">
-          PETI 1
-        </div>
-
-        <div class="question-count" id="question-count">
-          SOALAN 1 / 25
-        </div>
-
-      </div>
-
-      <div id="question-text"></div>
-
-      <div class="answers" id="answers"></div>
-
-      <div id="feedback"></div>
-
-      <button id="continue-btn">
-        TERUSKAN →
-      </button>
-
-    </div>
-
-  </div>
+</button>
 
 </div>
 
-<!-- PHASER -->
+
+<div
+class="uiBox"
+id="clueBox">
+
+<div id="clueTitle">
+
+🗺️ PETUNJUK MISI
+
+</div>
+
+<div id="clueArea">
+
+📍 Kebun Bunga Pekebun
+
+</div>
+
+<div id="clueText">
+
+Cari peti pertama di kebun bunga sebelah Rumah Pekebun.
+
+</div>
+
+</div>
+
+
+<div
+class="uiBox"
+id="progressBox">
+
+🧰 PETI&nbsp;
+
+<span id="currentNum">
+1
+</span>
+
+/25
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     GAME
+===================================================== -->
+
+<div id="gameContainer">
+
+<div id="game"></div>
+
+
+<div id="interact">
+
+🧰 Dekati peti dan tekan CARI
+
+</div>
+
+
+<!-- =====================================================
+     CONTROLS
+===================================================== -->
+
+<div id="controls">
+
+<div id="analogWrap">
+
+<div id="analogBase">
+
+<div id="analogKnob"></div>
+
+</div>
+
+</div>
+
+
+<div id="actionWrap">
+
+<button id="actionBtn">
+
+CARI<br>
+🧰
+
+</button>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     QUESTION
+===================================================== -->
+
+<div
+class="modal"
+id="questionModal">
+
+<div class="modalCard">
+
+<div class="questionHeader">
+
+<div
+class="badge"
+id="questionNumber">
+
+Soalan 1 / 25
+
+</div>
+
+<div
+class="badge"
+id="tp">
+
+TP2
+
+</div>
+
+</div>
+
+
+<div id="questionBox">
+
+<div id="questionText"></div>
+
+</div>
+
+
+<div id="answers"></div>
+
+
+<div id="answerStatus"></div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     REWARD
+===================================================== -->
+
+<div
+class="modal"
+id="rewardModal">
+
+<div class="modalCard">
+
+<div class="rewardIcon">
+
+🗝️
+
+</div>
+
+
+<div class="rewardTitle">
+
+Petunjuk Baru!
+
+</div>
+
+
+<div id="nextClue"></div>
+
+
+<div class="modalButtons">
+
+<button
+class="greenBtn"
+id="continueBtn">
+
+TERUSKAN JELAJAH
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     COMPLETE
+===================================================== -->
+
+<div
+class="modal"
+id="completeModal">
+
+<div class="modalCard">
+
+<div class="rewardIcon">
+
+🏆
+
+</div>
+
+
+<div class="rewardTitle">
+
+Misi Pekebun Selesai!
+
+</div>
+
+
+<div
+style="
+margin-top:10px;
+padding:10px;
+background:white;
+border:3px solid #d5aa65;
+border-radius:11px;
+text-align:center;
+font-size:12px;
+font-weight:800;
+line-height:1.4;
+">
+
+Tahniah! Kamu berjaya menjelajah seluruh Kampung Seri Hijau,
+menjumpai 25 peti harta karun dan menjawab semua soalan tumbuhan.
+
+</div>
+
+
+<div class="modalButtons">
+
+<button
+id="restartBtn"
+style="
+background:#f1c95e;
+">
+
+🔄 MAIN SEMULA
+
+</button>
+
+
+<button
+onclick="window.location.href='index.html'"
+style="
+background:#72ad58;
+color:white;
+">
+
+🏠 HOME
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div id="toast"></div>
+
+</div>
+
+</div>
+
+
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <script>
 
-(() => {
-
-"use strict";
-
 /* =========================================================
-   QUESTION SET
+   QUESTIONS SET 3
 ========================================================= */
 
-const questions = [
+const QUESTIONS=[
 
-  {
-    q: "[TP2] Antara berikut, yang manakah merupakan bahagian tumbuhan?",
-    options: [
-      "Batu",
-      "Air",
-      "Daun",
-      "Tanah"
-    ],
-    answer: 2
-  },
+{
+tp:"TP2",
+q:"Siti menunjuk bahagian tumbuhan yang lebar dan hijau. Bahagian itu ialah ____.",
+o:["Batang","Akar","Daun","Bunga"],
+a:2
+},
 
-  {
-    q: "[TP1] Apakah bahagian utama tumbuhan?",
-    options: [
-      "Akar, daun dan tanah",
-      "Daun, bunga dan air",
-      "Batang, tanah dan akar",
-      "Akar, batang, daun dan bunga"
-    ],
-    answer: 3
-  },
+{
+tp:"TP1",
+q:"Bahagian tumbuhan yang disebut bersama bunga, daun dan akar ialah ____.",
+o:["Sayap","Sirip","Kulit","Batang"],
+a:3
+},
 
-  {
-    q: "[TP2] Apakah fungsi batang pada tumbuhan?",
-    options: [
-      "Menyokong daun dan bunga",
-      "Menyerap cahaya sahaja",
-      "Menghasilkan tanah",
-      "Menjadi tempat tinggal haiwan"
-    ],
-    answer: 0
-  },
+{
+tp:"TP1",
+q:"Apakah nama bahagian tumbuhan yang memegang daun dan bunga?",
+o:["Batang","Bunga","Akar","Daun"],
+a:0
+},
 
-  {
-    q: "[TP2] Yang manakah menunjukkan dua tumbuhan yang mempunyai daun?",
-    options: [
-      "Batu dan tanah",
-      "Air dan pasir",
-      "Pokok mangga dan pokok bunga raya",
-      "Awan dan rumput"
-    ],
-    answer: 2
-  },
+{
+tp:"TP2",
+q:"Bahagian yang boleh dilihat pada pokok keembung dan juga pokok bunga raya ialah ____.",
+o:["Tanduk","Cangkerang","Daun","Sumbu"],
+a:2
+},
 
-  {
-    q: "[TP2] Apakah fungsi bunga pada sesetengah tumbuhan?",
-    options: [
-      "Menyerap air",
-      "Menghasilkan buah dan biji benih",
-      "Memegang tanah",
-      "Menyimpan batu"
-    ],
-    answer: 1
-  },
+{
+tp:"TP1",
+q:"Apakah bahagian tumbuhan yang boleh berkembang menjadi buah dan biji benih?",
+o:["Daun","Bunga","Akar","Batang"],
+a:1
+},
 
-  {
-    q: "[TP1] Yang manakah merupakan bahagian tumbuhan?",
-    options: [
-      "Tanah",
-      "Batu",
-      "Pasir",
-      "Bunga"
-    ],
-    answer: 3
-  },
+{
+tp:"TP2",
+q:"Nina mahu melabel bahagian pokok dari atas hingga bawah. Antara label yang sesuai ialah ____.",
+o:["Sayap","Telinga","Sirip","Bunga"],
+a:3
+},
 
-  {
-    q: "[TP3] Daun yang mempunyai urat daun yang hampir selari mempunyai urat daun jenis ______.",
-    options: [
-      "Jejala",
-      "Bulat",
-      "Selari",
-      "Bercabang"
-    ],
-    answer: 2
-  },
+{
+tp:"TP2",
+q:"Daun yang uratnya bergerak sehala dan hampir sejajar dikelaskan sebagai urat daun ____.",
+o:["Tunjang","Serabut","Selari","Jejala"],
+a:2
+},
 
-  {
-    q: "[TP3] Antara berikut, pasangan tumbuhan yang mempunyai jenis batang yang berbeza ialah ______.",
-    options: [
-      "Durian dan betik",
-      "Pandan dan rumput",
-      "Padi dan rumput",
-      "Kelapa dan pandan"
-    ],
-    answer: 0
-  },
+{
+tp:"TP1",
+q:"Pokok durian dan pokok betik berbeza dari segi ____.",
+o:["Jenis batang","Bilangan pasu","Jenis haiwan","Warna tanah"],
+a:0
+},
 
-  {
-    q: "[TP2] Apakah jenis urat daun bagi daun pandan?",
-    options: [
-      "Jejala",
-      "Selari",
-      "Bulat",
-      "Tidak berurat"
-    ],
-    answer: 1
-  },
+{
+tp:"TP1",
+q:"Daun pokok pandan mempunyai urat daun ____.",
+o:["Jejala","Selari","Serabut","Tunjang"],
+a:1
+},
 
-  {
-    q: "[TP2] Apakah jenis akar bagi pokok pandan?",
-    options: [
-      "Akar tunjang",
-      "Akar jejala",
-      "Akar batang",
-      "Akar serabut"
-    ],
-    answer: 3
-  },
+{
+tp:"TP2",
+q:"Jika akar tumbuhan menyerupai akar pokok pandan, jenis akarnya ialah ____.",
+o:["Jejala","Tunjang","Berkayu","Serabut"],
+a:3
+},
 
-  {
-    q: "[TP3] Bagaimanakah kita boleh membezakan daun pokok ros dan daun pokok pandan?",
-    options: [
-      "Melihat jenis urat daun",
-      "Melihat warna tanah",
-      "Melihat saiz pasu",
-      "Melihat tempat tumbuhan berada"
-    ],
-    answer: 0
-  },
+{
+tp:"TP2",
+q:"Apakah ciri yang digunakan untuk membezakan daun bunga ros dengan daun pandan?",
+o:[
+"Jejala atau selari",
+"Berbunga atau tidak berbunga",
+"Tunjang atau serabut",
+"Berkayu atau tidak berkayu"
+],
+a:0
+},
 
-  {
-    q: "[TP2] Apakah jenis urat daun bagi daun pokok ros?",
-    options: [
-      "Selari",
-      "Bercabang",
-      "Jejala",
-      "Tidak berurat"
-    ],
-    answer: 2
-  },
+{
+tp:"TP1",
+q:"Daun pokok bunga ros mempunyai urat daun ____.",
+o:["Tunjang","Selari","Jejala","Serabut"],
+a:2
+},
 
-  {
-    q: "[TP2] Bahagian tumbuhan yang terlibat dalam pembiakan ialah ______.",
-    options: [
-      "Akar",
-      "Batang",
-      "Bunga",
-      "Tanah"
-    ],
-    answer: 1
-  },
+{
+tp:"TP1",
+q:"Bahagian pembiakan tumbuhan ialah ____.",
+o:["Daun","Bunga","Batang","Akar"],
+a:1
+},
 
-  {
-    q: "[TP2] Apakah fungsi daun kepada tumbuhan?",
-    options: [
-      "Menghasilkan makanan",
-      "Menghasilkan batu",
-      "Menyerap pasir",
-      "Menyimpan tanah"
-    ],
-    answer: 2
-  },
+{
+tp:"TP1",
+q:"Bahagian tumbuhan manakah menghasilkan makanan yang kemudiannya diangkut oleh batang?",
+o:["Akar","Buah","Daun","Bunga"],
+a:2
+},
 
-  {
-    q: "[TP3] Akar dan batang bekerjasama untuk ______.",
-    options: [
-      "Membolehkan air bergerak ke bahagian tumbuhan",
-      "Menghasilkan cahaya matahari",
-      "Menghasilkan tanah",
-      "Menjadi tempat tinggal serangga"
-    ],
-    answer: 0
-  },
+{
+tp:"TP2",
+q:"Bahagian manakah bekerja bersama dalam laluan air daripada tanah ke daun?",
+o:[
+"Akar dan batang",
+"Buah dan biji benih sahaja",
+"Daun dan bunga sahaja",
+"Bunga dan buah"
+],
+a:0
+},
 
-  {
-    q: "[TP2] Apakah fungsi akar?",
-    options: [
-      "Menghasilkan bunga sahaja",
-      "Menyerap air dan nutrien",
-      "Menghasilkan cahaya",
-      "Menghasilkan udara"
-    ],
-    answer: 1
-  },
+{
+tp:"TP1",
+q:"Bahagian yang menyerap air dan nutrien daripada tanah ialah ____.",
+o:["Bunga","Akar","Batang","Daun"],
+a:1
+},
 
-  {
-    q: "[TP3] Apakah fungsi batang kepada tumbuhan?",
-    options: [
-      "Menyerap cahaya",
-      "Menghasilkan biji sahaja",
-      "Menyimpan tanah",
-      "Mengangkut air dan makanan ke bahagian tumbuhan"
-    ],
-    answer: 3
-  },
+{
+tp:"TP2",
+q:"Jika makanan telah dihasilkan oleh daun, batang membawanya ke ____.",
+o:[
+"Akar sahaja",
+"Bunga sahaja",
+"Tanah sahaja",
+"Semua bahagian tumbuhan"
+],
+a:3
+},
 
-  {
-    q: "[TP2] Mengapakah akar penting kepada tumbuhan?",
-    options: [
-      "Akar membantu tumbuhan menyerap air dan menyokong tumbuhan",
-      "Akar menghasilkan cahaya",
-      "Akar menghasilkan hujan",
-      "Akar menghasilkan tanah"
-    ],
-    answer: 0
-  },
+{
+tp:"TP2",
+q:"Apakah dua fungsi akar yang dinyatakan dalam Unit 6?",
+o:[
+"Menyokong pokok dan menyerap air serta nutrien",
+"Mengangkut makanan dan menjadi buah",
+"Membuat makanan dan berbunga",
+"Menghasilkan bunyi dan warna"
+],
+a:0
+},
 
-  {
-    q: "[TP3] Apakah yang boleh terbentuk daripada bunga bagi sesetengah tumbuhan?",
-    options: [
-      "Batu",
-      "Pasir",
-      "Air",
-      "Buah dan biji benih"
-    ],
-    answer: 3
-  },
+{
+tp:"TP1",
+q:"Bunga penting kerana boleh membentuk ____.",
+o:[
+"Akar dan tanah",
+"Air dan nutrien",
+"Batang dan daun",
+"Buah dan biji benih"
+],
+a:3
+},
 
-  {
-    q: "[TP3] Apakah persamaan antara dua tumbuhan yang mempunyai jenis akar yang sama?",
-    options: [
-      "Kedua-duanya mempunyai jenis akar yang sama",
-      "Kedua-duanya mesti mempunyai warna bunga yang sama",
-      "Kedua-duanya mesti mempunyai saiz daun yang sama",
-      "Kedua-duanya mesti hidup di tempat yang sama"
-    ],
-    answer: 2
-  },
+{
+tp:"TP2",
+q:"Pokok A dan B mempunyai akar tunjang. Apakah ciri yang serupa?",
+o:[
+"Jenis bunga",
+"Warna daun",
+"Jenis akar",
+"Jenis batang tidak berkayu"
+],
+a:2
+},
 
-  {
-    q: "[TP3] Apakah ciri yang boleh digunakan untuk membandingkan daun tumbuhan?",
-    options: [
-      "Jenis urat daun",
-      "Jenis tanah sahaja",
-      "Jenis pasu",
-      "Tempat tumbuhan dijual"
-    ],
-    answer: 3
-  },
+{
+tp:"TP1",
+q:"Ciri yang boleh dibandingkan pada daun ialah jenis ____.",
+o:["Bunga","Batang","Akar","Urat daun"],
+a:3
+},
 
-  {
-    q: "[TP3] Apakah persamaan antara tumbuhan yang mempunyai akar yang sama?",
-    options: [
-      "Mempunyai bunga yang sama",
-      "Mempunyai ciri akar yang sama",
-      "Mempunyai warna daun yang sama",
-      "Mempunyai batang yang sama"
-    ],
-    answer: 1
-  },
+{
+tp:"TP2",
+q:"Jika dua tumbuhan berlainan sama-sama berakar tunjang, apakah persamaan mereka?",
+o:[
+"Warna pasu",
+"Ciri akar",
+"Saiz tanah",
+"Ciri bunga sahaja"
+],
+a:1
+},
 
-  {
-    q: "[TP3] Apakah jenis akar bagi pokok bunga raya dan pokok ros?",
-    options: [
-      "Akar tunjang",
-      "Akar serabut",
-      "Akar udara",
-      "Akar jejala"
-    ],
-    answer: 0
-  },
+{
+tp:"TP1",
+q:"Apakah persamaan kedua-dua pokok bunga raya dan bunga ros dari segi akar?",
+o:[
+"Akar tunjang",
+"Batang tidak berkayu",
+"Akar serabut",
+"Urat jejala"
+],
+a:0
+},
 
-  {
-    q: "[TP4] Dua tumbuhan mempunyai satu ciri yang sama tetapi ciri lain berbeza. Apakah kesimpulan yang sesuai?",
-    options: [
-      "Semua ciri tumbuhan mesti sama",
-      "Tumbuhan tidak mempunyai ciri",
-      "Tumbuhan boleh mempunyai persamaan dan perbezaan",
-      "Semua tumbuhan mempunyai akar yang sama"
-    ],
-    answer: 2
-  },
+{
+tp:"TP2",
+q:"Jika dua pokok mempunyai daun berurat jejala tetapi nama pokok berbeza, kedua-duanya tetap mempunyai ____.",
+o:[
+"Akar yang pasti serabut",
+"Tiada persamaan",
+"Satu ciri yang serupa",
+"Semua ciri yang sama"
+],
+a:2
+},
 
-  {
-    q: "[KBAT] Mengapakah kita tidak boleh mengatakan semua tumbuhan mempunyai ciri yang sama?",
-    options: [
-      "Kerana semua tumbuhan tidak mempunyai bahagian",
-      "Kerana tumbuhan mempunyai pelbagai ciri yang berbeza",
-      "Kerana tumbuhan tidak boleh diperhatikan",
-      "Kerana semua tumbuhan hidup dalam air"
-    ],
-    answer: 1
-  }
+{
+tp:"TP1",
+q:"Pokok yang berlainan tidak semestinya mempunyai semua ciri yang ____.",
+o:["Sama sekali","Berbeza","Tiada","Hilang"],
+a:1
+}
 
 ];
 
+
 /* =========================================================
-   CLUES
+   CHESTS + CLUES
 ========================================================= */
 
-const clues = [
+const CHESTS=[
 
-  "Peti 1: Pergi ke sebelah TIMUR rumah pekebun. Cari di hujung kebun sayur, berhampiran pagar kayu.",
+{
+x:730,
+y:570,
+area:"Kebun Bunga Pekebun",
+clue:"Peti pertama berada di kebun bunga di sebelah kanan Rumah Pekebun."
+},
 
-  "Peti 2: Pergi ke TELAGA di sebelah utara rumah. Peti berada di belakang telaga.",
+{
+x:1080,
+y:455,
+area:"Kebun Sayur",
+clue:"Pergi ke kebun sayur dan cari peti berhampiran batas tanaman."
+},
 
-  "Peti 3: Cari POKOK BESAR di utara kolam kampung. Peti berada di bawah pokok itu.",
+{
+x:1440,
+y:390,
+area:"Dusun Buah",
+clue:"Cari kawasan yang mempunyai banyak pokok buah."
+},
 
-  "Peti 4: Pergi ke JAMBATAN KAYU di sebelah barat kolam. Cari peti di hujung jambatan.",
+{
+x:1880,
+y:430,
+area:"Kedai Kampung",
+clue:"Cari kedai dengan bumbung dan awning merah kuning."
+},
 
-  "Peti 5: Cari BANGSAL MERAH di barat kampung. Peti berada di belakang bangsal.",
+{
+x:2270,
+y:430,
+area:"Bangsal Ladang",
+clue:"Bergerak ke timur sehingga kamu menemui bangsal merah."
+},
 
-  "Peti 6: Cari TAMAN BUNGA di selatan rumah. Peti berada di tepi taman.",
+{
+x:2690,
+y:650,
+area:"Hutan Timur",
+clue:"Terus ke timur dan cari peti di celah pokok."
+},
 
-  "Peti 7: Ikuti PAGAR SELATAN sehingga ke batu besar. Peti berada di sebelah batu.",
+{
+x:2500,
+y:850,
+area:"Padang Bunga Liar",
+clue:"Turun dari hutan dan cari kawasan bunga liar."
+},
 
-  "Peti 8: Pergi ke KEBUN LABU di tenggara kampung. Cari peti di antara barisan tanaman.",
+{
+x:1990,
+y:780,
+area:"Dataran Kampung",
+clue:"Kembali ke dataran kampung dan cari telaga."
+},
 
-  "Peti 9: Cari TIGA BATU BESAR berhampiran jalan tanah di timur. Peti berada di belakang batu.",
+{
+x:1500,
+y:810,
+area:"Rumah Hijau",
+clue:"Cari rumah tanaman berkaca di sebelah barat dataran."
+},
 
-  "Peti 10: Pergi ke sudut tenggara KOLAM. Peti berada berhampiran rumpun buluh.",
+{
+x:900,
+y:850,
+area:"Kolam Kampung",
+clue:"Pergi ke barat sehingga menjumpai kolam."
+},
 
-  "Peti 11: Cari POKOK BUAH di timur laut kampung. Peti berada di bawah pokok.",
+{
+x:450,
+y:1040,
+area:"Tebing Sungai Barat",
+clue:"Pergi ke selatan sehingga sampai ke tebing sungai."
+},
 
-  "Peti 12: Cari PAPAN TANDA KAYU di persimpangan jalan. Peti berada di belakang papan tanda.",
+{
+x:1500,
+y:1080,
+area:"Jambatan Kampung",
+clue:"Ikut sungai ke timur sehingga menjumpai jambatan kayu."
+},
 
-  "Peti 13: Pergi ke RUMAH HIJAU di barat daya kampung. Cari peti di sisi pintunya.",
+{
+x:2260,
+y:1050,
+area:"Tebing Sungai Timur",
+clue:"Teruskan perjalanan di sepanjang tebing timur."
+},
 
-  "Peti 14: Cari KINCIR ANGIN kecil di selatan kampung. Peti berada di belakangnya.",
+{
+x:1500,
+y:1290,
+area:"Laluan Kampung Selatan",
+clue:"Lintasi jambatan dan cari laluan menuju Kampung Selatan."
+},
 
-  "Peti 15: Masuk ke KAWASAN HUTAN KECIL di barat laut. Cari peti di kawasan lapang antara pokok.",
+{
+x:520,
+y:1450,
+area:"Ladang Barat",
+clue:"Pergi ke barat daya dan cari ladang tanah coklat."
+},
 
-  "Peti 16: Ikuti ANAK SUNGAI ke utara. Peti berada di tebing sebelah timur sungai.",
+{
+x:1000,
+y:1580,
+area:"Dusun Selatan",
+clue:"Cari pokok buah yang tersusun dalam barisan."
+},
 
-  "Peti 17: Cari TIMBUNAN JERAMI di sebelah barat bangsal. Peti berada di belakang jerami.",
+{
+x:1500,
+y:1580,
+area:"Kampung Selatan",
+clue:"Cari rumah-rumah di tengah Kampung Selatan."
+},
 
-  "Peti 18: Pergi ke PAGAR UTARA kampung. Cari pokok renek berbunga; peti berada di sebelahnya.",
+{
+x:2050,
+y:1500,
+area:"Bukit Batu",
+clue:"Bergerak ke timur sehingga menjumpai kawasan berbatu."
+},
 
-  "Peti 19: Cari JAMBATAN BATU kecil di hujung sungai. Peti berada di bawah jambatan.",
+{
+x:2550,
+y:1480,
+area:"Hutan Tenggara",
+clue:"Teruskan ke timur sehingga masuk ke hutan."
+},
 
-  "Peti 20: Pergi ke DATARAN KAMPUNG berhampiran air pancut. Peti berada di belakang air pancut.",
+{
+x:2740,
+y:1820,
+area:"Taman Batu",
+clue:"Turun ke selatan sehingga menjumpai susunan batu."
+},
 
-  "Peti 21: Cari KEBUN GANDUM di sebelah timur jauh. Peti berada di penjuru barat kebun.",
+{
+x:2300,
+y:1880,
+area:"Padang Bunga Selatan",
+clue:"Pergi ke barat dan cari padang bunga besar."
+},
 
-  "Peti 22: Pergi ke RUMAH KECIL di sudut barat daya. Peti berada di belakang rumah.",
+{
+x:1760,
+y:1850,
+area:"Pokok Tua",
+clue:"Cari pokok paling besar di kawasan selatan."
+},
 
-  "Peti 23: Cari POKOK GERGASI di selatan hutan. Peti berada di sebelah akarnya.",
+{
+x:1210,
+y:1880,
+area:"Runtuhan Lama",
+clue:"Pergi ke barat dari Pokok Tua dan cari runtuhan batu."
+},
 
-  "Peti 24: Pergi ke BUKIT KECIL di timur laut. Cari peti di bawah bendera.",
+{
+x:650,
+y:1850,
+area:"Hutan Barat",
+clue:"Teruskan ke barat sehingga memasuki kawasan hutan."
+},
 
-  "Peti terakhir: Kembali ke TENGAH KAMPUNG. Cari pokok tua di sebelah dataran. Peti terakhir berada di bawah pokok."
+{
+x:850,
+y:2070,
+area:"Taman Rahsia",
+clue:"Peti terakhir tersembunyi di taman bunga rahsia."
+}
 
 ];
 
-/* =========================================================
-   CHEST LOCATIONS
-========================================================= */
-
-const chestLocations = [
-
-  { x: 1770, y: 980 },
-  { x: 1360, y: 770 },
-  { x: 1450, y: 560 },
-  { x: 1120, y: 1030 },
-  { x: 900,  y: 800 },
-  { x: 1300, y: 1320 },
-  { x: 1250, y: 1600 },
-  { x: 1850, y: 1450 },
-  { x: 2150, y: 1100 },
-  { x: 1720, y: 1240 },
-  { x: 1950, y: 550 },
-  { x: 1500, y: 1250 },
-  { x: 800,  y: 1500 },
-  { x: 1450, y: 1700 },
-  { x: 500,  y: 450 },
-  { x: 1000, y: 300 },
-  { x: 650,  y: 920 },
-  { x: 1450, y: 250 },
-  { x: 1100, y: 400 },
-  { x: 1500, y: 1150 },
-  { x: 2350, y: 1250 },
-  { x: 350,  y: 1650 },
-  { x: 850,  y: 1700 },
-  { x: 2250, y: 400 },
-  { x: 1300, y: 1050 }
-
-];
 
 /* =========================================================
-   GAME STATE
+   STATE
 ========================================================= */
 
-const state = {
+let sceneRef=null;
 
-  currentChest: 0,
+let currentChest=0;
 
-  opened: [],
+let questionOpen=false;
 
-  mistakes: 0,
+let rewardOpen=false;
 
-  locked: false,
+let gameComplete=false;
 
-  joystickX: 0,
+let phaserGame=null;
 
-  joystickY: 0,
 
-  heading: -Math.PI / 2
+/* analog vector */
+
+const analog={
+
+x:0,
+
+y:0,
+
+active:false,
+
+pointerId:null
 
 };
+
 
 /* =========================================================
    DOM
 ========================================================= */
 
-const shell = document.getElementById("game-shell");
+const $=
+id=>
+document.getElementById(id);
 
-const loading = document.getElementById("loading");
 
-const questText = document.getElementById("quest-text");
-const progressText = document.getElementById("progress");
+const questionModal=
+$("questionModal");
 
-const joystick = document.getElementById("joystick");
-const joystickThumb = document.getElementById("joystick-thumb");
+const rewardModal=
+$("rewardModal");
 
-const interactBtn = document.getElementById("interact-btn");
-const nearHint = document.getElementById("near-hint");
+const completeModal=
+$("completeModal");
 
-const toast = document.getElementById("toast");
+const questionNumber=
+$("questionNumber");
 
-const modal = document.getElementById("question-modal");
+const tp=
+$("tp");
 
-const questionBadge = document.getElementById("question-badge");
-const questionCount = document.getElementById("question-count");
-const questionText = document.getElementById("question-text");
+const questionText=
+$("questionText");
 
-const answersBox = document.getElementById("answers");
+const answers=
+$("answers");
 
-const feedback = document.getElementById("feedback");
+const answerStatus=
+$("answerStatus");
 
-const continueBtn = document.getElementById("continue-btn");
+const currentNum=
+$("currentNum");
 
-const compassNeedle = document.getElementById("compass-needle");
-const headingText = document.getElementById("heading");
+const clueArea=
+$("clueArea");
 
-/* =========================================================
-   TOAST
-========================================================= */
+const clueText=
+$("clueText");
 
-let toastTimer = null;
+const interact=
+$("interact");
 
-function showToast(message, duration = 2600) {
+const nextClue=
+$("nextClue");
 
-  toast.textContent = message;
+const toast=
+$("toast");
 
-  toast.classList.add("show");
-
-  clearTimeout(toastTimer);
-
-  toastTimer = setTimeout(() => {
-
-    toast.classList.remove("show");
-
-  }, duration);
-
-}
 
 /* =========================================================
-   QUEST UI
+   ANALOG JOYSTICK
 ========================================================= */
 
-function updateQuest() {
+const analogWrap=
+$("analogWrap");
 
-  if (state.currentChest >= questions.length) {
+const analogBase=
+$("analogBase");
 
-    questText.textContent =
-      "Semua peti telah ditemui! Kampung ini telah berjaya diterokai.";
+const analogKnob=
+$("analogKnob");
 
-    progressText.textContent =
-      "🎉 MISI SELESAI — 25 / 25";
 
-    return;
-  }
+function updateAnalog(
+clientX,
+clientY
+){
 
-  questText.textContent = clues[state.currentChest];
+const rect=
+analogBase.getBoundingClientRect();
 
-  progressText.textContent =
-    `PETI ${state.currentChest + 1} / ${questions.length}`;
 
-}
+const centerX=
+rect.left+
+rect.width/2;
 
-/* =========================================================
-   COMPASS
-========================================================= */
 
-function updateCompass() {
+const centerY=
+rect.top+
+rect.height/2;
 
-  const angle = state.heading;
 
-  const degrees =
-    ((angle * 180 / Math.PI) + 360) % 360;
+let dx=
+clientX-
+centerX;
 
-  /*
-    Phaser:
-    0°   = TIMUR
-    90°  = SELATAN
-    180° = BARAT
-    270° = UTARA
-  */
 
-  compassNeedle.style.transform =
-    `translate(-50%, -90%) rotate(${degrees + 90}deg)`;
+let dy=
+clientY-
+centerY;
 
-  let direction = "UTARA";
 
-  if (degrees >= 315 || degrees < 45) {
+const maxDistance=
+rect.width*
+0.31;
 
-    direction = "TIMUR";
 
-  } else if (degrees >= 45 && degrees < 135) {
+const distance=
+Math.hypot(
+dx,
+dy
+);
 
-    direction = "SELATAN";
 
-  } else if (degrees >= 135 && degrees < 225) {
+if(
+distance>
+maxDistance
+){
 
-    direction = "BARAT";
+dx=
+dx/distance*
+maxDistance;
 
-  } else {
 
-    direction = "UTARA";
-
-  }
-
-  headingText.textContent = direction;
-
-}
-
-/* =========================================================
-   JOYSTICK
-========================================================= */
-
-let joystickPointerId = null;
-
-function resetJoystick() {
-
-  state.joystickX = 0;
-  state.joystickY = 0;
-
-  joystickThumb.style.transform =
-    "translate(-50%, -50%) translate(0px, 0px)";
+dy=
+dy/distance*
+maxDistance;
 
 }
 
-function updateJoystick(clientX, clientY) {
 
-  const rect = joystick.getBoundingClientRect();
+/* movement vector */
 
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
+analog.x=
+dx/
+maxDistance;
 
-  let dx = clientX - centerX;
-  let dy = clientY - centerY;
 
-  const maxDistance = rect.width * .30;
+analog.y=
+dy/
+maxDistance;
 
-  const distance = Math.sqrt(dx * dx + dy * dy);
 
-  if (distance > maxDistance) {
+/* dead zone */
 
-    dx = dx / distance * maxDistance;
-    dy = dy / distance * maxDistance;
+if(
+Math.abs(
+analog.x
+)<0.08
+){
 
-  }
-
-  state.joystickX = dx / maxDistance;
-  state.joystickY = dy / maxDistance;
-
-  joystickThumb.style.transform =
-    `translate(-50%, -50%) translate(${dx}px, ${dy}px)`;
+analog.x=0;
 
 }
 
-joystick.addEventListener("pointerdown", event => {
 
-  if (state.locked) return;
+if(
+Math.abs(
+analog.y
+)<0.08
+){
 
-  joystickPointerId = event.pointerId;
-
-  joystick.setPointerCapture(event.pointerId);
-
-  updateJoystick(
-    event.clientX,
-    event.clientY
-  );
-
-});
-
-joystick.addEventListener("pointermove", event => {
-
-  if (state.locked) return;
-
-  if (event.pointerId !== joystickPointerId) return;
-
-  updateJoystick(
-    event.clientX,
-    event.clientY
-  );
-
-});
-
-function endJoystick(event) {
-
-  if (event.pointerId !== joystickPointerId) return;
-
-  joystickPointerId = null;
-
-  resetJoystick();
+analog.y=0;
 
 }
 
-joystick.addEventListener("pointerup", endJoystick);
-joystick.addEventListener("pointercancel", endJoystick);
-joystick.addEventListener("lostpointercapture", resetJoystick);
 
-/* =========================================================
-   QUESTION SYSTEM
-========================================================= */
+/* move visual knob */
 
-function openQuestion(index) {
+analogKnob.style.transform=
 
-  if (state.locked) return;
-
-  const question = questions[index];
-
-  state.locked = true;
-
-  joystick.classList.add("disabled");
-
-  modal.classList.add("show");
-
-  questionBadge.textContent =
-    `PETI ${index + 1}`;
-
-  questionCount.textContent =
-    `SOALAN ${index + 1} / ${questions.length}`;
-
-  questionText.textContent =
-    question.q;
-
-  feedback.textContent = "";
-
-  feedback.className = "";
-
-  continueBtn.style.display = "none";
-
-  answersBox.innerHTML = "";
-
-  question.options.forEach((option, optionIndex) => {
-
-    const button = document.createElement("button");
-
-    button.className = "answer-btn";
-
-    const letter =
-      String.fromCharCode(65 + optionIndex);
-
-    button.innerHTML =
-      `<span class="answer-letter">${letter}</span>${option}`;
-
-    button.addEventListener("click", () => {
-
-      checkAnswer(
-        index,
-        optionIndex,
-        button
-      );
-
-    });
-
-    answersBox.appendChild(button);
-
-  });
+"translate(calc(-50% + "+
+dx+
+"px), calc(-50% + "+
+dy+
+"px))";
 
 }
 
-function checkAnswer(questionIndex, selectedIndex, selectedButton) {
 
-  const question = questions[questionIndex];
+function resetAnalog(){
 
-  if (selectedIndex === question.answer) {
+analog.x=0;
 
-    selectedButton.classList.add("correct");
+analog.y=0;
 
-    [...answersBox.children].forEach(button => {
+analog.active=false;
 
-      button.disabled = true;
+analog.pointerId=null;
 
-    });
 
-    feedback.className = "feedback-correct";
+analogKnob.style.transform=
 
-    feedback.innerHTML =
-      `✅ Betul! Jawapan ialah <strong>${
-        String.fromCharCode(65 + question.answer)
-      }. ${question.options[question.answer]}</strong>`;
-
-    state.opened[questionIndex] = true;
-
-    if (questionIndex === state.currentChest) {
-
-      state.currentChest++;
-
-    }
-
-    continueBtn.style.display = "block";
-
-    if (state.currentChest < questions.length) {
-
-      questText.textContent =
-        clues[state.currentChest];
-
-      progressText.textContent =
-        `PETI ${state.currentChest + 1} / ${questions.length}`;
-
-      if (window.villageScene) {
-
-        window.villageScene.revealChest(
-          state.currentChest
-        );
-
-      }
-
-    } else {
-
-      questText.textContent =
-        "🎉 Tahniah! Semua 25 peti harta karun telah ditemui.";
-
-      progressText.textContent =
-        "🎉 MISI SELESAI — 25 / 25";
-
-    }
-
-    showToast(
-      state.currentChest < questions.length
-        ? `Betul! Peti ${state.currentChest + 1} sudah ditemui pada peta.`
-        : "🎉 Semua peti berjaya ditemui!",
-      3200
-    );
-
-  } else {
-
-    selectedButton.classList.add("wrong");
-
-    state.mistakes++;
-
-    feedback.className = "feedback-wrong";
-
-    feedback.textContent =
-      "❌ Belum tepat. Cuba semula.";
-
-    setTimeout(() => {
-
-      selectedButton.classList.remove("wrong");
-
-    }, 600);
-
-  }
+"translate(-50%,-50%)";
 
 }
 
-continueBtn.addEventListener("click", () => {
 
-  modal.classList.remove("show");
+analogWrap.addEventListener(
+"pointerdown",
+e=>{
 
-  state.locked = false;
+e.preventDefault();
 
-  joystick.classList.remove("disabled");
 
-  resetJoystick();
+analog.active=true;
 
-  if (window.villageScene) {
+analog.pointerId=
+e.pointerId;
 
-    window.villageScene.inputLocked = false;
 
-  }
+try{
 
-});
+analogWrap.setPointerCapture(
+e.pointerId
+);
 
-/* =========================================================
-   DRAW HELPERS
-========================================================= */
+}
+catch(err){}
 
-function addLabel(scene, x, y, text, size = 16) {
 
-  const label = scene.add.text(
-    x,
-    y,
-    text,
-    {
-      fontFamily: "Arial",
-      fontSize: size + "px",
-      fontStyle: "bold",
-      color: "#fff8d6",
-      stroke: "#3b5b36",
-      strokeThickness: 5,
-      align: "center"
-    }
-  );
+updateAnalog(
+e.clientX,
+e.clientY
+);
 
-  label.setOrigin(.5);
+}
+);
 
-  label.setDepth(8);
 
-  return label;
+analogWrap.addEventListener(
+"pointermove",
+e=>{
+
+if(
+!analog.active ||
+e.pointerId!==
+analog.pointerId
+){
+
+return;
 
 }
 
-function drawTree(scene, x, y, scale = 1) {
 
-  const g = scene.add.graphics();
+e.preventDefault();
 
-  g.setDepth(4);
 
-  /* shadow */
+updateAnalog(
+e.clientX,
+e.clientY
+);
 
-  g.fillStyle(0x3f6f3a, .22);
+}
+);
 
-  g.fillEllipse(
-    x,
-    y + 36 * scale,
-    100 * scale,
-    30 * scale
-  );
 
-  /* trunk */
+analogWrap.addEventListener(
+"pointerup",
+e=>{
 
-  g.fillStyle(0x80512f, 1);
+if(
+e.pointerId===
+analog.pointerId
+){
 
-  g.fillRoundedRect(
-    x - 18 * scale,
-    y - 5 * scale,
-    36 * scale,
-    70 * scale,
-    10
-  );
-
-  /* branches */
-
-  g.lineStyle(
-    12 * scale,
-    0x80512f,
-    1
-  );
-
-  g.beginPath();
-
-  g.moveTo(
-    x,
-    y + 20 * scale
-  );
-
-  g.lineTo(
-    x - 32 * scale,
-    y - 15 * scale
-  );
-
-  g.moveTo(
-    x,
-    y + 20 * scale
-  );
-
-  g.lineTo(
-    x + 30 * scale,
-    y - 15 * scale
-  );
-
-  g.strokePath();
-
-  /* leaves */
-
-  g.fillStyle(0x3f8b45, 1);
-
-  g.fillCircle(
-    x - 35 * scale,
-    y - 20 * scale,
-    40 * scale
-  );
-
-  g.fillCircle(
-    x + 35 * scale,
-    y - 18 * scale,
-    42 * scale
-  );
-
-  g.fillCircle(
-    x,
-    y - 48 * scale,
-    50 * scale
-  );
-
-  g.fillCircle(
-    x,
-    y - 5 * scale,
-    50 * scale
-  );
-
-  /* highlights */
-
-  g.fillStyle(0x72b957, .8);
-
-  g.fillCircle(
-    x - 18 * scale,
-    y - 52 * scale,
-    12 * scale
-  );
-
-  g.fillCircle(
-    x + 23 * scale,
-    y - 15 * scale,
-    10 * scale
-  );
-
-  return g;
+resetAnalog();
 
 }
 
-function drawBigTree(scene, x, y) {
+}
+);
 
-  return drawTree(scene, x, y, 1.55);
+
+analogWrap.addEventListener(
+"pointercancel",
+resetAnalog
+);
+
+
+/* action */
+
+$("actionBtn")
+.addEventListener(
+"pointerdown",
+e=>{
+
+e.preventDefault();
+
+
+if(sceneRef){
+
+interactChest(
+sceneRef
+);
 
 }
 
-function drawHouse(scene, x, y) {
-
-  const g = scene.add.graphics();
-
-  g.setDepth(3);
-
-  /* shadow */
-
-  g.fillStyle(0x365536, .25);
-
-  g.fillEllipse(
-    x,
-    y + 125,
-    300,
-    55
-  );
-
-  /* house body */
-
-  g.fillStyle(0xf1d49b, 1);
-
-  g.fillRoundedRect(
-    x - 130,
-    y - 35,
-    260,
-    160,
-    12
-  );
-
-  /* roof */
-
-  g.fillStyle(0xa34d38, 1);
-
-  g.beginPath();
-
-  g.moveTo(x - 160, y - 25);
-  g.lineTo(x, y - 135);
-  g.lineTo(x + 160, y - 25);
-  g.closePath();
-
-  g.fillPath();
-
-  /* roof line */
-
-  g.lineStyle(5, 0x773a2e, 1);
-
-  g.beginPath();
-
-  g.moveTo(x - 160, y - 25);
-  g.lineTo(x, y - 135);
-  g.lineTo(x + 160, y - 25);
-
-  g.strokePath();
-
-  /* door */
-
-  g.fillStyle(0x75472e, 1);
-
-  g.fillRoundedRect(
-    x - 27,
-    y + 42,
-    54,
-    83,
-    8
-  );
-
-  /* door knob */
-
-  g.fillStyle(0xf2cf5e, 1);
-
-  g.fillCircle(
-    x + 15,
-    y + 83,
-    5
-  );
-
-  /* windows */
-
-  function windowBox(wx) {
-
-    g.fillStyle(0x9fd9e4, 1);
-
-    g.fillRect(
-      wx - 31,
-      y + 8,
-      62,
-      48
-    );
-
-    g.lineStyle(4, 0x704a35, 1);
-
-    g.strokeRect(
-      wx - 31,
-      y + 8,
-      62,
-      48
-    );
-
-    g.lineBetween(
-      wx,
-      y + 8,
-      wx,
-      y + 56
-    );
-
-    g.lineBetween(
-      wx - 31,
-      y + 32,
-      wx + 31,
-      y + 32
-    );
-
-  }
-
-  windowBox(x - 80);
-  windowBox(x + 80);
-
-  /* chimney */
-
-  g.fillStyle(0x9b523d, 1);
-
-  g.fillRect(
-    x + 65,
-    y - 102,
-    35,
-    60
-  );
-
-  addLabel(
-    scene,
-    x,
-    y + 155,
-    "RUMAH PEKEBUN",
-    14
-  );
-
 }
+);
 
-function drawFarm(scene, x, y, width, height, type = "vegetable") {
-
-  const g = scene.add.graphics();
-
-  g.setDepth(2);
-
-  /* soil rows */
-
-  const rows = 5;
-
-  for (let r = 0; r < rows; r++) {
-
-    const ry =
-      y + r * (height / rows);
-
-    g.fillStyle(0x9b683f, 1);
-
-    g.fillRoundedRect(
-      x,
-      ry,
-      width,
-      height / rows - 8,
-      8
-    );
-
-    g.lineStyle(
-      3,
-      0x7b4f32,
-      .8
-    );
-
-    for (
-      let px = x + 15;
-      px < x + width - 10;
-      px += 35
-    ) {
-
-      g.lineBetween(
-        px,
-        ry + 12,
-        px,
-        ry + height / rows - 20
-      );
-
-    }
-
-  }
-
-  /* plants */
-
-  for (let r = 0; r < rows; r++) {
-
-    for (
-      let c = 0;
-      c < Math.floor(width / 40);
-      c++
-    ) {
-
-      const px =
-        x + 20 + c * 40;
-
-      const py =
-        y + 18 + r * (height / rows);
-
-      if (type === "pumpkin") {
-
-        g.fillStyle(0xe78628, 1);
-
-        g.fillCircle(
-          px,
-          py,
-          10
-        );
-
-        g.fillStyle(0x3f8c3d, 1);
-
-        g.fillCircle(
-          px - 10,
-          py - 8,
-          6
-        );
-
-      } else if (type === "wheat") {
-
-        g.lineStyle(
-          3,
-          0x8a6a22,
-          1
-        );
-
-        g.lineBetween(
-          px,
-          py + 12,
-          px,
-          py - 9
-        );
-
-        g.fillStyle(0xf0ce5a, 1);
-
-        g.fillEllipse(
-          px,
-          py - 10,
-          8,
-          14
-        );
-
-      } else {
-
-        /* leafy crops */
-
-        g.fillStyle(0x3f9148, 1);
-
-        g.fillCircle(
-          px - 6,
-          py,
-          8
-        );
-
-        g.fillCircle(
-          px + 6,
-          py,
-          8
-        );
-
-        g.fillStyle(0x71b95b, 1);
-
-        g.fillCircle(
-          px,
-          py - 6,
-          7
-        );
-
-      }
-
-    }
-
-  }
-
-}
-
-function drawPond(scene, x, y) {
-
-  const g = scene.add.graphics();
-
-  g.setDepth(2);
-
-  g.fillStyle(0x4e8f78, .25);
-
-  g.fillEllipse(
-    x,
-    y,
-    430,
-    250
-  );
-
-  g.fillStyle(0x4b9fd1, 1);
-
-  g.fillEllipse(
-    x,
-    y,
-    400,
-    220
-  );
-
-  g.lineStyle(
-    7,
-    0x387fa7,
-    1
-  );
-
-  g.strokeEllipse(
-    x,
-    y,
-    400,
-    220
-  );
-
-  /* water highlights */
-
-  g.lineStyle(
-    4,
-    0x91d7e7,
-    .7
-  );
-
-  for (let i = -2; i <= 2; i++) {
-
-    g.lineBetween(
-      x - 130,
-      y + i * 35,
-      x - 60,
-      y + i * 35
-    );
-
-    g.lineBetween(
-      x + 50,
-      y + i * 35 + 10,
-      x + 125,
-      y + i * 35 + 10
-    );
-
-  }
-
-  /* stones */
-
-  const stones = [
-
-    [-170, 65],
-    [-135, -70],
-    [170, 70],
-    [145, -65],
-    [0, 110]
-
-  ];
-
-  stones.forEach(([sx, sy]) => {
-
-    g.fillStyle(0x87938a, 1);
-
-    g.fillEllipse(
-      x + sx,
-      y + sy,
-      38,
-      25
-    );
-
-  });
-
-  addLabel(
-    scene,
-    x,
-    y + 155,
-    "KOLAM KAMPUNG",
-    14
-  );
-
-}
-
-function drawWell(scene, x, y) {
-
-  const g = scene.add.graphics();
-
-  g.setDepth(4);
-
-  g.fillStyle(0x6e7772, 1);
-
-  g.fillEllipse(
-    x,
-    y + 25,
-    105,
-    35
-  );
-
-  g.fillStyle(0x89928d, 1);
-
-  g.fillRoundedRect(
-    x - 48,
-    y - 10,
-    96,
-    55,
-    8
-  );
-
-  g.fillStyle(0x3f7e9a, 1);
-
-  g.fillEllipse(
-    x,
-    y + 3,
-    67,
-    25
-  );
-
-  g.lineStyle(
-    7,
-    0x70482e,
-    1
-  );
-
-  g.lineBetween(
-    x - 42,
-    y - 65,
-    x - 42,
-    y - 2
-  );
-
-  g.lineBetween(
-    x + 42,
-    y - 65,
-    x + 42,
-    y - 2
-  );
-
-  g.lineBetween(
-    x - 47,
-    y - 60,
-    x + 47,
-    y - 60
-  );
-
-  addLabel(
-    scene,
-    x,
-    y + 65,
-    "TELAGA",
-    13
-  );
-
-}
-
-function drawBarn(scene, x, y) {
-
-  const g = scene.add.graphics();
-
-  g.setDepth(3);
-
-  g.fillStyle(0x9e4b38, 1);
-
-  g.fillRoundedRect(
-    x - 110,
-    y - 20,
-    220,
-    150,
-    10
-  );
-
-  g.fillStyle(0x713c2e, 1);
-
-  g.beginPath();
-
-  g.moveTo(x - 130, y - 20);
-  g.lineTo(x, y - 105);
-  g.lineTo(x + 130, y - 20);
-  g.closePath();
-
-  g.fillPath();
-
-  g.fillStyle(0x6e452e, 1);
-
-  g.fillRect(
-    x - 35,
-    y + 35,
-    70,
-    95
-  );
-
-  g.lineStyle(
-    5,
-    0x493427,
-    1
-  );
-
-  g.lineBetween(
-    x - 35,
-    y + 35,
-    x + 35,
-    y + 130
-  );
-
-  g.lineBetween(
-    x + 35,
-    y + 35,
-    x - 35,
-    y + 130
-  );
-
-  addLabel(
-    scene,
-    x,
-    y + 165,
-    "BANGSAL",
-    14
-  );
-
-}
-
-function drawFlowers(scene, x, y) {
-
-  const g = scene.add.graphics();
-
-  g.setDepth(3);
-
-  for (let i = 0; i < 24; i++) {
-
-    const px =
-      x + ((i * 43) % 250);
-
-    const py =
-      y + ((i * 67) % 130);
-
-    g.lineStyle(
-      2,
-      0x3e783d,
-      1
-    );
-
-    g.lineBetween(
-      px,
-      py + 12,
-      px,
-      py
-    );
-
-    const colors = [
-      0xf4a7bb,
-      0xf7d45e,
-      0xa6b9f2,
-      0xf19b6c
-    ];
-
-    g.fillStyle(
-      colors[i % colors.length],
-      1
-    );
-
-    g.fillCircle(
-      px,
-      py,
-      7
-    );
-
-  }
-
-  addLabel(
-    scene,
-    x + 125,
-    y + 160,
-    "TAMAN BUNGA",
-    13
-  );
-
-}
-
-function drawBridge(scene, x, y, stone = false) {
-
-  const g = scene.add.graphics();
-
-  g.setDepth(4);
-
-  const color =
-    stone ? 0x858b82 : 0x9a633b;
-
-  g.fillStyle(color, 1);
-
-  g.fillRoundedRect(
-    x - 105,
-    y - 38,
-    210,
-    76,
-    8
-  );
-
-  g.lineStyle(
-    5,
-    stone ? 0x626861 : 0x70442b,
-    1
-  );
-
-  for (let i = -80; i <= 80; i += 30) {
-
-    g.lineBetween(
-      x + i,
-      y - 38,
-      x + i,
-      y + 38
-    );
-
-  }
-
-  g.lineStyle(
-    7,
-    stone ? 0x626861 : 0x70442b,
-    1
-  );
-
-  g.lineBetween(
-    x - 100,
-    y - 45,
-    x + 100,
-    y - 45
-  );
-
-  g.lineBetween(
-    x - 100,
-    y + 45,
-    x + 100,
-    y + 45
-  );
-
-}
-
-function drawGreenhouse(scene, x, y) {
-
-  const g = scene.add.graphics();
-
-  g.setDepth(3);
-
-  g.fillStyle(0x86c7bd, .55);
-
-  g.fillRect(
-    x - 115,
-    y - 60,
-    230,
-    120
-  );
-
-  g.lineStyle(
-    7,
-    0x537d68,
-    1
-  );
-
-  g.strokeRect(
-    x - 115,
-    y - 60,
-    230,
-    120
-  );
-
-  g.lineBetween(
-    x - 115,
-    y - 60,
-    x,
-    y - 125
-  );
-
-  g.lineBetween(
-    x,
-    y - 125,
-    x + 115,
-    y - 60
-  );
-
-  g.lineBetween(
-    x,
-    y - 125,
-    x,
-    y + 60
-  );
-
-  g.fillStyle(0x755037, 1);
-
-  g.fillRect(
-    x - 22,
-    y + 20,
-    44,
-    40
-  );
-
-  addLabel(
-    scene,
-    x,
-    y + 90,
-    "RUMAH HIJAU",
-    13
-  );
-
-}
-
-function drawWindmill(scene, x, y) {
-
-  const g = scene.add.graphics();
-
-  g.setDepth(4);
-
-  g.fillStyle(0xd8c4a0, 1);
-
-  g.fillRoundedRect(
-    x - 45,
-    y - 100,
-    90,
-    190,
-    14
-  );
-
-  g.fillStyle(0xa54e3e, 1);
-
-  g.beginPath();
-
-  g.moveTo(x - 55, y - 95);
-  g.lineTo(x, y - 145);
-  g.lineTo(x + 55, y - 95);
-  g.closePath();
-
-  g.fillPath();
-
-  g.fillStyle(0x70482e, 1);
-
-  g.fillCircle(
-    x,
-    y - 10,
-    15
-  );
-
-  g.lineStyle(
-    10,
-    0xf0e4c2,
-    1
-  );
-
-  g.lineBetween(
-    x - 80,
-    y - 90,
-    x + 80,
-    y + 70
-  );
-
-  g.lineBetween(
-    x + 80,
-    y - 90,
-    x - 80,
-    y + 70
-  );
-
-  addLabel(
-    scene,
-    x,
-    y + 125,
-    "KINCIR ANGIN",
-    13
-  );
-
-}
-
-function drawFountain(scene, x, y) {
-
-  const g = scene.add.graphics();
-
-  g.setDepth(4);
-
-  g.fillStyle(0x909d98, 1);
-
-  g.fillEllipse(
-    x,
-    y + 25,
-    150,
-    55
-  );
-
-  g.fillStyle(0x5da6c4, 1);
-
-  g.fillEllipse(
-    x,
-    y + 20,
-    115,
-    37
-  );
-
-  g.fillStyle(0x8d9995, 1);
-
-  g.fillRect(
-    x - 15,
-    y - 60,
-    30,
-    80
-  );
-
-  g.fillStyle(0x5da6c4, .9);
-
-  g.fillCircle(
-    x,
-    y - 68,
-    18
-  );
-
-  addLabel(
-    scene,
-    x,
-    y + 65,
-    "DATARAN KAMPUNG",
-    13
-  );
-
-}
-
-function drawSign(scene, x, y) {
-
-  const g = scene.add.graphics();
-
-  g.setDepth(5);
-
-  g.fillStyle(0x765032, 1);
-
-  g.fillRect(
-    x - 8,
-    y,
-    16,
-    70
-  );
-
-  g.fillStyle(0xb98a51, 1);
-
-  g.fillRoundedRect(
-    x - 75,
-    y - 48,
-    150,
-    55,
-    7
-  );
-
-  g.lineStyle(
-    4,
-    0x6c472c,
-    1
-  );
-
-  g.strokeRoundedRect(
-    x - 75,
-    y - 48,
-    150,
-    55,
-    7
-  );
-
-  const text = scene.add.text(
-    x,
-    y - 21,
-    "PERSIMPANGAN",
-    {
-      fontSize: "12px",
-      fontStyle: "bold",
-      color: "#49301e"
-    }
-  );
-
-  text.setOrigin(.5);
-  text.setDepth(6);
-
-}
-
-function drawHay(scene, x, y) {
-
-  const g = scene.add.graphics();
-
-  g.setDepth(4);
-
-  for (let i = 0; i < 3; i++) {
-
-    g.fillStyle(0xd6aa4f, 1);
-
-    g.fillRoundedRect(
-      x + i * 55,
-      y - i * 8,
-      58,
-      48,
-      9
-    );
-
-    g.lineStyle(
-      3,
-      0xa77c35,
-      1
-    );
-
-    g.strokeRoundedRect(
-      x + i * 55,
-      y - i * 8,
-      58,
-      48,
-      9
-    );
-
-  }
-
-  addLabel(
-    scene,
-    x + 60,
-    y + 65,
-    "JERAMI",
-    12
-  );
-
-}
-
-function drawFlagHill(scene, x, y) {
-
-  const g = scene.add.graphics();
-
-  g.setDepth(3);
-
-  g.fillStyle(0x66884e, 1);
-
-  g.fillEllipse(
-    x,
-    y + 35,
-    310,
-    130
-  );
-
-  g.fillStyle(0x7ea15a, 1);
-
-  g.fillEllipse(
-    x,
-    y,
-    260,
-    120
-  );
-
-  g.lineStyle(
-    6,
-    0x70482e,
-    1
-  );
-
-  g.lineBetween(
-    x,
-    y - 80,
-    x,
-    y + 15
-  );
-
-  g.fillStyle(0xe56e58, 1);
-
-  g.beginPath();
-
-  g.moveTo(x, y - 80);
-  g.lineTo(x + 60, y - 60);
-  g.lineTo(x, y - 40);
-  g.closePath();
-
-  g.fillPath();
-
-  addLabel(
-    scene,
-    x,
-    y + 95,
-    "BUKIT KECIL",
-    13
-  );
-
-}
-
-/* =========================================================
-   PLAYER
-========================================================= */
-
-function createPlayer(scene, x, y) {
-
-  const container =
-    scene.add.container(x, y);
-
-  container.setDepth(30);
-
-  const g =
-    scene.add.graphics();
-
-  /* shadow */
-
-  g.fillStyle(0x1c3a27, .25);
-
-  g.fillEllipse(
-    0,
-    28,
-    52,
-    17
-  );
-
-  /* boots */
-
-  g.fillStyle(0x573b2b, 1);
-
-  g.fillRoundedRect(
-    -21,
-    22,
-    17,
-    15,
-    5
-  );
-
-  g.fillRoundedRect(
-    4,
-    22,
-    17,
-    15,
-    5
-  );
-
-  /* body */
-
-  g.fillStyle(0x527f55, 1);
-
-  g.fillRoundedRect(
-    -23,
-    -5,
-    46,
-    35,
-    11
-  );
-
-  /* overalls */
-
-  g.fillStyle(0x5a7193, 1);
-
-  g.fillRoundedRect(
-    -17,
-    0,
-    34,
-    28,
-    8
-  );
-
-  /* neck */
-
-  g.fillStyle(0xe4a06c, 1);
-
-  g.fillRect(
-    -7,
-    -17,
-    14,
-    13
-  );
-
-  /* face */
-
-  g.fillStyle(0xf0b27d, 1);
-
-  g.fillCircle(
-    0,
-    -32,
-    24
-  );
-
-  /* ears */
-
-  g.fillCircle(
-    -23,
-    -32,
-    7
-  );
-
-  g.fillCircle(
-    23,
-    -32,
-    7
-  );
-
-  /* eyes */
-
-  g.fillStyle(0x2b2923, 1);
-
-  g.fillCircle(
-    -8,
-    -34,
-    3
-  );
-
-  g.fillCircle(
-    8,
-    -34,
-    3
-  );
-
-  /* smile */
-
-  g.lineStyle(
-    2,
-    0x713f2f,
-    1
-  );
-
-  g.beginPath();
-
-  g.arc(
-    0,
-    -28,
-    8,
-    .2,
-    2.9,
-    false
-  );
-
-  g.strokePath();
-
-  /* hat */
-
-  g.fillStyle(0xd6a647, 1);
-
-  g.fillEllipse(
-    0,
-    -58,
-    62,
-    20
-  );
-
-  g.fillRoundedRect(
-    -22,
-    -75,
-    44,
-    22,
-    9
-  );
-
-  g.fillStyle(0xb57d2f, 1);
-
-  g.fillRect(
-    -22,
-    -58,
-    44,
-    6
-  );
-
-  /* arms */
-
-  g.fillStyle(0xe4a06c, 1);
-
-  g.fillRoundedRect(
-    -34,
-    0,
-    12,
-    28,
-    6
-  );
-
-  g.fillRoundedRect(
-    22,
-    0,
-    12,
-    28,
-    6
-  );
-
-  container.add(g);
-
-  const label =
-    scene.add.text(
-      0,
-      -91,
-      "PEKEBUN",
-      {
-        fontSize: "11px",
-        fontStyle: "bold",
-        color: "#fff9db",
-        stroke: "#35583b",
-        strokeThickness: 4
-      }
-    );
-
-  label.setOrigin(.5);
-
-  container.add(label);
-
-  return container;
-
-}
-
-/* =========================================================
-   CHEST
-========================================================= */
-
-function createChest(scene, index, x, y) {
-
-  const container =
-    scene.add.container(x, y);
-
-  container.setDepth(25);
-
-  const g =
-    scene.add.graphics();
-
-  /* ground glow */
-
-  g.fillStyle(0xffdc67, .18);
-
-  g.fillEllipse(
-    0,
-    19,
-    100,
-    35
-  );
-
-  /* chest body */
-
-  g.fillStyle(0x8a512b, 1);
-
-  g.fillRoundedRect(
-    -27,
-    -12,
-    54,
-    38,
-    7
-  );
-
-  /* chest top */
-
-  g.fillStyle(0xb66e32, 1);
-
-  g.fillRoundedRect(
-    -27,
-    -25,
-    54,
-    24,
-    9
-  );
-
-  /* gold band */
-
-  g.fillStyle(0xe6bb4f, 1);
-
-  g.fillRect(
-    -4,
-    -25,
-    8,
-    38
-  );
-
-  /* latch */
-
-  g.fillStyle(0xf2d36c, 1);
-
-  g.fillRoundedRect(
-    -7,
-    -3,
-    14,
-    13,
-    4
-  );
-
-  /* number */
-
-  const label =
-    scene.add.text(
-      0,
-      -48,
-      `PETI ${index + 1}`,
-      {
-        fontSize: "11px",
-        fontStyle: "bold",
-        color: "#fff8cf",
-        stroke: "#4a3820",
-        strokeThickness: 4
-      }
-    );
-
-  label.setOrigin(.5);
-
-  /* sparkle */
-
-  const sparkle =
-    scene.add.text(
-      0,
-      -78,
-      "✦",
-      {
-        fontSize: "28px",
-        color: "#fff0a0",
-        stroke: "#9a7026",
-        strokeThickness: 2
-      }
-    );
-
-  sparkle.setOrigin(.5);
-
-  container.add(g);
-  container.add(label);
-  container.add(sparkle);
-
-  sparkle.setAlpha(0);
-
-  container.setVisible(false);
-
-  const tween =
-    scene.tweens.add({
-      targets: sparkle,
-      alpha: { from: .2, to: 1 },
-      scale: { from: .7, to: 1.15 },
-      duration: 650,
-      yoyo: true,
-      repeat: -1,
-      ease: "Sine.easeInOut"
-    });
-
-  return {
-
-    container,
-
-    sparkle,
-
-    tween
-
-  };
-
-}
-
-/* =========================================================
-   VILLAGE SCENE
-========================================================= */
-
-class VillageScene extends Phaser.Scene {
-
-  constructor() {
-
-    super("VillageScene");
-
-    this.player = null;
-
-    this.chests = [];
-
-    this.inputLocked = false;
-
-    this.lastMovementX = 0;
-
-    this.lastMovementY = -1;
-
-  }
-
-  create() {
-
-    window.villageScene = this;
-
-    this.WORLD_WIDTH = 3000;
-    this.WORLD_HEIGHT = 2200;
-
-    this.physics.world.setBounds(
-      0,
-      0,
-      this.WORLD_WIDTH,
-      this.WORLD_HEIGHT
-    );
-
-    this.drawWorld();
-
-    /* player */
-
-    this.player =
-      createPlayer(
-        this,
-        1400,
-        950
-      );
-
-    this.physics.add.existing(
-      this.player
-    );
-
-    this.player.body.setSize(
-      34,
-      50
-    );
-
-    this.player.body.setOffset(
-      -17,
-      -25
-    );
-
-    this.player.body.setCollideWorldBounds(
-      true
-    );
-
-    /* keyboard */
-
-    this.cursors =
-      this.input.keyboard.createCursorKeys();
-
-    this.keys =
-      this.input.keyboard.addKeys(
-        "W,A,S,D"
-      );
-
-    this.keyE =
-      this.input.keyboard.addKey(
-        Phaser.Input.Keyboard.KeyCodes.E
-      );
-
-    this.keySpace =
-      this.input.keyboard.addKey(
-        Phaser.Input.Keyboard.KeyCodes.SPACE
-      );
-
-    /* camera */
-
-    this.cameras.main.startFollow(
-      this.player,
-      true,
-      .08,
-      .08
-    );
-
-    this.cameras.main.setBounds(
-      0,
-      0,
-      this.WORLD_WIDTH,
-      this.WORLD_HEIGHT
-    );
-
-    this.cameras.main.roundPixels = true;
-
-    /* chests */
-
-    this.chests =
-      chestLocations.map(
-        (position, index) =>
-          createChest(
-            this,
-            index,
-            position.x,
-            position.y
-          )
-      );
-
-    this.revealChest(0);
-
-    /* resize */
-
-    this.scale.on(
-      "resize",
-      this.handleResize,
-      this
-    );
-
-    this.handleResize();
-
-    /* initial UI */
-
-    updateQuest();
-
-    showToast(
-      "🌿 Jelajah kampung, ikut petunjuk dan cari peti harta karun!",
-      4200
-    );
-
-    loading.classList.add("hide");
-
-    /* keyboard browser protection */
-
-    window.addEventListener(
-      "keydown",
-      event => {
-
-        if (
-          [
-            "ArrowUp",
-            "ArrowDown",
-            "ArrowLeft",
-            "ArrowRight",
-            " "
-          ].includes(event.key)
-        ) {
-
-          event.preventDefault();
-
-        }
-
-      },
-      { passive: false }
-    );
-
-  }
-
-  /* =======================================================
-     WORLD
-  ======================================================= */
-
-  drawWorld() {
-
-    const W = this.WORLD_WIDTH;
-    const H = this.WORLD_HEIGHT;
-
-    /* grass background */
-
-    const background =
-      this.add.graphics();
-
-    background.fillStyle(
-      0x76c96a,
-      1
-    );
-
-    background.fillRect(
-      0,
-      0,
-      W,
-      H
-    );
-
-    background.setDepth(-100);
-
-    /* grass details */
-
-    const grass =
-      this.add.graphics();
-
-    grass.setDepth(-90);
-
-    let seed = 987654;
-
-    const random = () => {
-
-      seed =
-        (seed * 9301 + 49297) % 233280;
-
-      return seed / 233280;
-
-    };
-
-    for (let i = 0; i < 600; i++) {
-
-      const x =
-        random() * W;
-
-      const y =
-        random() * H;
-
-      grass.lineStyle(
-        2,
-        0x4d9b51,
-        .35
-      );
-
-      grass.lineBetween(
-        x,
-        y,
-        x + 3,
-        y - 7
-      );
-
-    }
-
-    /* paths */
-
-    const paths =
-      this.add.graphics();
-
-    paths.setDepth(-70);
-
-    paths.lineStyle(
-      90,
-      0xd7b77a,
-      1
-    );
-
-    paths.strokePoints(
-      [
-        { x: 200, y: 1080 },
-        { x: 800, y: 1080 },
-        { x: 1250, y: 950 },
-        { x: 1500, y: 1150 },
-        { x: 2200, y: 1150 },
-        { x: 2700, y: 1200 }
-      ],
-      false,
-      false
-    );
-
-    paths.strokePoints(
-      [
-        { x: 1400, y: 950 },
-        { x: 1400, y: 500 },
-        { x: 1450, y: 200 }
-      ],
-      false,
-      false
-    );
-
-    paths.strokePoints(
-      [
-        { x: 1300, y: 950 },
-        { x: 900, y: 1450 },
-        { x: 500, y: 1750 }
-      ],
-      false,
-      false
-    );
-
-    /* village objects */
-
-    drawHouse(
-      this,
-      1300,
-      800
-    );
-
-    drawFarm(
-      this,
-      1500,
-      760,
-      400,
-      260,
-      "vegetable"
-    );
-
-    addLabel(
-      this,
-      1700,
-      735,
-      "KEBUN SAYUR",
-      14
-    );
-
-    drawWell(
-      this,
-      1360,
-      680
-    );
-
-    drawPond(
-      this,
-      1400,
-      1080
-    );
-
-    drawBarn(
-      this,
-      900,
-      680
-    );
-
-    drawFlowers(
-      this,
-      1170,
-      1250
-    );
-
-    drawFarm(
-      this,
-      1720,
-      1350,
-      300,
-      230,
-      "pumpkin"
-    );
-
-    addLabel(
-      this,
-      1870,
-      1320,
-      "KEBUN LABU",
-      14
-    );
-
-    drawFarm(
-      this,
-      2250,
-      1160,
-      390,
-      250,
-      "wheat"
-    );
-
-    addLabel(
-      this,
-      2445,
-      1130,
-      "KEBUN GANDUM",
-      14
-    );
-
-    drawGreenhouse(
-      this,
-      800,
-      1450
-    );
-
-    drawWindmill(
-      this,
-      1450,
-      1720
-    );
-
-    drawFountain(
-      this,
-      1500,
-      1160
-    );
-
-    drawSign(
-      this,
-      1500,
-      1260
-    );
-
-    drawHay(
-      this,
-      560,
-      890
-    );
-
-    drawFlagHill(
-      this,
-      2250,
-      400
-    );
-
-    /* bridges */
-
-    drawBridge(
-      this,
-      1120,
-      1030,
-      false
-    );
-
-    drawBridge(
-      this,
-      1100,
-      400,
-      true
-    );
-
-    /* small house */
-
-    drawHouse(
-      this,
-      430,
-      1580
-    );
-
-    /* giant trees */
-
-    drawBigTree(
-      this,
-      850,
-      1710
-    );
-
-    drawBigTree(
-      this,
-      1450,
-      540
-    );
-
-    /* fruit tree */
-
-    drawTree(
-      this,
-      1950,
-      550,
-      1.15
-    );
-
-    addLabel(
-      this,
-      1950,
-      625,
-      "POKOK BUAH",
-      13
-    );
-
-    /* old tree near final */
-
-    drawBigTree(
-      this,
-      1300,
-      1050
-    );
-
-    /* bamboo */
-
-    const bamboo =
-      this.add.graphics();
-
-    bamboo.setDepth(4);
-
-    for (let i = 0; i < 8; i++) {
-
-      const bx =
-        1680 + i * 16;
-
-      const by =
-        1190 + (i % 3) * 10;
-
-      bamboo.lineStyle(
-        6,
-        0x3c7d45,
-        1
-      );
-
-      bamboo.lineBetween(
-        bx,
-        by + 50,
-        bx,
-        by - 20
-      );
-
-      bamboo.lineStyle(
-        2,
-        0x87ba55,
-        1
-      );
-
-      bamboo.lineBetween(
-        bx,
-        by - 5,
-        bx + 12,
-        by - 13
-      );
-
-    }
-
-    addLabel(
-      this,
-      1740,
-      1290,
-      "RUMPUN BULUH",
-      12
-    );
-
-    /* three rocks */
-
-    const rocks =
-      this.add.graphics();
-
-    rocks.setDepth(4);
-
-    [
-      [2100, 1080],
-      [2160, 1110],
-      [2210, 1070]
-    ].forEach(([x,y]) => {
-
-      rocks.fillStyle(
-        0x7f8b82,
-        1
-      );
-
-      rocks.fillEllipse(
-        x,
-        y,
-        60,
-        42
-      );
-
-    });
-
-    addLabel(
-      this,
-      2150,
-      1165,
-      "BATU BESAR",
-      12
-    );
-
-    /* forest northwest */
-
-    for (let i = 0; i < 16; i++) {
-
-      const x =
-        300 + (i % 5) * 100;
-
-      const y =
-        250 + Math.floor(i / 5) * 120;
-
-      drawTree(
-        this,
-        x,
-        y,
-        .8 + (i % 3) * .12
-      );
-
-    }
-
-    addLabel(
-      this,
-      500,
-      690,
-      "HUTAN KECIL",
-      15
-    );
-
-    /* stream */
-
-    const stream =
-      this.add.graphics();
-
-    stream.setDepth(-20);
-
-    stream.fillStyle(
-      0x4b9fc1,
-      1
-    );
-
-    stream.beginPath();
-
-    stream.moveTo(920, 0);
-    stream.lineTo(1050, 0);
-    stream.lineTo(1070, 160);
-    stream.lineTo(1040, 300);
-    stream.lineTo(1130, 470);
-    stream.lineTo(1180, 700);
-    stream.lineTo(1100, 800);
-    stream.lineTo(1000, 700);
-    stream.lineTo(970, 500);
-    stream.lineTo(990, 300);
-    stream.closePath();
-
-    stream.fillPath();
-
-    /* northern bushes */
-
-    const bushes =
-      this.add.graphics();
-
-    bushes.setDepth(4);
-
-    for (let i = 0; i < 10; i++) {
-
-      const x =
-        1320 + i * 30;
-
-      const y =
-        230 + (i % 2) * 18;
-
-      bushes.fillStyle(
-        0x4b8e46,
-        1
-      );
-
-      bushes.fillCircle(
-        x,
-        y,
-        22
-      );
-
-      bushes.fillStyle(
-        0x83bd58,
-        1
-      );
-
-      bushes.fillCircle(
-        x - 6,
-        y - 7,
-        8
-      );
-
-    }
-
-    addLabel(
-      this,
-      1450,
-      185,
-      "PAGAR UTARA",
-      13
-    );
-
-    /* southern fence */
-
-    const fence =
-      this.add.graphics();
-
-    fence.setDepth(4);
-
-    fence.lineStyle(
-      7,
-      0x795238,
-      1
-    );
-
-    fence.lineBetween(
-      800,
-      1620,
-      1900,
-      1620
-    );
-
-    for (
-      let x = 800;
-      x <= 1900;
-      x += 70
-    ) {
-
-      fence.lineBetween(
-        x,
-        1595,
-        x,
-        1645
-      );
-
-    }
-
-    /* big rock south */
-
-    const bigRock =
-      this.add.graphics();
-
-    bigRock.setDepth(4);
-
-    bigRock.fillStyle(
-      0x737e77,
-      1
-    );
-
-    bigRock.fillEllipse(
-      1250,
-      1600,
-      90,
-      60
-    );
-
-    /* labels */
-
-    addLabel(
-      this,
-      1250,
-      1680,
-      "PAGAR SELATAN",
-      12
-    );
-
-    /* decorative flowers */
-
-    const decor =
-      this.add.graphics();
-
-    decor.setDepth(3);
-
-    for (let i = 0; i < 45; i++) {
-
-      const x =
-        100 + (i * 197) % 2700;
-
-      const y =
-        100 + (i * 113) % 1900;
-
-      decor.fillStyle(
-        i % 2 === 0
-          ? 0xf0a6b8
-          : 0xf5d568,
-        .8
-      );
-
-      decor.fillCircle(
-        x,
-        y,
-        4
-      );
-
-    }
-
-  }
-
-  /* =======================================================
-     CHEST
-  ======================================================= */
-
-  revealChest(index) {
-
-    if (index < 0) return;
-
-    if (index >= this.chests.length) return;
-
-    this.chests.forEach(
-      (chest, i) => {
-
-        chest.container.setVisible(
-          i === index
-        );
-
-      }
-    );
-
-    const chest =
-      this.chests[index];
-
-    if (chest) {
-
-      chest.container.setScale(.85);
-
-      this.tweens.add({
-
-        targets:
-          chest.container,
-
-        scale: {
-          from: .75,
-          to: 1
-        },
-
-        duration: 400,
-
-        ease: "Back.easeOut"
-
-      });
-
-    }
-
-  }
-
-  /* =======================================================
-     RESIZE
-  ======================================================= */
-
-  handleResize() {
-
-    if (!this.cameras || !this.cameras.main) {
-      return;
-    }
-
-    const width =
-      this.scale.gameSize.width;
-
-    const height =
-      this.scale.gameSize.height;
-
-    this.cameras.main.setViewport(
-      0,
-      0,
-      width,
-      height
-    );
-
-    /*
-      Responsive zoom.
-
-      Landscape:
-      nampak lebih luas secara mendatar.
-
-      Portrait:
-      zoom dikecilkan supaya kawasan kampung
-      masih boleh diterokai.
-    */
-
-    const responsiveZoom =
-      Math.min(
-        1,
-        Math.max(
-          .62,
-          Math.min(
-            width / 760,
-            height / 520
-          )
-        )
-      );
-
-    this.cameras.main.setZoom(
-      responsiveZoom
-    );
-
-  }
-
-  /* =======================================================
-     INTERACT
-  ======================================================= */
-
-  tryInteract() {
-
-    if (this.inputLocked) return;
-
-    if (
-      state.currentChest >=
-      this.chests.length
-    ) {
-      return;
-    }
-
-    const chest =
-      this.chests[
-        state.currentChest
-      ];
-
-    if (!chest) return;
-
-    const distance =
-      Phaser.Math.Distance.Between(
-        this.player.x,
-        this.player.y,
-        chest.container.x,
-        chest.container.y
-      );
-
-    if (distance <= 115) {
-
-      this.inputLocked = true;
-
-      this.player.body.setVelocity(
-        0,
-        0
-      );
-
-      openQuestion(
-        state.currentChest
-      );
-
-    } else {
-
-      showToast(
-        "🧭 Dekati peti yang bercahaya dahulu.",
-        1800
-      );
-
-    }
-
-  }
-
-  /* =======================================================
-     UPDATE
-  ======================================================= */
-
-  update(time, delta) {
-
-    if (!this.player) return;
-
-    if (this.inputLocked) {
-
-      this.player.body.setVelocity(
-        0,
-        0
-      );
-
-      interactBtn.style.display =
-        "none";
-
-      nearHint.style.display =
-        "none";
-
-      return;
-
-    }
-
-    let x = 0;
-    let y = 0;
-
-    /* keyboard */
-
-    if (
-      this.cursors.left.isDown ||
-      this.keys.A.isDown
-    ) {
-      x -= 1;
-    }
-
-    if (
-      this.cursors.right.isDown ||
-      this.keys.D.isDown
-    ) {
-      x += 1;
-    }
-
-    if (
-      this.cursors.up.isDown ||
-      this.keys.W.isDown
-    ) {
-      y -= 1;
-    }
-
-    if (
-      this.cursors.down.isDown ||
-      this.keys.S.isDown
-    ) {
-      y += 1;
-    }
-
-    /* joystick */
-
-    if (
-      Math.abs(state.joystickX) > .05 ||
-      Math.abs(state.joystickY) > .05
-    ) {
-
-      x += state.joystickX;
-      y += state.joystickY;
-
-    }
-
-    const length =
-      Math.sqrt(
-        x * x +
-        y * y
-      );
-
-    if (length > 0) {
-
-      x /= length;
-      y /= length;
-
-      this.lastMovementX = x;
-      this.lastMovementY = y;
-
-      state.heading =
-        Math.atan2(y, x);
-
-      updateCompass();
-
-    }
-
-    const speed = 205;
-
-    this.player.body.setVelocity(
-      x * speed,
-      y * speed
-    );
-
-    /* tiny walking bob */
-
-    if (length > 0) {
-
-      const bob =
-        Math.sin(
-          time * .018
-        ) * 1.5;
-
-      this.player.y +=
-        bob * .05;
-
-    }
-
-    /* interaction */
-
-    let nearChest = false;
-
-    if (
-      state.currentChest <
-      this.chests.length
-    ) {
-
-      const activeChest =
-        this.chests[
-          state.currentChest
-        ];
-
-      if (activeChest) {
-
-        const distance =
-          Phaser.Math.Distance.Between(
-            this.player.x,
-            this.player.y,
-            activeChest.container.x,
-            activeChest.container.y
-          );
-
-        if (distance <= 125) {
-
-          nearChest = true;
-
-          nearHint.style.display =
-            "block";
-
-          interactBtn.style.display =
-            "block";
-
-        }
-
-      }
-
-    }
-
-    if (!nearChest) {
-
-      nearHint.style.display =
-        "none";
-
-      interactBtn.style.display =
-        "none";
-
-    }
-
-    /* E / SPACE */
-
-    if (
-      Phaser.Input.Keyboard.JustDown(
-        this.keyE
-      ) ||
-      Phaser.Input.Keyboard.JustDown(
-        this.keySpace
-      )
-    ) {
-
-      if (nearChest) {
-
-        this.tryInteract();
-
-      }
-
-    }
-
-  }
-
-}
 
 /* =========================================================
    PHASER CONFIG
 ========================================================= */
 
-if (!window.Phaser) {
+const config={
 
-  loading.innerHTML =
-    "⚠️ Phaser gagal dimuat.<br><br>Pastikan internet aktif.";
+type:Phaser.AUTO,
 
-  return;
+parent:"game",
+
+width:960,
+
+height:540,
+
+backgroundColor:"#76ad55",
+
+pixelArt:true,
+
+roundPixels:true,
+
+physics:{
+
+default:"arcade",
+
+arcade:{
+
+gravity:{
+y:0
+},
+
+debug:false
 
 }
 
-const config = {
+},
 
-  type: Phaser.AUTO,
+scale:{
 
-  parent: "game-shell",
+mode:Phaser.Scale.FIT,
 
-  backgroundColor: "#76c96a",
+autoCenter:
+Phaser.Scale.CENTER_BOTH,
 
-  scale: {
+width:960,
 
-    mode: Phaser.Scale.RESIZE,
+height:540
 
-    autoCenter:
-      Phaser.Scale.CENTER_BOTH,
+},
 
-    width: 1180,
+scene:{
 
-    height: 760
+create:create,
 
-  },
+update:update
 
-  physics: {
-
-    default: "arcade",
-
-    arcade: {
-
-      debug: false,
-
-      gravity: {
-        y: 0
-      }
-
-    }
-
-  },
-
-  render: {
-
-    antialias: true,
-
-    roundPixels: true
-
-  },
-
-  scene: [
-    VillageScene
-  ]
+}
 
 };
 
-const game =
-  new Phaser.Game(config);
 
-window.game = game;
-
-/* =========================================================
-   INTERACT BUTTON
-========================================================= */
-
-interactBtn.addEventListener(
-  "pointerdown",
-  event => {
-
-    event.preventDefault();
-
-    if (window.villageScene) {
-
-      window.villageScene.tryInteract();
-
-    }
-
-  }
+phaserGame=
+new Phaser.Game(
+config
 );
 
+
 /* =========================================================
-   RESPONSIVE ROTATION
+   ROTATION / RESIZE SUPPORT
 ========================================================= */
 
-function refreshEverything() {
+let resizeTimer=null;
 
-  /*
-    CSS akan ubah saiz game-shell secara automatik.
 
-    Phaser pula refresh canvas.
+function refreshGameSize(){
 
-    Ini yang memastikan rotate phone
-    tidak menghasilkan skrin kosong.
-  */
+clearTimeout(
+resizeTimer
+);
 
-  if (window.game) {
 
-    window.game.scale.refresh();
+resizeTimer=
+setTimeout(
+()=>{
 
-  }
+resetAnalog();
 
-  if (window.villageScene) {
 
-    window.villageScene.handleResize();
+const container=
+document.getElementById(
+"gameContainer"
+);
 
-  }
+
+if(
+!container ||
+!phaserGame
+){
+
+return;
 
 }
 
-/* normal resize */
+
+/*
+Phaser keeps the internal game resolution at 960x540.
+Only the display size changes, so the map, physics,
+player position and current question are not restarted.
+*/
+
+if(
+phaserGame.scale
+){
+
+phaserGame.scale.refresh();
+
+}
+
+
+/*
+Force camera to recalculate its viewport after
+Safari/Chrome phone rotation.
+*/
+
+if(
+sceneRef &&
+sceneRef.cameras &&
+sceneRef.cameras.main
+){
+
+sceneRef.cameras.main.setSize(
+960,
+540
+);
+
+}
+
+
+/*
+Fix mobile browser viewport after orientation animation.
+*/
+
+window.scrollTo(
+0,
+0
+);
+
+},
+120
+);
+
+}
+
 
 window.addEventListener(
-  "resize",
-  () => {
-
-    setTimeout(
-      refreshEverything,
-      60
-    );
-
-  },
-  { passive: true }
+"resize",
+refreshGameSize
 );
 
-/* phone orientation */
 
 window.addEventListener(
-  "orientationchange",
-  () => {
+"orientationchange",
+()=>{
 
-    setTimeout(
-      refreshEverything,
-      180
-    );
+resetAnalog();
 
-    setTimeout(
-      refreshEverything,
-      500
-    );
 
-  },
-  { passive: true }
+setTimeout(
+refreshGameSize,
+100
 );
 
-/* newer mobile browsers */
 
-if (screen.orientation) {
+setTimeout(
+refreshGameSize,
+350
+);
 
-  screen.orientation.addEventListener(
-    "change",
-    () => {
+}
+);
 
-      setTimeout(
-        refreshEverything,
-        180
-      );
 
-    }
-  );
+if(
+window.visualViewport
+){
+
+window.visualViewport.addEventListener(
+"resize",
+refreshGameSize
+);
 
 }
 
-/* Safari visual viewport */
-
-if (window.visualViewport) {
-
-  window.visualViewport.addEventListener(
-    "resize",
-    () => {
-
-      setTimeout(
-        refreshEverything,
-        80
-      );
-
-    },
-    { passive: true }
-  );
-
-}
-
-/* Observe actual game container size */
-
-if (window.ResizeObserver) {
-
-  const observer =
-    new ResizeObserver(
-      () => {
-
-        refreshEverything();
-
-      }
-    );
-
-  observer.observe(shell);
-
-}
 
 /* =========================================================
-   INITIAL COMPASS
+   CREATE
 ========================================================= */
 
-updateCompass();
+function create(){
+
+sceneRef=this;
+
+
+this.worldW=3000;
+
+this.worldH=2200;
+
+
+this.physics.world.setBounds(
+0,
+0,
+this.worldW,
+this.worldH
+);
+
+
+this.cameras.main.setBounds(
+0,
+0,
+this.worldW,
+this.worldH
+);
+
+
+/* textures */
+
+createTextures(
+this
+);
+
+
+/* collision */
+
+this.blockers=
+this.physics.add.staticGroup();
+
+
+/* grass */
+
+this.add.rectangle(
+1500,
+1100,
+3000,
+2200,
+0x79b157
+)
+.setDepth(
+-100
+);
+
+
+createGrassDetails(
+this
+);
+
+
+createRoads(
+this
+);
+
+
+createRiver(
+this
+);
+
+
+/* =====================================================
+   IMPORTANT:
+   Containers exist internally only.
+   No visible rectangle/background/border.
+===================================================== */
+
+createVillageGroups(
+this
+);
+
+
+createSouthGroups(
+this
+);
+
+
+createForest(
+this
+);
+
+
+createSecretGarden(
+this
+);
+
+
+/* =====================================================
+   CHESTS
+===================================================== */
+
+this.chests=[];
+
+
+CHESTS.forEach(
+(c,index)=>{
+
+const chest=
+this.add.image(
+c.x,
+c.y,
+"chest"
+);
+
+
+chest.setDepth(
+c.y+20
+);
+
+
+chest.setVisible(
+false
+);
+
+
+this.chests.push(
+chest
+);
+
+}
+);
+
+
+showCurrentChest(
+this
+);
+
+
+/* =====================================================
+   PLAYER
+===================================================== */
+
+this.shadow=
+this.add.ellipse(
+550,
+565,
+32,
+11,
+0x24321c,
+.27
+);
+
+
+this.player=
+this.physics.add.sprite(
+550,
+540,
+"gardener"
+);
+
+
+this.player.setCollideWorldBounds(
+true
+);
+
+
+this.player.body.setSize(
+22,
+18
+);
+
+
+this.player.body.setOffset(
+15,
+39
+);
+
+
+this.physics.add.collider(
+this.player,
+this.blockers
+);
+
+
+/* camera */
+
+this.cameras.main.startFollow(
+this.player,
+true,
+.12,
+.12
+);
+
+
+this.cameras.main.setZoom(
+1.15
+);
+
+
+/* keyboard */
+
+this.cursors=
+this.input.keyboard.createCursorKeys();
+
+
+this.keys=
+this.input.keyboard.addKeys({
+
+W:
+Phaser.Input.Keyboard.KeyCodes.W,
+
+A:
+Phaser.Input.Keyboard.KeyCodes.A,
+
+S:
+Phaser.Input.Keyboard.KeyCodes.S,
+
+D:
+Phaser.Input.Keyboard.KeyCodes.D
+
+});
+
+
+this.input.keyboard.on(
+"keydown-E",
+()=>{
+
+interactChest(
+this
+);
+
+}
+);
+
+
+this.input.keyboard.on(
+"keydown-SPACE",
+()=>{
+
+interactChest(
+this
+);
+
+}
+);
+
+
+updateHUD();
+
+
+showToast(
+"🌱 Gunakan analog untuk menjelajah kampung!"
+);
+
+
+setTimeout(
+refreshGameSize,
+100
+);
+
+}
+
 
 /* =========================================================
-   PREVENT MOBILE PAGE GESTURES
+   UPDATE
 ========================================================= */
 
-document.addEventListener(
-  "gesturestart",
-  event => {
-    event.preventDefault();
-  },
-  { passive: false }
+function update(){
+
+if(!this.player){
+
+return;
+
+}
+
+
+if(
+questionOpen ||
+rewardOpen ||
+gameComplete
+){
+
+this.player.setVelocity(
+0
 );
 
-document.addEventListener(
-  "gesturechange",
-  event => {
-    event.preventDefault();
-  },
-  { passive: false }
+return;
+
+}
+
+
+let dx=0;
+
+let dy=0;
+
+
+/* =====================================================
+   ANALOG
+===================================================== */
+
+dx+=
+analog.x;
+
+
+dy+=
+analog.y;
+
+
+/* =====================================================
+   KEYBOARD
+===================================================== */
+
+if(
+this.cursors.left.isDown ||
+this.keys.A.isDown
+){
+
+dx-=1;
+
+}
+
+
+if(
+this.cursors.right.isDown ||
+this.keys.D.isDown
+){
+
+dx+=1;
+
+}
+
+
+if(
+this.cursors.up.isDown ||
+this.keys.W.isDown
+){
+
+dy-=1;
+
+}
+
+
+if(
+this.cursors.down.isDown ||
+this.keys.S.isDown
+){
+
+dy+=1;
+
+}
+
+
+/* =====================================================
+   MOVEMENT
+===================================================== */
+
+const magnitude=
+Math.hypot(
+dx,
+dy
 );
 
-document.addEventListener(
-  "gestureend",
-  event => {
-    event.preventDefault();
-  },
-  { passive: false }
+
+if(
+magnitude>
+0.05
+){
+
+if(
+magnitude>1
+){
+
+dx/=magnitude;
+
+dy/=magnitude;
+
+}
+
+
+const strength=
+Math.min(
+1,
+Math.hypot(
+dx,
+dy
+)
 );
 
-})();
+
+const speed=
+185*
+Math.max(
+.45,
+strength
+);
+
+
+this.player.setVelocity(
+dx*speed,
+dy*speed
+);
+
+
+if(
+dx<-.08
+){
+
+this.player.setFlipX(
+true
+);
+
+}
+
+
+if(
+dx>.08
+){
+
+this.player.setFlipX(
+false
+);
+
+}
+
+
+this.player.angle=
+
+Math.sin(
+this.time.now*.02
+)*2;
+
+}
+else{
+
+this.player.setVelocity(
+0
+);
+
+
+this.player.angle=
+0;
+
+}
+
+
+/* depth */
+
+this.player.setDepth(
+this.player.y+30
+);
+
+
+/* shadow */
+
+this.shadow.x=
+this.player.x;
+
+
+this.shadow.y=
+this.player.y+23;
+
+
+this.shadow.setDepth(
+this.player.y+10
+);
+
+
+/* =====================================================
+   CHEST NEARBY
+===================================================== */
+
+const chest=
+this.chests[
+currentChest
+];
+
+
+if(
+chest &&
+chest.visible
+){
+
+const distance=
+Phaser.Math.Distance.Between(
+
+this.player.x,
+
+this.player.y,
+
+chest.x,
+
+chest.y
+
+);
+
+
+interact.style.display=
+
+distance<82
+
+?
+
+"block"
+
+:
+
+"none";
+
+}
+else{
+
+interact.style.display=
+"none";
+
+}
+
+}
+
+
+/* =========================================================
+   VILLAGE GROUPS
+========================================================= */
+
+function createVillageGroups(
+scene
+){
+
+scene.add.text(
+1500,
+525,
+"KAMPUNG SERI HIJAU",
+{
+fontFamily:"monospace",
+fontSize:"27px",
+fontStyle:"bold",
+color:"#fff3b8",
+stroke:"#42612f",
+strokeThickness:8
+}
+)
+.setOrigin(.5)
+.setDepth(900);
+
+
+/* =====================================================
+   RUMAH PEKEBUN GROUP
+===================================================== */
+
+const farmerHome=
+scene.add.container(
+430,
+350
+);
+
+
+addHouseToGroup(
+scene,
+farmerHome,
+0,
+0,
+0xdab169,
+0x7c4c2e
+);
+
+
+addNaturalFence(
+scene,
+farmerHome,
+0,
+95,
+270
+);
+
+
+addAreaSign(
+scene,
+430,
+535,
+"RUMAH PEKEBUN"
+);
+
+
+/* =====================================================
+   FLOWER GARDEN GROUP
+===================================================== */
+
+const flowerGarden=
+scene.add.container(
+730,
+565
+);
+
+
+addFlowersToGroup(
+scene,
+flowerGarden,
+0,
+0,
+7,
+5
+);
+
+
+addAreaSign(
+scene,
+730,
+680,
+"KEBUN BUNGA"
+);
+
+
+/* =====================================================
+   VEGETABLE FARM GROUP
+===================================================== */
+
+const vegFarm=
+scene.add.container(
+1080,
+420
+);
+
+
+addFarmToGroup(
+scene,
+vegFarm,
+0,
+15,
+330,
+220
+);
+
+
+addAreaSign(
+scene,
+1080,
+565,
+"KEBUN SAYUR"
+);
+
+
+/* =====================================================
+   ORCHARD GROUP
+===================================================== */
+
+const orchard=
+scene.add.container(
+1440,
+385
+);
+
+
+for(
+let row=0;
+row<2;
+row++
+){
+
+for(
+let col=0;
+col<4;
+col++
+){
+
+const localX=
+-135+
+col*90;
+
+
+const localY=
+-45+
+row*115;
+
+
+const tree=
+scene.add.image(
+localX,
+localY,
+"fruitTree"
+);
+
+
+tree.setDepth(
+localY+100
+);
+
+
+orchard.add(
+tree
+);
+
+
+addBlock(
+
+scene,
+
+1440+
+localX,
+
+385+
+localY+
+28,
+
+38,
+
+28
+
+);
+
+}
+
+}
+
+
+addAreaSign(
+scene,
+1440,
+570,
+"DUSUN BUAH"
+);
+
+
+/* =====================================================
+   PAK MAIL HOUSE
+===================================================== */
+
+const pakMail=
+scene.add.container(
+1690,
+355
+);
+
+
+addHouseToGroup(
+scene,
+pakMail,
+0,
+0,
+0xc87d5a,
+0x75432d
+);
+
+
+/* =====================================================
+   SHOP
+===================================================== */
+
+const shop=
+scene.add.container(
+1900,
+410
+);
+
+
+addShopToGroup(
+scene,
+shop,
+0,
+0
+);
+
+
+addAreaSign(
+scene,
+1900,
+585,
+"KEDAI KAMPUNG"
+);
+
+
+/* =====================================================
+   BARN
+===================================================== */
+
+const barn=
+scene.add.container(
+2270,
+410
+);
+
+
+addBarnToGroup(
+scene,
+barn,
+0,
+0
+);
+
+
+addAreaSign(
+scene,
+2270,
+600,
+"BANGSAL"
+);
+
+
+/* =====================================================
+   VILLAGE SQUARE
+===================================================== */
+
+scene.add.circle(
+1990,
+785,
+180,
+0xd9be87,
+.75
+)
+.setDepth(
+-15
+);
+
+
+const square=
+scene.add.container(
+1990,
+780
+);
+
+
+addWellToGroup(
+scene,
+square,
+0,
+0
+);
+
+
+addBenchToGroup(
+scene,
+square,
+-135,
+95
+);
+
+
+addBenchToGroup(
+scene,
+square,
+135,
+95
+);
+
+
+addAreaSign(
+scene,
+1990,
+995,
+"DATARAN KAMPUNG"
+);
+
+
+/* =====================================================
+   GREENHOUSE
+===================================================== */
+
+const greenhouse=
+scene.add.container(
+1500,
+800
+);
+
+
+addGreenhouseToGroup(
+scene,
+greenhouse,
+0,
+0
+);
+
+
+addAreaSign(
+scene,
+1500,
+960,
+"RUMAH HIJAU"
+);
+
+
+/* =====================================================
+   POND
+===================================================== */
+
+const pond=
+scene.add.container(
+900,
+845
+);
+
+
+const pondOuter=
+scene.add.ellipse(
+0,
+0,
+390,
+245,
+0x4b8b6d
+);
+
+
+const pondWater=
+scene.add.ellipse(
+0,
+-4,
+345,
+202,
+0x66b7c6
+);
+
+
+const pondLight=
+scene.add.ellipse(
+0,
+-8,
+300,
+160,
+0x82ced7
+);
+
+
+pond.add([
+
+pondOuter,
+
+pondWater,
+
+pondLight
+
+]);
+
+
+for(
+let i=0;
+i<10;
+i++
+){
+
+const angle=
+
+i/10*
+Math.PI*
+2;
+
+
+const rock=
+scene.add.image(
+
+Math.cos(angle)*195,
+
+Math.sin(angle)*122,
+
+"rock"
+
+);
+
+
+pond.add(
+rock
+);
+
+}
+
+
+addAreaSign(
+scene,
+900,
+1015,
+"KOLAM KAMPUNG"
+);
+
+
+/* NPC */
+
+addNPC(
+scene,
+610,
+700,
+"Pak Kebun"
+);
+
+}
+
+
+/* =========================================================
+   SOUTH GROUPS
+========================================================= */
+
+function createSouthGroups(
+scene
+){
+
+const farmWest=
+scene.add.container(
+520,
+1450
+);
+
+
+addFarmToGroup(
+scene,
+farmWest,
+0,
+0,
+470,
+260
+);
+
+
+addAreaSign(
+scene,
+520,
+1620,
+"LADANG BARAT"
+);
+
+
+const southOrchard=
+scene.add.container(
+1000,
+1580
+);
+
+
+for(
+let row=0;
+row<2;
+row++
+){
+
+for(
+let col=0;
+col<4;
+col++
+){
+
+const x=
+-150+
+col*100;
+
+
+const y=
+-55+
+row*125;
+
+
+const tree=
+scene.add.image(
+x,
+y,
+"fruitTree"
+);
+
+
+southOrchard.add(
+tree
+);
+
+
+addBlock(
+
+scene,
+
+1000+
+x,
+
+1580+
+y+
+28,
+
+38,
+
+28
+
+);
+
+}
+
+}
+
+
+addAreaSign(
+scene,
+1000,
+1750,
+"DUSUN SELATAN"
+);
+
+
+const southVillage=
+scene.add.container(
+1500,
+1580
+);
+
+
+addHouseToGroup(
+scene,
+southVillage,
+-145,
+0,
+0xd59a5c,
+0x79482c
+);
+
+
+addHouseToGroup(
+scene,
+southVillage,
+145,
+0,
+0xc7735e,
+0x643b2f
+);
+
+
+addAreaSign(
+scene,
+1500,
+1765,
+"KAMPUNG SELATAN"
+);
+
+
+const rockHill=
+scene.add.container(
+2050,
+1500
+);
+
+
+for(
+let i=0;
+i<15;
+i++
+){
+
+const rock=
+scene.add.image(
+
+Phaser.Math.Between(
+-150,
+150
+),
+
+Phaser.Math.Between(
+-90,
+90
+),
+
+"rock"
+
+);
+
+
+rockHill.add(
+rock
+);
+
+}
+
+
+addAreaSign(
+scene,
+2050,
+1660,
+"BUKIT BATU"
+);
+
+
+const flowerField=
+scene.add.container(
+2300,
+1880
+);
+
+
+addFlowersToGroup(
+scene,
+flowerField,
+0,
+0,
+10,
+6
+);
+
+
+addAreaSign(
+scene,
+2300,
+2020,
+"PADANG BUNGA"
+);
+
+
+const oldTree=
+scene.add.container(
+1760,
+1850
+);
+
+
+const giant=
+scene.add.image(
+0,
+0,
+"giantTree"
+);
+
+
+oldTree.add(
+giant
+);
+
+
+addBlock(
+scene,
+1760,
+1905,
+95,
+48
+);
+
+
+addAreaSign(
+scene,
+1760,
+2070,
+"POKOK TUA"
+);
+
+
+const ruins=
+scene.add.container(
+1210,
+1880
+);
+
+
+createRuinsInGroup(
+scene,
+ruins
+);
+
+
+addAreaSign(
+scene,
+1210,
+2035,
+"RUNTUHAN LAMA"
+);
+
+
+const stoneGarden=
+scene.add.container(
+2740,
+1820
+);
+
+
+for(
+let i=0;
+i<12;
+i++
+){
+
+const angle=
+
+i/12*
+Math.PI*
+2;
+
+
+const rock=
+scene.add.image(
+
+Math.cos(angle)*120,
+
+Math.sin(angle)*90,
+
+"rock"
+
+);
+
+
+stoneGarden.add(
+rock
+);
+
+}
+
+
+addAreaSign(
+scene,
+2740,
+1970,
+"TAMAN BATU"
+);
+
+}
+
+
+/* =========================================================
+   HOUSE GROUP
+========================================================= */
+
+function addHouseToGroup(
+scene,
+container,
+x,
+y,
+wallColor,
+roofColor
+){
+
+const shadow=
+scene.add.ellipse(
+x+7,
+y+75,
+220,
+60,
+0x24321c,
+.14
+);
+
+
+const wall=
+scene.add.rectangle(
+x,
+y+25,
+185,
+120,
+wallColor
+);
+
+
+const roof=
+scene.add.triangle(
+x,
+y-75,
+0,
+100,
+92,
+0,
+184,
+100,
+roofColor
+);
+
+
+const roofLine=
+scene.add.rectangle(
+x,
+y-18,
+200,
+35,
+roofColor
+);
+
+
+const door=
+scene.add.rectangle(
+x,
+y+55,
+36,
+66,
+0x6e472b
+);
+
+
+const window1=
+createWindowParts(
+scene,
+x-52,
+y+17
+);
+
+
+const window2=
+createWindowParts(
+scene,
+x+52,
+y+17
+);
+
+
+container.add([
+
+shadow,
+
+wall,
+
+roof,
+
+roofLine,
+
+door,
+
+...window1,
+
+...window2
+
+]);
+
+
+addBlock(
+
+scene,
+
+container.x+
+x,
+
+container.y+
+y+
+35,
+
+190,
+
+105
+
+);
+
+}
+
+
+/* =========================================================
+   WINDOW
+========================================================= */
+
+function createWindowParts(
+scene,
+x,
+y
+){
+
+const border=
+scene.add.rectangle(
+x,
+y,
+38,
+36,
+0x674a35
+);
+
+
+const glass=
+scene.add.rectangle(
+x,
+y,
+29,
+27,
+0x8dd1d8
+);
+
+
+const vertical=
+scene.add.rectangle(
+x,
+y,
+3,
+27,
+0xe9e2bc
+);
+
+
+const horizontal=
+scene.add.rectangle(
+x,
+y,
+29,
+3,
+0xe9e2bc
+);
+
+
+return[
+
+border,
+
+glass,
+
+vertical,
+
+horizontal
+
+];
+
+}
+
+
+/* =========================================================
+   SHOP GROUP
+========================================================= */
+
+function addShopToGroup(
+scene,
+container,
+x,
+y
+){
+
+const wall=
+scene.add.rectangle(
+x,
+y+20,
+205,
+120,
+0xd8bb71
+);
+
+
+const roof=
+scene.add.rectangle(
+x,
+y-48,
+225,
+55,
+0x6d4330
+);
+
+
+container.add([
+
+wall,
+
+roof
+
+]);
+
+
+for(
+let i=0;
+i<6;
+i++
+){
+
+const awning=
+scene.add.rectangle(
+
+x-85+
+i*34,
+
+y-12,
+
+34,
+
+24,
+
+i%2
+?
+0xf1d78b
+:
+0xe26450
+
+);
+
+
+container.add(
+awning
+);
+
+}
+
+
+const door=
+scene.add.rectangle(
+x,
+y+55,
+42,
+65,
+0x755036
+);
+
+
+container.add(
+door
+);
+
+
+const window1=
+createWindowParts(
+scene,
+x-62,
+y+34
+);
+
+
+const window2=
+createWindowParts(
+scene,
+x+62,
+y+34
+);
+
+
+container.add([
+
+...window1,
+
+...window2
+
+]);
+
+
+addBlock(
+
+scene,
+
+container.x+x,
+
+container.y+y+30,
+
+210,
+
+115
+
+);
+
+}
+
+
+/* =========================================================
+   BARN
+========================================================= */
+
+function addBarnToGroup(
+scene,
+container,
+x,
+y
+){
+
+const wall=
+scene.add.rectangle(
+x,
+y+30,
+220,
+150,
+0xb9523e
+);
+
+
+const roof=
+scene.add.triangle(
+x,
+y-85,
+0,
+110,
+110,
+0,
+220,
+110,
+0x713d2e
+);
+
+
+const door=
+scene.add.rectangle(
+x,
+y+55,
+85,
+95,
+0x6c4429
+);
+
+
+const crossV=
+scene.add.rectangle(
+x,
+y+55,
+7,
+88,
+0xba8953
+);
+
+
+const crossH=
+scene.add.rectangle(
+x,
+y+55,
+78,
+7,
+0xba8953
+);
+
+
+container.add([
+
+wall,
+
+roof,
+
+door,
+
+crossV,
+
+crossH
+
+]);
+
+
+addBlock(
+
+scene,
+
+container.x+x,
+
+container.y+y+40,
+
+225,
+
+140
+
+);
+
+}
+
+
+/* =========================================================
+   FARM
+========================================================= */
+
+function addFarmToGroup(
+scene,
+container,
+x,
+y,
+width,
+height
+){
+
+const soil=
+scene.add.rectangle(
+x,
+y,
+width,
+height,
+0x956136
+);
+
+
+container.add(
+soil
+);
+
+
+for(
+let yy=
+y-height/2+30;
+
+yy<
+y+height/2-15;
+
+yy+=42
+){
+
+const row=
+scene.add.rectangle(
+x,
+yy,
+width-25,
+12,
+0x704724
+);
+
+
+container.add(
+row
+);
+
+
+for(
+let xx=
+x-width/2+30;
+
+xx<
+x+width/2-20;
+
+xx+=50
+){
+
+const crop=
+scene.add.image(
+xx,
+yy,
+"crop"
+);
+
+
+container.add(
+crop
+);
+
+}
+
+}
+
+}
+
+
+/* =========================================================
+   FLOWERS
+========================================================= */
+
+function addFlowersToGroup(
+scene,
+container,
+x,
+y,
+cols,
+rows
+){
+
+for(
+let row=0;
+row<rows;
+row++
+){
+
+for(
+let col=0;
+col<cols;
+col++
+){
+
+const flower=
+scene.add.image(
+
+x+
+(col-(cols-1)/2)*32+
+Phaser.Math.Between(-3,3),
+
+y+
+(row-(rows-1)/2)*27+
+Phaser.Math.Between(-3,3),
+
+"flower"
+
+);
+
+
+container.add(
+flower
+);
+
+}
+
+}
+
+}
+
+
+/* =========================================================
+   GREENHOUSE
+========================================================= */
+
+function addGreenhouseToGroup(
+scene,
+container,
+x,
+y
+){
+
+const glass=
+scene.add.rectangle(
+x,
+y+15,
+240,
+140,
+0xb8dfcb,
+.84
+);
+
+
+container.add(
+glass
+);
+
+
+for(
+let i=-2;
+i<=2;
+i++
+){
+
+const bar=
+scene.add.rectangle(
+x+i*45,
+y+15,
+4,
+135,
+0x557c65
+);
+
+
+container.add(
+bar
+);
+
+}
+
+
+const roof=
+scene.add.triangle(
+x,
+y-95,
+0,
+65,
+120,
+0,
+240,
+65,
+0x98c9b3,
+.9
+);
+
+
+container.add(
+roof
+);
+
+
+addBlock(
+
+scene,
+
+container.x+x,
+
+container.y+y+20,
+
+240,
+
+125
+
+);
+
+}
+
+
+/* =========================================================
+   WELL
+========================================================= */
+
+function addWellToGroup(
+scene,
+container,
+x,
+y
+){
+
+const base=
+scene.add.ellipse(
+x,
+y+15,
+105,
+64,
+0x77766f
+);
+
+
+const hole=
+scene.add.ellipse(
+x,
+y+10,
+75,
+38,
+0x263d43
+);
+
+
+const left=
+scene.add.rectangle(
+x-47,
+y-40,
+9,
+100,
+0x754927
+);
+
+
+const right=
+scene.add.rectangle(
+x+47,
+y-40,
+9,
+100,
+0x754927
+);
+
+
+const top=
+scene.add.rectangle(
+x,
+y-88,
+120,
+16,
+0x80532d
+);
+
+
+container.add([
+
+base,
+
+hole,
+
+left,
+
+right,
+
+top
+
+]);
+
+
+addBlock(
+
+scene,
+
+container.x+x,
+
+container.y+y+15,
+
+105,
+
+60
+
+);
+
+}
+
+
+/* =========================================================
+   BENCH
+========================================================= */
+
+function addBenchToGroup(
+scene,
+container,
+x,
+y
+){
+
+const seat=
+scene.add.rectangle(
+x,
+y,
+90,
+14,
+0x8d5c2e
+);
+
+
+const leg1=
+scene.add.rectangle(
+x-30,
+y+16,
+8,
+30,
+0x63401f
+);
+
+
+const leg2=
+scene.add.rectangle(
+x+30,
+y+16,
+8,
+30,
+0x63401f
+);
+
+
+container.add([
+
+seat,
+
+leg1,
+
+leg2
+
+]);
+
+}
+
+
+/* =========================================================
+   NATURAL FENCE
+========================================================= */
+
+function addNaturalFence(
+scene,
+container,
+x,
+y,
+width
+){
+
+for(
+let px=
+-width/2;
+
+px<=
+width/2;
+
+px+=38
+){
+
+const fence=
+scene.add.image(
+x+px,
+y,
+"fence"
+);
+
+
+container.add(
+fence
+);
+
+}
+
+}
+
+
+/* =========================================================
+   AREA SIGN
+========================================================= */
+
+function addAreaSign(
+scene,
+x,
+y,
+text
+){
+
+const post=
+scene.add.rectangle(
+x,
+y+17,
+7,
+38,
+0x684426
+);
+
+
+const board=
+scene.add.rectangle(
+x,
+y,
+Math.max(
+85,
+text.length*7
+),
+25,
+0x8f6034
+);
+
+
+const label=
+scene.add.text(
+x,
+y,
+text,
+{
+fontFamily:"monospace",
+fontSize:"9px",
+fontStyle:"bold",
+color:"#fff1b8"
+}
+)
+.setOrigin(.5);
+
+
+post.setDepth(
+y
+);
+
+
+board.setDepth(
+y+1
+);
+
+
+label.setDepth(
+y+2
+);
+
+}
+
+
+/* =========================================================
+   NPC
+========================================================= */
+
+function addNPC(
+scene,
+x,
+y,
+name
+){
+
+scene.add.image(
+x,
+y,
+"npc"
+)
+.setDepth(
+y
+);
+
+
+scene.add.text(
+x,
+y+48,
+name,
+{
+fontFamily:"monospace",
+fontSize:"9px",
+fontStyle:"bold",
+color:"#fff",
+stroke:"#354b2b",
+strokeThickness:4
+}
+)
+.setOrigin(.5)
+.setDepth(
+y+2
+);
+
+}
+
+
+/* =========================================================
+   RUINS
+========================================================= */
+
+function createRuinsInGroup(
+scene,
+container
+){
+
+for(
+let i=0;
+i<6;
+i++
+){
+
+const stone=
+scene.add.rectangle(
+-135+
+i*54,
+70,
+45,
+36,
+0x85837a
+);
+
+
+container.add(
+stone
+);
+
+}
+
+
+for(
+let i=0;
+i<4;
+i++
+){
+
+const left=
+scene.add.rectangle(
+-135,
+-45+
+i*42,
+42,
+36,
+0x85837a
+);
+
+
+const right=
+scene.add.rectangle(
+135,
+-45+
+i*42,
+42,
+36,
+0x85837a
+);
+
+
+container.add([
+
+left,
+
+right
+
+]);
+
+}
+
+}
+
+
+/* =========================================================
+   FOREST
+========================================================= */
+
+function createForest(
+scene
+){
+
+for(
+let x=80;
+x<2950;
+x+=110
+){
+
+addWorldTree(
+scene,
+x,
+95+
+Phaser.Math.Between(
+-15,
+15
+)
+);
+
+}
+
+
+for(
+let row=0;
+row<5;
+row++
+){
+
+for(
+let col=0;
+col<5;
+col++
+){
+
+const x=
+
+2600+
+col*95+
+Phaser.Math.Between(
+-12,
+12
+);
+
+
+const y=
+
+620+
+row*120+
+Phaser.Math.Between(
+-15,
+15
+);
+
+
+if(
+x<2950
+){
+
+addWorldTree(
+scene,
+x,
+y
+);
+
+}
+
+}
+
+}
+
+
+for(
+let y=720;
+y<2110;
+y+=115
+){
+
+addWorldTree(
+scene,
+100+
+Phaser.Math.Between(
+-10,
+12
+),
+y
+);
+
+}
+
+
+for(
+let row=0;
+row<4;
+row++
+){
+
+for(
+let col=0;
+col<5;
+col++
+){
+
+const x=
+
+2450+
+col*105+
+Phaser.Math.Between(
+-12,
+12
+);
+
+
+const y=
+
+1370+
+row*115+
+Phaser.Math.Between(
+-12,
+12
+);
+
+
+if(
+x<2950
+){
+
+addWorldTree(
+scene,
+x,
+y
+);
+
+}
+
+}
+
+}
+
+
+for(
+let row=0;
+row<4;
+row++
+){
+
+for(
+let col=0;
+col<5;
+col++
+){
+
+addWorldTree(
+
+scene,
+
+280+
+col*100+
+Phaser.Math.Between(
+-8,
+8
+),
+
+1780+
+row*105+
+Phaser.Math.Between(
+-8,
+8
+)
+
+);
+
+}
+
+}
+
+}
+
+
+/* =========================================================
+   WORLD TREE
+========================================================= */
+
+function addWorldTree(
+scene,
+x,
+y
+){
+
+scene.add.image(
+x,
+y,
+"tree"
+)
+.setDepth(
+y
+);
+
+
+addBlock(
+scene,
+x,
+y+28,
+38,
+28
+);
+
+}
+
+
+/* =========================================================
+   SECRET GARDEN
+========================================================= */
+
+function createSecretGarden(
+scene
+){
+
+const garden=
+scene.add.container(
+850,
+2070
+);
+
+
+for(
+let i=0;
+i<35;
+i++
+){
+
+const angle=
+
+Math.random()*
+Math.PI*
+2;
+
+
+const radius=
+
+Phaser.Math.Between(
+50,
+220
+);
+
+
+const flower=
+scene.add.image(
+
+Math.cos(angle)*
+radius,
+
+Math.sin(angle)*
+radius*
+.42,
+
+"flower"
+
+);
+
+
+garden.add(
+flower
+);
+
+}
+
+
+for(
+let i=0;
+i<5;
+i++
+){
+
+const bush=
+scene.add.image(
+
+-180+
+i*90,
+
+-85+
+Phaser.Math.Between(
+-8,
+8
+),
+
+"bush"
+
+);
+
+
+garden.add(
+bush
+);
+
+}
+
+
+addAreaSign(
+scene,
+850,
+2170,
+"TAMAN RAHSIA"
+);
+
+}
+
+
+/* =========================================================
+   ROADS
+========================================================= */
+
+function createRoads(
+scene
+){
+
+scene.add.rectangle(
+1500,
+610,
+2450,
+165,
+0xd3af71
+)
+.setDepth(
+-70
+);
+
+
+scene.add.rectangle(
+1500,
+920,
+160,
+700,
+0xd3af71
+)
+.setDepth(
+-70
+);
+
+
+scene.add.rectangle(
+1500,
+1510,
+2550,
+160,
+0xcda569
+)
+.setDepth(
+-70
+);
+
+
+scene.add.rectangle(
+700,
+1060,
+130,
+900,
+0xcda569
+)
+.setDepth(
+-70
+);
+
+
+scene.add.rectangle(
+2470,
+1060,
+130,
+900,
+0xcda569
+)
+.setDepth(
+-70
+);
+
+
+for(
+let i=0;
+i<150;
+i++
+){
+
+scene.add.image(
+
+Phaser.Math.Between(
+230,
+2760
+),
+
+Phaser.Math.Between(
+545,
+1570
+),
+
+"pebble"
+
+)
+.setAlpha(
+.5
+)
+.setDepth(
+-69
+);
+
+}
+
+}
+
+
+/* =========================================================
+   RIVER
+========================================================= */
+
+function createRiver(
+scene
+){
+
+const y=
+1120;
+
+
+scene.add.rectangle(
+1500,
+y,
+3000,
+185,
+0x4da3ba
+)
+.setDepth(
+-60
+);
+
+
+for(
+let x=20;
+x<3000;
+x+=90
+){
+
+scene.add.rectangle(
+
+x,
+
+y+
+Phaser.Math.Between(
+-60,
+60
+),
+
+40,
+
+3,
+
+0x92dae1,
+
+.8
+
+)
+.setDepth(
+-59
+);
+
+}
+
+
+scene.add.rectangle(
+1500,
+y,
+185,
+220,
+0x704724
+)
+.setDepth(
+-40
+);
+
+
+for(
+let py=
+y-90;
+
+py<=
+y+90;
+
+py+=27
+){
+
+scene.add.rectangle(
+1500,
+py,
+171,
+19,
+0xb97b3f
+)
+.setDepth(
+-39
+);
+
+}
+
+
+addBlock(
+scene,
+700,
+y,
+1400,
+170
+);
+
+
+addBlock(
+scene,
+2350,
+y,
+1300,
+170
+);
+
+}
+
+
+/* =========================================================
+   GRASS DETAILS
+========================================================= */
+
+function createGrassDetails(
+scene
+){
+
+for(
+let i=0;
+i<470;
+i++
+){
+
+scene.add.image(
+
+Phaser.Math.Between(
+20,
+2980
+),
+
+Phaser.Math.Between(
+20,
+2180
+),
+
+"grass"
+
+)
+.setDepth(
+-90
+)
+.setAlpha(
+.7
+);
+
+}
+
+}
+
+
+/* =========================================================
+   HUD
+========================================================= */
+
+function updateHUD(){
+
+const data=
+CHESTS[
+currentChest
+];
+
+
+currentNum.textContent=
+currentChest+1;
+
+
+clueArea.textContent=
+
+"📍 "+
+data.area;
+
+
+clueText.textContent=
+data.clue;
+
+}
+
+
+/* =========================================================
+   SHOW CURRENT CHEST
+========================================================= */
+
+function showCurrentChest(
+scene
+){
+
+const chest=
+scene.chests[
+currentChest
+];
+
+
+if(!chest){
+
+return;
+
+}
+
+
+chest.setTexture(
+"chest"
+);
+
+
+chest.setVisible(
+true
+);
+
+
+chest.setScale(
+1
+);
+
+
+scene.tweens.add({
+
+targets:
+chest,
+
+y:
+chest.y-5,
+
+duration:
+650,
+
+yoyo:
+true,
+
+repeat:
+-1,
+
+ease:
+"Sine.easeInOut"
+
+});
+
+}
+
+
+/* =========================================================
+   INTERACT WITH CHEST
+========================================================= */
+
+function interactChest(
+scene
+){
+
+if(
+questionOpen ||
+rewardOpen ||
+gameComplete
+){
+
+return;
+
+}
+
+
+const chest=
+scene.chests[
+currentChest
+];
+
+
+if(!chest){
+
+return;
+
+}
+
+
+const distance=
+Phaser.Math.Distance.Between(
+
+scene.player.x,
+
+scene.player.y,
+
+chest.x,
+
+chest.y
+
+);
+
+
+if(
+distance<=82
+){
+
+openQuestion(
+scene
+);
+
+}
+else{
+
+showToast(
+"🔎 Cari peti mengikut petunjuk!"
+);
+
+}
+
+}
+
+
+/* =========================================================
+   OPEN QUESTION
+========================================================= */
+
+function openQuestion(
+scene
+){
+
+resetAnalog();
+
+
+questionOpen=true;
+
+
+scene.player.setVelocity(
+0
+);
+
+
+scene.physics.pause();
+
+
+interact.style.display=
+"none";
+
+
+const data=
+QUESTIONS[
+currentChest
+];
+
+
+questionNumber.textContent=
+
+"Soalan "+
+(currentChest+1)+
+" / 25";
+
+
+tp.textContent=
+data.tp;
+
+
+questionText.textContent=
+data.q;
+
+
+answers.innerHTML=
+"";
+
+
+answerStatus.textContent=
+"";
+
+
+const letters=[
+"A",
+"B",
+"C",
+"D"
+];
+
+
+data.o.forEach(
+(option,index)=>{
+
+const wrap=
+document.createElement(
+"div"
+);
+
+
+wrap.className=
+"answerWrap";
+
+
+const button=
+document.createElement(
+"button"
+);
+
+
+button.className=
+"answer";
+
+
+button.innerHTML=
+
+"<strong>"+
+letters[index]+
+".</strong> "+
+option;
+
+
+button.onclick=
+()=>{
+
+checkAnswer(
+
+scene,
+
+wrap,
+
+index
+
+);
+
+};
+
+
+wrap.appendChild(
+button
+);
+
+
+answers.appendChild(
+wrap
+);
+
+}
+);
+
+
+questionModal.style.display=
+"flex";
+
+}
+
+
+/* =========================================================
+   ANSWER
+========================================================= */
+
+function checkAnswer(
+scene,
+wrap,
+choice
+){
+
+const data=
+QUESTIONS[
+currentChest
+];
+
+
+if(
+choice!==data.a
+){
+
+wrap.classList.add(
+"wrong"
+);
+
+
+answerStatus.textContent=
+
+"❌ Belum tepat. Cuba lagi.";
+
+
+answerStatus.style.color=
+"#9c3028";
+
+
+setTimeout(
+()=>{
+
+wrap.classList.remove(
+"wrong"
+);
+
+},
+450
+);
+
+
+return;
+
+}
+
+
+wrap.classList.add(
+"correct"
+);
+
+
+answers
+.querySelectorAll(
+"button"
+)
+.forEach(
+button=>{
+
+button.disabled=true;
+
+}
+);
+
+
+answerStatus.textContent=
+
+"✅ Betul! Peti berjaya dibuka.";
+
+
+answerStatus.style.color=
+"#39712e";
+
+
+setTimeout(
+()=>{
+
+finishQuestion(
+scene
+);
+
+},
+650
+);
+
+}
+
+
+/* =========================================================
+   FINISH QUESTION
+========================================================= */
+
+function finishQuestion(
+scene
+){
+
+questionModal.style.display=
+"none";
+
+
+questionOpen=false;
+
+
+const oldChest=
+scene.chests[
+currentChest
+];
+
+
+scene.tweens.killTweensOf(
+oldChest
+);
+
+
+oldChest.setTexture(
+"chestOpen"
+);
+
+
+oldChest.y+=5;
+
+
+if(
+currentChest===
+QUESTIONS.length-1
+){
+
+gameComplete=true;
+
+
+scene.physics.resume();
+
+
+setTimeout(
+()=>{
+
+completeModal.style.display=
+"flex";
+
+},
+250
+);
+
+
+return;
+
+}
+
+
+currentChest++;
+
+
+showCurrentChest(
+scene
+);
+
+
+updateHUD();
+
+
+const data=
+CHESTS[
+currentChest
+];
+
+
+nextClue.innerHTML=
+
+"<strong>📍 "+
+data.area+
+"</strong><br><br>"+
+data.clue;
+
+
+rewardOpen=true;
+
+
+rewardModal.style.display=
+"flex";
+
+}
+
+
+/* =========================================================
+   CONTINUE
+========================================================= */
+
+$("continueBtn")
+.addEventListener(
+"click",
+()=>{
+
+rewardModal.style.display=
+"none";
+
+
+rewardOpen=false;
+
+
+resetAnalog();
+
+
+if(sceneRef){
+
+sceneRef.physics.resume();
+
+}
+
+}
+);
+
+
+/* =========================================================
+   RESTART
+========================================================= */
+
+$("restartBtn")
+.addEventListener(
+"click",
+()=>{
+
+currentChest=0;
+
+questionOpen=false;
+
+rewardOpen=false;
+
+gameComplete=false;
+
+
+resetAnalog();
+
+
+questionModal.style.display=
+"none";
+
+rewardModal.style.display=
+"none";
+
+completeModal.style.display=
+"none";
+
+
+if(sceneRef){
+
+sceneRef.scene.restart();
+
+}
+
+}
+);
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer;
+
+
+function showToast(
+message
+){
+
+toast.textContent=
+message;
+
+
+toast.classList.add(
+"show"
+);
+
+
+clearTimeout(
+toastTimer
+);
+
+
+toastTimer=
+setTimeout(
+()=>{
+
+toast.classList.remove(
+"show"
+);
+
+},
+1700
+);
+
+}
+
+
+/* =========================================================
+   COLLISION BLOCK
+========================================================= */
+
+function addBlock(
+scene,
+x,
+y,
+width,
+height
+){
+
+const block=
+scene.blockers.create(
+x,
+y,
+"block"
+);
+
+
+block.setDisplaySize(
+width,
+height
+);
+
+
+block.setVisible(
+false
+);
+
+
+block.refreshBody();
+
+}
+
+
+/* =========================================================
+   TEXTURES
+========================================================= */
+
+function createTextures(
+scene
+){
+
+let g=
+scene.add.graphics();
+
+
+g.fillStyle(
+0xffffff,
+1
+);
+
+
+g.fillRect(
+0,
+0,
+4,
+4
+);
+
+
+g.generateTexture(
+"block",
+4,
+4
+);
+
+
+g.destroy();
+
+
+g=
+scene.add.graphics();
+
+
+g.fillStyle(
+0x4c933f
+);
+
+
+g.fillRect(
+4,
+5,
+2,
+7
+);
+
+
+g.fillRect(
+1,
+7,
+2,
+4
+);
+
+
+g.fillRect(
+7,
+8,
+2,
+3
+);
+
+
+g.generateTexture(
+"grass",
+10,
+12
+);
+
+
+g.destroy();
+
+
+g=
+scene.add.graphics();
+
+
+g.fillStyle(
+0xa77b49
+);
+
+
+g.fillRect(
+1,
+2,
+5,
+3
+);
+
+
+g.fillStyle(
+0xc49a62
+);
+
+
+g.fillRect(
+4,
+0,
+3,
+2
+);
+
+
+g.generateTexture(
+"pebble",
+8,
+6
+);
+
+
+g.destroy();
+
+
+createGardenerTexture(
+scene
+);
+
+
+createNPCTexture(
+scene
+);
+
+
+createChestTextures(
+scene
+);
+
+
+createTreeTextures(
+scene
+);
+
+
+createFlowerTexture(
+scene
+);
+
+
+createCropTexture(
+scene
+);
+
+
+createRockTexture(
+scene
+);
+
+
+createFenceTexture(
+scene
+);
+
+
+createBushTexture(
+scene
+);
+
+}
+
+
+/* =========================================================
+   GARDENER CHARACTER
+========================================================= */
+
+function createGardenerTexture(
+scene
+){
+
+const g=
+scene.add.graphics();
+
+
+g.fillStyle(
+0x4e3524
+);
+
+
+g.fillRect(
+11,
+46,
+10,
+6
+);
+
+
+g.fillRect(
+26,
+46,
+10,
+6
+);
+
+
+g.fillStyle(
+0x425f80
+);
+
+
+g.fillRect(
+12,
+36,
+9,
+11
+);
+
+
+g.fillRect(
+26,
+36,
+9,
+11
+);
+
+
+g.fillStyle(
+0x4c9c51
+);
+
+
+g.fillRect(
+9,
+23,
+29,
+16
+);
+
+
+g.fillStyle(
+0x47789a
+);
+
+
+g.fillRect(
+14,
+24,
+19,
+16
+);
+
+
+g.fillRect(
+14,
+19,
+4,
+9
+);
+
+
+g.fillRect(
+29,
+19,
+4,
+9
+);
+
+
+g.fillStyle(
+0x72a4be
+);
+
+
+g.fillRect(
+20,
+29,
+7,
+6
+);
+
+
+g.fillStyle(
+0xf1bd8a
+);
+
+
+g.fillRect(
+5,
+25,
+5,
+12
+);
+
+
+g.fillRect(
+38,
+25,
+5,
+12
+);
+
+
+g.fillStyle(
+0xf1bd8a
+);
+
+
+g.fillRect(
+12,
+10,
+24,
+14
+);
+
+
+g.fillStyle(
+0x5b3924
+);
+
+
+g.fillRect(
+13,
+8,
+22,
+5
+);
+
+
+g.fillStyle(
+0x30291f
+);
+
+
+g.fillRect(
+16,
+15,
+2,
+3
+);
+
+
+g.fillRect(
+30,
+15,
+2,
+3
+);
+
+
+g.fillStyle(
+0xe3b952
+);
+
+
+g.fillRect(
+5,
+6,
+38,
+6
+);
+
+
+g.fillStyle(
+0xf0ca67
+);
+
+
+g.fillRect(
+11,
+0,
+26,
+9
+);
+
+
+g.fillStyle(
+0x8c5a2b
+);
+
+
+g.fillRect(
+11,
+6,
+26,
+3
+);
+
+
+g.fillStyle(
+0x718c98
+);
+
+
+g.fillRect(
+40,
+28,
+7,
+10
+);
+
+
+g.fillRect(
+44,
+25,
+4,
+5
+);
+
+
+g.fillRect(
+46,
+27,
+5,
+3
+);
+
+
+g.generateTexture(
+"gardener",
+52,
+54
+);
+
+
+g.destroy();
+
+}
+
+
+/* =========================================================
+   NPC
+========================================================= */
+
+function createNPCTexture(
+scene
+){
+
+const g=
+scene.add.graphics();
+
+
+g.fillStyle(
+0x553a26
+);
+
+
+g.fillRect(
+11,
+38,
+8,
+6
+);
+
+
+g.fillRect(
+23,
+38,
+8,
+6
+);
+
+
+g.fillStyle(
+0x6e8041
+);
+
+
+g.fillRect(
+9,
+22,
+24,
+18
+);
+
+
+g.fillStyle(
+0xeab985
+);
+
+
+g.fillRect(
+10,
+10,
+22,
+13
+);
+
+
+g.fillStyle(
+0xd6aa49
+);
+
+
+g.fillRect(
+4,
+6,
+34,
+6
+);
+
+
+g.fillRect(
+10,
+0,
+22,
+9
+);
+
+
+g.fillStyle(
+0x30291f
+);
+
+
+g.fillRect(
+14,
+15,
+2,
+3
+);
+
+
+g.fillRect(
+26,
+15,
+2,
+3
+);
+
+
+g.generateTexture(
+"npc",
+42,
+45
+);
+
+
+g.destroy();
+
+}
+
+
+/* =========================================================
+   CHESTS
+========================================================= */
+
+function createChestTextures(
+scene
+){
+
+let g=
+scene.add.graphics();
+
+
+g.fillStyle(
+0x59361b
+);
+
+
+g.fillRect(
+2,
+11,
+46,
+28
+);
+
+
+g.fillStyle(
+0xb8752f
+);
+
+
+g.fillRect(
+5,
+8,
+40,
+26
+);
+
+
+g.fillStyle(
+0x69411e
+);
+
+
+g.fillRect(
+5,
+8,
+40,
+10
+);
+
+
+g.fillStyle(
+0xe6ae43
+);
+
+
+g.fillRect(
+5,
+19,
+40,
+5
+);
+
+
+g.fillStyle(
+0xffd968
+);
+
+
+g.fillRect(
+21,
+18,
+8,
+12
+);
+
+
+g.fillStyle(
+0x3e2715
+);
+
+
+g.fillRect(
+24,
+22,
+3,
+5
+);
+
+
+g.generateTexture(
+"chest",
+50,
+42
+);
+
+
+g.destroy();
+
+
+g=
+scene.add.graphics();
+
+
+g.fillStyle(
+0x59361b
+);
+
+
+g.fillRect(
+2,
+20,
+46,
+20
+);
+
+
+g.fillStyle(
+0xb8752f
+);
+
+
+g.fillRect(
+5,
+20,
+40,
+17
+);
+
+
+g.fillStyle(
+0x69411e
+);
+
+
+g.fillRect(
+6,
+3,
+38,
+9
+);
+
+
+g.fillRect(
+4,
+9,
+42,
+7
+);
+
+
+g.fillStyle(
+0xffdf69
+);
+
+
+g.fillRect(
+12,
+16,
+27,
+5
+);
+
+
+g.generateTexture(
+"chestOpen",
+50,
+43
+);
+
+
+g.destroy();
+
+}
+
+
+/* =========================================================
+   TREES
+========================================================= */
+
+function createTreeTextures(
+scene
+){
+
+let g=
+scene.add.graphics();
+
+
+g.fillStyle(
+0x654125
+);
+
+
+g.fillRect(
+32,
+59,
+17,
+39
+);
+
+
+g.fillStyle(
+0x2f6e32
+);
+
+
+g.fillCircle(
+40,
+43,
+34
+);
+
+
+g.fillStyle(
+0x458c3d
+);
+
+
+g.fillCircle(
+23,
+39,
+22
+);
+
+
+g.fillCircle(
+57,
+40,
+22
+);
+
+
+g.fillCircle(
+41,
+23,
+23
+);
+
+
+g.fillStyle(
+0x65a94d
+);
+
+
+g.fillRect(
+18,
+22,
+10,
+8
+);
+
+
+g.fillRect(
+49,
+29,
+10,
+8
+);
+
+
+g.generateTexture(
+"tree",
+80,
+100
+);
+
+
+g.destroy();
+
+
+g=
+scene.add.graphics();
+
+
+g.fillStyle(
+0x654125
+);
+
+
+g.fillRect(
+32,
+59,
+17,
+39
+);
+
+
+g.fillStyle(
+0x337633
+);
+
+
+g.fillCircle(
+40,
+43,
+34
+);
+
+
+g.fillStyle(
+0x4d9b42
+);
+
+
+g.fillCircle(
+23,
+39,
+22
+);
+
+
+g.fillCircle(
+57,
+40,
+22
+);
+
+
+g.fillCircle(
+41,
+23,
+23
+);
+
+
+g.fillStyle(
+0xd9523d
+);
+
+
+[
+[25,28],
+[52,30],
+[61,48],
+[36,52],
+[42,14]
+]
+.forEach(
+p=>{
+
+g.fillCircle(
+p[0],
+p[1],
+4
+);
+
+}
+);
+
+
+g.generateTexture(
+"fruitTree",
+80,
+100
+);
+
+
+g.destroy();
+
+
+g=
+scene.add.graphics();
+
+
+g.fillStyle(
+0x654125
+);
+
+
+g.fillRect(
+72,
+110,
+46,
+90
+);
+
+
+g.fillRect(
+46,
+130,
+42,
+21
+);
+
+
+g.fillRect(
+102,
+130,
+42,
+21
+);
+
+
+g.fillStyle(
+0x28652e
+);
+
+
+g.fillCircle(
+95,
+82,
+70
+);
+
+
+g.fillStyle(
+0x3a8238
+);
+
+
+g.fillCircle(
+48,
+78,
+44
+);
+
+
+g.fillCircle(
+142,
+78,
+44
+);
+
+
+g.fillCircle(
+95,
+37,
+48
+);
+
+
+g.fillStyle(
+0x5ba348
+);
+
+
+g.fillCircle(
+65,
+45,
+18
+);
+
+
+g.fillCircle(
+127,
+53,
+20
+);
+
+
+g.generateTexture(
+"giantTree",
+190,
+205
+);
+
+
+g.destroy();
+
+}
+
+
+/* =========================================================
+   FLOWER
+========================================================= */
+
+function createFlowerTexture(
+scene
+){
+
+const g=
+scene.add.graphics();
+
+
+g.fillStyle(
+0x397e38
+);
+
+
+g.fillRect(
+8,
+11,
+3,
+14
+);
+
+
+g.fillStyle(
+0xf3d24b
+);
+
+
+g.fillCircle(
+9,
+9,
+3
+);
+
+
+g.fillStyle(
+0xf2769d
+);
+
+
+g.fillCircle(
+9,
+4,
+4
+);
+
+
+g.fillCircle(
+4,
+9,
+4
+);
+
+
+g.fillCircle(
+14,
+9,
+4
+);
+
+
+g.fillCircle(
+9,
+14,
+4
+);
+
+
+g.generateTexture(
+"flower",
+19,
+26
+);
+
+
+g.destroy();
+
+}
+
+
+/* =========================================================
+   CROPS
+========================================================= */
+
+function createCropTexture(
+scene
+){
+
+const g=
+scene.add.graphics();
+
+
+g.fillStyle(
+0x3f8338
+);
+
+
+g.fillRect(
+9,
+8,
+3,
+17
+);
+
+
+g.fillStyle(
+0x6cb24a
+);
+
+
+g.fillTriangle(
+10,
+14,
+1,
+7,
+8,
+19
+);
+
+
+g.fillTriangle(
+12,
+14,
+21,
+7,
+13,
+19
+);
+
+
+g.generateTexture(
+"crop",
+22,
+26
+);
+
+
+g.destroy();
+
+}
+
+
+/* =========================================================
+   ROCK
+========================================================= */
+
+function createRockTexture(
+scene
+){
+
+const g=
+scene.add.graphics();
+
+
+g.fillStyle(
+0x5e625e
+);
+
+
+g.fillRect(
+4,
+16,
+36,
+18
+);
+
+
+g.fillStyle(
+0x7d827b
+);
+
+
+g.fillTriangle(
+4,
+17,
+14,
+5,
+25,
+17
+);
+
+
+g.fillTriangle(
+17,
+17,
+29,
+2,
+41,
+17
+);
+
+
+g.fillStyle(
+0xa4aaa1
+);
+
+
+g.fillRect(
+13,
+11,
+8,
+4
+);
+
+
+g.generateTexture(
+"rock",
+45,
+36
+);
+
+
+g.destroy();
+
+}
+
+
+/* =========================================================
+   FENCE
+========================================================= */
+
+function createFenceTexture(
+scene
+){
+
+const g=
+scene.add.graphics();
+
+
+g.fillStyle(
+0x724829
+);
+
+
+g.fillRect(
+3,
+3,
+7,
+32
+);
+
+
+g.fillRect(
+33,
+3,
+7,
+32
+);
+
+
+g.fillStyle(
+0xa56e39
+);
+
+
+g.fillRect(
+0,
+10,
+43,
+7
+);
+
+
+g.fillRect(
+0,
+23,
+43,
+7
+);
+
+
+g.generateTexture(
+"fence",
+43,
+37
+);
+
+
+g.destroy();
+
+}
+
+
+/* =========================================================
+   BUSH
+========================================================= */
+
+function createBushTexture(
+scene
+){
+
+const g=
+scene.add.graphics();
+
+
+g.fillStyle(
+0x316b34
+);
+
+
+g.fillCircle(
+20,
+20,
+16
+);
+
+
+g.fillCircle(
+36,
+18,
+17
+);
+
+
+g.fillCircle(
+28,
+10,
+16
+);
+
+
+g.fillStyle(
+0x4d9746
+);
+
+
+g.fillCircle(
+18,
+13,
+8
+);
+
+
+g.fillCircle(
+36,
+12,
+7
+);
+
+
+g.generateTexture(
+"bush",
+55,
+42
+);
+
+
+g.destroy();
+
+}
+
 </script>
 
 </body>
