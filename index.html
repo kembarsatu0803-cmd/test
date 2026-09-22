@@ -1,1205 +1,683 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 
 <meta name="viewport"
 content="width=device-width,
 initial-scale=1,
 maximum-scale=1,
 user-scalable=no,
-viewport-fit=cover" />
+viewport-fit=cover">
 
 <title>Connect Match Tumbuhan — Set 5</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <style>
-
-:root{
-  --ink:#173d2c;
-  --cream:#fffdf1;
-  --panel:#fff9df;
-  --green:#4d9d58;
-  --green2:#dff4c8;
-  --gold:#ffd66b;
-}
-
 *{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
 }
 
-html,
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:"Trebuchet MS",Arial,sans-serif;
+    background:#cfeab5;
+}
+
 body{
-  margin:0;
-  width:100%;
-  min-height:100%;
-  font-family:"Trebuchet MS",Arial,sans-serif;
-  background:#bfe7a4;
-  color:var(--ink);
-}
-
-body{
-  min-height:100vh;
-  min-height:100svh;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  padding:10px;
-
-  background:
-  radial-gradient(
-    circle at 10% 8%,
-    rgba(255,255,255,.7) 0 2%,
-    transparent 2.2%
-  ),
-
-  radial-gradient(
-    circle at 90% 12%,
-    rgba(255,255,255,.65) 0 1.8%,
-    transparent 2%
-  ),
-
-  linear-gradient(
-    180deg,
-    #dff5c9,
-    #a9d989
-  );
-}
-
-button{
-  font:inherit;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
 #app{
-  width:min(100%,980px);
-
-  height:min(94svh,880px);
-
-  min-height:600px;
-
-  display:flex;
-  flex-direction:column;
-
-  overflow:hidden;
-
-  border:5px solid #276843;
-  border-radius:26px;
-
-  background:var(--cream);
-
-  box-shadow:
-  0 14px 35px
-  rgba(32,72,45,.24);
-
-  position:relative;
+    width:min(100%,1000px);
+    height:100vh;
+    height:100svh;
+    background:#f7f3d5;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    position:relative;
 }
-
-
-/* =========================
-   TOP BAR
-========================= */
 
 #topbar{
-
-  flex:0 0 auto;
-
-  display:grid;
-
-  grid-template-columns:
-  auto
-  1fr
-  auto;
-
-  gap:10px;
-
-  align-items:center;
-
-  padding:10px 12px;
-
-  background:
-  linear-gradient(
-    180deg,
-    #fff8d9,
-    #f4efc8
-  );
-
-  border-bottom:
-  3px solid #7aaa56;
+    flex:none;
+    min-height:65px;
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    align-items:center;
+    gap:8px;
+    padding:8px 12px;
+    background:#fff7d5;
+    border-bottom:4px solid #599453;
 }
 
-.topBtn,
-.pill{
-
-  min-height:44px;
-
-  border:0;
-
-  border-radius:14px;
-
-  padding:8px 12px;
-
-  font-weight:900;
-
-  box-shadow:
-  0 4px 0
-  rgba(0,0,0,.13);
-
-  cursor:pointer;
-}
-
-.topBtn{
-
-  background:#fff;
-
-  color:#24583d;
-
-  border:
-  2px solid #77a95a;
-}
-
-.topBtn:active{
-
-  transform:
-  translateY(2px);
-
-  box-shadow:
-  0 2px 0
-  rgba(0,0,0,.12);
+#homeBtn{
+    border:2px solid #5b9556;
+    background:#fff;
+    color:#2e6440;
+    padding:9px 12px;
+    border-radius:12px;
+    font-weight:900;
+    font-size:14px;
+    cursor:pointer;
 }
 
 #titleWrap{
-
-  text-align:center;
-
-  line-height:1.05;
-
-  min-width:0;
+    text-align:center;
+    min-width:0;
 }
 
 #title{
-
-  font-size:
-  clamp(
-    18px,
-    3.6vw,
-    30px
-  );
-
-  font-weight:1000;
-
-  letter-spacing:.3px;
-
-  color:#2a6643;
-
-  white-space:nowrap;
-
-  overflow:hidden;
-
-  text-overflow:ellipsis;
+    font-size:clamp(18px,3.5vw,29px);
+    font-weight:1000;
+    color:#275e3c;
 }
 
 #subtitle{
-
-  font-size:
-  clamp(
-    11px,
-    2vw,
-    14px
-  );
-
-  font-weight:800;
-
-  color:#6f784c;
-
-  margin-top:4px;
+    font-size:12px;
+    color:#687b52;
+    font-weight:800;
+    margin-top:2px;
 }
 
-.pill{
-
-  background:#ffe38a;
-
-  color:#6b4c13;
-
-  white-space:nowrap;
+#stage{
+    background:#ffe184;
+    color:#674b10;
+    border-radius:12px;
+    padding:9px 11px;
+    font-weight:1000;
+    white-space:nowrap;
 }
 
-
-/* =========================
-   GAME
-========================= */
-
-#gameBox{
-
-  position:relative;
-
-  flex:1;
-
-  min-height:0;
-
-  background:#daf0bd;
-
-  overflow:hidden;
+#gameArea{
+    flex:1;
+    min-height:0;
+    position:relative;
+    overflow:hidden;
+    background:
+    linear-gradient(
+        180deg,
+        #dff3c6,
+        #c4e49f
+    );
 }
 
 #game{
-
-  position:absolute;
-
-  inset:0;
+    position:absolute;
+    inset:0;
 }
 
 #game canvas{
-
-  display:block;
-
-  width:100% !important;
-
-  height:100% !important;
-
-  touch-action:none;
+    display:block;
+    width:100% !important;
+    height:100% !important;
+    touch-action:none;
 }
 
-
-/* =========================
-   HINT
-========================= */
-
-#hint{
-
-  position:absolute;
-
-  left:50%;
-
-  bottom:10px;
-
-  transform:
-  translateX(-50%);
-
-  z-index:3;
-
-  max-width:92%;
-
-  padding:8px 12px;
-
-  border-radius:999px;
-
-  background:
-  rgba(255,253,237,.94);
-
-  border:
-  2px solid #93b86f;
-
-  font-size:13px;
-
-  font-weight:900;
-
-  text-align:center;
-
-  pointer-events:none;
-
-  box-shadow:
-  0 4px 12px
-  rgba(39,88,61,.13);
+#instruction{
+    position:absolute;
+    z-index:6;
+    left:50%;
+    bottom:9px;
+    transform:translateX(-50%);
+    padding:7px 12px;
+    background:rgba(255,255,245,.94);
+    border:2px solid #83aa66;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:900;
+    color:#33573a;
+    text-align:center;
+    width:max-content;
+    max-width:92%;
+    pointer-events:none;
 }
 
-
-/* =========================
-   OVERLAY
-========================= */
+/* overlay */
 
 .overlay{
-
-  position:absolute;
-
-  inset:0;
-
-  z-index:20;
-
-  display:none;
-
-  align-items:center;
-
-  justify-content:center;
-
-  padding:16px;
-
-  background:
-  rgba(24,60,42,.54);
-
-  backdrop-filter:
-  blur(2px);
+    position:absolute;
+    inset:0;
+    z-index:30;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:14px;
+    background:rgba(25,63,40,.58);
+    backdrop-filter:blur(2px);
 }
 
 .overlay.show{
-
-  display:flex;
+    display:flex;
 }
 
 .card{
-
-  width:min(94%,720px);
-
-  max-height:92%;
-
-  overflow:auto;
-
-  background:#fffdf2;
-
-  border:
-  4px solid #3e8453;
-
-  border-radius:24px;
-
-  padding:18px;
-
-  box-shadow:
-  0 16px 40px
-  rgba(0,0,0,.28);
+    width:min(94%,720px);
+    max-height:92%;
+    overflow:auto;
+    background:#fffef0;
+    border:4px solid #4d8851;
+    border-radius:22px;
+    padding:18px;
+    box-shadow:0 14px 38px rgba(0,0,0,.3);
 }
 
 .card h2{
-
-  margin:
-  0 0 8px;
-
-  font-size:
-  clamp(
-    24px,
-    5vw,
-    38px
-  );
-
-  color:#2c6b43;
-
-  text-align:center;
+    margin:0 0 8px;
+    color:#2d6840;
+    font-size:clamp(24px,5vw,38px);
+    text-align:center;
 }
 
 .card p{
-
-  font-size:
-  clamp(
-    15px,
-    2.4vw,
-    18px
-  );
-
-  line-height:1.45;
+    line-height:1.45;
+    font-size:16px;
 }
-
-#introList{
-
-  margin:
-  12px 0 18px;
-
-  padding-left:22px;
-
-  font-weight:800;
-
-  line-height:1.55;
-}
-
-
-/* =========================
-   BUTTON
-========================= */
 
 .primary{
-
-  width:100%;
-
-  min-height:52px;
-
-  border:0;
-
-  border-radius:16px;
-
-  background:#4eaa62;
-
-  color:white;
-
-  font-size:18px;
-
-  font-weight:1000;
-
-  cursor:pointer;
-
-  box-shadow:
-  0 5px 0 #317b43;
+    width:100%;
+    min-height:52px;
+    border:0;
+    border-radius:15px;
+    background:#4da45d;
+    color:#fff;
+    font-size:18px;
+    font-weight:1000;
+    box-shadow:0 5px 0 #307441;
+    cursor:pointer;
 }
 
 .primary:active{
-
-  transform:
-  translateY(2px);
-
-  box-shadow:
-  0 3px 0 #317b43;
+    transform:translateY(2px);
+    box-shadow:0 3px 0 #307441;
 }
 
-
-/* =========================
-   QUESTION
-========================= */
+/* soalan */
 
 #questionMeta{
-
-  font-weight:1000;
-
-  color:#7a5e18;
-
-  text-align:center;
-
-  margin-bottom:8px;
+    text-align:center;
+    color:#85641a;
+    font-weight:1000;
 }
 
 #questionText{
-
-  font-size:
-  clamp(
-    18px,
-    3.4vw,
-    26px
-  );
-
-  font-weight:1000;
-
-  line-height:1.3;
-
-  margin:
-  8px 0 14px;
-
-  text-align:center;
+    margin:10px 0 15px;
+    font-size:clamp(18px,3vw,25px);
+    font-weight:1000;
+    line-height:1.35;
+    text-align:center;
+    color:#234e36;
 }
 
 #answers{
-
-  display:grid;
-
-  grid-template-columns:
-  1fr 1fr;
-
-  gap:10px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
 }
 
 .answer{
-
-  min-height:58px;
-
-  border:
-  3px solid #96b875;
-
-  border-radius:16px;
-
-  background:white;
-
-  color:#214d36;
-
-  padding:
-  10px 12px;
-
-  text-align:left;
-
-  font-weight:900;
-
-  font-size:
-  clamp(
-    15px,
-    2.5vw,
-    18px
-  );
-
-  cursor:pointer;
-
-  box-shadow:
-  0 4px 0 #c5d9aa;
-}
-
-.answer:hover{
-
-  background:#f4ffe8;
+    min-height:58px;
+    padding:10px 13px;
+    text-align:left;
+    background:#fff;
+    color:#244f36;
+    border:3px solid #9fbb7d;
+    border-radius:15px;
+    font-size:16px;
+    font-weight:900;
+    cursor:pointer;
 }
 
 .answer:active{
-
-  transform:
-  translateY(2px);
-
-  box-shadow:
-  0 2px 0 #c5d9aa;
+    transform:scale(.98);
 }
 
 .answer.correct{
-
-  background:#d7f7d9;
-
-  border-color:#42a653;
-
-  color:#1b6a2c;
+    background:#d7f5d8;
+    border-color:#43a955;
 }
 
 .answer.wrong{
-
-  background:#ffe0de;
-
-  border-color:#e95d50;
-
-  color:#8c2d27;
+    background:#ffe0dc;
+    border-color:#e85b51;
 }
 
 #feedback{
-
-  min-height:30px;
-
-  margin-top:12px;
-
-  text-align:center;
-
-  font-weight:1000;
-
-  font-size:17px;
+    min-height:30px;
+    margin-top:12px;
+    font-size:17px;
+    font-weight:1000;
+    text-align:center;
 }
 
-
-/* =========================
-   WIN
-========================= */
-
-#winCard{
-
-  text-align:center;
+#winOverlay .card{
+    text-align:center;
 }
 
 #winPlant{
-
-  font-size:76px;
-
-  margin:
-  4px 0 10px;
+    font-size:70px;
 }
-
-#winCard p{
-
-  font-weight:800;
-}
-
-
-/* =========================
-   MOBILE
-========================= */
 
 @media(max-width:650px){
+    #app{
+        width:100%;
+    }
 
-  body{
+    #topbar{
+        min-height:58px;
+        padding:6px 7px;
+        gap:5px;
+    }
 
-    padding:0;
+    #homeBtn,
+    #stage{
+        font-size:11px;
+        padding:8px;
+    }
 
-    background:#dff5c9;
-  }
+    #title{
+        font-size:17px;
+    }
 
-  #app{
+    #subtitle{
+        display:none;
+    }
 
-    width:100%;
+    .card{
+        padding:14px;
+        border-width:3px;
+    }
 
-    height:100svh;
+    #answers{
+        grid-template-columns:1fr;
+    }
 
-    min-height:540px;
-
-    border-radius:0;
-
-    border-width:0;
-  }
-
-  #topbar{
-
-    grid-template-columns:
-    auto
-    1fr
-    auto;
-
-    padding:8px;
-
-    gap:7px;
-
-    border-bottom-width:3px;
-  }
-
-  .topBtn,
-  .pill{
-
-    min-height:40px;
-
-    padding:7px 9px;
-
-    font-size:12px;
-
-    border-radius:12px;
-  }
-
-  #subtitle{
-
-    display:none;
-  }
-
-  #hint{
-
-    font-size:11px;
-
-    bottom:7px;
-  }
-
-  .card{
-
-    padding:14px;
-
-    border-width:3px;
-
-    border-radius:18px;
-  }
-
-  #answers{
-
-    grid-template-columns:
-    1fr;
-  }
-
-  .answer{
-
-    min-height:52px;
-  }
+    .answer{
+        min-height:50px;
+        font-size:14px;
+    }
 }
-
-@media(max-width:370px){
-
-  #title{
-
-    font-size:16px;
-  }
-
-  .topBtn,
-  .pill{
-
-    font-size:11px;
-
-    padding:6px 7px;
-  }
-}
-
 </style>
 </head>
-
 
 <body>
 
 <div id="app">
 
+    <div id="topbar">
 
-<!-- =========================
-     HEADER
-========================= -->
+        <button id="homeBtn">
+            ⌂ Home
+        </button>
 
-<div id="topbar">
+        <div id="titleWrap">
+            <div id="title">
+                Connect Match Tumbuhan
+            </div>
 
-  <button
-  class="topBtn"
-  id="homeBtn">
-  ⌂ Home
-  </button>
+            <div id="subtitle">
+                Sambungkan bahagian tumbuhan yang sama
+            </div>
+        </div>
 
+        <div id="stage">
+            Stage 1/25
+        </div>
 
-  <div id="titleWrap">
-
-    <div id="title">
-      🌱 Connect Match Tumbuhan
     </div>
 
-    <div id="subtitle">
-      Sambungkan pasangan warna yang sama
+
+    <div id="gameArea">
+
+        <div id="game"></div>
+
+        <div id="instruction">
+            Tekan simbol dan terus drag ke pasangan yang sama
+        </div>
+
+
+        <!-- START -->
+
+        <div class="overlay show" id="startOverlay">
+
+            <div class="card">
+
+                <h2>
+                    🌱 Connect Tumbuhan
+                </h2>
+
+                <p style="text-align:center;font-weight:900">
+                    Sambungkan pasangan
+                    <b>daun, bunga, akar dan batang</b>
+                    di dalam grid.
+                </p>
+
+                <p>
+                    Tekan satu simbol dan terus seret melalui petak grid
+                    sehingga sampai kepada pasangan yang sama.
+                </p>
+
+                <p>
+                    Selepas semua 4 pasangan berjaya disambungkan,
+                    jawab satu soalan Sains untuk ke stage seterusnya.
+                </p>
+
+                <button class="primary" id="startBtn">
+                    MULA GAME
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- QUESTION -->
+
+        <div class="overlay" id="questionOverlay">
+
+            <div class="card">
+
+                <div id="questionMeta"></div>
+
+                <div id="questionText"></div>
+
+                <div id="answers"></div>
+
+                <div id="feedback"></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- WIN -->
+
+        <div class="overlay" id="winOverlay">
+
+            <div class="card">
+
+                <div id="winPlant">
+                    🌻
+                </div>
+
+                <h2>
+                    Tahniah!
+                </h2>
+
+                <p style="font-weight:900">
+                    Anda berjaya melengkapkan semua 25 stage.
+                </p>
+
+                <button class="primary" id="againBtn">
+                    MAIN SEMULA
+                </button>
+
+            </div>
+
+        </div>
+
     </div>
 
-  </div>
-
-
-  <div
-  class="pill"
-  id="stagePill">
-    Stage 1/25
-  </div>
-
-</div>
-
-
-
-<!-- =========================
-     GAME BOX
-========================= -->
-
-<div id="gameBox">
-
-<div id="game"></div>
-
-
-<div id="hint">
-
-Tekan & seret dari satu tumbuhan ke pasangan warna yang sama.
-
-</div>
-
-
-
-<!-- =========================
-     INTRO
-========================= -->
-
-<div
-class="overlay show"
-id="introOverlay">
-
-<div class="card">
-
-<h2>
-🌿 Misi Sambung Tumbuhan
-</h2>
-
-<p
-style="
-text-align:center;
-font-weight:900;
-">
-
-Setiap stage ada 4 pasangan:
-
-<b>
-Daun, Bunga, Akar dan Batang
-</b>.
-
-</p>
-
-
-<ol id="introList">
-
-<li>
-
-Tekan satu watak tumbuhan dan
-
-<b>seret</b>
-
-ke pasangan warna yang sama.
-
-</li>
-
-
-<li>
-
-Sambungkan semua 4 pasangan.
-
-</li>
-
-
-<li>
-
-Jawab soalan Sains untuk pergi ke stage seterusnya.
-
-</li>
-
-</ol>
-
-
-<button
-class="primary"
-id="startBtn">
-
-MULA GAME
-
-</button>
-
-</div>
-
-</div>
-
-
-
-<!-- =========================
-     QUESTION
-========================= -->
-
-<div
-class="overlay"
-id="questionOverlay">
-
-<div class="card">
-
-<div id="questionMeta"></div>
-
-<div id="questionText"></div>
-
-<div id="answers"></div>
-
-<div id="feedback"></div>
-
-</div>
-
-</div>
-
-
-
-<!-- =========================
-     WIN
-========================= -->
-
-<div
-class="overlay"
-id="winOverlay">
-
-<div
-class="card"
-id="winCard">
-
-<div id="winPlant">
-
-🌻
-
-</div>
-
-<h2>
-
-Tahniah!
-
-</h2>
-
-<p>
-
-Anda berjaya melengkapkan semua 25 stage
-Connect Match Tumbuhan.
-
-</p>
-
-
-<button
-class="primary"
-id="playAgainBtn">
-
-MAIN SEMULA
-
-</button>
-
-</div>
-
-</div>
-
-
-</div>
 </div>
 
 
 
 <script>
 
-/* =========================================================
+/* ============================================================
    SOALAN SET 5
-========================================================= */
+============================================================ */
 
 const QUESTIONS = [
 
 {
-tp:'TP1',
-q:'Apakah bahagian tumbuhan yang biasanya berwarna hijau dan terdapat pada ranting?',
+tp:"TP1",
+q:"Apakah bahagian tumbuhan yang biasanya berwarna hijau dan terdapat pada ranting?",
+o:["Daun","Batang","Akar","Bunga"],
+a:0
+},
+
+{
+tp:"TP1",
+q:"Pada pokok berbunga, bahagian yang disebut sebagai bunga ialah salah satu daripada ____ utama tumbuhan.",
+o:["Bunyi","Haiwan","Bahagian","Rasa"],
+a:2
+},
+
+{
+tp:"TP2",
+q:"Bahagian tumbuhan yang boleh dikenal pasti pada pokok bunga raya ialah ____.",
+o:["Paruh","Kepak","Sirip","Bunga"],
+a:3
+},
+
+{
+tp:"TP2",
+q:"Bahagian tumbuhan yang menghubungkan bahagian bawah dan bahagian atas pokok ialah ____.",
+o:["Akar","Batang","Daun","Bunga"],
+a:1
+},
+
+{
+tp:"TP1",
+q:"Pilih kumpulan yang semuanya merupakan bahagian tumbuhan.",
 o:[
-'Daun',
-'Batang',
-'Akar',
-'Bunga'
+"Bunga, daun, batang, akar",
+"Mata, telinga, hidung, kulit",
+"Kepak, sirip, paruh, tanduk",
+"Roda, pintu, tingkap, bumbung"
 ],
 a:0
 },
 
 {
-tp:'TP1',
-q:'Pada pokok berbunga, bahagian yang disebut sebagai bunga ialah salah satu daripada ____ utama tumbuhan.',
-o:[
-'Bunyi',
-'Haiwan',
-'Bahagian',
-'Rasa'
-],
-a:2
+tp:"TP2",
+q:"Amin melihat satu bahagian tumbuhan di bawah tanah. Bahagian itu ialah ____.",
+o:["Batang","Akar","Daun","Bunga"],
+a:1
 },
 
 {
-tp:'TP2',
-q:'Bahagian tumbuhan yang boleh dikenal pasti pada pokok bunga raya ialah ____.',
+tp:"TP2",
+q:"Apabila mengelaskan tumbuhan mengikut batang, dua kumpulan yang sesuai ialah ____.",
 o:[
-'Paruh',
-'Kepak',
-'Sirip',
-'Bunga'
+"Jejala dan selari",
+"Tunjang dan serabut",
+"Berbunga dan tidak berbunga",
+"Berkayu dan tidak berkayu"
 ],
 a:3
 },
 
 {
-tp:'TP2',
-q:'Bahagian tumbuhan yang menghubungkan bahagian bawah dan bahagian atas pokok ialah ____.',
+tp:"TP2",
+q:"Rina membandingkan pokok teratai dengan paku pakis. Perbezaan yang dinyatakan dalam buku ialah ____.",
 o:[
-'Akar',
-'Batang',
-'Daun',
-'Bunga'
-],
-a:1
-},
-
-{
-tp:'TP1',
-q:'Pilih kumpulan yang semuanya merupakan bahagian tumbuhan.',
-o:[
-'Bunga, daun, batang, akar',
-'Mata, telinga, hidung, kulit',
-'Kepak, sirip, paruh, tanduk',
-'Roda, pintu, tingkap, bumbung'
+"Teratai berbunga, paku pakis tidak berbunga",
+"Kedua-duanya berbunga",
+"Teratai tidak berdaun",
+"Kedua-duanya tidak berbunga"
 ],
 a:0
 },
 
 {
-tp:'TP2',
-q:'Amin melihat satu bahagian tumbuhan di bawah tanah. Bahagian itu ialah ____.',
-o:[
-'Batang',
-'Akar',
-'Daun',
-'Bunga'
-],
-a:1
+tp:"TP1",
+q:"Batang pokok betik ialah jenis ____.",
+o:["Jejala","Berkayu","Tidak berkayu","Tunjang"],
+a:2
 },
 
 {
-tp:'TP2',
-q:'Apabila mengelaskan tumbuhan mengikut batang, dua kumpulan yang sesuai ialah ____.',
+tp:"TP2",
+q:"Apakah ciri yang digunakan untuk membezakan pokok durian dengan pokok betik dalam buku?",
 o:[
-'Jejala dan selari',
-'Tunjang dan serabut',
-'Berbunga dan tidak berbunga',
-'Berkayu dan tidak berkayu'
+"Berbunga atau tidak berbunga",
+"Tunjang atau serabut",
+"Jejala atau selari",
+"Berkayu atau tidak berkayu"
 ],
 a:3
 },
 
 {
-tp:'TP2',
-q:'Rina membandingkan pokok teratai dengan paku pakis. Perbezaan yang dinyatakan dalam buku ialah ____.',
+tp:"TP1",
+q:"Pokok pandan mempunyai akar ____.",
+o:["Serabut","Jejala","Selari","Tunjang"],
+a:0
+},
+
+{
+tp:"TP1",
+q:"Batang pokok durian ialah jenis ____.",
+o:["Serabut","Berkayu","Tidak berkayu","Jejala"],
+a:1
+},
+
+{
+tp:"TP2",
+q:"Apakah bahagian yang membantu tumbuhan berdiri kukuh di dalam tanah?",
+o:["Buah","Bunga","Daun","Akar"],
+a:3
+},
+
+{
+tp:"TP1",
+q:"Batang membawa makanan dari daun ke ____.",
 o:[
-'Teratai berbunga, paku pakis tidak berbunga',
-'Kedua-duanya berbunga',
-'Teratai tidak berdaun',
-'Kedua-duanya tidak berbunga'
+"Pasu",
+"Langit",
+"Bahagian tumbuhan yang lain",
+"Batu"
+],
+a:2
+},
+
+{
+tp:"TP1",
+q:"Akar mengambil air dan nutrien terus daripada ____.",
+o:["Tanah","Buah","Daun","Bunga"],
+a:0
+},
+
+{
+tp:"TP2",
+q:"Air dan nutrien bergerak dari akar ke daun melalui ____.",
+o:["Buah","Bunga","Batang","Biji benih"],
+a:2
+},
+
+{
+tp:"TP2",
+q:"Mengapakah akar penting kepada pokok?",
+o:[
+"Membuat bunga berwarna",
+"Menyokong pokok dan menyerap air serta nutrien",
+"Menarik cahaya",
+"Menghasilkan bunyi"
+],
+a:1
+},
+
+{
+tp:"TP2",
+q:"Jika akar rosak, fungsi yang mungkin terganggu ialah ____.",
+o:[
+"Menghasilkan bunyi",
+"Melihat cahaya",
+"Mendengar bunyi",
+"Menyerap air dan nutrien"
+],
+a:3
+},
+
+{
+tp:"TP1",
+q:"Daun penting kerana daun ____.",
+o:[
+"Membuat makanan",
+"Menjadi akar",
+"Menjadi biji benih",
+"Menyerap air dari tanah"
 ],
 a:0
 },
 
 {
-tp:'TP1',
-q:'Batang pokok betik ialah jenis ____.',
+tp:"TP2",
+q:"Pokok A dan B mempunyai batang berkayu. Apakah ciri yang serupa?",
 o:[
-'Jejala',
-'Berkayu',
-'Tidak berkayu',
-'Tunjang'
+"Jenis urat daun",
+"Jenis tanah",
+"Jenis batang",
+"Jenis akar"
 ],
 a:2
 },
 
 {
-tp:'TP2',
-q:'Apakah ciri yang digunakan untuk membezakan pokok durian dengan pokok betik dalam buku?',
+tp:"TP1",
+q:"Batang pokok bunga raya dan bunga ros sama-sama jenis ____.",
 o:[
-'Berbunga atau tidak berbunga',
-'Tunjang atau serabut',
-'Jejala atau selari',
-'Berkayu atau tidak berkayu'
-],
-a:3
-},
-
-{
-tp:'TP1',
-q:'Pokok pandan mempunyai akar ____.',
-o:[
-'Serabut',
-'Jejala',
-'Selari',
-'Tunjang'
-],
-a:0
-},
-
-{
-tp:'TP1',
-q:'Batang pokok durian ialah jenis ____.',
-o:[
-'Serabut',
-'Berkayu',
-'Tidak berkayu',
-'Jejala'
+"Serabut",
+"Berkayu",
+"Tidak berkayu",
+"Selari"
 ],
 a:1
 },
 
 {
-tp:'TP2',
-q:'Apakah bahagian yang membantu tumbuhan berdiri kukuh di dalam tanah?',
+tp:"TP2",
+q:"Bunga raya dan bunga ros mempunyai batang berkayu. Pernyataan ini menunjukkan ____.",
 o:[
-'Buah',
-'Bunga',
-'Daun',
-'Akar'
+"Perbezaan akar",
+"Perbezaan bunga",
+"Tiada batang",
+"Persamaan ciri batang"
 ],
 a:3
 },
 
 {
-tp:'TP1',
-q:'Batang membawa makanan dari daun ke ____.',
+tp:"TP1",
+q:"Bunga raya dan bunga ros mempunyai tiga ciri yang sama: urat daun jejala, batang berkayu dan akar ____.",
 o:[
-'Pasu',
-'Langit',
-'Bahagian tumbuhan yang lain',
-'Batu'
-],
-a:2
-},
-
-{
-tp:'TP1',
-q:'Akar mengambil air dan nutrien terus daripada ____.',
-o:[
-'Tanah',
-'Buah',
-'Daun',
-'Bunga'
-],
-a:0
-},
-
-{
-tp:'TP2',
-q:'Air dan nutrien bergerak dari akar ke daun melalui ____.',
-o:[
-'Buah',
-'Bunga',
-'Batang',
-'Biji benih'
-],
-a:2
-},
-
-{
-tp:'TP2',
-q:'Mengapakah akar penting kepada pokok?',
-o:[
-'Membuat bunga berwarna',
-'Menyokong pokok dan menyerap air serta nutrien',
-'Menarik cahaya',
-'Menghasilkan bunyi'
+"Serabut",
+"Tunjang",
+"Selari",
+"Tidak berkayu"
 ],
 a:1
 },
 
 {
-tp:'TP2',
-q:'Jika akar rosak, fungsi yang mungkin terganggu ialah ____.',
+tp:"TP2",
+q:"Pokok A dan B mempunyai urat daun jejala. Apakah ciri yang serupa?",
 o:[
-'Menghasilkan bunyi',
-'Melihat cahaya',
-'Mendengar bunyi',
-'Menyerap air dan nutrien'
-],
-a:3
-},
-
-{
-tp:'TP1',
-q:'Daun penting kerana daun ____.',
-o:[
-'Membuat makanan',
-'Menjadi akar',
-'Menjadi biji benih',
-'Menyerap air dari tanah'
-],
-a:0
-},
-
-{
-tp:'TP2',
-q:'Pokok A dan B mempunyai batang berkayu. Apakah ciri yang serupa?',
-o:[
-'Jenis urat daun',
-'Jenis tanah',
-'Jenis batang',
-'Jenis akar'
+"Warna tanah",
+"Jenis buah",
+"Jenis urat daun",
+"Jenis bunga"
 ],
 a:2
 },
 
 {
-tp:'TP1',
-q:'Batang pokok bunga raya dan bunga ros sama-sama jenis ____.',
+tp:"TP1",
+q:"Selain sama-sama berbunga, bunga raya dan bunga ros juga sama-sama mempunyai batang ____.",
 o:[
-'Serabut',
-'Berkayu',
-'Tidak berkayu',
-'Selari'
-],
-a:1
-},
-
-{
-tp:'TP2',
-q:'Bunga raya dan bunga ros mempunyai batang berkayu. Pernyataan ini menunjukkan ____.',
-o:[
-'Perbezaan akar',
-'Perbezaan bunga',
-'Tiada batang',
-'Persamaan ciri batang'
-],
-a:3
-},
-
-{
-tp:'TP1',
-q:'Bunga raya dan bunga ros mempunyai tiga ciri yang sama: urat daun jejala, batang berkayu dan akar ____.',
-o:[
-'Serabut',
-'Tunjang',
-'Selari',
-'Tidak berkayu'
-],
-a:1
-},
-
-{
-tp:'TP2',
-q:'Pokok A dan B mempunyai urat daun jejala. Apakah ciri yang serupa?',
-o:[
-'Warna tanah',
-'Jenis buah',
-'Jenis urat daun',
-'Jenis bunga'
-],
-a:2
-},
-
-{
-tp:'TP1',
-q:'Selain sama-sama berbunga, bunga raya dan bunga ros juga sama-sama mempunyai batang ____.',
-o:[
-'Berkayu',
-'Tidak berkayu',
-'Selari',
-'Serabut'
+"Berkayu",
+"Tidak berkayu",
+"Selari",
+"Serabut"
 ],
 a:0
 }
@@ -1207,2649 +685,2260 @@ a:0
 ];
 
 
+/* ============================================================
+   GAME DATA
+============================================================ */
 
-/* =========================================================
-   JENIS PASANGAN
-========================================================= */
-
-const PARTS = [
+const TYPES = [
 
 {
-name:'Daun',
-short:'D',
-color:0x39a8ff
+id:"leaf",
+name:"Daun",
+color:0x4eae55
 },
 
 {
-name:'Bunga',
-short:'B',
-color:0xf04ba9
+id:"flower",
+name:"Bunga",
+color:0xed5aa7
 },
 
 {
-name:'Akar',
-short:'A',
-color:0xf3a43b
+id:"root",
+name:"Akar",
+color:0xd99042
 },
 
 {
-name:'Batang',
-short:'Bt',
-color:0x55b96a
+id:"stem",
+name:"Batang",
+color:0x3e94c9
 }
 
 ];
 
 
-
-/* =========================================================
-   GLOBAL
-========================================================= */
-
-let gameScene = null;
-
-let currentStage = 0;
-
-let started = false;
-
-let questionLocked = false;
+const GRID = 6;
 
 
-const stagePill =
-document.getElementById(
-'stagePill'
-);
+/*
+Setiap layout:
+[type][start,end]
+cell = [column,row]
+*/
 
-const introOverlay =
-document.getElementById(
-'introOverlay'
-);
+const LAYOUTS = [
+
+{
+leaf:[[0,0],[5,1]],
+flower:[[1,4],[4,0]],
+root:[[0,5],[5,5]],
+stem:[[2,1],[3,4]]
+},
+
+{
+leaf:[[0,1],[4,5]],
+flower:[[1,5],[5,2]],
+root:[[0,4],[5,4]],
+stem:[[2,0],[3,3]]
+},
+
+{
+leaf:[[0,0],[5,3]],
+flower:[[0,5],[4,1]],
+root:[[1,2],[5,5]],
+stem:[[2,5],[4,0]]
+},
+
+{
+leaf:[[0,2],[5,0]],
+flower:[[1,5],[5,4]],
+root:[[0,4],[4,2]],
+stem:[[2,0],[3,5]]
+},
+
+{
+leaf:[[0,5],[5,3]],
+flower:[[0,1],[4,5]],
+root:[[1,3],[5,0]],
+stem:[[2,5],[4,2]]
+},
+
+{
+leaf:[[0,0],[4,4]],
+flower:[[1,5],[5,1]],
+root:[[0,3],[5,5]],
+stem:[[2,1],[3,4]]
+}
+
+];
+
+
+/* ============================================================
+   DOM
+============================================================ */
+
+const stageText =
+document.getElementById("stage");
+
+const startOverlay =
+document.getElementById("startOverlay");
 
 const questionOverlay =
-document.getElementById(
-'questionOverlay'
-);
+document.getElementById("questionOverlay");
 
 const winOverlay =
-document.getElementById(
-'winOverlay'
-);
+document.getElementById("winOverlay");
 
 const questionMeta =
-document.getElementById(
-'questionMeta'
-);
+document.getElementById("questionMeta");
 
 const questionText =
-document.getElementById(
-'questionText'
-);
+document.getElementById("questionText");
 
 const answers =
-document.getElementById(
-'answers'
-);
+document.getElementById("answers");
 
 const feedback =
-document.getElementById(
-'feedback'
-);
+document.getElementById("feedback");
 
 
+let currentStage = 0;
+let gameScene = null;
+let answerLocked = false;
 
-/* =========================================================
-   HOME
-========================================================= */
 
-document
-.getElementById(
-'homeBtn'
-)
-.onclick = () => {
+/* ============================================================
+   BUTTON
+============================================================ */
 
-window.location.href =
-'index.html';
+document.getElementById("homeBtn").onclick = () => {
+    window.location.href = "index.html";
+};
+
+
+document.getElementById("startBtn").onclick = () => {
+
+    startOverlay.classList.remove("show");
+
+    if(gameScene){
+        gameScene.loadStage(0);
+    }
 
 };
 
 
+document.getElementById("againBtn").onclick = () => {
 
-/* =========================================================
-   START
-========================================================= */
+    currentStage = 0;
 
-document
-.getElementById(
-'startBtn'
-)
-.onclick = () => {
+    winOverlay.classList.remove("show");
 
-started = true;
-
-introOverlay
-.classList
-.remove(
-'show'
-);
-
-if(gameScene){
-
-gameScene
-.startStage(
-currentStage
-);
-
-}
+    if(gameScene){
+        gameScene.loadStage(0);
+    }
 
 };
 
 
+/* ============================================================
+   PHASER
+============================================================ */
 
-/* =========================================================
-   PLAY AGAIN
-========================================================= */
-
-document
-.getElementById(
-'playAgainBtn'
-)
-.onclick = () => {
-
-currentStage = 0;
-
-winOverlay
-.classList
-.remove(
-'show'
-);
-
-started = true;
-
-if(gameScene){
-
-gameScene
-.startStage(
-0
-);
-
-}
-
-};
-
-
-
-/* =========================================================
-   RANDOM SEED
-========================================================= */
-
-function mulberry32(seed){
-
-return function(){
-
-let t =
-seed +=
-0x6D2B79F5;
-
-t =
-Math.imul(
-t ^ t >>> 15,
-t | 1
-);
-
-t ^=
-t +
-Math.imul(
-t ^ t >>> 7,
-t | 61
-);
-
-return (
-(
-t ^ t >>> 14
-) >>> 0
-) /
-4294967296;
-
-};
-
-}
-
-
-
-function seededShuffle(
-arr,
-seed
-){
-
-const a =
-arr.slice();
-
-const r =
-mulberry32(
-seed
-);
-
-for(
-let i =
-a.length - 1;
-i > 0;
-i--
-){
-
-const j =
-Math.floor(
-r() *
-(i + 1)
-);
-
-[
-a[i],
-a[j]
-] = [
-a[j],
-a[i]
-];
-
-}
-
-return a;
-
-}
-
-
-
-/* =========================================================
-   PHASER SCENE
-========================================================= */
-
-class ConnectScene
-extends Phaser.Scene{
+class GameScene extends Phaser.Scene{
 
 constructor(){
 
-super(
-'ConnectScene'
-);
+    super("GameScene");
 
 }
 
 
-
-/* =========================================================
+/* ============================================================
    CREATE
-========================================================= */
+============================================================ */
 
 create(){
 
-gameScene =
-this;
+    gameScene = this;
+
+    this.bgGraphics =
+        this.add.graphics();
+
+    this.gridGraphics =
+        this.add.graphics();
+
+    this.pathGraphics =
+        this.add.graphics();
+
+    this.tempGraphics =
+        this.add.graphics();
+
+    this.symbolContainer =
+        this.add.container(0,0);
+
+    this.currentDrag = null;
+
+    this.paths = {};
+
+    this.nodes = [];
+
+    this.stageLocked = true;
 
 
-this.bg =
-this.add.graphics();
+    this.input.on(
+        "pointerdown",
+        pointer => {
+
+            this.pointerDown(pointer);
+
+        }
+    );
 
 
-this.pathG =
-this.add.graphics();
+    this.input.on(
+        "pointermove",
+        pointer => {
+
+            this.pointerMove(pointer);
+
+        }
+    );
 
 
-this.tempG =
-this.add.graphics();
+    this.input.on(
+        "pointerup",
+        pointer => {
+
+            this.pointerUp(pointer);
+
+        }
+    );
 
 
-this.decor =
-this.add.container(
-0,
-0
-);
+    this.input.on(
+        "pointerupoutside",
+        pointer => {
+
+            this.pointerUp(pointer);
+
+        }
+    );
 
 
-this.nodeLayer =
-this.add.container(
-0,
-0
-);
+    this.scale.on(
+        "resize",
+        () => {
+
+            if(!this.stageLocked || this.nodes.length){
+
+                this.loadStage(
+                    currentStage
+                );
+
+            }else{
+
+                this.drawBoard();
+
+            }
+
+        }
+    );
 
 
-this.pairs = [];
-
-this.drawing = null;
-
-this.stageLock = true;
-
-
-
-/* pointer move */
-
-this.input.on(
-'pointermove',
-pointer => {
-
-this.onMove(
-pointer
-);
-
-}
-);
-
-
-
-/* pointer up */
-
-this.input.on(
-'pointerup',
-pointer => {
-
-this.onUp(
-pointer
-);
-
-}
-);
-
-
-
-this.input.on(
-'pointerupoutside',
-pointer => {
-
-this.onUp(
-pointer
-);
-
-}
-);
-
-
-
-/* resize */
-
-this.scale.on(
-'resize',
-() => {
-
-this.drawBackground();
-
-if(started){
-
-this.startStage(
-currentStage
-);
-
-}
-
-}
-);
-
-
-this.drawBackground();
+    this.drawBoard();
 
 }
 
 
+/* ============================================================
+   BOARD SIZE
+============================================================ */
 
-/* =========================================================
-   BACKGROUND
-========================================================= */
+calculateBoard(){
 
-drawBackground(){
+    const width =
+        this.scale.width;
 
-const w =
-this.scale.width;
+    const height =
+        this.scale.height;
 
-const h =
-this.scale.height;
+    const maxSize =
+        Math.min(
+            width - 26,
+            height - 50,
+            690
+        );
+
+    this.boardSize =
+        Math.max(
+            280,
+            maxSize
+        );
+
+    this.cellSize =
+        this.boardSize / GRID;
+
+    this.boardX =
+        (width - this.boardSize) / 2;
+
+    this.boardY =
+        Math.max(
+            15,
+            (height - this.boardSize) / 2 - 5
+        );
+
+}
 
 
-this.bg.clear();
+/* ============================================================
+   DRAW BOARD
+============================================================ */
+
+drawBoard(){
+
+    this.calculateBoard();
+
+    const g =
+        this.bgGraphics;
+
+    g.clear();
 
 
-this.bg.fillStyle(
-0xdaf0bd,
-1
-);
+    g.fillStyle(
+        0xd9efbd,
+        1
+    );
 
-this.bg.fillRect(
-0,
-0,
-w,
-h
-);
+    g.fillRect(
+        0,
+        0,
+        this.scale.width,
+        this.scale.height
+    );
 
 
+    /* board shadow */
 
-/* jalur taman */
+    g.fillStyle(
+        0x41643d,
+        .18
+    );
 
-for(
-let y = 0;
-y < h;
-y += 90
+    g.fillRoundedRect(
+
+        this.boardX + 7,
+        this.boardY + 9,
+
+        this.boardSize,
+        this.boardSize,
+
+        20
+
+    );
+
+
+    /* board base */
+
+    g.fillStyle(
+        0xfffced,
+        1
+    );
+
+    g.fillRoundedRect(
+
+        this.boardX,
+        this.boardY,
+
+        this.boardSize,
+        this.boardSize,
+
+        18
+
+    );
+
+
+    this.drawGrid();
+
+}
+
+
+/* ============================================================
+   GRID
+============================================================ */
+
+drawGrid(){
+
+    const g =
+        this.gridGraphics;
+
+    g.clear();
+
+
+    for(
+        let row = 0;
+        row < GRID;
+        row++
+    ){
+
+        for(
+            let col = 0;
+            col < GRID;
+            col++
+        ){
+
+            const x =
+                this.boardX +
+                col *
+                this.cellSize;
+
+            const y =
+                this.boardY +
+                row *
+                this.cellSize;
+
+
+            const alternate =
+                (row + col) % 2 === 0;
+
+
+            g.fillStyle(
+                alternate
+                ? 0xf6f3d9
+                : 0xeeeac9,
+                1
+            );
+
+
+            g.fillRect(
+
+                x + 1,
+                y + 1,
+
+                this.cellSize - 2,
+                this.cellSize - 2
+
+            );
+
+
+            g.lineStyle(
+                2,
+                0xb0bd8b,
+                .9
+            );
+
+
+            g.strokeRect(
+
+                x,
+                y,
+
+                this.cellSize,
+                this.cellSize
+
+            );
+
+        }
+
+    }
+
+
+    g.lineStyle(
+        5,
+        0x638b52,
+        1
+    );
+
+
+    g.strokeRoundedRect(
+
+        this.boardX,
+        this.boardY,
+
+        this.boardSize,
+        this.boardSize,
+
+        18
+
+    );
+
+}
+
+
+/* ============================================================
+   LOAD STAGE
+============================================================ */
+
+loadStage(index){
+
+    currentStage = index;
+
+    stageText.textContent =
+        `Stage ${index + 1}/25`;
+
+
+    this.calculateBoard();
+
+    this.drawBoard();
+
+
+    this.symbolContainer.removeAll(true);
+
+    this.pathGraphics.clear();
+
+    this.tempGraphics.clear();
+
+
+    this.paths = {};
+
+    this.nodes = [];
+
+    this.currentDrag = null;
+
+    this.stageLocked = false;
+
+
+    const layout =
+        this.getLayout(index);
+
+
+    TYPES.forEach(type => {
+
+        const positions =
+            layout[type.id];
+
+
+        positions.forEach(
+            (cell,i) => {
+
+                this.createNode(
+                    type,
+                    cell[0],
+                    cell[1],
+                    i
+                );
+
+            }
+        );
+
+
+        this.paths[type.id] = null;
+
+    });
+
+}
+
+
+/* ============================================================
+   VARIASI STAGE
+============================================================ */
+
+getLayout(stage){
+
+    const original =
+        LAYOUTS[
+            stage %
+            LAYOUTS.length
+        ];
+
+
+    const result = {};
+
+
+    TYPES.forEach(type => {
+
+        result[type.id] =
+            original[type.id]
+            .map(cell => {
+
+                let col =
+                    cell[0];
+
+                let row =
+                    cell[1];
+
+
+                /* mirror setiap beberapa stage */
+
+                if(
+                    Math.floor(
+                        stage /
+                        LAYOUTS.length
+                    ) %
+                    2 === 1
+                ){
+
+                    col =
+                        GRID -
+                        1 -
+                        col;
+
+                }
+
+
+                /* flip vertical */
+
+                if(
+                    Math.floor(
+                        stage /
+                        12
+                    ) %
+                    2 === 1
+                ){
+
+                    row =
+                        GRID -
+                        1 -
+                        row;
+
+                }
+
+
+                return [
+                    col,
+                    row
+                ];
+
+            });
+
+    });
+
+
+    return result;
+
+}
+
+
+/* ============================================================
+   CELL CENTER
+============================================================ */
+
+cellCenter(
+    col,
+    row
 ){
 
-this.bg.fillStyle(
+    return {
 
-(y / 90) % 2 === 0
+        x:
+        this.boardX +
+        col *
+        this.cellSize +
+        this.cellSize / 2,
 
-?
+        y:
+        this.boardY +
+        row *
+        this.cellSize +
+        this.cellSize / 2
 
-0xcfe9ac
-
-:
-
-0xdaf0bd,
-
-1
-
-);
-
-this.bg.fillRect(
-0,
-y,
-w,
-45
-);
+    };
 
 }
 
 
-
-/* garis hiasan */
-
-this.bg.lineStyle(
-2,
-0x9fc67a,
-0.35
-);
-
-for(
-let x = 35;
-x < w;
-x += 72
-){
-
-this.bg.lineBetween(
-x,
-0,
-x - 20,
-h
-);
-
-}
-
-
-
-/* decor */
-
-this.decor
-.removeAll(
-true
-);
-
-
-const spots = [
-
-[
-0.05,
-0.09,
-'🌼'
-],
-
-[
-0.92,
-0.12,
-'🍃'
-],
-
-[
-0.08,
-0.86,
-'🌱'
-],
-
-[
-0.90,
-0.82,
-'🌸'
-],
-
-[
-0.50,
-0.07,
-'🍀'
-],
-
-[
-0.54,
-0.90,
-'🌿'
-]
-
-];
-
-
-spots.forEach(
-(
-[
-nx,
-ny,
-symbol
-],
-i
-) => {
-
-const t =
-this.add.text(
-
-w * nx,
-
-h * ny,
-
-symbol,
-
-{
-
-fontSize:
-
-Math.max(
-
-24,
-
-Math.min(
-42,
-w * 0.05
-)
-
-) + 'px'
-
-}
-
-)
-
-.setOrigin(
-0.5
-)
-
-.setAlpha(
-0.30
-);
-
-
-t.setRotation(
-
-(i % 2 ? 1 : -1)
-
-* 0.15
-
-);
-
-
-this.decor.add(
-t
-);
-
-}
-);
-
-}
-
-
-
-/* =========================================================
-   START STAGE
-========================================================= */
-
-startStage(index){
-
-currentStage =
-index;
-
-
-stagePill.textContent =
-`Stage ${index + 1}/25`;
-
-
-questionOverlay
-.classList
-.remove(
-'show'
-);
-
-
-feedback.textContent =
-'';
-
-
-questionLocked =
-false;
-
-
-this.stageLock =
-false;
-
-
-this.drawing =
-null;
-
-
-this.pathG.clear();
-
-this.tempG.clear();
-
-
-this.nodeLayer
-.removeAll(
-true
-);
-
-
-this.pairs = [];
-
-
-
-const w =
-this.scale.width;
-
-const h =
-this.scale.height;
-
-
-
-const padX =
-Math.max(
-
-76,
-
-Math.min(
-120,
-w * 0.13
-)
-
-);
-
-
-const top =
-Math.max(
-75,
-h * 0.13
-);
-
-
-const bottom =
-Math.min(
-
-h - 88,
-
-h * 0.84
-
-);
-
-
-const left =
-padX;
-
-
-const right =
-w - padX;
-
-
-const midL =
-w * 0.32;
-
-
-const midR =
-w * 0.68;
-
-
-
-/* 8 posisi */
-
-const slots = [
-
-{
-x:left,
-y:top
-},
-
-{
-x:right,
-y:top
-},
-
-{
-x:left,
-y:h * 0.38
-},
-
-{
-x:right,
-y:h * 0.38
-},
-
-{
-x:left,
-y:h * 0.67
-},
-
-{
-x:right,
-y:h * 0.67
-},
-
-{
-x:midL,
-y:bottom
-},
-
-{
-x:midR,
-y:bottom
-}
-
-];
-
-
-
-/* random lokasi */
-
-const order =
-seededShuffle(
-
-[
-0,
-1,
-2,
-3,
-4,
-5,
-6,
-7
-],
-
-9001 +
-index * 1337
-
-);
-
-
-const chosen =
-order.map(
-
-i =>
-slots[i]
-
-);
-
-
-
-/* random jenis tumbuhan */
-
-const pairOrder =
-seededShuffle(
-
-[
-0,
-1,
-2,
-3
-],
-
-5000 +
-index * 71
-
-);
-
-
-
-for(
-let k = 0;
-k < 4;
-k++
-){
-
-const part =
-PARTS[
-pairOrder[k]
-];
-
-
-const p1 =
-chosen[
-k * 2
-];
-
-
-const p2 =
-chosen[
-k * 2 + 1
-];
-
-
-const pair = {
-
-id:k,
-
-part:part,
-
-connected:false,
-
-path:[],
-
-nodes:[]
-
-};
-
-
-
-pair.nodes.push(
-
-this.makeNode(
-
-p1.x,
-
-p1.y,
-
-pair,
-
-0
-
-)
-
-);
-
-
-pair.nodes.push(
-
-this.makeNode(
-
-p2.x,
-
-p2.y,
-
-pair,
-
-1
-
-)
-
-);
-
-
-this.pairs.push(
-pair
-);
-
-}
-
-}
-
-
-
-/* =========================================================
+/* ============================================================
    CREATE NODE
-========================================================= */
+============================================================ */
 
-makeNode(
-x,
-y,
-pair,
-side
+createNode(
+    type,
+    col,
+    row,
+    endpoint
 ){
 
-const container =
-this.add.container(
-x,
-y
-);
-
-
-container.pairId =
-pair.id;
-
-
-container.side =
-side;
-
-
-container.connected =
-false;
-
-
-
-/* bayang */
-
-const shadow =
-this.add.ellipse(
-
-0,
-34,
-
-70,
-18,
-
-0x4f703d,
-
-0.18
-
-);
-
-
-
-/* batang kecil */
-
-const stem =
-this.add.rectangle(
-
-0,
--32,
-
-10,
-20,
-
-0x2d7d45
-
-)
-
-.setOrigin(
-0.5,
-1
-);
-
-
-
-/* daun atas */
-
-const sprout1 =
-this.add.ellipse(
-
--8,
--48,
-
-24,
-13,
-
-0x46a95c
-
-)
-
-.setRotation(
--0.45
-);
-
-
-
-const sprout2 =
-this.add.ellipse(
-
-9,
--48,
-
-24,
-13,
-
-0x46a95c
-
-)
-
-.setRotation(
-0.45
-);
-
-
-
-/* badan watak */
-
-const blob =
-this.add.graphics();
-
-
-blob.fillStyle(
-pair.part.color,
-1
-);
-
-
-blob.fillRoundedRect(
-
--33,
--30,
-
-66,
-62,
-
-24
-
-);
-
-
-blob.fillCircle(
-
--22,
--5,
-
-16
-
-);
-
-
-blob.fillCircle(
-
-22,
--5,
-
-16
-
-);
-
-
-/* highlight */
-
-blob.lineStyle(
-
-3,
-
-0xffffff,
-
-0.45
-
-);
-
-
-blob.strokeRoundedRect(
-
--33,
--30,
-
-66,
-62,
-
-24
-
-);
-
-
-
-/* mata */
-
-const eye1 =
-this.add.circle(
-
--11,
--5,
-
-7,
-
-0xffffff
-
-);
-
-
-const eye2 =
-this.add.circle(
-
-11,
--5,
-
-7,
-
-0xffffff
-
-);
-
-
-
-const pupil1 =
-this.add.circle(
-
--10,
--4,
-
-3,
-
-0x173d2c
-
-);
-
-
-const pupil2 =
-this.add.circle(
-
-10,
--4,
-
-3,
-
-0x173d2c
-
-);
-
-
-
-/* simbol */
-
-const symbol =
-this.add.text(
-
-0,
-14,
-
-pair.part.short,
-
-{
-
-fontFamily:
-'Trebuchet MS, Arial',
-
-fontSize:
-'17px',
-
-fontStyle:
-'bold',
-
-color:
-'#ffffff',
-
-stroke:
-'#173d2c',
-
-strokeThickness:
-3
+    const pos =
+        this.cellCenter(
+            col,
+            row
+        );
+
+
+    const container =
+        this.add.container(
+            pos.x,
+            pos.y
+        );
+
+
+    container.typeId =
+        type.id;
+
+    container.col =
+        col;
+
+    container.row =
+        row;
+
+    container.endpoint =
+        endpoint;
+
+    container.completed =
+        false;
+
+
+    const shadow =
+        this.add.ellipse(
+            2,
+            this.cellSize * .25,
+            this.cellSize * .55,
+            this.cellSize * .14,
+            0x375233,
+            .17
+        );
+
+
+    const plate =
+        this.add.circle(
+            0,
+            0,
+            Math.min(
+                this.cellSize * .36,
+                35
+            ),
+            0xffffff,
+            .88
+        );
+
+
+    const ring =
+        this.add.graphics();
+
+    ring.lineStyle(
+        Math.max(
+            3,
+            this.cellSize * .035
+        ),
+        type.color,
+        1
+    );
+
+    ring.strokeCircle(
+        0,
+        0,
+        Math.min(
+            this.cellSize * .36,
+            35
+        )
+    );
+
+
+    const symbol =
+        this.createPlantSymbol(
+            type
+        );
+
+
+    container.add([
+        shadow,
+        plate,
+        ring,
+        symbol
+    ]);
+
+
+    this.symbolContainer.add(
+        container
+    );
+
+
+    this.nodes.push(
+        container
+    );
 
 }
 
-)
 
-.setOrigin(
-0.5
-);
+/* ============================================================
+   PLANT SYMBOLS
+============================================================ */
+
+createPlantSymbol(type){
+
+    const g =
+        this.add.graphics();
+
+    const s =
+        Math.min(
+            this.cellSize / 88,
+            1.15
+        );
 
 
+    if(type.id === "leaf"){
 
-/* nama */
+        /*
+        DAUN
+        */
 
-const label =
-this.add.text(
+        g.fillStyle(
+            type.color,
+            1
+        );
 
-0,
-48,
+        g.fillEllipse(
+            -4 * s,
+            0,
+            42 * s,
+            25 * s
+        );
 
-pair.part.name,
+        g.lineStyle(
+            3 * s,
+            0x236633,
+            1
+        );
 
-{
+        g.lineBetween(
+            -21 * s,
+            11 * s,
+            18 * s,
+            -10 * s
+        );
 
-fontFamily:
-'Trebuchet MS, Arial',
 
-fontSize:
-'14px',
+        g.lineBetween(
+            -4 * s,
+            1 * s,
+            -8 * s,
+            -9 * s
+        );
 
-fontStyle:
-'bold',
 
-color:
-'#1d5136',
+        g.lineBetween(
+            4 * s,
+            -3 * s,
+            9 * s,
+            5 * s
+        );
 
-backgroundColor:
-'#fffced',
+    }
 
-padding:{
 
-x:6,
+    else if(type.id === "flower"){
 
-y:3
+        /*
+        BUNGA
+        */
+
+        g.fillStyle(
+            type.color,
+            1
+        );
+
+
+        const petalR =
+            10 * s;
+
+        const radius =
+            14 * s;
+
+
+        for(
+            let i = 0;
+            i < 6;
+            i++
+        ){
+
+            const angle =
+                Phaser.Math.DegToRad(
+                    i * 60
+                );
+
+
+            g.fillCircle(
+
+                Math.cos(angle) *
+                radius,
+
+                Math.sin(angle) *
+                radius,
+
+                petalR
+
+            );
+
+        }
+
+
+        g.fillStyle(
+            0xffcf45,
+            1
+        );
+
+        g.fillCircle(
+            0,
+            0,
+            10 * s
+        );
+
+
+        g.lineStyle(
+            2 * s,
+            0x7d5b20,
+            1
+        );
+
+        g.strokeCircle(
+            0,
+            0,
+            10 * s
+        );
+
+    }
+
+
+    else if(type.id === "root"){
+
+        /*
+        AKAR
+        */
+
+        g.lineStyle(
+            7 * s,
+            type.color,
+            1
+        );
+
+
+        g.lineBetween(
+            0,
+            -20 * s,
+            0,
+            11 * s
+        );
+
+
+        g.lineStyle(
+            5 * s,
+            type.color,
+            1
+        );
+
+
+        g.lineBetween(
+            0,
+            4 * s,
+            -19 * s,
+            23 * s
+        );
+
+
+        g.lineBetween(
+            0,
+            7 * s,
+            19 * s,
+            23 * s
+        );
+
+
+        g.lineBetween(
+            -8 * s,
+            13 * s,
+            -22 * s,
+            10 * s
+        );
+
+
+        g.lineBetween(
+            8 * s,
+            14 * s,
+            23 * s,
+            11 * s
+        );
+
+
+        g.lineBetween(
+            0,
+            9 * s,
+            0,
+            29 * s
+        );
+
+
+        g.lineStyle(
+            3 * s,
+            type.color,
+            1
+        );
+
+
+        g.lineBetween(
+            -19 * s,
+            23 * s,
+            -25 * s,
+            29 * s
+        );
+
+
+        g.lineBetween(
+            19 * s,
+            23 * s,
+            25 * s,
+            29 * s
+        );
+
+    }
+
+
+    else if(type.id === "stem"){
+
+        /*
+        BATANG
+        */
+
+        g.fillStyle(
+            type.color,
+            1
+        );
+
+
+        g.fillRoundedRect(
+
+            -8 * s,
+            -29 * s,
+
+            16 * s,
+            58 * s,
+
+            6 * s
+
+        );
+
+
+        g.fillEllipse(
+            -15 * s,
+            -9 * s,
+            22 * s,
+            12 * s
+        );
+
+
+        g.fillEllipse(
+            15 * s,
+            8 * s,
+            22 * s,
+            12 * s
+        );
+
+
+        g.lineStyle(
+            2 * s,
+            0x1c648a,
+            1
+        );
+
+
+        g.lineBetween(
+            0,
+            -26 * s,
+            0,
+            26 * s
+        );
+
+    }
+
+
+    return g;
 
 }
 
+
+/* ============================================================
+   POINTER DOWN
+   TERUS DRAG, TIADA HOLD
+============================================================ */
+
+pointerDown(pointer){
+
+    if(this.stageLocked){
+        return;
+    }
+
+
+    const node =
+        this.findNodeAt(
+            pointer.x,
+            pointer.y
+        );
+
+
+    if(!node){
+        return;
+    }
+
+
+    /*
+    jika path lama untuk simbol ini sudah ada,
+    user boleh buat semula
+    */
+
+    if(
+        this.paths[
+            node.typeId
+        ]
+    ){
+
+        this.paths[
+            node.typeId
+        ] = null;
+
+        this.nodes
+        .filter(
+            n =>
+            n.typeId ===
+            node.typeId
+        )
+        .forEach(
+            n =>
+            n.completed =
+            false
+        );
+
+
+        this.renderCompletedPaths();
+
+    }
+
+
+    this.currentDrag = {
+
+        typeId:
+        node.typeId,
+
+        startNode:
+        node,
+
+        cells:[
+            {
+                col:node.col,
+                row:node.row
+            }
+        ]
+
+    };
+
+
+    this.highlightNode(
+        node,
+        1.12
+    );
+
+
+    this.renderTemp();
+
 }
 
-)
 
-.setOrigin(
-0.5
-);
+/* ============================================================
+   POINTER MOVE
+============================================================ */
 
+pointerMove(pointer){
 
-
-container.add([
-
-shadow,
-
-stem,
-
-sprout1,
-
-sprout2,
-
-blob,
-
-eye1,
-
-eye2,
-
-pupil1,
-
-pupil2,
-
-symbol,
-
-label
-
-]);
+    if(!this.currentDrag){
+        return;
+    }
 
 
-
-/* kawasan tap besar */
-
-container.setSize(
-100,
-112
-);
+    const cell =
+        this.pointerToCell(
+            pointer.x,
+            pointer.y
+        );
 
 
-container.setInteractive(
-
-new Phaser.Geom.Rectangle(
-
--50,
--56,
-
-100,
-112
-
-),
-
-Phaser.Geom.Rectangle.Contains
-
-);
+    if(!cell){
+        return;
+    }
 
 
+    const cells =
+        this.currentDrag.cells;
 
-/* mula drag */
 
-container.on(
+    const last =
+        cells[
+            cells.length - 1
+        ];
 
-'pointerdown',
 
-pointer => {
+    if(
+        cell.col === last.col &&
+        cell.row === last.row
+    ){
+        return;
+    }
 
-this.beginDraw(
 
-container,
+    /*
+    Kalau jari bergerak laju,
+    tambah petak satu-satu
+    */
 
-pointer
+    this.moveTowardsCell(
+        cell.col,
+        cell.row
+    );
 
-);
+
+    this.renderTemp();
 
 }
 
-);
 
+/* ============================================================
+   ADD CELLS
+============================================================ */
 
-
-/* hover desktop */
-
-container.on(
-
-'pointerover',
-
-() => {
-
-if(
-!container.connected &&
-!this.drawing
+moveTowardsCell(
+    targetCol,
+    targetRow
 ){
 
-this.tweens.add({
+    const cells =
+        this.currentDrag.cells;
 
-targets:
-container,
 
-scale:
-1.07,
+    let safety = 0;
 
-duration:
-90
 
-});
+    while(
+        safety <
+        20
+    ){
 
-}
+        safety++;
 
-}
 
-);
+        const last =
+            cells[
+                cells.length - 1
+            ];
 
 
+        if(
+            last.col ===
+            targetCol &&
+            last.row ===
+            targetRow
+        ){
 
-container.on(
+            break;
 
-'pointerout',
+        }
 
-() => {
 
-if(
-!container.connected &&
-!this.drawing
-){
+        let nextCol =
+            last.col;
 
-this.tweens.add({
+        let nextRow =
+            last.row;
 
-targets:
-container,
 
-scale:
-1,
+        const dx =
+            targetCol -
+            last.col;
 
-duration:
-90
+        const dy =
+            targetRow -
+            last.row;
 
-});
 
-}
+        if(
+            Math.abs(dx) >
+            Math.abs(dy)
+        ){
 
-}
+            nextCol +=
+                Math.sign(dx);
 
-);
+        }
 
+        else{
 
-this.nodeLayer.add(
-container
-);
+            nextRow +=
+                Math.sign(dy);
 
+        }
 
-return container;
 
-}
+        /*
+        backtrack satu cell
+        */
 
+        if(
+            cells.length >= 2
+        ){
 
+            const previous =
+                cells[
+                    cells.length - 2
+                ];
 
-/* =========================================================
-   START DRAW
-========================================================= */
 
-beginDraw(
-node,
-pointer
-){
+            if(
+                previous.col ===
+                nextCol &&
+                previous.row ===
+                nextRow
+            ){
 
-if(
-this.stageLock ||
-node.connected
-){
+                cells.pop();
 
-return;
+                continue;
 
-}
+            }
 
+        }
 
-const pair =
-this.pairs[
-node.pairId
-];
 
+        /*
+        jangan loop pada path sendiri
+        */
 
-this.drawing = {
+        const already =
+            cells.findIndex(
+                c =>
+                c.col === nextCol &&
+                c.row === nextRow
+            );
 
-pair:pair,
 
-node:node,
+        if(already !== -1){
 
-points:[
+            cells.splice(
+                already + 1
+            );
 
-new Phaser.Math.Vector2(
+            continue;
 
-node.x,
+        }
 
-node.y
 
-)
+        /*
+        Kalau petak ada simbol berlainan,
+        jangan lalu
+        */
 
-]
+        const blockedNode =
+            this.nodes.find(
+                node =>
 
-};
+                node.col ===
+                nextCol &&
 
+                node.row ===
+                nextRow &&
 
-this.tweens.add({
+                node.typeId !==
+                this.currentDrag.typeId
+            );
 
-targets:
-node,
 
-scale:
-1.12,
+        if(blockedNode){
 
-duration:
-80
+            break;
 
-});
+        }
 
 
-this.addPoint(
+        cells.push({
 
-pointer.x,
+            col:nextCol,
+            row:nextRow
 
-pointer.y
+        });
 
-);
-
-}
-
-
-
-/* =========================================================
-   ADD POINT
-========================================================= */
-
-addPoint(
-x,
-y
-){
-
-if(
-!this.drawing
-){
-
-return;
-
-}
-
-
-const points =
-this.drawing.points;
-
-
-const last =
-points[
-points.length - 1
-];
-
-
-if(
-
-Phaser.Math.Distance.Between(
-
-last.x,
-last.y,
-
-x,
-y
-
-)
-
-> 7
-
-){
-
-points.push(
-
-new Phaser.Math.Vector2(
-
-x,
-y
-
-)
-
-);
-
-}
+    }
 
 }
 
 
-
-/* =========================================================
-   MOVE
-========================================================= */
-
-onMove(
-pointer
-){
-
-if(
-!this.drawing
-){
-
-return;
-
-}
-
-
-this.addPoint(
-
-pointer.x,
-
-pointer.y
-
-);
-
-
-this.renderTemp(
-
-pointer.x,
-
-pointer.y
-
-);
-
-}
-
-
-
-/* =========================================================
+/* ============================================================
    RELEASE
-========================================================= */
+============================================================ */
 
-onUp(
-pointer
+pointerUp(pointer){
+
+    if(!this.currentDrag){
+        return;
+    }
+
+
+    const drag =
+        this.currentDrag;
+
+
+    const finalCell =
+        drag.cells[
+            drag.cells.length - 1
+        ];
+
+
+    const matchingNode =
+        this.nodes.find(
+            node =>
+
+            node.typeId ===
+            drag.typeId &&
+
+            node !==
+            drag.startNode &&
+
+            node.col ===
+            finalCell.col &&
+
+            node.row ===
+            finalCell.row
+        );
+
+
+    this.highlightNode(
+        drag.startNode,
+        1
+    );
+
+
+    /*
+    BERJAYA
+    */
+
+    if(matchingNode){
+
+        this.paths[
+            drag.typeId
+        ] = drag.cells.slice();
+
+
+        this.nodes
+        .filter(
+            node =>
+            node.typeId ===
+            drag.typeId
+        )
+        .forEach(
+            node => {
+
+                node.completed =
+                    true;
+
+                this.popNode(
+                    node
+                );
+
+            }
+        );
+
+
+        this.currentDrag =
+            null;
+
+
+        this.tempGraphics.clear();
+
+        this.renderCompletedPaths();
+
+        this.checkStageComplete();
+
+    }
+
+
+    /*
+    TAK SAMPAI PASANGAN
+    */
+
+    else{
+
+        this.currentDrag =
+            null;
+
+        this.tempGraphics.clear();
+
+        this.shakeNode(
+            drag.startNode
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   FIND NODE
+============================================================ */
+
+findNodeAt(x,y){
+
+    let result =
+        null;
+
+    let shortest =
+        Infinity;
+
+
+    const radius =
+        this.cellSize * .46;
+
+
+    this.nodes.forEach(
+        node => {
+
+            const d =
+                Phaser.Math.Distance.Between(
+                    x,
+                    y,
+                    node.x,
+                    node.y
+                );
+
+
+            if(
+                d < radius &&
+                d < shortest
+            ){
+
+                result =
+                    node;
+
+                shortest =
+                    d;
+
+            }
+
+        }
+    );
+
+
+    return result;
+
+}
+
+
+/* ============================================================
+   POINTER TO GRID
+============================================================ */
+
+pointerToCell(x,y){
+
+    if(
+        x < this.boardX ||
+        y < this.boardY ||
+        x >=
+        this.boardX +
+        this.boardSize ||
+        y >=
+        this.boardY +
+        this.boardSize
+    ){
+
+        return null;
+
+    }
+
+
+    const col =
+        Math.floor(
+            (
+                x -
+                this.boardX
+            ) /
+            this.cellSize
+        );
+
+
+    const row =
+        Math.floor(
+            (
+                y -
+                this.boardY
+            ) /
+            this.cellSize
+        );
+
+
+    return {
+        col,
+        row
+    };
+
+}
+
+
+/* ============================================================
+   TEMP PATH
+============================================================ */
+
+renderTemp(){
+
+    const g =
+        this.tempGraphics;
+
+    g.clear();
+
+
+    if(!this.currentDrag){
+        return;
+    }
+
+
+    const type =
+        TYPES.find(
+            t =>
+            t.id ===
+            this.currentDrag.typeId
+        );
+
+
+    const points =
+        this.currentDrag.cells
+        .map(
+            cell => {
+
+                const p =
+                    this.cellCenter(
+                        cell.col,
+                        cell.row
+                    );
+
+                return new Phaser.Math.Vector2(
+                    p.x,
+                    p.y
+                );
+
+            }
+        );
+
+
+    if(points.length < 1){
+        return;
+    }
+
+
+    /*
+    putih bawah
+    */
+
+    g.lineStyle(
+        Math.max(
+            18,
+            this.cellSize * .31
+        ),
+        0xffffff,
+        .65
+    );
+
+
+    g.strokePoints(
+        points,
+        false,
+        false
+    );
+
+
+    /*
+    warna
+    */
+
+    g.lineStyle(
+        Math.max(
+            11,
+            this.cellSize * .20
+        ),
+        type.color,
+        .9
+    );
+
+
+    g.strokePoints(
+        points,
+        false,
+        false
+    );
+
+
+    points.forEach(
+        p => {
+
+            g.fillStyle(
+                type.color,
+                .95
+            );
+
+            g.fillCircle(
+                p.x,
+                p.y,
+                Math.max(
+                    5,
+                    this.cellSize * .10
+                )
+            );
+
+        }
+    );
+
+}
+
+
+/* ============================================================
+   COMPLETED PATHS
+============================================================ */
+
+renderCompletedPaths(){
+
+    const g =
+        this.pathGraphics;
+
+    g.clear();
+
+
+    TYPES.forEach(type => {
+
+        const cells =
+            this.paths[
+                type.id
+            ];
+
+
+        if(!cells){
+            return;
+        }
+
+
+        const points =
+            cells.map(
+                cell => {
+
+                    const p =
+                        this.cellCenter(
+                            cell.col,
+                            cell.row
+                        );
+
+                    return new Phaser.Math.Vector2(
+                        p.x,
+                        p.y
+                    );
+
+                }
+            );
+
+
+        /*
+        white edge
+        */
+
+        g.lineStyle(
+            Math.max(
+                20,
+                this.cellSize * .34
+            ),
+            0xffffff,
+            .74
+        );
+
+
+        g.strokePoints(
+            points,
+            false,
+            false
+        );
+
+
+        /*
+        main color
+        */
+
+        g.lineStyle(
+            Math.max(
+                12,
+                this.cellSize * .21
+            ),
+            type.color,
+            1
+        );
+
+
+        g.strokePoints(
+            points,
+            false,
+            false
+        );
+
+
+        /*
+        rounded cell points
+        */
+
+        points.forEach(
+            point => {
+
+                g.fillStyle(
+                    type.color,
+                    1
+                );
+
+                g.fillCircle(
+                    point.x,
+                    point.y,
+                    Math.max(
+                        6,
+                        this.cellSize * .105
+                    )
+                );
+
+            }
+        );
+
+    });
+
+}
+
+
+/* ============================================================
+   NODE EFFECT
+============================================================ */
+
+highlightNode(
+    node,
+    scale
 ){
 
-if(
-!this.drawing
+    this.tweens.killTweensOf(
+        node
+    );
+
+
+    this.tweens.add({
+
+        targets:node,
+
+        scaleX:scale,
+        scaleY:scale,
+
+        duration:80
+
+    });
+
+}
+
+
+/* ============================================================
+   POP
+============================================================ */
+
+popNode(node){
+
+    this.tweens.killTweensOf(
+        node
+    );
+
+
+    node.setScale(1);
+
+
+    this.tweens.add({
+
+        targets:node,
+
+        scaleX:1.18,
+        scaleY:1.18,
+
+        duration:120,
+
+        yoyo:true
+
+    });
+
+}
+
+
+/* ============================================================
+   SHAKE
+============================================================ */
+
+shakeNode(node){
+
+    const startX =
+        node.x;
+
+
+    this.tweens.add({
+
+        targets:node,
+
+        x:startX + 7,
+
+        duration:55,
+
+        yoyo:true,
+
+        repeat:3,
+
+        onComplete:()=>{
+
+            node.x =
+                startX;
+
+        }
+
+    });
+
+}
+
+
+/* ============================================================
+   STAGE COMPLETE
+============================================================ */
+
+checkStageComplete(){
+
+    const completed =
+        TYPES.every(
+            type =>
+            this.paths[
+                type.id
+            ]
+        );
+
+
+    if(!completed){
+        return;
+    }
+
+
+    this.stageLocked =
+        true;
+
+
+    const msg =
+        this.add.text(
+
+            this.scale.width / 2,
+
+            this.boardY +
+            this.boardSize / 2,
+
+            "SEMUA PASANGAN BERJAYA!",
+
+            {
+
+                fontFamily:
+                "Trebuchet MS, Arial",
+
+                fontStyle:
+                "bold",
+
+                fontSize:
+                Math.max(
+                    19,
+                    Math.min(
+                        34,
+                        this.scale.width * .05
+                    )
+                ) + "px",
+
+                color:
+                "#28603c",
+
+                backgroundColor:
+                "#fff9cf",
+
+                padding:{
+                    x:16,
+                    y:10
+                },
+
+                stroke:
+                "#ffffff",
+
+                strokeThickness:4
+
+            }
+
+        )
+        .setOrigin(.5)
+        .setDepth(50);
+
+
+    this.tweens.add({
+
+        targets:msg,
+
+        scaleX:1.08,
+        scaleY:1.08,
+
+        duration:180,
+
+        yoyo:true,
+
+        repeat:1
+
+    });
+
+
+    this.time.delayedCall(
+        650,
+        ()=>{
+
+            msg.destroy();
+
+            showQuestion(
+                currentStage
+            );
+
+        }
+    );
+
+}
+
+}
+
+
+/* ============================================================
+   QUESTION
+============================================================ */
+
+function showQuestion(index){
+
+    const q =
+        QUESTIONS[index];
+
+
+    answerLocked = false;
+
+    feedback.textContent = "";
+
+    answers.innerHTML = "";
+
+
+    questionMeta.textContent =
+        `Soalan ${index + 1}/25 • ${q.tp}`;
+
+
+    questionText.textContent =
+        q.q;
+
+
+    const letters =
+        ["A","B","C","D"];
+
+
+    q.o.forEach(
+        (option,i)=>{
+
+            const btn =
+                document.createElement(
+                    "button"
+                );
+
+
+            btn.className =
+                "answer";
+
+
+            btn.textContent =
+                `${letters[i]}. ${option}`;
+
+
+            btn.onclick =
+                ()=>{
+
+                    answerQuestion(
+                        index,
+                        i,
+                        btn
+                    );
+
+                };
+
+
+            answers.appendChild(
+                btn
+            );
+
+        }
+    );
+
+
+    questionOverlay.classList.add(
+        "show"
+    );
+
+}
+
+
+/* ============================================================
+   ANSWER CHECK
+============================================================ */
+
+function answerQuestion(
+    questionIndex,
+    choice,
+    button
 ){
 
-return;
+    if(answerLocked){
+        return;
+    }
+
+
+    const q =
+        QUESTIONS[
+            questionIndex
+        ];
+
+
+    if(choice === q.a){
+
+        answerLocked =
+            true;
+
+
+        button.classList.add(
+            "correct"
+        );
+
+
+        feedback.textContent =
+            "✅ Betul!";
+
+
+        [...answers.children]
+        .forEach(
+            b =>
+            b.disabled =
+            true
+        );
+
+
+        setTimeout(
+            ()=>{
+
+                questionOverlay
+                .classList
+                .remove(
+                    "show"
+                );
+
+
+                if(
+                    questionIndex ===
+                    QUESTIONS.length - 1
+                ){
+
+                    winOverlay
+                    .classList
+                    .add(
+                        "show"
+                    );
+
+                }
+
+                else{
+
+                    currentStage =
+                        questionIndex +
+                        1;
+
+
+                    gameScene.loadStage(
+                        currentStage
+                    );
+
+                }
+
+            },
+            750
+        );
+
+    }
+
+    else{
+
+        button.classList.add(
+            "wrong"
+        );
+
+
+        feedback.textContent =
+            "❌ Belum tepat. Cuba lagi.";
+
+
+        button.disabled =
+            true;
+
+
+        setTimeout(
+            ()=>{
+
+                button.classList.remove(
+                    "wrong"
+                );
+
+                button.disabled =
+                    false;
+
+                feedback.textContent =
+                    "";
+
+            },
+            650
+        );
+
+    }
 
 }
 
 
-const drawing =
-this.drawing;
-
-
-this.addPoint(
-
-pointer.x,
-
-pointer.y
-
-);
-
-
-const target =
-this.findNode(
-
-pointer.x,
-
-pointer.y
-
-);
-
-
-
-/* kalau pasangan betul */
-
-if(
-
-target &&
-
-target.pairId ===
-drawing.node.pairId &&
-
-target.side !==
-drawing.node.side &&
-
-!target.connected
-
-){
-
-const pair =
-drawing.pair;
-
-
-pair.connected =
-true;
-
-
-drawing.node.connected =
-true;
-
-
-target.connected =
-true;
-
-
-pair.path =
-drawing.points.slice();
-
-
-pair.path.push(
-
-new Phaser.Math.Vector2(
-
-target.x,
-
-target.y
-
-)
-
-);
-
-
-drawing.node.setScale(
-1
-);
-
-
-target.setScale(
-1
-);
-
-
-this.flashPair(
-
-pair,
-
-true
-
-);
-
-
-this.renderPaths();
-
-
-this.checkComplete();
-
-}
-
-
-/* salah */
-
-else{
-
-drawing.node.setScale(
-1
-);
-
-
-this.shake(
-
-drawing.node
-
-);
-
-}
-
-
-this.drawing =
-null;
-
-
-this.tempG.clear();
-
-}
-
-
-
-/* =========================================================
-   CARI NODE
-========================================================= */
-
-findNode(
-x,
-y
-){
-
-let best =
-null;
-
-
-let distance =
-Infinity;
-
-
-this.pairs.forEach(
-
-pair =>
-
-pair.nodes.forEach(
-
-node => {
-
-const d =
-Phaser.Math.Distance.Between(
-
-x,
-y,
-
-node.x,
-node.y
-
-);
-
-
-if(
-
-d < 62 &&
-
-d < distance
-
-){
-
-best =
-node;
-
-
-distance =
-d;
-
-}
-
-}
-
-)
-
-);
-
-
-return best;
-
-}
-
-
-
-/* =========================================================
-   TEMP LINE
-========================================================= */
-
-renderTemp(
-x,
-y
-){
-
-if(
-!this.drawing
-){
-
-return;
-
-}
-
-
-const graphics =
-this.tempG;
-
-
-const pair =
-this.drawing.pair;
-
-
-const points =
-
-this.drawing.points.concat([
-
-new Phaser.Math.Vector2(
-
-x,
-y
-
-)
-
-]);
-
-
-graphics.clear();
-
-
-
-/* glow */
-
-graphics.lineStyle(
-
-26,
-
-pair.part.color,
-
-0.20
-
-);
-
-
-graphics.strokePoints(
-
-points,
-
-false,
-
-false
-
-);
-
-
-
-/* main vine */
-
-graphics.lineStyle(
-
-16,
-
-pair.part.color,
-
-0.95
-
-);
-
-
-graphics.strokePoints(
-
-points,
-
-false,
-
-false
-
-);
-
-
-
-/* bulatan kecil supaya line nampak bulat */
-
-points.forEach(
-
-(point,index) => {
-
-if(
-index % 2 === 0
-){
-
-graphics.fillStyle(
-
-pair.part.color,
-
-0.96
-
-);
-
-graphics.fillCircle(
-
-point.x,
-
-point.y,
-
-8
-
-);
-
-}
-
-}
-
-);
-
-}
-
-
-
-/* =========================================================
-   PERMANENT PATH
-========================================================= */
-
-renderPaths(){
-
-const graphics =
-this.pathG;
-
-
-graphics.clear();
-
-
-this.pairs.forEach(
-
-pair => {
-
-if(
-!pair.connected
-){
-
-return;
-
-}
-
-
-
-/* border putih */
-
-graphics.lineStyle(
-
-28,
-
-0xffffff,
-
-0.72
-
-);
-
-
-graphics.strokePoints(
-
-pair.path,
-
-false,
-
-false
-
-);
-
-
-
-/* line warna */
-
-graphics.lineStyle(
-
-17,
-
-pair.part.color,
-
-1
-
-);
-
-
-graphics.strokePoints(
-
-pair.path,
-
-false,
-
-false
-
-);
-
-
-
-pair.path.forEach(
-
-(point,index) => {
-
-if(
-index % 2 === 0
-){
-
-graphics.fillStyle(
-
-pair.part.color,
-
-1
-
-);
-
-
-graphics.fillCircle(
-
-point.x,
-
-point.y,
-
-8.5
-
-);
-
-}
-
-}
-
-);
-
-
-
-/* hujung line */
-
-const first =
-pair.path[0];
-
-
-const last =
-pair.path[
-pair.path.length - 1
-];
-
-
-graphics.fillStyle(
-
-pair.part.color,
-
-1
-
-);
-
-
-graphics.fillCircle(
-
-first.x,
-
-first.y,
-
-10
-
-);
-
-
-graphics.fillCircle(
-
-last.x,
-
-last.y,
-
-10
-
-);
-
-}
-
-);
-
-}
-
-
-
-/* =========================================================
-   SUCCESS EFFECT
-========================================================= */
-
-flashPair(
-pair
-){
-
-pair.nodes.forEach(
-
-node => {
-
-this.tweens.add({
-
-targets:
-node,
-
-scale:
-1.16,
-
-duration:
-110,
-
-yoyo:
-true
-
-});
-
-
-const tick =
-this.add.text(
-
-node.x,
-
-node.y - 72,
-
-'✓',
-
-{
-
-fontSize:
-'30px',
-
-fontStyle:
-'bold',
-
-color:
-'#1c7a35',
-
-stroke:
-'#ffffff',
-
-strokeThickness:
-5
-
-}
-
-)
-
-.setOrigin(
-0.5
-);
-
-
-this.tweens.add({
-
-targets:
-tick,
-
-y:
-tick.y - 18,
-
-alpha:
-0,
-
-duration:
-650,
-
-ease:
-'Cubic.easeOut',
-
-onComplete:
-() => {
-
-tick.destroy();
-
-}
-
-});
-
-}
-
-);
-
-}
-
-
-
-/* =========================================================
-   WRONG EFFECT
-========================================================= */
-
-shake(
-node
-){
-
-const originalX =
-node.x;
-
-
-this.tweens.add({
-
-targets:
-node,
-
-x:
-originalX + 7,
-
-duration:
-55,
-
-yoyo:
-true,
-
-repeat:
-3,
-
-onComplete:
-() => {
-
-node.x =
-originalX;
-
-node.setScale(
-1
-);
-
-}
-
-});
-
-}
-
-
-
-/* =========================================================
-   CHECK COMPLETE
-========================================================= */
-
-checkComplete(){
-
-const complete =
-this.pairs.every(
-
-pair =>
-pair.connected
-
-);
-
-
-if(
-!complete
-){
-
-return;
-
-}
-
-
-this.stageLock =
-true;
-
-
-
-const completeText =
-this.add.text(
-
-this.scale.width / 2,
-
-this.scale.height / 2,
-
-'🌿  SEMUA BERSAMBUNG!  🌿',
-
-{
-
-fontFamily:
-'Trebuchet MS, Arial',
-
-fontSize:
-
-Math.max(
-
-22,
-
-Math.min(
-
-38,
-
-this.scale.width * 0.055
-
-)
-
-) + 'px',
-
-fontStyle:
-'bold',
-
-color:
-'#245b3a',
-
-backgroundColor:
-'#fff8cf',
-
-padding:{
-
-x:16,
-
-y:10
-
-},
-
-stroke:
-'#ffffff',
-
-strokeThickness:
-3
-
-}
-
-)
-
-.setOrigin(
-0.5
-)
-
-.setDepth(
-20
-);
-
-
-
-this.tweens.add({
-
-targets:
-completeText,
-
-scale:
-1.08,
-
-duration:
-250,
-
-yoyo:
-true,
-
-repeat:
-1
-
-});
-
-
-
-this.time.delayedCall(
-
-650,
-
-() => {
-
-completeText.destroy();
-
-
-showQuestion(
-
-currentStage
-
-);
-
-}
-
-);
-
-}
-
-}
-
-
-
-/* =========================================================
-   SHOW QUESTION
-========================================================= */
-
-function showQuestion(
-index
-){
-
-const item =
-QUESTIONS[
-index
-];
-
-
-questionLocked =
-false;
-
-
-questionMeta.textContent =
-
-`Soalan ${index + 1}/25 • ${item.tp}`;
-
-
-questionText.textContent =
-item.q;
-
-
-feedback.textContent =
-'';
-
-
-answers.innerHTML =
-'';
-
-
-const letters = [
-
-'A',
-'B',
-'C',
-'D'
-
-];
-
-
-
-item.o.forEach(
-
-(option,i) => {
-
-const button =
-document.createElement(
-'button'
-);
-
-
-button.className =
-'answer';
-
-
-button.textContent =
-
-`${letters[i]}. ${option}`;
-
-
-button.onclick =
-() => {
-
-checkAnswer(
-
-index,
-
-i,
-
-button
-
-);
-
-};
-
-
-answers.appendChild(
-button
-);
-
-}
-
-);
-
-
-questionOverlay
-.classList
-.add(
-'show'
-);
-
-}
-
-
-
-/* =========================================================
-   ANSWER
-========================================================= */
-
-function checkAnswer(
-index,
-chosen,
-button
-){
-
-if(
-questionLocked
-){
-
-return;
-
-}
-
-
-const item =
-QUESTIONS[
-index
-];
-
-
-
-/* betul */
-
-if(
-chosen === item.a
-){
-
-questionLocked =
-true;
-
-
-button.classList.add(
-'correct'
-);
-
-
-feedback.textContent =
-'✅ Betul! Bagus!';
-
-
-
-[
-...answers.children
-]
-.forEach(
-
-answerButton => {
-
-answerButton.disabled =
-true;
-
-}
-
-);
-
-
-
-setTimeout(
-
-() => {
-
-questionOverlay
-.classList
-.remove(
-'show'
-);
-
-
-
-/* last question */
-
-if(
-index >= 24
-){
-
-winOverlay
-.classList
-.add(
-'show'
-);
-
-}
-
-
-/* next stage */
-
-else{
-
-currentStage =
-index + 1;
-
-
-if(
-gameScene
-){
-
-gameScene.startStage(
-
-currentStage
-
-);
-
-}
-
-}
-
-},
-
-800
-
-);
-
-}
-
-
-
-/* salah */
-
-else{
-
-button.classList.add(
-'wrong'
-);
-
-
-feedback.textContent =
-'❌ Belum tepat. Cuba lagi.';
-
-
-button.disabled =
-true;
-
-
-
-setTimeout(
-
-() => {
-
-button.classList.remove(
-'wrong'
-);
-
-
-button.disabled =
-false;
-
-
-feedback.textContent =
-'';
-
-},
-
-700
-
-);
-
-}
-
-}
-
-
-
-/* =========================================================
-   PHASER CONFIG
-========================================================= */
+/* ============================================================
+   CONFIG
+============================================================ */
 
 const config = {
 
-type:
-Phaser.AUTO,
+    type:Phaser.AUTO,
 
-parent:
-'game',
+    parent:"game",
 
-backgroundColor:
-'#daf0bd',
+    backgroundColor:"#d9efbd",
 
-scale:{
+    scale:{
 
-mode:
-Phaser.Scale.RESIZE,
+        mode:Phaser.Scale.RESIZE,
 
-width:
-'100%',
+        width:"100%",
 
-height:
-'100%'
+        height:"100%"
 
-},
+    },
 
-render:{
+    input:{
 
-antialias:
-true,
+        activePointers:3
 
-pixelArt:
-false,
+    },
 
-roundPixels:
-false
+    render:{
 
-},
+        antialias:true,
 
-input:{
+        pixelArt:false,
 
-activePointers:
-3
+        roundPixels:false
 
-},
+    },
 
-scene:[
-ConnectScene
-]
+    scene:[
+        GameScene
+    ]
 
 };
 
 
-
 new Phaser.Game(
-config
+    config
 );
 
 </script>
