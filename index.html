@@ -2,582 +2,764 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
+
 <meta
     name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    content="width=device-width,
+    initial-scale=1,
+    maximum-scale=1,
+    user-scalable=no,
+    viewport-fit=cover"
 >
 
-<title>Lebah Cari Bunga Jawapan — Unit 6 Tumbuhan</title>
+<title>Lebah Misi Tumbuhan — Unit 6</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <style>
-    * {
-        box-sizing: border-box;
-        -webkit-tap-highlight-color: transparent;
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+    margin:0;
+    width:100%;
+    min-height:100%;
+    font-family:"Trebuchet MS",Arial,sans-serif;
+    background:
+        radial-gradient(
+            circle at 15% 10%,
+            rgba(255,255,255,.8),
+            transparent 25%
+        ),
+        linear-gradient(
+            135deg,
+            #eaf8cf,
+            #bfe6a4,
+            #a9d98d
+        );
+    color:#26402d;
+}
+
+body{
+    padding:15px 10px 35px;
+}
+
+button{
+    font-family:inherit;
+}
+
+/* ===========================
+   WRAPPER
+=========================== */
+
+.wrapper{
+    width:min(1000px,100%);
+    margin:0 auto;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+}
+
+.home-btn{
+    border:0;
+    padding:10px 16px;
+    border-radius:14px;
+
+    background:#fff;
+    color:#315b39;
+
+    font-weight:900;
+    font-size:14px;
+
+    box-shadow:0 4px 0 rgba(53,93,59,.18);
+
+    cursor:pointer;
+}
+
+.title{
+    font-weight:900;
+    color:#3e6846;
+    font-size:clamp(13px,2vw,17px);
+}
+
+/* ===========================
+   MAIN
+=========================== */
+
+.main-card{
+    overflow:hidden;
+
+    border:4px solid rgba(255,255,255,.85);
+    border-radius:27px;
+
+    background:#fff;
+
+    box-shadow:
+        0 20px 50px rgba(50,90,55,.20);
+}
+
+/* ===========================
+   QUESTION AREA
+=========================== */
+
+.question-area{
+    padding:15px 18px 13px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #fffef8,
+            #fffbea
+        );
+
+    border-bottom:3px solid #e0eac8;
+}
+
+.info-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+
+    flex-wrap:wrap;
+
+    margin-bottom:10px;
+}
+
+.category{
+    padding:7px 11px;
+
+    border-radius:999px;
+
+    background:#e9f7d3;
+    border:2px solid #d3e9b0;
+
+    font-size:12px;
+    font-weight:900;
+
+    color:#4e743e;
+}
+
+.stats{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+}
+
+.stat{
+    padding:7px 10px;
+
+    border:2px solid #e3ead5;
+    border-radius:999px;
+
+    background:#fff;
+
+    font-size:12px;
+    font-weight:900;
+}
+
+.question{
+    margin-bottom:11px;
+
+    font-size:clamp(16px,2.2vw,21px);
+    font-weight:900;
+    line-height:1.35;
+
+    color:#263e2d;
+}
+
+.options{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:7px;
+}
+
+.option{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    min-height:43px;
+    padding:7px 10px;
+
+    border:2px solid #e6ebdc;
+    border-radius:13px;
+
+    background:#fff;
+
+    font-size:clamp(12px,1.8vw,15px);
+    font-weight:800;
+}
+
+.letter{
+    display:grid;
+    place-items:center;
+
+    width:28px;
+    height:28px;
+    min-width:28px;
+
+    border-radius:50%;
+
+    background:#76b85a;
+    color:#fff;
+
+    font-weight:900;
+}
+
+.feedback{
+    min-height:24px;
+
+    margin-top:9px;
+
+    text-align:center;
+
+    font-size:14px;
+    font-weight:900;
+}
+
+.feedback.correct{
+    color:#15824b;
+}
+
+.feedback.wrong{
+    color:#d4493f;
+}
+
+.feedback.warning{
+    color:#de7b22;
+}
+
+.progress{
+    height:9px;
+
+    margin-top:8px;
+
+    border-radius:100px;
+
+    background:#e7ebdd;
+
+    overflow:hidden;
+}
+
+.progress-fill{
+    width:0%;
+    height:100%;
+
+    border-radius:100px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #72b653,
+            #f3c84e
+        );
+
+    transition:width .35s ease;
+}
+
+/* ===========================
+   GAME
+=========================== */
+
+#game-shell{
+    position:relative;
+
+    width:100%;
+    height:clamp(460px,63vh,620px);
+
+    overflow:hidden;
+
+    background:#aae1ef;
+
+    touch-action:none;
+}
+
+#game{
+    position:absolute;
+    inset:0;
+}
+
+#game canvas{
+    width:100% !important;
+    height:100% !important;
+
+    display:block !important;
+
+    touch-action:none;
+}
+
+.instruction{
+    position:absolute;
+    z-index:15;
+
+    left:50%;
+    top:9px;
+
+    transform:translateX(-50%);
+
+    width:max-content;
+    max-width:90%;
+
+    padding:7px 12px;
+
+    border:2px solid rgba(255,255,255,.9);
+    border-radius:999px;
+
+    background:rgba(255,255,255,.86);
+
+    color:#3a6240;
+
+    text-align:center;
+
+    font-size:clamp(10px,1.7vw,13px);
+    font-weight:900;
+
+    pointer-events:none;
+}
+
+/* ===========================
+   ANALOG JOYSTICK
+=========================== */
+
+.joystick-zone{
+    position:absolute;
+    z-index:20;
+
+    left:14px;
+    bottom:14px;
+
+    width:145px;
+    height:145px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    touch-action:none;
+    user-select:none;
+}
+
+.joystick-base{
+    position:relative;
+
+    width:128px;
+    height:128px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(255,255,255,.78),
+            rgba(255,255,255,.55)
+        );
+
+    border:4px solid rgba(255,255,255,.86);
+
+    box-shadow:
+        inset 0 0 0 3px rgba(65,96,67,.10),
+        0 5px 15px rgba(31,63,38,.18);
+}
+
+.joystick-center{
+    position:absolute;
+
+    width:26px;
+    height:26px;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    border-radius:50%;
+
+    background:rgba(72,111,72,.13);
+}
+
+.joystick-knob{
+    position:absolute;
+
+    width:58px;
+    height:58px;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    border-radius:50%;
+
+    background:
+        linear-gradient(
+            180deg,
+            #effbdc,
+            #9ed276
+        );
+
+    border:4px solid rgba(255,255,255,.95);
+
+    box-shadow:
+        0 6px 12px rgba(37,70,43,.25);
+
+    pointer-events:none;
+}
+
+/* ===========================
+   FIRE BUTTON
+=========================== */
+
+.fire-area{
+    position:absolute;
+    z-index:20;
+
+    right:20px;
+    bottom:27px;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;
+}
+
+.fire-btn{
+    width:92px;
+    height:92px;
+
+    border:5px solid rgba(255,255,255,.94);
+    border-radius:50%;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffdc58,
+            #f0a932
+        );
+
+    color:#5f4218;
+
+    font-size:16px;
+    font-weight:900;
+
+    box-shadow:
+        0 7px 0 #bd7e28,
+        0 10px 20px rgba(70,50,15,.22);
+
+    cursor:pointer;
+
+    touch-action:none;
+    user-select:none;
+}
+
+.fire-btn.active,
+.fire-btn:active{
+    transform:translateY(5px);
+    box-shadow:
+        0 2px 0 #bd7e28;
+}
+
+.fire-label{
+    padding:4px 8px;
+
+    border-radius:999px;
+
+    background:rgba(255,255,255,.82);
+
+    font-size:10px;
+    font-weight:900;
+
+    color:#526354;
+}
+
+/* ===========================
+   OVERLAY
+=========================== */
+
+.overlay{
+    position:absolute;
+    z-index:40;
+
+    inset:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
+
+    background:rgba(40,75,48,.35);
+
+    backdrop-filter:blur(3px);
+}
+
+.overlay.hidden{
+    display:none;
+}
+
+.overlay-card{
+    width:min(450px,95%);
+
+    padding:24px 20px;
+
+    border:4px solid #fff;
+    border-radius:26px;
+
+    background:#fffef6;
+
+    text-align:center;
+
+    box-shadow:
+        0 20px 50px rgba(29,60,36,.3);
+}
+
+.icon{
+    font-size:55px;
+    line-height:1;
+
+    margin-bottom:8px;
+}
+
+.overlay-card h1,
+.overlay-card h2{
+    margin:0 0 10px;
+
+    color:#315b39;
+
+    font-size:clamp(23px,6vw,34px);
+}
+
+.overlay-card p{
+    margin:7px 0;
+
+    font-size:14px;
+    line-height:1.45;
+    font-weight:700;
+
+    color:#566b5b;
+}
+
+.start-btn{
+    width:min(270px,100%);
+
+    min-height:52px;
+
+    margin-top:15px;
+
+    border:0;
+    border-radius:16px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #88ca61,
+            #63a746
+        );
+
+    color:#fff;
+
+    font-size:17px;
+    font-weight:900;
+
+    box-shadow:
+        0 6px 0 #478038;
+
+    cursor:pointer;
+}
+
+.start-btn:active{
+    transform:translateY(4px);
+    box-shadow:0 2px 0 #478038;
+}
+
+.result{
+    margin-top:14px;
+
+    padding:12px;
+
+    border-radius:15px;
+
+    background:#ecf7db;
+
+    color:#49653f;
+
+    font-weight:900;
+}
+
+/* ===========================
+   DEATH COUNTDOWN
+=========================== */
+
+.rest-overlay{
+    position:absolute;
+    z-index:35;
+
+    inset:0;
+
+    display:none;
+    align-items:center;
+    justify-content:center;
+
+    pointer-events:none;
+
+    background:rgba(25,40,30,.25);
+}
+
+.rest-overlay.show{
+    display:flex;
+}
+
+.rest-card{
+    padding:20px 26px;
+
+    border:4px solid white;
+    border-radius:24px;
+
+    background:rgba(255,255,255,.95);
+
+    text-align:center;
+
+    box-shadow:
+        0 15px 40px rgba(20,40,25,.3);
+}
+
+.rest-title{
+    font-size:21px;
+    font-weight:900;
+
+    color:#c74d43;
+}
+
+.rest-time{
+    margin-top:4px;
+
+    font-size:42px;
+    font-weight:900;
+
+    color:#4e714e;
+}
+
+/* ===========================
+   MOBILE
+=========================== */
+
+@media(max-width:600px){
+
+    body{
+        padding:8px 6px 25px;
     }
 
-    html, body {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        min-height: 100%;
-        font-family: "Trebuchet MS", Arial, sans-serif;
-        background:
-            radial-gradient(circle at 20% 15%, rgba(255,255,255,.65), transparent 22%),
-            linear-gradient(135deg, #e7f7ca, #bde7a3 45%, #a6db8c);
-        color: #24402b;
+    .main-card{
+        border-width:3px;
+        border-radius:20px;
     }
 
-    body {
-        padding: 18px 12px 35px;
+    .question-area{
+        padding:11px 11px 10px;
     }
 
-    button {
-        font-family: inherit;
+    .options{
+        grid-template-columns:1fr;
+        gap:4px;
     }
 
-    /* =========================
-       MAIN CONTAINER
-    ========================= */
+    .option{
+        min-height:36px;
+        padding:5px 8px;
 
-    .game-page {
-        width: min(980px, 100%);
-        margin: 0 auto;
+        font-size:11.5px;
     }
 
-    .topbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 12px;
+    .letter{
+        width:24px;
+        height:24px;
+        min-width:24px;
+
+        font-size:11px;
     }
 
-    .home-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-
-        min-height: 42px;
-        padding: 9px 15px;
-
-        border: 0;
-        border-radius: 13px;
-
-        background: #ffffff;
-        color: #315637;
-
-        font-size: 14px;
-        font-weight: 800;
-
-        box-shadow: 0 4px 0 rgba(70,111,66,.16);
-
-        cursor: pointer;
+    #game-shell{
+        height:490px;
     }
 
-    .mini-title {
-        text-align: right;
-        font-size: clamp(13px, 2vw, 16px);
-        font-weight: 900;
-        color: #426849;
+    .joystick-zone{
+        left:5px;
+        bottom:4px;
+
+        width:125px;
+        height:125px;
     }
 
-    .main-card {
-        overflow: hidden;
-
-        background: rgba(255,255,255,.95);
-        border: 4px solid rgba(255,255,255,.72);
-        border-radius: 28px;
-
-        box-shadow:
-            0 18px 45px rgba(57, 99, 58, .20),
-            inset 0 0 0 1px rgba(45,89,48,.05);
+    .joystick-base{
+        width:112px;
+        height:112px;
     }
 
-    /* =========================
-       QUESTION
-    ========================= */
-
-    .question-area {
-        padding: 17px 20px 15px;
-
-        background:
-            linear-gradient(180deg, #fffef8, #fffbee);
-        border-bottom: 3px solid #e6efcc;
+    .joystick-knob{
+        width:52px;
+        height:52px;
     }
 
-    .question-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 11px;
-        flex-wrap: wrap;
+    .fire-area{
+        right:12px;
+        bottom:15px;
     }
 
-    .category {
-        display: inline-flex;
-        align-items: center;
+    .fire-btn{
+        width:78px;
+        height:78px;
 
-        padding: 7px 11px;
-
-        background: #eaf7d4;
-        border: 2px solid #d2e9ad;
-        border-radius: 999px;
-
-        color: #4e7439;
-        font-size: 12px;
-        font-weight: 900;
+        font-size:13px;
     }
 
-    .stats {
-        display: flex;
-        gap: 7px;
-        flex-wrap: wrap;
+    .fire-label{
+        font-size:9px;
+    }
+}
+
+@media(max-width:390px){
+
+    #game-shell{
+        height:460px;
     }
 
-    .stat-chip {
-        padding: 7px 10px;
-
-        background: #ffffff;
-        border: 2px solid #e4ecd4;
-        border-radius: 999px;
-
-        font-size: 12px;
-        font-weight: 900;
-        white-space: nowrap;
+    .question{
+        font-size:15px;
     }
 
-    .question-text {
-        font-size: clamp(16px, 2.2vw, 21px);
-        font-weight: 900;
-        line-height: 1.35;
-        color: #263c2c;
-
-        margin-bottom: 12px;
+    .category,
+    .stat{
+        font-size:10px;
     }
 
-    .options {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
+    .joystick-zone{
+        transform:scale(.9);
+        transform-origin:bottom left;
     }
 
-    .option {
-        display: flex;
-        align-items: center;
-        gap: 9px;
-
-        min-height: 45px;
-        padding: 7px 11px;
-
-        background: #ffffff;
-        border: 2px solid #e6ecd9;
-        border-radius: 13px;
-
-        font-size: clamp(12px, 1.8vw, 15px);
-        font-weight: 800;
-
-        box-shadow: 0 3px 0 rgba(82,110,67,.06);
+    .fire-area{
+        transform:scale(.9);
+        transform-origin:bottom right;
     }
+}
 
-    .option-letter {
-        display: grid;
-        place-items: center;
-
-        width: 29px;
-        height: 29px;
-        min-width: 29px;
-
-        border-radius: 50%;
-
-        background: #78b95b;
-        color: #fff;
-
-        font-size: 14px;
-        font-weight: 900;
-    }
-
-    .feedback {
-        min-height: 25px;
-        margin-top: 10px;
-
-        text-align: center;
-
-        font-size: 14px;
-        font-weight: 900;
-    }
-
-    .feedback.correct {
-        color: #15864f;
-    }
-
-    .feedback.wrong {
-        color: #d04f42;
-    }
-
-    /* =========================
-       PROGRESS
-    ========================= */
-
-    .progress-track {
-        width: 100%;
-        height: 10px;
-        margin-top: 10px;
-
-        overflow: hidden;
-
-        background: #e7ecd9;
-        border-radius: 100px;
-    }
-
-    .progress-fill {
-        width: 0%;
-        height: 100%;
-
-        background: linear-gradient(90deg, #80bd57, #f1c64c);
-        border-radius: inherit;
-
-        transition: width .35s ease;
-    }
-
-    /* =========================
-       PHASER GAME
-    ========================= */
-
-    #game-shell {
-        position: relative;
-
-        width: 100%;
-        height: clamp(420px, 61vh, 590px);
-
-        overflow: hidden;
-
-        background: #a8ddf1;
-    }
-
-    #game {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-
-        touch-action: none;
-    }
-
-    #game canvas {
-        display: block !important;
-        width: 100% !important;
-        height: 100% !important;
-
-        touch-action: none;
-    }
-
-    /* =========================
-       INSTRUCTION
-    ========================= */
-
-    .instruction {
-        position: absolute;
-        z-index: 8;
-        top: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-
-        width: max-content;
-        max-width: 88%;
-
-        padding: 7px 12px;
-
-        border: 2px solid rgba(255,255,255,.9);
-        border-radius: 999px;
-
-        background: rgba(255,255,255,.86);
-        backdrop-filter: blur(4px);
-
-        color: #3d6840;
-
-        font-size: clamp(10px, 1.8vw, 13px);
-        font-weight: 900;
-        text-align: center;
-
-        pointer-events: none;
-    }
-
-    /* =========================
-       D-PAD
-    ========================= */
-
-    .dpad {
-        position: absolute;
-        z-index: 15;
-
-        left: 16px;
-        bottom: 16px;
-
-        width: 132px;
-        height: 132px;
-
-        pointer-events: none;
-    }
-
-    .move-btn {
-        position: absolute;
-
-        width: 49px;
-        height: 49px;
-
-        border: 2px solid rgba(255,255,255,.9);
-        border-radius: 15px;
-
-        background: rgba(255,255,255,.86);
-
-        color: #31593c;
-        font-size: 22px;
-        font-weight: 900;
-
-        box-shadow: 0 5px 0 rgba(48,81,52,.18);
-
-        cursor: pointer;
-        pointer-events: auto;
-
-        touch-action: none;
-        user-select: none;
-    }
-
-    .move-btn:active,
-    .move-btn.active {
-        transform: translateY(3px);
-        box-shadow: 0 2px 0 rgba(48,81,52,.16);
-        background: #dff2c5;
-    }
-
-    .move-up {
-        top: 0;
-        left: 41px;
-    }
-
-    .move-left {
-        top: 41px;
-        left: 0;
-    }
-
-    .move-right {
-        top: 41px;
-        right: 0;
-    }
-
-    .move-down {
-        bottom: 0;
-        left: 41px;
-    }
-
-    /* =========================
-       OVERLAYS
-    ========================= */
-
-    .overlay {
-        position: absolute;
-        z-index: 30;
-        inset: 0;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        padding: 20px;
-
-        background: rgba(43,79,50,.35);
-        backdrop-filter: blur(3px);
-    }
-
-    .overlay.hidden {
-        display: none;
-    }
-
-    .overlay-card {
-        width: min(440px, 95%);
-
-        padding: 25px 20px;
-
-        background: #fffef6;
-
-        border: 4px solid #ffffff;
-        border-radius: 27px;
-
-        box-shadow: 0 18px 50px rgba(25,58,32,.28);
-
-        text-align: center;
-    }
-
-    .big-icon {
-        font-size: 55px;
-        line-height: 1;
-        margin-bottom: 9px;
-    }
-
-    .overlay-card h1,
-    .overlay-card h2 {
-        margin: 0 0 10px;
-
-        color: #315b37;
-
-        font-size: clamp(24px, 6vw, 34px);
-        line-height: 1.08;
-    }
-
-    .overlay-card p {
-        margin: 7px 0;
-        color: #54665a;
-
-        font-size: 14px;
-        font-weight: 700;
-        line-height: 1.45;
-    }
-
-    .start-btn {
-        width: min(260px, 100%);
-        min-height: 52px;
-
-        margin-top: 16px;
-
-        border: 0;
-        border-radius: 16px;
-
-        background: linear-gradient(180deg, #86c95d, #65aa47);
-        color: white;
-
-        font-size: 17px;
-        font-weight: 900;
-
-        box-shadow: 0 6px 0 #47823a;
-
-        cursor: pointer;
-    }
-
-    .start-btn:active {
-        transform: translateY(4px);
-        box-shadow: 0 2px 0 #47823a;
-    }
-
-    .result-box {
-        margin: 15px auto 4px;
-        padding: 12px 14px;
-
-        background: #edf7dc;
-        border-radius: 16px;
-
-        font-weight: 900;
-        color: #45653c;
-    }
-
-    /* =========================
-       MOBILE
-    ========================= */
-
-    @media (max-width: 600px) {
-        body {
-            padding: 10px 7px 25px;
-        }
-
-        .main-card {
-            border-radius: 20px;
-            border-width: 3px;
-        }
-
-        .question-area {
-            padding: 12px 12px 10px;
-        }
-
-        .question-top {
-            margin-bottom: 8px;
-        }
-
-        .options {
-            grid-template-columns: 1fr;
-            gap: 5px;
-        }
-
-        .option {
-            min-height: 37px;
-            padding: 5px 8px;
-        }
-
-        .option-letter {
-            width: 25px;
-            height: 25px;
-            min-width: 25px;
-            font-size: 12px;
-        }
-
-        #game-shell {
-            height: 470px;
-        }
-
-        .dpad {
-            width: 119px;
-            height: 119px;
-            left: 10px;
-            bottom: 10px;
-        }
-
-        .move-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 13px;
-            font-size: 19px;
-        }
-
-        .move-up {
-            left: 37px;
-        }
-
-        .move-left {
-            top: 37px;
-        }
-
-        .move-right {
-            top: 37px;
-        }
-
-        .move-down {
-            left: 37px;
-        }
-    }
-
-    @media (max-width: 390px) {
-        #game-shell {
-            height: 430px;
-        }
-
-        .question-text {
-            font-size: 15px;
-        }
-
-        .option {
-            font-size: 11.5px;
-        }
-
-        .category,
-        .stat-chip {
-            font-size: 10px;
-        }
-    }
-
-    @media (min-width: 800px) {
-        .dpad {
-            opacity: .82;
-        }
-    }
 </style>
 </head>
 
 <body>
 
-<div class="game-page">
+<div class="wrapper">
 
     <div class="topbar">
+
         <button
             class="home-btn"
             onclick="window.location.href='index.html'"
@@ -585,17 +767,22 @@
             ← Home
         </button>
 
-        <div class="mini-title">
-            UNIT 6 • Kenali Tumbuhan
+        <div class="title">
+            UNIT 6 • MISI TUMBUHAN
         </div>
+
     </div>
+
 
     <div class="main-card">
 
-        <!-- QUESTION PANEL -->
-        <section class="question-area">
+        <!-- =========================
+             QUESTION
+        ========================== -->
 
-            <div class="question-top">
+        <div class="question-area">
+
+            <div class="info-row">
 
                 <div
                     class="category"
@@ -605,121 +792,158 @@
                 </div>
 
                 <div class="stats">
+
                     <div
-                        class="stat-chip"
-                        id="progressText"
+                        class="stat"
+                        id="questionCounter"
                     >
                         Soalan 1 / 25
                     </div>
 
                     <div
-                        class="stat-chip"
-                        id="mistakeText"
+                        class="stat"
+                        id="lifeCounter"
+                    >
+                        ❤️❤️❤️
+                    </div>
+
+                    <div
+                        class="stat"
+                        id="mistakeCounter"
                     >
                         Salah: 0
                     </div>
+
                 </div>
 
             </div>
 
+
             <div
-                class="question-text"
+                class="question"
                 id="questionText"
             >
                 Tekan mula untuk bermain.
             </div>
+
 
             <div
                 class="options"
                 id="options"
             ></div>
 
+
             <div
                 class="feedback"
                 id="feedback"
             ></div>
 
-            <div class="progress-track">
+
+            <div class="progress">
+
                 <div
                     class="progress-fill"
                     id="progressFill"
                 ></div>
+
             </div>
 
-        </section>
+        </div>
 
 
-        <!-- GAME -->
-        <section id="game-shell">
+        <!-- =========================
+             GAME
+        ========================== -->
+
+        <div id="game-shell">
 
             <div id="game"></div>
 
+
             <div class="instruction">
-                Gerakkan lebah ke bunga jawapan • Telefon: boleh tap bunga
+                Analog untuk bergerak • TEMBAK untuk serang enemy
             </div>
 
-            <!-- D-PAD -->
-            <div class="dpad">
+
+            <!-- ANALOG -->
+
+            <div
+                class="joystick-zone"
+                id="joystickZone"
+            >
+
+                <div
+                    class="joystick-base"
+                    id="joystickBase"
+                >
+
+                    <div class="joystick-center"></div>
+
+                    <div
+                        class="joystick-knob"
+                        id="joystickKnob"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- FIRE -->
+
+            <div class="fire-area">
 
                 <button
-                    class="move-btn move-up"
-                    data-direction="up"
-                    aria-label="Atas"
+                    class="fire-btn"
+                    id="fireBtn"
                 >
-                    ▲
+                    TEMBAK
                 </button>
 
-                <button
-                    class="move-btn move-left"
-                    data-direction="left"
-                    aria-label="Kiri"
-                >
-                    ◀
-                </button>
-
-                <button
-                    class="move-btn move-right"
-                    data-direction="right"
-                    aria-label="Kanan"
-                >
-                    ▶
-                </button>
-
-                <button
-                    class="move-btn move-down"
-                    data-direction="down"
-                    aria-label="Bawah"
-                >
-                    ▼
-                </button>
+                <div class="fire-label">
+                    Laptop: SPACE
+                </div>
 
             </div>
 
 
             <!-- START -->
+
             <div
                 class="overlay"
                 id="startOverlay"
             >
+
                 <div class="overlay-card">
 
-                    <div class="big-icon">🐝🌼</div>
+                    <div class="icon">
+                        🐝🌼
+                    </div>
 
-                    <h1>Lebah Cari Bunga</h1>
+                    <h1>
+                        Misi Lebah Tumbuhan
+                    </h1>
 
                     <p>
-                        Baca soalan dan pilihan jawapan.
+                        Gerakkan lebah menggunakan
+                        <strong>analog joystick</strong>.
                     </p>
 
                     <p>
-                        Kemudian bawa lebah ke bunga
-                        <strong>A, B, C atau D</strong>
-                        yang betul.
+                        Cari bunga A, B, C atau D yang
+                        sepadan dengan jawapan betul.
                     </p>
 
                     <p>
-                        Komputer: Arrow Keys / WASD<br>
-                        Telefon & tablet: D-pad atau tap bunga
+                        Hati-hati! Enemy akan menembak
+                        <strong>peluru merah</strong>
+                        ke arah lebah.
+                    </p>
+
+                    <p>
+                        Gunakan butang
+                        <strong>TEMBAK</strong>
+                        untuk melawan enemy.
                     </p>
 
                     <button
@@ -730,30 +954,60 @@
                     </button>
 
                 </div>
+
+            </div>
+
+
+            <!-- REST -->
+
+            <div
+                class="rest-overlay"
+                id="restOverlay"
+            >
+
+                <div class="rest-card">
+
+                    <div class="rest-title">
+                        Lebah perlu berehat!
+                    </div>
+
+                    <div
+                        class="rest-time"
+                        id="restTime"
+                    >
+                        3
+                    </div>
+
+                </div>
+
             </div>
 
 
             <!-- END -->
+
             <div
                 class="overlay hidden"
                 id="endOverlay"
             >
+
                 <div class="overlay-card">
 
-                    <div class="big-icon">🌻🏆🐝</div>
+                    <div class="icon">
+                        🏆🐝🌻
+                    </div>
 
-                    <h2>Misi Selesai!</h2>
+                    <h2>
+                        Misi Selesai!
+                    </h2>
 
                     <p>
-                        Semua 25 bunga jawapan telah berjaya ditemui.
+                        Semua 25 soalan berjaya diselesaikan.
                     </p>
 
                     <div
-                        class="result-box"
+                        class="result"
                         id="finalResult"
-                    >
-                        25 / 25 selesai
-                    </div>
+                    ></div>
 
                     <button
                         class="start-btn"
@@ -763,2454 +1017,4266 @@
                     </button>
 
                 </div>
+
             </div>
 
-        </section>
+        </div>
 
     </div>
+
 </div>
 
 
 <script>
-/* ============================================================
-   SOALAN SET 6
-============================================================ */
+
+/* ==========================================================
+   QUESTIONS
+========================================================== */
 
 const QUESTIONS = [
 
-    {
-        category: "Kenali Bahagian Tumbuhan",
-        question: "Bahagian tumbuhan yang tumbuh di atas akar ialah ____.",
-        options: {
-            A: "Daun",
-            B: "Batang",
-            C: "Bunga",
-            D: "Akar"
-        },
-        answer: "B"
-    },
+{
+category:"Kenali Bahagian Tumbuhan",
+question:"Bahagian tumbuhan yang tumbuh di atas akar ialah ____.",
+options:{
+A:"Daun",
+B:"Batang",
+C:"Bunga",
+D:"Akar"
+},
+answer:"B"
+},
 
-    {
-        category: "Kenali Bahagian Tumbuhan",
-        question: "Lina mahu melabel bahagian pokok yang berada di bawah batang. Label yang betul ialah ____.",
-        options: {
-            A: "Buah",
-            B: "Bunga",
-            C: "Daun",
-            D: "Akar"
-        },
-        answer: "D"
-    },
+{
+category:"Kenali Bahagian Tumbuhan",
+question:"Lina mahu melabel bahagian pokok yang berada di bawah batang. Label yang betul ialah ____.",
+options:{
+A:"Buah",
+B:"Bunga",
+C:"Daun",
+D:"Akar"
+},
+answer:"D"
+},
 
-    {
-        category: "Kenali Bahagian Tumbuhan",
-        question: "Jika bahagian tumbuhan ditunjukkan di tengah-tengah pokok dan menyokong cabang, apakah labelnya?",
-        options: {
-            A: "Daun",
-            B: "Bunga",
-            C: "Batang",
-            D: "Akar"
-        },
-        answer: "C"
-    },
+{
+category:"Kenali Bahagian Tumbuhan",
+question:"Jika bahagian tumbuhan ditunjukkan di tengah-tengah pokok dan menyokong cabang, apakah labelnya?",
+options:{
+A:"Daun",
+B:"Bunga",
+C:"Batang",
+D:"Akar"
+},
+answer:"C"
+},
 
-    {
-        category: "Kenali Bahagian Tumbuhan",
-        question: "Apakah nama bahagian pokok yang biasanya mempunyai banyak helaian hijau?",
-        options: {
-            A: "Daun",
-            B: "Batang",
-            C: "Tanah",
-            D: "Akar"
-        },
-        answer: "A"
-    },
+{
+category:"Kenali Bahagian Tumbuhan",
+question:"Apakah nama bahagian pokok yang biasanya mempunyai banyak helaian hijau?",
+options:{
+A:"Daun",
+B:"Batang",
+C:"Tanah",
+D:"Akar"
+},
+answer:"A"
+},
 
-    {
-        category: "Kenali Bahagian Tumbuhan",
-        question: "Jika satu gambar menunjukkan akar, batang dan daun tetapi satu label belum diisi pada bahagian berkelopak, label itu ialah ____.",
-        options: {
-            A: "Batang",
-            B: "Bunga",
-            C: "Daun",
-            D: "Akar"
-        },
-        answer: "B"
-    },
+{
+category:"Kenali Bahagian Tumbuhan",
+question:"Jika satu gambar menunjukkan akar, batang dan daun tetapi satu label belum diisi pada bahagian berkelopak, label itu ialah ____.",
+options:{
+A:"Batang",
+B:"Bunga",
+C:"Daun",
+D:"Akar"
+},
+answer:"B"
+},
 
-    {
-        category: "Kenali Bahagian Tumbuhan",
-        question: "Pokok bunga raya mempunyai bahagian seperti bunga, daun, batang dan ____.",
-        options: {
-            A: "Akar",
-            B: "Kepak",
-            C: "Cangkerang",
-            D: "Paruh"
-        },
-        answer: "A"
-    },
+{
+category:"Kenali Bahagian Tumbuhan",
+question:"Pokok bunga raya mempunyai bahagian seperti bunga, daun, batang dan ____.",
+options:{
+A:"Akar",
+B:"Kepak",
+C:"Cangkerang",
+D:"Paruh"
+},
+answer:"A"
+},
 
-    {
-        category: "Ciri Bahagian yang Berbeza",
-        question: "Jika satu tumbuhan mempunyai batang seperti pokok betik, batang itu dikelaskan sebagai ____.",
-        options: {
-            A: "Jejala",
-            B: "Berkayu",
-            C: "Tidak berkayu",
-            D: "Tunjang"
-        },
-        answer: "C"
-    },
+{
+category:"Ciri Bahagian yang Berbeza",
+question:"Jika satu tumbuhan mempunyai batang seperti pokok betik, batang itu dikelaskan sebagai ____.",
+options:{
+A:"Jejala",
+B:"Berkayu",
+C:"Tidak berkayu",
+D:"Tunjang"
+},
+answer:"C"
+},
 
-    {
-        category: "Ciri Bahagian yang Berbeza",
-        question: "Antara berikut, yang manakah ciri urat daun?",
-        options: {
-            A: "Berbunga atau tidak berbunga",
-            B: "Jejala atau selari",
-            C: "Tunjang atau serabut",
-            D: "Berkayu atau tidak berkayu"
-        },
-        answer: "B"
-    },
+{
+category:"Ciri Bahagian yang Berbeza",
+question:"Antara berikut, yang manakah ciri urat daun?",
+options:{
+A:"Berbunga atau tidak berbunga",
+B:"Jejala atau selari",
+C:"Tunjang atau serabut",
+D:"Berkayu atau tidak berkayu"
+},
+answer:"B"
+},
 
-    {
-        category: "Ciri Bahagian yang Berbeza",
-        question: "Pokok paku pakis ialah tumbuhan yang ____.",
-        options: {
-            A: "Berbunga",
-            B: "Berbuah besar",
-            C: "Berbatang berkayu",
-            D: "Tidak berbunga"
-        },
-        answer: "D"
-    },
+{
+category:"Ciri Bahagian yang Berbeza",
+question:"Pokok paku pakis ialah tumbuhan yang ____.",
+options:{
+A:"Berbunga",
+B:"Berbuah besar",
+C:"Berbatang berkayu",
+D:"Tidak berbunga"
+},
+answer:"D"
+},
 
-    {
-        category: "Ciri Bahagian yang Berbeza",
-        question: "Antara berikut, yang manakah ciri batang?",
-        options: {
-            A: "Berkayu atau tidak berkayu",
-            B: "Berbunga atau tidak berbunga",
-            C: "Jejala atau selari",
-            D: "Tunjang atau serabut"
-        },
-        answer: "A"
-    },
+{
+category:"Ciri Bahagian yang Berbeza",
+question:"Antara berikut, yang manakah ciri batang?",
+options:{
+A:"Berkayu atau tidak berkayu",
+B:"Berbunga atau tidak berbunga",
+C:"Jejala atau selari",
+D:"Tunjang atau serabut"
+},
+answer:"A"
+},
 
-    {
-        category: "Ciri Bahagian yang Berbeza",
-        question: "Aina membandingkan bunga ros dengan pandan. Perbezaan akar yang betul ialah ____.",
-        options: {
-            A: "Bunga ros serabut, pandan tunjang",
-            B: "Kedua-duanya tunjang",
-            C: "Kedua-duanya serabut",
-            D: "Bunga ros tunjang, pandan serabut"
-        },
-        answer: "D"
-    },
+{
+category:"Ciri Bahagian yang Berbeza",
+question:"Aina membandingkan bunga ros dengan pandan. Perbezaan akar yang betul ialah ____.",
+options:{
+A:"Bunga ros serabut, pandan tunjang",
+B:"Kedua-duanya tunjang",
+C:"Kedua-duanya serabut",
+D:"Bunga ros tunjang, pandan serabut"
+},
+answer:"D"
+},
 
-    {
-        category: "Ciri Bahagian yang Berbeza",
-        question: "Daun yang mempunyai corak urat seperti jaring dikelaskan sebagai urat daun ____.",
-        options: {
-            A: "Tunjang",
-            B: "Serabut",
-            C: "Jejala",
-            D: "Selari"
-        },
-        answer: "C"
-    },
+{
+category:"Ciri Bahagian yang Berbeza",
+question:"Daun yang mempunyai corak urat seperti jaring dikelaskan sebagai urat daun ____.",
+options:{
+A:"Tunjang",
+B:"Serabut",
+C:"Jejala",
+D:"Selari"
+},
+answer:"C"
+},
 
-    {
-        category: "Pentingnya Bahagian Tumbuhan",
-        question: "Apakah fungsi utama bunga yang dinyatakan dalam Unit 6?",
-        options: {
-            A: "Bahagian pembiakan tumbuhan",
-            B: "Menyerap air daripada tanah",
-            C: "Membuat makanan",
-            D: "Menyokong pokok"
-        },
-        answer: "A"
-    },
+{
+category:"Pentingnya Bahagian Tumbuhan",
+question:"Apakah fungsi utama bunga yang dinyatakan dalam Unit 6?",
+options:{
+A:"Bahagian pembiakan tumbuhan",
+B:"Menyerap air daripada tanah",
+C:"Membuat makanan",
+D:"Menyokong pokok"
+},
+answer:"A"
+},
 
-    {
-        category: "Pentingnya Bahagian Tumbuhan",
-        question: "Apakah yang berlaku kepada bunga seperti yang diterangkan dalam buku?",
-        options: {
-            A: "Bertukar menjadi batu",
-            B: "Bertukar menjadi buah dan biji benih",
-            C: "Bertukar menjadi tanah",
-            D: "Bertukar menjadi akar"
-        },
-        answer: "B"
-    },
+{
+category:"Pentingnya Bahagian Tumbuhan",
+question:"Apakah yang berlaku kepada bunga seperti yang diterangkan dalam buku?",
+options:{
+A:"Bertukar menjadi batu",
+B:"Bertukar menjadi buah dan biji benih",
+C:"Bertukar menjadi tanah",
+D:"Bertukar menjadi akar"
+},
+answer:"B"
+},
 
-    {
-        category: "Pentingnya Bahagian Tumbuhan",
-        question: "Daun telah membuat makanan. Bahagian yang mengangkut makanan itu ialah ____.",
-        options: {
-            A: "Akar",
-            B: "Bunga",
-            C: "Buah",
-            D: "Batang"
-        },
-        answer: "D"
-    },
+{
+category:"Pentingnya Bahagian Tumbuhan",
+question:"Daun telah membuat makanan. Bahagian yang mengangkut makanan itu ialah ____.",
+options:{
+A:"Akar",
+B:"Bunga",
+C:"Buah",
+D:"Batang"
+},
+answer:"D"
+},
 
-    {
-        category: "Pentingnya Bahagian Tumbuhan",
-        question: "Makanan yang dibuat oleh daun dihantar ke bahagian lain melalui ____.",
-        options: {
-            A: "Akar sahaja",
-            B: "Tanah",
-            C: "Batang",
-            D: "Bunga sahaja"
-        },
-        answer: "C"
-    },
+{
+category:"Pentingnya Bahagian Tumbuhan",
+question:"Makanan yang dibuat oleh daun dihantar ke bahagian lain melalui ____.",
+options:{
+A:"Akar sahaja",
+B:"Tanah",
+C:"Batang",
+D:"Bunga sahaja"
+},
+answer:"C"
+},
 
-    {
-        category: "Pentingnya Bahagian Tumbuhan",
-        question: "Bahagian tumbuhan yang digunakan untuk membuat makanan ialah ____.",
-        options: {
-            A: "Akar",
-            B: "Batang",
-            C: "Bunga",
-            D: "Daun"
-        },
-        answer: "D"
-    },
+{
+category:"Pentingnya Bahagian Tumbuhan",
+question:"Bahagian tumbuhan yang digunakan untuk membuat makanan ialah ____.",
+options:{
+A:"Akar",
+B:"Batang",
+C:"Bunga",
+D:"Daun"
+},
+answer:"D"
+},
 
-    {
-        category: "Pentingnya Bahagian Tumbuhan",
-        question: "Apakah hasil yang boleh terbentuk selepas bunga berkembang seperti diterangkan dalam buku?",
-        options: {
-            A: "Batang dan akar",
-            B: "Buah dan biji benih",
-            C: "Air dan nutrien",
-            D: "Daun dan tanah"
-        },
-        answer: "B"
-    },
+{
+category:"Pentingnya Bahagian Tumbuhan",
+question:"Apakah hasil yang boleh terbentuk selepas bunga berkembang seperti diterangkan dalam buku?",
+options:{
+A:"Batang dan akar",
+B:"Buah dan biji benih",
+C:"Air dan nutrien",
+D:"Daun dan tanah"
+},
+answer:"B"
+},
 
-    {
-        category: "Pentingnya Bahagian Tumbuhan",
-        question: "Pokok tanpa akar mudah tumbang kerana akar membantu ____.",
-        options: {
-            A: "Menyokong pokok",
-            B: "Menukar warna daun",
-            C: "Membuat bunyi",
-            D: "Menghasilkan cahaya"
-        },
-        answer: "A"
-    },
+{
+category:"Pentingnya Bahagian Tumbuhan",
+question:"Pokok tanpa akar mudah tumbang kerana akar membantu ____.",
+options:{
+A:"Menyokong pokok",
+B:"Menukar warna daun",
+C:"Membuat bunyi",
+D:"Menghasilkan cahaya"
+},
+answer:"A"
+},
 
-    {
-        category: "Berbeza Tapi Serupa",
-        question: "Daun pokok bunga raya dan bunga ros sama-sama berurat ____.",
-        options: {
-            A: "Selari",
-            B: "Serabut",
-            C: "Jejala",
-            D: "Tunjang"
-        },
-        answer: "C"
-    },
+{
+category:"Berbeza Tapi Serupa",
+question:"Daun pokok bunga raya dan bunga ros sama-sama berurat ____.",
+options:{
+A:"Selari",
+B:"Serabut",
+C:"Jejala",
+D:"Tunjang"
+},
+answer:"C"
+},
 
-    {
-        category: "Berbeza Tapi Serupa",
-        question: "Apabila dua tumbuhan mempunyai batang berkayu yang sama, kita mengatakan ciri batangnya ____.",
-        options: {
-            A: "Berbeza sepenuhnya",
-            B: "Serupa",
-            C: "Tiada",
-            D: "Tidak dapat dibandingkan"
-        },
-        answer: "B"
-    },
+{
+category:"Berbeza Tapi Serupa",
+question:"Apabila dua tumbuhan mempunyai batang berkayu yang sama, kita mengatakan ciri batangnya ____.",
+options:{
+A:"Berbeza sepenuhnya",
+B:"Serupa",
+C:"Tiada",
+D:"Tidak dapat dibandingkan"
+},
+answer:"B"
+},
 
-    {
-        category: "Berbeza Tapi Serupa",
-        question: "Apabila dua tumbuhan mempunyai akar tunjang yang sama, kita mengatakan ciri akarnya ____.",
-        options: {
-            A: "Bertentangan",
-            B: "Tidak wujud",
-            C: "Hilang",
-            D: "Serupa"
-        },
-        answer: "D"
-    },
+{
+category:"Berbeza Tapi Serupa",
+question:"Apabila dua tumbuhan mempunyai akar tunjang yang sama, kita mengatakan ciri akarnya ____.",
+options:{
+A:"Bertentangan",
+B:"Tidak wujud",
+C:"Hilang",
+D:"Serupa"
+},
+answer:"D"
+},
 
-    {
-        category: "Berbeza Tapi Serupa",
-        question: "Dalam subtopik 'Berbeza Tapi Serupa', kita mengenal pasti ____ antara tumbuhan berlainan.",
-        options: {
-            A: "Rasa makanan",
-            B: "Ciri bahagian yang sama",
-            C: "Bunyi haiwan",
-            D: "Warna pakaian"
-        },
-        answer: "B"
-    },
+{
+category:"Berbeza Tapi Serupa",
+question:"Dalam subtopik 'Berbeza Tapi Serupa', kita mengenal pasti ____ antara tumbuhan berlainan.",
+options:{
+A:"Rasa makanan",
+B:"Ciri bahagian yang sama",
+C:"Bunyi haiwan",
+D:"Warna pakaian"
+},
+answer:"B"
+},
 
-    {
-        category: "Berbeza Tapi Serupa",
-        question: "Bunga raya dan bunga ros mempunyai akar tunjang. Pernyataan ini menunjukkan ____.",
-        options: {
-            A: "Perbezaan bunga",
-            B: "Perbezaan daun",
-            C: "Persamaan ciri akar",
-            D: "Tiada akar"
-        },
-        answer: "C"
-    },
+{
+category:"Berbeza Tapi Serupa",
+question:"Bunga raya dan bunga ros mempunyai akar tunjang. Pernyataan ini menunjukkan ____.",
+options:{
+A:"Perbezaan bunga",
+B:"Perbezaan daun",
+C:"Persamaan ciri akar",
+D:"Tiada akar"
+},
+answer:"C"
+},
 
-    {
-        category: "Berbeza Tapi Serupa",
-        question: "Dua tumbuhan boleh dibandingkan berdasarkan bunga, daun, batang dan ____.",
-        options: {
-            A: "Akar",
-            B: "Sirip",
-            C: "Sayap",
-            D: "Paruh"
-        },
-        answer: "A"
-    }
+{
+category:"Berbeza Tapi Serupa",
+question:"Dua tumbuhan boleh dibandingkan berdasarkan bunga, daun, batang dan ____.",
+options:{
+A:"Akar",
+B:"Sirip",
+C:"Sayap",
+D:"Paruh"
+},
+answer:"A"
+}
 
 ];
 
 
-/* ============================================================
-   HTML ELEMENTS
-============================================================ */
+/* ==========================================================
+   HTML ELEMENT
+========================================================== */
 
-const categoryEl = document.getElementById("category");
-const questionTextEl = document.getElementById("questionText");
-const optionsEl = document.getElementById("options");
+const categoryEl =
+document.getElementById("category");
 
-const feedbackEl = document.getElementById("feedback");
+const questionTextEl =
+document.getElementById("questionText");
 
-const progressTextEl = document.getElementById("progressText");
-const mistakeTextEl = document.getElementById("mistakeText");
-const progressFillEl = document.getElementById("progressFill");
+const optionsEl =
+document.getElementById("options");
 
-const startOverlay = document.getElementById("startOverlay");
-const endOverlay = document.getElementById("endOverlay");
+const questionCounterEl =
+document.getElementById("questionCounter");
 
-const startBtn = document.getElementById("startBtn");
-const restartBtn = document.getElementById("restartBtn");
+const lifeCounterEl =
+document.getElementById("lifeCounter");
 
-const finalResult = document.getElementById("finalResult");
+const mistakeCounterEl =
+document.getElementById("mistakeCounter");
+
+const feedbackEl =
+document.getElementById("feedback");
+
+const progressFillEl =
+document.getElementById("progressFill");
+
+const startOverlay =
+document.getElementById("startOverlay");
+
+const endOverlay =
+document.getElementById("endOverlay");
+
+const startBtn =
+document.getElementById("startBtn");
+
+const restartBtn =
+document.getElementById("restartBtn");
+
+const finalResult =
+document.getElementById("finalResult");
+
+const restOverlay =
+document.getElementById("restOverlay");
+
+const restTime =
+document.getElementById("restTime");
+
+const fireBtn =
+document.getElementById("fireBtn");
 
 
-/* ============================================================
-   GLOBAL GAME STATE
-============================================================ */
+/* ==========================================================
+   GLOBAL STATE
+========================================================== */
 
 let currentQuestion = 0;
+
 let mistakes = 0;
+
+let lives = 3;
+
 let gameStarted = false;
+
 let gameFinished = false;
 
-let previousOrder = "";
+let playerResting = false;
 
-let gardenScene = null;
+let sceneRef = null;
+
+let fireHeld = false;
 
 
-/* ============================================================
-   UI QUESTION
-============================================================ */
+/* analog */
 
-function updateQuestionUI() {
+const analog = {
+    x:0,
+    y:0
+};
 
-    const q = QUESTIONS[currentQuestion];
 
-    categoryEl.textContent = q.category;
+/* ==========================================================
+   UI
+========================================================== */
+
+function updateQuestionUI(){
+
+    const q =
+    QUESTIONS[currentQuestion];
+
+    categoryEl.textContent =
+    q.category;
 
     questionTextEl.textContent =
-        (currentQuestion + 1) + ". " + q.question;
+    `${currentQuestion + 1}. ${q.question}`;
 
     optionsEl.innerHTML = "";
 
-    ["A", "B", "C", "D"].forEach(letter => {
+    ["A","B","C","D"].forEach(letter=>{
 
-        const box = document.createElement("div");
-        box.className = "option";
+        const item =
+        document.createElement("div");
 
-        const badge = document.createElement("div");
-        badge.className = "option-letter";
-        badge.textContent = letter;
+        item.className =
+        "option";
 
-        const text = document.createElement("div");
-        text.textContent = q.options[letter];
 
-        box.appendChild(badge);
-        box.appendChild(text);
+        const badge =
+        document.createElement("div");
 
-        optionsEl.appendChild(box);
+        badge.className =
+        "letter";
+
+        badge.textContent =
+        letter;
+
+
+        const text =
+        document.createElement("div");
+
+        text.textContent =
+        q.options[letter];
+
+
+        item.appendChild(
+            badge
+        );
+
+        item.appendChild(
+            text
+        );
+
+        optionsEl.appendChild(
+            item
+        );
+
     });
 
-    progressTextEl.textContent =
-        `Soalan ${currentQuestion + 1} / ${QUESTIONS.length}`;
 
-    mistakeTextEl.textContent =
-        `Salah: ${mistakes}`;
+    questionCounterEl.textContent =
+    `Soalan ${currentQuestion + 1} / 25`;
 
-    const completed = currentQuestion;
+    mistakeCounterEl.textContent =
+    `Salah: ${mistakes}`;
+
+    updateLives();
 
     progressFillEl.style.width =
-        `${(completed / QUESTIONS.length) * 100}%`;
+    `${(currentQuestion / QUESTIONS.length) * 100}%`;
 
     feedbackEl.textContent = "";
-    feedbackEl.className = "feedback";
+
+    feedbackEl.className =
+    "feedback";
 }
 
 
-/* ============================================================
-   SOUND EFFECT - WEB AUDIO
-   TIADA FAIL AUDIO LUAR
-============================================================ */
+function updateLives(){
+
+    let display = "";
+
+    for(let i=0;i<3;i++){
+
+        display +=
+        i < lives
+        ? "❤️"
+        : "🖤";
+
+    }
+
+    lifeCounterEl.textContent =
+    display;
+}
+
+
+/* ==========================================================
+   AUDIO
+========================================================== */
 
 let audioContext = null;
 
-function beep(frequency, duration, type = "sine", volume = 0.04) {
 
-    try {
+function beep(
+    frequency,
+    duration,
+    type="sine",
+    volume=.035
+){
 
-        if (!audioContext) {
-            audioContext = new (
+    try{
+
+        if(!audioContext){
+
+            audioContext =
+            new (
                 window.AudioContext ||
                 window.webkitAudioContext
             )();
+
         }
 
-        const oscillator = audioContext.createOscillator();
-        const gain = audioContext.createGain();
+        const oscillator =
+        audioContext.createOscillator();
 
-        oscillator.type = type;
-        oscillator.frequency.value = frequency;
+        const gain =
+        audioContext.createGain();
 
-        gain.gain.value = volume;
 
-        oscillator.connect(gain);
-        gain.connect(audioContext.destination);
+        oscillator.type =
+        type;
+
+        oscillator.frequency.value =
+        frequency;
+
+        gain.gain.value =
+        volume;
+
+
+        oscillator.connect(
+            gain
+        );
+
+        gain.connect(
+            audioContext.destination
+        );
+
 
         oscillator.start();
 
+
         gain.gain.exponentialRampToValueAtTime(
-            0.001,
-            audioContext.currentTime + duration
+            .001,
+            audioContext.currentTime +
+            duration
         );
+
 
         oscillator.stop(
-            audioContext.currentTime + duration
+            audioContext.currentTime +
+            duration
         );
 
-    } catch (e) {}
+    }catch(e){}
+
 }
 
 
-function correctSound() {
-    beep(540, .12, "sine", .035);
+function correctSound(){
 
-    setTimeout(() => {
-        beep(720, .13, "sine", .035);
-    }, 90);
+    beep(
+        550,
+        .12
+    );
 
-    setTimeout(() => {
-        beep(900, .16, "sine", .035);
-    }, 170);
+    setTimeout(()=>{
+        beep(
+            750,
+            .13
+        );
+    },80);
+
+    setTimeout(()=>{
+        beep(
+            940,
+            .14
+        );
+    },160);
+
 }
 
 
-function wrongSound() {
-    beep(190, .18, "square", .025);
+function shootSound(){
+
+    beep(
+        490,
+        .06,
+        "square",
+        .015
+    );
+
 }
 
 
-/* ============================================================
+function hurtSound(){
+
+    beep(
+        150,
+        .18,
+        "square",
+        .025
+    );
+
+}
+
+
+/* ==========================================================
    PHASER SCENE
-============================================================ */
+========================================================== */
 
-class GardenScene extends Phaser.Scene {
+class GardenGame extends Phaser.Scene{
 
-    constructor() {
-        super("GardenScene");
+constructor(){
 
-        this.answerLocked = true;
-
-        this.virtual = {
-            up: false,
-            down: false,
-            left: false,
-            right: false
-        };
-
-        this.autoTarget = null;
-
-        this.flowers = [];
-
-        this.speed = 235;
-    }
+    super(
+        "GardenGame"
+    );
 
 
-    create() {
+    this.flowers = [];
 
-        gardenScene = this;
-
-        this.createTextures();
-
-        this.backgroundGraphics = this.add.graphics();
-
-        this.decorGraphics = this.add.graphics();
-
-        this.drawBackground();
+    this.lastAim = {
+        x:0,
+        y:-1
+    };
 
 
-        /* --------------------------------
-           FLOWER GROUP
-        -------------------------------- */
+    this.playerSpeed =
+    245;
 
-        this.flowerGroup = this.physics.add.group({
-            allowGravity: false,
-            immovable: true
-        });
+    this.lastPlayerShot =
+    0;
 
+    this.playerShootDelay =
+    280;
 
-        for (let i = 0; i < 4; i++) {
+    this.invulnerable =
+    false;
 
-            const flower = this.flowerGroup.create(
-                0,
-                0,
-                "answerFlower"
-            );
+    this.roundLocked =
+    true;
 
-            flower.setDepth(6);
-
-            flower.setInteractive({
-                useHandCursor: true
-            });
-
-            flower.body.setCircle(
-                39,
-                7,
-                7
-            );
-
-            const label = this.add.text(
-                0,
-                0,
-                "A",
-                {
-                    fontFamily: "Trebuchet MS, Arial",
-                    fontSize: "31px",
-                    fontStyle: "bold",
-                    color: "#59431f",
-                    stroke: "#fff8cf",
-                    strokeThickness: 5
-                }
-            )
-            .setOrigin(.5)
-            .setDepth(8);
-
-            flower.answerLabel = label;
-            flower.answerLetter = "A";
-
-            flower.on("pointerdown", () => {
-
-                if (
-                    !gameStarted ||
-                    gameFinished ||
-                    this.answerLocked
-                ) {
-                    return;
-                }
-
-                this.autoTarget = {
-                    x: flower.x,
-                    y: flower.y
-                };
-
-            });
-
-            this.flowers.push(flower);
-        }
+}
 
 
-        /* --------------------------------
-           BEE
-        -------------------------------- */
+/* ==========================================================
+   CREATE
+========================================================== */
 
-        this.bee = this.physics.add.image(
-            this.scale.width / 2,
-            this.scale.height * .78,
-            "bee"
+create(){
+
+    sceneRef =
+    this;
+
+
+    this.createTextures();
+
+
+    this.bg =
+    this.add.graphics()
+    .setDepth(0);
+
+
+    this.decor =
+    this.add.graphics()
+    .setDepth(1);
+
+
+    this.drawBackground();
+
+
+    /* =========================
+       FLOWER
+    ========================= */
+
+    this.flowerGroup =
+    this.physics.add.group({
+        allowGravity:false
+    });
+
+
+    for(let i=0;i<4;i++){
+
+        const flower =
+        this.flowerGroup.create(
+            100,
+            100,
+            "answerFlower"
         );
 
-        this.bee
-            .setDepth(12)
-            .setCollideWorldBounds(true);
 
-        this.bee.body.setCircle(
-            24,
-            15,
+        flower
+        .setDepth(6)
+        .setCollideWorldBounds(true)
+        .setBounce(1,1);
+
+
+        flower.body.setCircle(
+            37,
+            11,
             7
         );
 
 
-        /* --------------------------------
-           COLLISION / OVERLAP
-        -------------------------------- */
-
-        this.physics.add.overlap(
-            this.bee,
-            this.flowerGroup,
-            this.touchFlower,
-            null,
-            this
-        );
-
-
-        /* --------------------------------
-           KEYBOARD
-        -------------------------------- */
-
-        this.cursors =
-            this.input.keyboard.createCursorKeys();
-
-        this.keys =
-            this.input.keyboard.addKeys({
-                up: Phaser.Input.Keyboard.KeyCodes.W,
-                down: Phaser.Input.Keyboard.KeyCodes.S,
-                left: Phaser.Input.Keyboard.KeyCodes.A,
-                right: Phaser.Input.Keyboard.KeyCodes.D
-            });
-
-
-        /* --------------------------------
-           FLOATING PARTICLES
-        -------------------------------- */
-
-        this.particles = [];
-
-        for (let i = 0; i < 10; i++) {
-
-            const dot = this.add.circle(
-                Phaser.Math.Between(20, Math.max(21, this.scale.width - 20)),
-                Phaser.Math.Between(40, Math.max(41, this.scale.height - 100)),
-                Phaser.Math.Between(2, 5),
-                0xffffff,
-                Phaser.Math.FloatBetween(.16, .35)
-            );
-
-            dot.speed =
-                Phaser.Math.FloatBetween(7, 16);
-
-            dot.setDepth(1);
-
-            this.particles.push(dot);
-        }
-
-
-        /* --------------------------------
-           SCALE RESIZE
-        -------------------------------- */
-
-        this.scale.on(
-            "resize",
-            this.handleResize,
-            this
-        );
-
-        this.handleResize({
-            width: this.scale.width,
-            height: this.scale.height
-        });
-
-        this.answerLocked = true;
-    }
-
-
-    /* ========================================================
-       TEXTURES
-    ======================================================== */
-
-    createTextures() {
-
-        /* -----------------------------
-           FLOWER
-        ----------------------------- */
-
-        const fg = this.make.graphics({
-            x: 0,
-            y: 0,
-            add: false
-        });
-
-        // shadow
-        fg.fillStyle(0x000000, .10);
-        fg.fillEllipse(
-            48,
-            84,
-            66,
-            16
-        );
-
-        // stem
-        fg.lineStyle(
-            8,
-            0x4b963f,
-            1
-        );
-
-        fg.lineBetween(
-            48,
-            51,
-            48,
-            87
-        );
-
-        // leaves
-        fg.fillStyle(
-            0x65ae4b,
-            1
-        );
-
-        fg.fillEllipse(
-            35,
-            69,
-            25,
-            12
-        );
-
-        fg.fillEllipse(
-            61,
-            75,
-            25,
-            12
-        );
-
-        // petals
-        const petals = [
-            [48, 15],
-            [68, 23],
-            [76, 43],
-            [68, 61],
-            [48, 69],
-            [28, 61],
-            [20, 43],
-            [28, 23]
-        ];
-
-        fg.fillStyle(
-            0xffe272,
-            1
-        );
-
-        petals.forEach(p => {
-            fg.fillCircle(
-                p[0],
-                p[1],
-                17
-            );
-        });
-
-        // center
-        fg.fillStyle(
-            0xffa83a,
-            1
-        );
-
-        fg.fillCircle(
-            48,
-            42,
-            24
-        );
-
-        fg.lineStyle(
-            3,
-            0xe79027,
-            1
-        );
-
-        fg.strokeCircle(
-            48,
-            42,
-            23
-        );
-
-        fg.generateTexture(
-            "answerFlower",
-            96,
-            96
-        );
-
-        fg.destroy();
-
-
-        /* -----------------------------
-           BEE
-        ----------------------------- */
-
-        const bg = this.make.graphics({
-            x: 0,
-            y: 0,
-            add: false
-        });
-
-        // wings
-        bg.fillStyle(
-            0xffffff,
-            .80
-        );
-
-        bg.fillEllipse(
-            29,
-            22,
-            32,
-            22
-        );
-
-        bg.fillEllipse(
-            53,
-            20,
-            32,
-            22
-        );
-
-        bg.lineStyle(
-            2,
-            0xbde5ef,
-            1
-        );
-
-        bg.strokeEllipse(
-            29,
-            22,
-            32,
-            22
-        );
-
-        bg.strokeEllipse(
-            53,
-            20,
-            32,
-            22
-        );
-
-        // body
-        bg.fillStyle(
-            0xffd33d,
-            1
-        );
-
-        bg.fillEllipse(
-            41,
-            39,
-            52,
-            36
-        );
-
-        // stripes
-        bg.fillStyle(
-            0x3e3833,
-            1
-        );
-
-        bg.fillRect(
-            32,
-            23,
-            8,
-            32
-        );
-
-        bg.fillRect(
-            47,
-            23,
-            8,
-            32
-        );
-
-        // head
-        bg.fillStyle(
-            0x4a4038,
-            1
-        );
-
-        bg.fillCircle(
-            65,
-            38,
-            14
-        );
-
-        // eye
-        bg.fillStyle(
-            0xffffff,
-            1
-        );
-
-        bg.fillCircle(
-            70,
-            34,
-            5
-        );
-
-        bg.fillStyle(
-            0x111111,
-            1
-        );
-
-        bg.fillCircle(
-            72,
-            34,
-            2.5
-        );
-
-        // cheek
-        bg.fillStyle(
-            0xff8d8d,
-            .9
-        );
-
-        bg.fillCircle(
-            69,
-            43,
-            3.5
-        );
-
-        // antenna
-        bg.lineStyle(
-            2.5,
-            0x443a34,
-            1
-        );
-
-        bg.lineBetween(
-            69,
-            26,
-            74,
-            16
-        );
-
-        bg.lineBetween(
-            62,
-            25,
-            63,
-            14
-        );
-
-        bg.fillStyle(
-            0x443a34,
-            1
-        );
-
-        bg.fillCircle(
-            74,
-            15,
-            3
-        );
-
-        bg.fillCircle(
-            63,
-            13,
-            3
-        );
-
-        bg.generateTexture(
-            "bee",
-            82,
-            65
-        );
-
-        bg.destroy();
-    }
-
-
-    /* ========================================================
-       BACKGROUND
-    ======================================================== */
-
-    drawBackground() {
-
-        if (!this.backgroundGraphics) {
-            return;
-        }
-
-        const g = this.backgroundGraphics;
-
-        const w = this.scale.width;
-        const h = this.scale.height;
-
-        g.clear();
-
-
-        /* SKY */
-
-        g.fillStyle(
-            0xaee4f4,
-            1
-        );
-
-        g.fillRect(
+        const label =
+        this.add.text(
             0,
             0,
-            w,
-            h
-        );
-
-
-        /* SUN */
-
-        g.fillStyle(
-            0xffdf65,
-            .95
-        );
-
-        g.fillCircle(
-            w * .86,
-            h * .13,
-            Math.min(42, w * .07)
-        );
-
-
-        /* CLOUDS */
-
-        this.drawCloud(
-            g,
-            w * .14,
-            h * .13,
-            Math.min(1, w / 700)
-        );
-
-        this.drawCloud(
-            g,
-            w * .65,
-            h * .22,
-            Math.min(.82, w / 850)
-        );
-
-
-        /* BACK HILLS */
-
-        g.fillStyle(
-            0x8ccd73,
-            1
-        );
-
-        g.fillEllipse(
-            w * .08,
-            h * .78,
-            w * .72,
-            h * .41
-        );
-
-        g.fillEllipse(
-            w * .75,
-            h * .79,
-            w * .88,
-            h * .43
-        );
-
-
-        /* FRONT GRASS */
-
-        g.fillStyle(
-            0x62ae54,
-            1
-        );
-
-        g.fillRect(
-            0,
-            h * .78,
-            w,
-            h * .22
-        );
-
-
-        /* SOIL */
-
-        g.fillStyle(
-            0x8a5b3d,
-            1
-        );
-
-        g.fillRect(
-            0,
-            h * .94,
-            w,
-            h * .06
-        );
-
-
-        /* LITTLE GRASS */
-
-        g.lineStyle(
-            3,
-            0x3d863f,
-            1
-        );
-
-        for (
-            let x = 10;
-            x < w;
-            x += 28
-        ) {
-
-            const y =
-                h * .79 +
-                Phaser.Math.Between(-5, 5);
-
-            g.lineBetween(
-                x,
-                y,
-                x - 4,
-                y - 12
-            );
-
-            g.lineBetween(
-                x,
-                y,
-                x + 4,
-                y - 14
-            );
-
-            g.lineBetween(
-                x,
-                y,
-                x + 10,
-                y - 8
-            );
-        }
-
-
-        /* SIDE BUSHES */
-
-        for (
-            let x = 0;
-            x < w;
-            x += 80
-        ) {
-
-            g.fillStyle(
-                x % 160 === 0
-                    ? 0x499e48
-                    : 0x57aa4f,
-                1
-            );
-
-            g.fillCircle(
-                x + 20,
-                h * .86,
-                32
-            );
-
-            g.fillCircle(
-                x + 48,
-                h * .86,
-                38
-            );
-        }
-
-
-        /* DECORATION */
-
-        this.drawDecorations();
-    }
-
-
-    drawCloud(g, x, y, scale) {
-
-        g.fillStyle(
-            0xffffff,
-            .82
-        );
-
-        g.fillCircle(
-            x,
-            y,
-            26 * scale
-        );
-
-        g.fillCircle(
-            x + 29 * scale,
-            y - 9 * scale,
-            32 * scale
-        );
-
-        g.fillCircle(
-            x + 61 * scale,
-            y,
-            25 * scale
-        );
-
-        g.fillRoundedRect(
-            x - 4 * scale,
-            y - 4 * scale,
-            68 * scale,
-            30 * scale,
-            13 * scale
-        );
-    }
-
-
-    drawDecorations() {
-
-        const g = this.decorGraphics;
-
-        if (!g) {
-            return;
-        }
-
-        g.clear();
-
-        const w = this.scale.width;
-        const h = this.scale.height;
-
-
-        /* LEFT PLANT */
-
-        const leftX = Math.max(
-            26,
-            w * .07
-        );
-
-        const baseY = h * .92;
-
-        g.lineStyle(
-            7,
-            0x438d3f,
-            1
-        );
-
-        g.lineBetween(
-            leftX,
-            baseY,
-            leftX,
-            baseY - 95
-        );
-
-        g.fillStyle(
-            0x62b756,
-            1
-        );
-
-        g.fillEllipse(
-            leftX - 18,
-            baseY - 58,
-            39,
-            18
-        );
-
-        g.fillEllipse(
-            leftX + 19,
-            baseY - 83,
-            41,
-            18
-        );
-
-
-        /* RIGHT PLANT */
-
-        const rightX =
-            w - Math.max(
-                28,
-                w * .065
-            );
-
-        g.lineStyle(
-            6,
-            0x438d3f,
-            1
-        );
-
-        g.lineBetween(
-            rightX,
-            baseY,
-            rightX,
-            baseY - 80
-        );
-
-        g.fillStyle(
-            0x5baa50,
-            1
-        );
-
-        g.fillEllipse(
-            rightX - 18,
-            baseY - 43,
-            37,
-            17
-        );
-
-        g.fillEllipse(
-            rightX + 14,
-            baseY - 66,
-            34,
-            17
-        );
-
-
-        /* SMALL FLOWERS */
-
-        const flowerXs = [
-            w * .15,
-            w * .38,
-            w * .61,
-            w * .82
-        ];
-
-        flowerXs.forEach(
-            (x, index) => {
-
-                const y =
-                    h * .89 +
-                    (index % 2) * 5;
-
-                g.lineStyle(
-                    3,
-                    0x459340,
-                    1
-                );
-
-                g.lineBetween(
-                    x,
-                    y,
-                    x,
-                    y - 24
-                );
-
-                const colors = [
-                    0xff98ac,
-                    0xf9d76b,
-                    0xd894f0,
-                    0xffffff
-                ];
-
-                g.fillStyle(
-                    colors[index],
-                    1
-                );
-
-                g.fillCircle(
-                    x - 6,
-                    y - 26,
-                    7
-                );
-
-                g.fillCircle(
-                    x + 6,
-                    y - 26,
-                    7
-                );
-
-                g.fillCircle(
-                    x,
-                    y - 32,
-                    7
-                );
-
-                g.fillCircle(
-                    x,
-                    y - 20,
-                    7
-                );
-
-                g.fillStyle(
-                    0xffaa35,
-                    1
-                );
-
-                g.fillCircle(
-                    x,
-                    y - 26,
-                    5
-                );
-            }
-        );
-    }
-
-
-    /* ========================================================
-       RESPONSIVE LAYOUT
-    ======================================================== */
-
-    handleResize(gameSize) {
-
-        const width =
-            gameSize.width ||
-            this.scale.width;
-
-        const height =
-            gameSize.height ||
-            this.scale.height;
-
-        this.physics.world.setBounds(
-            0,
-            0,
-            width,
-            height
-        );
-
-        this.drawBackground();
-
-        if (this.bee) {
-
-            this.bee.x = Phaser.Math.Clamp(
-                this.bee.x,
-                40,
-                width - 40
-            );
-
-            this.bee.y = Phaser.Math.Clamp(
-                this.bee.y,
-                50,
-                height - 55
-            );
-        }
-
-        if (
-            this.flowers &&
-            this.flowers.length
-        ) {
-
-            this.positionFlowers(
-                false
-            );
-        }
-    }
-
-
-    getFlowerPositions() {
-
-        const w = this.scale.width;
-        const h = this.scale.height;
-
-        /*
-         * PORTRAIT / NARROW
-         */
-        if (w < 560) {
-
-            return [
-                {
-                    x: w * .25,
-                    y: h * .26
-                },
-                {
-                    x: w * .75,
-                    y: h * .26
-                },
-                {
-                    x: w * .25,
-                    y: h * .56
-                },
-                {
-                    x: w * .75,
-                    y: h * .56
-                }
-            ];
-        }
-
-
-        /*
-         * LANDSCAPE / TABLET / PC
-         */
-        return [
+            "A",
             {
-                x: w * .19,
-                y: h * .30
-            },
-            {
-                x: w * .81,
-                y: h * .30
-            },
-            {
-                x: w * .27,
-                y: h * .62
-            },
-            {
-                x: w * .73,
-                y: h * .62
+                fontFamily:
+                "Trebuchet MS, Arial",
+
+                fontSize:"30px",
+
+                fontStyle:"bold",
+
+                color:"#60451d",
+
+                stroke:"#fff9d3",
+
+                strokeThickness:5
             }
-        ];
-    }
+        )
+        .setOrigin(.5)
+        .setDepth(8);
 
 
-    /* ========================================================
-       GAME START
-    ======================================================== */
+        flower.letter =
+        "A";
 
-    startRound() {
-
-        this.answerLocked = false;
-        this.autoTarget = null;
-
-        this.placeBeeAtStart();
-
-        this.positionFlowers(
-            true
-        );
-    }
+        flower.label =
+        label;
 
 
-    placeBeeAtStart() {
-
-        const w = this.scale.width;
-        const h = this.scale.height;
-
-        this.bee.setVelocity(
-            0,
-            0
+        this.flowers.push(
+            flower
         );
 
-        this.bee.setPosition(
-            w * .50,
-            h * .80
-        );
-
-        this.bee.setAngle(0);
     }
 
 
-    /* ========================================================
-       RANDOM FLOWER LETTER POSITIONS
-    ======================================================== */
+    /* =========================
+       PLAYER
+    ========================= */
 
-    positionFlowers(randomiseLetters = true) {
+    this.player =
+    this.physics.add.image(
+        this.scale.width / 2,
+        this.scale.height * .73,
+        "bee"
+    );
 
-        if (!this.flowers.length) {
-            return;
-        }
 
-        const positions =
-            this.getFlowerPositions();
+    this.player
+    .setDepth(12)
+    .setCollideWorldBounds(true);
 
-        let letters =
-            ["A", "B", "C", "D"];
 
+    this.player.body.setCircle(
+        23,
+        17,
+        9
+    );
 
-        if (randomiseLetters) {
 
-            let attempts = 0;
-            let order = "";
+    /* =========================
+       ENEMY
+    ========================= */
 
-            do {
+    this.enemies =
+    this.physics.add.group({
+        allowGravity:false
+    });
 
-                letters = Phaser.Utils.Array.Shuffle(
-                    ["A", "B", "C", "D"]
-                );
 
-                order = letters.join("");
+    /* =========================
+       BULLETS
+    ========================= */
 
-                attempts++;
+    this.playerBullets =
+    this.physics.add.group({
+        allowGravity:false
+    });
 
-            } while (
-                order === previousOrder &&
-                attempts < 10
-            );
 
-            previousOrder =
-                letters.join("");
+    this.enemyBullets =
+    this.physics.add.group({
+        allowGravity:false
+    });
 
-        } else {
 
-            letters =
-                this.flowers.map(
-                    flower =>
-                        flower.answerLetter
-                );
-        }
+    /* =========================
+       OVERLAPS
+    ========================= */
 
+    this.physics.add.overlap(
+        this.player,
+        this.flowerGroup,
+        this.touchAnswer,
+        null,
+        this
+    );
 
-        this.flowers.forEach(
-            (flower, index) => {
 
-                const pos =
-                    positions[index];
+    this.physics.add.overlap(
+        this.playerBullets,
+        this.enemies,
+        this.playerBulletHitEnemy,
+        null,
+        this
+    );
 
-                const smallScreen =
-                    this.scale.width < 430;
 
-                const scale =
-                    smallScreen
-                        ? .80
-                        : this.scale.width < 650
-                            ? .89
-                            : 1;
+    this.physics.add.overlap(
+        this.player,
+        this.enemyBullets,
+        this.enemyBulletHitPlayer,
+        null,
+        this
+    );
 
-                flower.setScale(scale);
 
-                flower.setPosition(
-                    pos.x,
-                    pos.y
-                );
+    this.physics.add.overlap(
+        this.player,
+        this.enemies,
+        this.enemyTouchPlayer,
+        null,
+        this
+    );
 
-                flower.body.setVelocity(
-                    0,
-                    0
-                );
 
-                flower.answerLetter =
-                    letters[index];
+    /* =========================
+       KEYBOARD
+    ========================= */
 
-                flower.answerLabel
-                    .setText(
-                        letters[index]
-                    )
-                    .setPosition(
-                        pos.x,
-                        pos.y - 4
-                    )
-                    .setScale(
-                        smallScreen
-                            ? .88
-                            : 1
-                    );
-            }
-        );
-    }
+    this.cursors =
+    this.input.keyboard.createCursorKeys();
 
 
-    /* ========================================================
-       FLOWER COLLISION
-    ======================================================== */
+    this.keys =
+    this.input.keyboard.addKeys({
 
-    touchFlower(
-        bee,
-        flower
-    ) {
+        W:
+        Phaser.Input.Keyboard.KeyCodes.W,
 
-        if (
-            !gameStarted ||
-            gameFinished ||
-            this.answerLocked
-        ) {
-            return;
-        }
+        A:
+        Phaser.Input.Keyboard.KeyCodes.A,
 
-        this.answerLocked = true;
+        S:
+        Phaser.Input.Keyboard.KeyCodes.S,
 
-        this.autoTarget = null;
+        D:
+        Phaser.Input.Keyboard.KeyCodes.D,
 
-        bee.setVelocity(
-            0,
-            0
-        );
+        SPACE:
+        Phaser.Input.Keyboard.KeyCodes.SPACE
 
-        const chosen =
-            flower.answerLetter;
+    });
 
-        const correct =
-            QUESTIONS[currentQuestion].answer;
 
+    /* =========================
+       ENEMY SHOOT TIMER
+    ========================= */
 
-        if (chosen === correct) {
+    this.enemyShootTimer =
+    this.time.addEvent({
 
-            correctSound();
+        delay:1450,
 
-            feedbackEl.textContent =
-                "Betul! Lebah berjaya mendapatkan nektar!";
+        loop:true,
 
-            feedbackEl.className =
-                "feedback correct";
+        callback:()=>{
 
-
-            /* flower celebration */
-
-            this.tweens.add({
-                targets: flower,
-                scaleX: flower.scaleX * 1.22,
-                scaleY: flower.scaleY * 1.22,
-                duration: 150,
-                yoyo: true,
-                ease: "Back.easeOut"
-            });
-
-
-            /* bee happy movement */
-
-            this.tweens.add({
-                targets: bee,
-                angle: {
-                    from: -10,
-                    to: 10
-                },
-                duration: 90,
-                yoyo: true,
-                repeat: 3
-            });
-
-
-            this.createNectarBurst(
-                flower.x,
-                flower.y
-            );
-
-
-            this.time.delayedCall(
-                850,
-                () => {
-
-                    currentQuestion++;
-
-                    progressFillEl.style.width =
-                        `${(currentQuestion / QUESTIONS.length) * 100}%`;
-
-
-                    if (
-                        currentQuestion >= QUESTIONS.length
-                    ) {
-
-                        this.finishGame();
-
-                    } else {
-
-                        updateQuestionUI();
-
-                        this.answerLocked = false;
-
-                        this.placeBeeAtStart();
-
-                        this.positionFlowers(
-                            true
-                        );
-                    }
-                }
-            );
-
-        } else {
-
-            mistakes++;
-
-            mistakeTextEl.textContent =
-                `Salah: ${mistakes}`;
-
-            wrongSound();
-
-            feedbackEl.textContent =
-                `Belum tepat. Bunga ${chosen} bukan jawapannya. Cuba lagi!`;
-
-            feedbackEl.className =
-                "feedback wrong";
-
-
-            /* wrong flower shake */
-
-            this.tweens.add({
-                targets: flower,
-                x: flower.x + 8,
-                duration: 60,
-                yoyo: true,
-                repeat: 4,
-                ease: "Sine.easeInOut"
-            });
-
-
-            /* bee return */
-
-            this.tweens.add({
-                targets: bee,
-                x: this.scale.width * .50,
-                y: this.scale.height * .80,
-                duration: 520,
-                ease: "Sine.easeInOut",
-                onComplete: () => {
-
-                    bee.setVelocity(
-                        0,
-                        0
-                    );
-
-                    this.answerLocked =
-                        false;
-                }
-            });
-        }
-    }
-
-
-    /* ========================================================
-       CORRECT PARTICLES
-    ======================================================== */
-
-    createNectarBurst(x, y) {
-
-        for (let i = 0; i < 14; i++) {
-
-            const radius =
-                Phaser.Math.Between(
-                    3,
-                    6
-                );
-
-            const colors = [
-                0xffdd4d,
-                0xffffff,
-                0xff9eb5,
-                0xb7ef78
-            ];
-
-            const circle =
-                this.add.circle(
-                    x,
-                    y,
-                    radius,
-                    Phaser.Utils.Array.GetRandom(
-                        colors
-                    ),
-                    1
-                )
-                .setDepth(20);
-
-            const angle =
-                Phaser.Math.FloatBetween(
-                    0,
-                    Math.PI * 2
-                );
-
-            const distance =
-                Phaser.Math.Between(
-                    40,
-                    100
-                );
-
-            this.tweens.add({
-                targets: circle,
-
-                x:
-                    x +
-                    Math.cos(angle) *
-                    distance,
-
-                y:
-                    y +
-                    Math.sin(angle) *
-                    distance,
-
-                alpha: 0,
-
-                scale: .3,
-
-                duration:
-                    Phaser.Math.Between(
-                        450,
-                        750
-                    ),
-
-                ease:
-                    "Quad.easeOut",
-
-                onComplete: () => {
-                    circle.destroy();
-                }
-            });
-        }
-    }
-
-
-    /* ========================================================
-       FINISH
-    ======================================================== */
-
-    finishGame() {
-
-        gameFinished = true;
-
-        this.answerLocked = true;
-
-        this.bee.setVelocity(
-            0,
-            0
-        );
-
-        progressFillEl.style.width =
-            "100%";
-
-        progressTextEl.textContent =
-            "25 / 25 Selesai";
-
-        feedbackEl.textContent =
-            "Tahniah! Semua soalan telah diselesaikan.";
-
-        feedbackEl.className =
-            "feedback correct";
-
-        finalResult.innerHTML =
-            `25 / 25 soalan selesai<br>` +
-            `Jumlah cubaan salah: ${mistakes}`;
-
-        correctSound();
-
-        this.time.delayedCall(
-            600,
-            () => {
-                endOverlay.classList.remove(
-                    "hidden"
-                );
-            }
-        );
-    }
-
-
-    /* ========================================================
-       VIRTUAL MOVEMENT
-    ======================================================== */
-
-    setVirtual(
-        direction,
-        state
-    ) {
-
-        if (
-            this.virtual.hasOwnProperty(
-                direction
-            )
-        ) {
-
-            this.virtual[direction] =
-                state;
-
-            if (state) {
-                this.autoTarget = null;
-            }
-        }
-    }
-
-
-    /* ========================================================
-       UPDATE
-    ======================================================== */
-
-    update(time, delta) {
-
-        if (!this.bee) {
-            return;
-        }
-
-
-        /* Decorative floating light */
-
-        this.particles.forEach(
-            particle => {
-
-                particle.y -=
-                    particle.speed *
-                    delta /
-                    1000;
-
-                if (particle.y < 15) {
-
-                    particle.y =
-                        this.scale.height -
-                        80;
-
-                    particle.x =
-                        Phaser.Math.Between(
-                            20,
-                            Math.max(
-                                21,
-                                this.scale.width - 20
-                            )
-                        );
-                }
-            }
-        );
-
-
-        if (
-            !gameStarted ||
-            gameFinished ||
-            this.answerLocked
-        ) {
-
-            this.bee.setVelocity(
-                0,
-                0
-            );
-
-            return;
-        }
-
-
-        const left =
-            this.cursors.left.isDown ||
-            this.keys.left.isDown ||
-            this.virtual.left;
-
-        const right =
-            this.cursors.right.isDown ||
-            this.keys.right.isDown ||
-            this.virtual.right;
-
-        const up =
-            this.cursors.up.isDown ||
-            this.keys.up.isDown ||
-            this.virtual.up;
-
-        const down =
-            this.cursors.down.isDown ||
-            this.keys.down.isDown ||
-            this.virtual.down;
-
-
-        const manualMovement =
-            left ||
-            right ||
-            up ||
-            down;
-
-
-        if (manualMovement) {
-
-            this.autoTarget = null;
-
-            let x = 0;
-            let y = 0;
-
-            if (left) {
-                x -= 1;
+            if(
+                !gameStarted ||
+                gameFinished ||
+                playerResting
+            ){
+                return;
             }
 
-            if (right) {
-                x += 1;
-            }
-
-            if (up) {
-                y -= 1;
-            }
-
-            if (down) {
-                y += 1;
-            }
-
-
-            const vector =
-                new Phaser.Math.Vector2(
-                    x,
-                    y
-                );
-
-            if (vector.length() > 0) {
-
-                vector
-                    .normalize()
-                    .scale(this.speed);
-
-                this.bee.setVelocity(
-                    vector.x,
-                    vector.y
-                );
-
-
-                if (vector.x < -1) {
-                    this.bee.setFlipX(true);
-                }
-
-                if (vector.x > 1) {
-                    this.bee.setFlipX(false);
-                }
-
-            } else {
-
-                this.bee.setVelocity(
-                    0,
-                    0
-                );
-            }
+            this.enemyShoot();
 
         }
 
-        else if (this.autoTarget) {
-
-            const dx =
-                this.autoTarget.x -
-                this.bee.x;
-
-            const dy =
-                this.autoTarget.y -
-                this.bee.y;
-
-            const distance =
-                Math.sqrt(
-                    dx * dx +
-                    dy * dy
-                );
+    });
 
 
-            if (distance > 5) {
+    /* =========================
+       RANDOM ENEMY DIRECTION
+    ========================= */
 
-                const vector =
-                    new Phaser.Math.Vector2(
-                        dx,
-                        dy
-                    );
+    this.enemyDirectionTimer =
+    this.time.addEvent({
 
-                vector
-                    .normalize()
-                    .scale(
-                        this.speed * .95
-                    );
+        delay:1800,
 
-                this.bee.setVelocity(
-                    vector.x,
-                    vector.y
-                );
+        loop:true,
 
-                if (vector.x < -1) {
-                    this.bee.setFlipX(true);
-                }
+        callback:()=>{
 
-                if (vector.x > 1) {
-                    this.bee.setFlipX(false);
-                }
-
-            } else {
-
-                this.bee.setVelocity(
-                    0,
-                    0
-                );
-
-                this.autoTarget = null;
+            if(
+                !gameStarted ||
+                gameFinished
+            ){
+                return;
             }
 
+            this.changeEnemyDirections();
+
         }
 
-        else {
+    });
 
-            this.bee.setVelocity(
-                0,
-                0
-            );
+
+    /* =========================
+       RANDOM FLOWER DIRECTION
+    ========================= */
+
+    this.flowerDirectionTimer =
+    this.time.addEvent({
+
+        delay:2200,
+
+        loop:true,
+
+        callback:()=>{
+
+            if(
+                !gameStarted ||
+                gameFinished
+            ){
+                return;
+            }
+
+            this.changeFlowerDirections();
+
         }
 
+    });
 
-        /* gentle flying rotation */
 
-        if (
-            Math.abs(
-                this.bee.body.velocity.x
-            ) > 3 ||
-            Math.abs(
-                this.bee.body.velocity.y
-            ) > 3
-        ) {
+    /* =========================
+       RESIZE
+    ========================= */
 
-            this.bee.setAngle(
-                Math.sin(
-                    time * .012
-                ) * 4
-            );
+    this.scale.on(
+        "resize",
+        this.onResize,
+        this
+    );
 
-        } else {
 
-            this.bee.setAngle(
-                Math.sin(
-                    time * .006
-                ) * 2
-            );
-        }
-    }
+    this.roundLocked =
+    true;
+
 }
 
 
-/* ============================================================
+/* ==========================================================
+   TEXTURES
+========================================================== */
+
+createTextures(){
+
+/* =========================
+   ANSWER FLOWER
+========================= */
+
+const f =
+this.make.graphics({
+    add:false
+});
+
+
+f.fillStyle(
+    0x000000,
+    .10
+);
+
+f.fillEllipse(
+    48,
+    87,
+    65,
+    15
+);
+
+
+/* stem */
+
+f.lineStyle(
+    7,
+    0x419a46
+);
+
+f.lineBetween(
+    48,
+    49,
+    48,
+    87
+);
+
+
+/* leaves */
+
+f.fillStyle(
+    0x5eb052
+);
+
+f.fillEllipse(
+    35,
+    70,
+    25,
+    12
+);
+
+f.fillEllipse(
+    61,
+    76,
+    25,
+    12
+);
+
+
+/* petals */
+
+const petals = [
+
+[48,14],
+[69,23],
+[77,43],
+[69,63],
+[48,71],
+[27,63],
+[19,43],
+[27,23]
+
+];
+
+
+f.fillStyle(
+    0xffdf69
+);
+
+
+petals.forEach(p=>{
+
+    f.fillCircle(
+        p[0],
+        p[1],
+        17
+    );
+
+});
+
+
+/* center */
+
+f.fillStyle(
+    0xffa42c
+);
+
+f.fillCircle(
+    48,
+    43,
+    24
+);
+
+
+f.lineStyle(
+    3,
+    0xdd841f
+);
+
+f.strokeCircle(
+    48,
+    43,
+    23
+);
+
+
+f.generateTexture(
+    "answerFlower",
+    96,
+    96
+);
+
+f.destroy();
+
+
+/* =========================
+   BEE
+========================= */
+
+const bee =
+this.make.graphics({
+    add:false
+});
+
+
+/* wings */
+
+bee.fillStyle(
+    0xffffff,
+    .85
+);
+
+bee.fillEllipse(
+    31,
+    20,
+    32,
+    23
+);
+
+bee.fillEllipse(
+    54,
+    18,
+    32,
+    23
+);
+
+
+bee.lineStyle(
+    2,
+    0xb9e3ef
+);
+
+bee.strokeEllipse(
+    31,
+    20,
+    32,
+    23
+);
+
+bee.strokeEllipse(
+    54,
+    18,
+    32,
+    23
+);
+
+
+/* body */
+
+bee.fillStyle(
+    0xffd43e
+);
+
+bee.fillEllipse(
+    42,
+    40,
+    52,
+    36
+);
+
+
+/* stripes */
+
+bee.fillStyle(
+    0x38352f
+);
+
+bee.fillRect(
+    30,
+    24,
+    8,
+    32
+);
+
+bee.fillRect(
+    46,
+    23,
+    8,
+    33
+);
+
+
+/* head */
+
+bee.fillStyle(
+    0x453c35
+);
+
+bee.fillCircle(
+    66,
+    39,
+    14
+);
+
+
+/* eye */
+
+bee.fillStyle(
+    0xffffff
+);
+
+bee.fillCircle(
+    71,
+    34,
+    5
+);
+
+bee.fillStyle(
+    0x111111
+);
+
+bee.fillCircle(
+    73,
+    34,
+    2
+);
+
+
+/* sting */
+
+bee.fillStyle(
+    0x423830
+);
+
+bee.fillTriangle(
+    15,
+    40,
+    4,
+    35,
+    4,
+    45
+);
+
+
+bee.generateTexture(
+    "bee",
+    84,
+    68
+);
+
+bee.destroy();
+
+
+/* =========================
+   ENEMY
+========================= */
+
+const enemy =
+this.make.graphics({
+    add:false
+});
+
+
+/* wings */
+
+enemy.fillStyle(
+    0xffffff,
+    .75
+);
+
+enemy.fillEllipse(
+    32,
+    15,
+    30,
+    19
+);
+
+enemy.fillEllipse(
+    53,
+    15,
+    30,
+    19
+);
+
+
+/* body */
+
+enemy.fillStyle(
+    0xe56c37
+);
+
+enemy.fillEllipse(
+    43,
+    35,
+    48,
+    31
+);
+
+
+/* stripe */
+
+enemy.fillStyle(
+    0x4b322e
+);
+
+enemy.fillRect(
+    35,
+    21,
+    7,
+    29
+);
+
+enemy.fillRect(
+    49,
+    21,
+    7,
+    29
+);
+
+
+/* enemy face */
+
+enemy.fillStyle(
+    0x542e28
+);
+
+enemy.fillCircle(
+    64,
+    35,
+    12
+);
+
+
+enemy.fillStyle(
+    0xffffff
+);
+
+enemy.fillCircle(
+    67,
+    31,
+    4
+);
+
+
+enemy.fillStyle(
+    0x111111
+);
+
+enemy.fillCircle(
+    68,
+    31,
+    2
+);
+
+
+/* angry eyebrow */
+
+enemy.lineStyle(
+    2,
+    0x111111
+);
+
+enemy.lineBetween(
+    62,
+    27,
+    69,
+    30
+);
+
+
+/* sting */
+
+enemy.fillStyle(
+    0x512f2b
+);
+
+enemy.fillTriangle(
+    18,
+    35,
+    6,
+    30,
+    6,
+    40
+);
+
+
+enemy.generateTexture(
+    "enemy",
+    82,
+    60
+);
+
+enemy.destroy();
+
+
+/* =========================
+   PLAYER BULLET
+========================= */
+
+const pb =
+this.make.graphics({
+    add:false
+});
+
+
+pb.fillStyle(
+    0xfff06a
+);
+
+pb.fillCircle(
+    8,
+    8,
+    7
+);
+
+
+pb.lineStyle(
+    2,
+    0xf2b92e
+);
+
+pb.strokeCircle(
+    8,
+    8,
+    7
+);
+
+
+pb.generateTexture(
+    "playerBullet",
+    16,
+    16
+);
+
+pb.destroy();
+
+
+/* =========================
+   ENEMY RED BULLET
+========================= */
+
+const eb =
+this.make.graphics({
+    add:false
+});
+
+
+eb.fillStyle(
+    0xf44336
+);
+
+eb.fillCircle(
+    9,
+    9,
+    8
+);
+
+
+eb.lineStyle(
+    2,
+    0xb71c1c
+);
+
+eb.strokeCircle(
+    9,
+    9,
+    8
+);
+
+
+eb.generateTexture(
+    "enemyBullet",
+    18,
+    18
+);
+
+eb.destroy();
+
+}
+
+
+/* ==========================================================
+   BACKGROUND
+========================================================== */
+
+drawBackground(){
+
+    if(!this.bg){
+        return;
+    }
+
+
+    const g =
+    this.bg;
+
+    const d =
+    this.decor;
+
+    const w =
+    this.scale.width;
+
+    const h =
+    this.scale.height;
+
+
+    g.clear();
+
+    d.clear();
+
+
+    /* sky */
+
+    g.fillStyle(
+        0xaee3f1
+    );
+
+    g.fillRect(
+        0,
+        0,
+        w,
+        h
+    );
+
+
+    /* sun */
+
+    g.fillStyle(
+        0xffdf62
+    );
+
+    g.fillCircle(
+        w * .87,
+        h * .14,
+        Math.min(
+            42,
+            w * .065
+        )
+    );
+
+
+    /* clouds */
+
+    this.cloud(
+        g,
+        w*.12,
+        h*.13,
+        .9
+    );
+
+
+    this.cloud(
+        g,
+        w*.62,
+        h*.22,
+        .7
+    );
+
+
+    /* back hills */
+
+    g.fillStyle(
+        0x88cc73
+    );
+
+    g.fillEllipse(
+        w*.1,
+        h*.82,
+        w*.75,
+        h*.43
+    );
+
+
+    g.fillEllipse(
+        w*.78,
+        h*.82,
+        w*.9,
+        h*.45
+    );
+
+
+    /* grass */
+
+    g.fillStyle(
+        0x63ad55
+    );
+
+    g.fillRect(
+        0,
+        h*.80,
+        w,
+        h*.20
+    );
+
+
+    /* dirt */
+
+    g.fillStyle(
+        0x8b5d3e
+    );
+
+    g.fillRect(
+        0,
+        h*.96,
+        w,
+        h*.04
+    );
+
+
+    /* bushes */
+
+    for(
+        let x=0;
+        x<w+80;
+        x+=75
+    ){
+
+        d.fillStyle(
+            x%150===0
+            ?0x49984a
+            :0x58a650
+        );
+
+        d.fillCircle(
+            x,
+            h*.89,
+            34
+        );
+
+        d.fillCircle(
+            x+32,
+            h*.9,
+            40
+        );
+
+    }
+
+
+    /* small plants */
+
+    for(
+        let x=40;
+        x<w;
+        x+=100
+    ){
+
+        d.lineStyle(
+            3,
+            0x3a8a42
+        );
+
+        d.lineBetween(
+            x,
+            h*.95,
+            x,
+            h*.89
+        );
+
+
+        d.fillStyle(
+            0x69b653
+        );
+
+        d.fillEllipse(
+            x-8,
+            h*.91,
+            19,
+            8
+        );
+
+        d.fillEllipse(
+            x+8,
+            h*.925,
+            19,
+            8
+        );
+
+    }
+
+}
+
+
+cloud(
+    g,
+    x,
+    y,
+    scale
+){
+
+    g.fillStyle(
+        0xffffff,
+        .8
+    );
+
+
+    g.fillCircle(
+        x,
+        y,
+        24*scale
+    );
+
+    g.fillCircle(
+        x+27*scale,
+        y-9*scale,
+        31*scale
+    );
+
+    g.fillCircle(
+        x+57*scale,
+        y,
+        23*scale
+    );
+
+    g.fillRoundedRect(
+        x-3*scale,
+        y-3*scale,
+        63*scale,
+        28*scale,
+        12
+    );
+
+}
+
+
+/* ==========================================================
+   START ROUND
+========================================================== */
+
+startGameRound(){
+
+    this.roundLocked =
+    false;
+
+
+    this.clearCombat();
+
+
+    this.resetPlayer();
+
+
+    this.assignFlowerAnswers();
+
+
+    this.spawnFlowerMovement();
+
+
+    this.updateEnemyCount();
+
+}
+
+
+/* ==========================================================
+   PLAYER
+========================================================== */
+
+resetPlayer(){
+
+    this.player
+    .setPosition(
+        this.scale.width/2,
+        this.scale.height*.70
+    )
+    .setVelocity(
+        0,
+        0
+    )
+    .setAlpha(1)
+    .setTint(0xffffff);
+
+
+    this.invulnerable =
+    false;
+
+
+    this.lastAim = {
+        x:0,
+        y:-1
+    };
+
+}
+
+
+/* ==========================================================
+   ANSWERS RANDOM MOVEMENT
+========================================================== */
+
+assignFlowerAnswers(){
+
+    let letters =
+    Phaser.Utils.Array.Shuffle(
+        ["A","B","C","D"]
+    );
+
+
+    const positions =
+    this.getFlowerStartPositions();
+
+
+    this.flowers.forEach(
+        (flower,index)=>{
+
+            flower.letter =
+            letters[index];
+
+
+            flower.label
+            .setText(
+                letters[index]
+            );
+
+
+            flower
+            .setPosition(
+                positions[index].x,
+                positions[index].y
+            );
+
+
+            flower.setActive(
+                true
+            );
+
+            flower.setVisible(
+                true
+            );
+
+
+            if(flower.body){
+
+                flower.body.enable =
+                true;
+
+            }
+
+        }
+    );
+
+}
+
+
+getFlowerStartPositions(){
+
+    const w =
+    this.scale.width;
+
+    const h =
+    this.scale.height;
+
+
+    if(w < 560){
+
+        return [
+
+            {
+                x:w*.23,
+                y:h*.25
+            },
+
+            {
+                x:w*.76,
+                y:h*.28
+            },
+
+            {
+                x:w*.28,
+                y:h*.51
+            },
+
+            {
+                x:w*.73,
+                y:h*.53
+            }
+
+        ];
+
+    }
+
+
+    return [
+
+        {
+            x:w*.18,
+            y:h*.27
+        },
+
+        {
+            x:w*.78,
+            y:h*.26
+        },
+
+        {
+            x:w*.28,
+            y:h*.53
+        },
+
+        {
+            x:w*.70,
+            y:h*.56
+        }
+
+    ];
+
+}
+
+
+spawnFlowerMovement(){
+
+    this.flowers.forEach(
+        flower=>{
+
+            const speed =
+            Phaser.Math.Between(
+                42,
+                78
+            );
+
+
+            const angle =
+            Phaser.Math.FloatBetween(
+                0,
+                Math.PI*2
+            );
+
+
+            flower.setVelocity(
+
+                Math.cos(angle) *
+                speed,
+
+                Math.sin(angle) *
+                speed
+
+            );
+
+
+            flower.setBounce(
+                1,
+                1
+            );
+
+        }
+    );
+
+}
+
+
+changeFlowerDirections(){
+
+    this.flowers.forEach(
+        flower=>{
+
+            if(
+                !flower.active
+            ){
+                return;
+            }
+
+
+            const currentSpeed =
+            Phaser.Math.Between(
+                42,
+                78
+            );
+
+
+            const angle =
+            Phaser.Math.FloatBetween(
+                0,
+                Math.PI*2
+            );
+
+
+            flower.setVelocity(
+
+                Math.cos(angle) *
+                currentSpeed,
+
+                Math.sin(angle) *
+                currentSpeed
+
+            );
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   ANSWER COLLISION
+========================================================== */
+
+touchAnswer(
+    player,
+    flower
+){
+
+    if(
+        this.roundLocked ||
+        gameFinished ||
+        playerResting
+    ){
+        return;
+    }
+
+
+    this.roundLocked =
+    true;
+
+
+    const selected =
+    flower.letter;
+
+
+    const correct =
+    QUESTIONS[currentQuestion]
+    .answer;
+
+
+    if(
+        selected === correct
+    ){
+
+        correctSound();
+
+
+        feedbackEl.textContent =
+        "Betul! Bunga jawapan berjaya ditemui!";
+
+
+        feedbackEl.className =
+        "feedback correct";
+
+
+        this.answerBurst(
+            flower.x,
+            flower.y
+        );
+
+
+        this.tweens.add({
+
+            targets:flower,
+
+            scaleX:1.3,
+
+            scaleY:1.3,
+
+            duration:130,
+
+            yoyo:true,
+
+            repeat:2
+
+        });
+
+
+        this.time.delayedCall(
+            750,
+            ()=>{
+
+                currentQuestion++;
+
+
+                progressFillEl.style.width =
+                `${
+                    (
+                        currentQuestion /
+                        QUESTIONS.length
+                    ) * 100
+                }%`;
+
+
+                if(
+                    currentQuestion >=
+                    QUESTIONS.length
+                ){
+
+                    this.finishGame();
+
+                    return;
+
+                }
+
+
+                updateQuestionUI();
+
+
+                this.resetPlayer();
+
+
+                this.assignFlowerAnswers();
+
+
+                this.spawnFlowerMovement();
+
+
+                this.updateEnemyCount();
+
+
+                this.roundLocked =
+                false;
+
+            }
+        );
+
+    }
+
+    else{
+
+        mistakes++;
+
+
+        mistakeCounterEl.textContent =
+        `Salah: ${mistakes}`;
+
+
+        hurtSound();
+
+
+        feedbackEl.textContent =
+        `Bunga ${selected} bukan jawapan yang betul. Cuba lagi!`;
+
+
+        feedbackEl.className =
+        "feedback wrong";
+
+
+        this.tweens.add({
+
+            targets:flower,
+
+            x:flower.x+8,
+
+            duration:55,
+
+            yoyo:true,
+
+            repeat:4
+
+        });
+
+
+        this.time.delayedCall(
+            450,
+            ()=>{
+
+                this.roundLocked =
+                false;
+
+            }
+        );
+
+    }
+
+}
+
+
+/* ==========================================================
+   PLAYER SHOOT
+========================================================== */
+
+shootPlayer(){
+
+    if(
+        !gameStarted ||
+        gameFinished ||
+        playerResting ||
+        this.roundLocked
+    ){
+        return;
+    }
+
+
+    const now =
+    this.time.now;
+
+
+    if(
+        now - this.lastPlayerShot <
+        this.playerShootDelay
+    ){
+        return;
+    }
+
+
+    this.lastPlayerShot =
+    now;
+
+
+    shootSound();
+
+
+    let aimX =
+    this.lastAim.x;
+
+    let aimY =
+    this.lastAim.y;
+
+
+    if(
+        Math.abs(aimX) < .05 &&
+        Math.abs(aimY) < .05
+    ){
+
+        aimY =
+        -1;
+
+    }
+
+
+    const bullet =
+    this.playerBullets.create(
+
+        this.player.x +
+        aimX*28,
+
+        this.player.y +
+        aimY*28,
+
+        "playerBullet"
+
+    );
+
+
+    bullet.setDepth(
+        11
+    );
+
+
+    bullet.body.setCircle(
+        7,
+        1,
+        1
+    );
+
+
+    const speed =
+    470;
+
+
+    bullet.setVelocity(
+
+        aimX *
+        speed,
+
+        aimY *
+        speed
+
+    );
+
+
+    bullet.life =
+    0;
+
+}
+
+
+/* ==========================================================
+   ENEMY SYSTEM
+========================================================== */
+
+desiredEnemyCount(){
+
+    if(
+        currentQuestion >= 20
+    ){
+        return 4;
+    }
+
+
+    if(
+        currentQuestion >= 10
+    ){
+        return 3;
+    }
+
+
+    return 2;
+
+}
+
+
+updateEnemyCount(){
+
+    const desired =
+    this.desiredEnemyCount();
+
+
+    let activeEnemies =
+    this.enemies.getChildren()
+    .filter(
+        e=>e.active
+    );
+
+
+    while(
+        activeEnemies.length <
+        desired
+    ){
+
+        this.spawnEnemy();
+
+
+        activeEnemies =
+        this.enemies.getChildren()
+        .filter(
+            e=>e.active
+        );
+
+    }
+
+
+    while(
+        activeEnemies.length >
+        desired
+    ){
+
+        const enemy =
+        activeEnemies.pop();
+
+        enemy.destroy();
+
+    }
+
+}
+
+
+spawnEnemy(){
+
+    const w =
+    this.scale.width;
+
+    const h =
+    this.scale.height;
+
+
+    let x;
+
+
+    if(
+        Phaser.Math.Between(
+            0,
+            1
+        ) === 0
+    ){
+
+        x =
+        Phaser.Math.Between(
+            70,
+            Math.max(
+                71,
+                w*.35
+            )
+        );
+
+    }
+
+    else{
+
+        x =
+        Phaser.Math.Between(
+            Math.max(
+                70,
+                w*.65
+            ),
+            Math.max(
+                71,
+                w-70
+            )
+        );
+
+    }
+
+
+    const y =
+    Phaser.Math.Between(
+        90,
+        Math.max(
+            110,
+            h*.47
+        )
+    );
+
+
+    const enemy =
+    this.enemies.create(
+        x,
+        y,
+        "enemy"
+    );
+
+
+    enemy
+    .setDepth(10)
+    .setCollideWorldBounds(true)
+    .setBounce(1,1);
+
+
+    enemy.body.setCircle(
+        21,
+        20,
+        10
+    );
+
+
+    enemy.hp =
+    2;
+
+
+    const speed =
+    Phaser.Math.Between(
+        70,
+        105
+    );
+
+
+    const angle =
+    Phaser.Math.FloatBetween(
+        0,
+        Math.PI*2
+    );
+
+
+    enemy.setVelocity(
+
+        Math.cos(angle) *
+        speed,
+
+        Math.sin(angle) *
+        speed
+
+    );
+
+
+    return enemy;
+
+}
+
+
+changeEnemyDirections(){
+
+    this.enemies.children.each(
+        enemy=>{
+
+            if(
+                !enemy ||
+                !enemy.active
+            ){
+                return;
+            }
+
+
+            const speed =
+            Phaser.Math.Between(
+                75,
+                currentQuestion >= 10
+                ?125
+                :105
+            );
+
+
+            const angle =
+            Phaser.Math.FloatBetween(
+                0,
+                Math.PI*2
+            );
+
+
+            enemy.setVelocity(
+
+                Math.cos(angle) *
+                speed,
+
+                Math.sin(angle) *
+                speed
+
+            );
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   ENEMY SHOOT
+========================================================== */
+
+enemyShoot(){
+
+    const enemies =
+    this.enemies.getChildren()
+    .filter(
+        enemy=>
+        enemy.active
+    );
+
+
+    if(
+        enemies.length === 0
+    ){
+        return;
+    }
+
+
+    const shooter =
+    Phaser.Utils.Array
+    .GetRandom(
+        enemies
+    );
+
+
+    const dx =
+    this.player.x -
+    shooter.x;
+
+    const dy =
+    this.player.y -
+    shooter.y;
+
+
+    const vector =
+    new Phaser.Math.Vector2(
+        dx,
+        dy
+    );
+
+
+    if(
+        vector.length() === 0
+    ){
+        return;
+    }
+
+
+    vector.normalize();
+
+
+    const bullet =
+    this.enemyBullets.create(
+
+        shooter.x +
+        vector.x*25,
+
+        shooter.y +
+        vector.y*25,
+
+        "enemyBullet"
+
+    );
+
+
+    bullet.setDepth(
+        11
+    );
+
+
+    bullet.body.setCircle(
+        8,
+        1,
+        1
+    );
+
+
+    const speed =
+    currentQuestion >= 20
+    ?250
+    :
+    currentQuestion >= 10
+    ?225
+    :200;
+
+
+    bullet.setVelocity(
+
+        vector.x*
+        speed,
+
+        vector.y*
+        speed
+
+    );
+
+
+    bullet.life =
+    0;
+
+}
+
+
+/* ==========================================================
+   PLAYER BULLET HIT ENEMY
+========================================================== */
+
+playerBulletHitEnemy(
+    bullet,
+    enemy
+){
+
+    if(
+        !bullet.active ||
+        !enemy.active
+    ){
+        return;
+    }
+
+
+    bullet.destroy();
+
+
+    enemy.hp--;
+
+
+    this.tweens.add({
+
+        targets:enemy,
+
+        alpha:.25,
+
+        duration:70,
+
+        yoyo:true,
+
+        repeat:1
+
+    });
+
+
+    if(
+        enemy.hp <= 0
+    ){
+
+        const ex =
+        enemy.x;
+
+        const ey =
+        enemy.y;
+
+
+        enemy.destroy();
+
+
+        this.enemyBurst(
+            ex,
+            ey
+        );
+
+
+        beep(
+            320,
+            .08,
+            "square",
+            .02
+        );
+
+
+        this.time.delayedCall(
+            1200,
+            ()=>{
+
+                if(
+                    gameStarted &&
+                    !gameFinished
+                ){
+
+                    this.updateEnemyCount();
+
+                }
+
+            }
+        );
+
+    }
+
+}
+
+
+/* ==========================================================
+   ENEMY BULLET HIT PLAYER
+========================================================== */
+
+enemyBulletHitPlayer(
+    player,
+    bullet
+){
+
+    if(
+        this.invulnerable ||
+        playerResting
+    ){
+
+        bullet.destroy();
+
+        return;
+
+    }
+
+
+    bullet.destroy();
+
+
+    this.damagePlayer();
+
+}
+
+
+/* enemy body collision */
+
+enemyTouchPlayer(
+    player,
+    enemy
+){
+
+    if(
+        this.invulnerable ||
+        playerResting
+    ){
+        return;
+    }
+
+
+    this.damagePlayer();
+
+
+    const direction =
+    new Phaser.Math.Vector2(
+
+        player.x -
+        enemy.x,
+
+        player.y -
+        enemy.y
+
+    );
+
+
+    if(
+        direction.length() >
+        0
+    ){
+
+        direction
+        .normalize()
+        .scale(
+            180
+        );
+
+
+        player.setVelocity(
+
+            direction.x,
+
+            direction.y
+
+        );
+
+    }
+
+}
+
+
+/* ==========================================================
+   DAMAGE
+========================================================== */
+
+damagePlayer(){
+
+    if(
+        this.invulnerable ||
+        playerResting
+    ){
+        return;
+    }
+
+
+    this.invulnerable =
+    true;
+
+
+    lives--;
+
+
+    if(
+        lives < 0
+    ){
+        lives = 0;
+    }
+
+
+    updateLives();
+
+
+    hurtSound();
+
+
+    feedbackEl.textContent =
+    "Awas! Lebah terkena serangan enemy.";
+
+
+    feedbackEl.className =
+    "feedback warning";
+
+
+    this.tweens.add({
+
+        targets:this.player,
+
+        alpha:.22,
+
+        duration:90,
+
+        yoyo:true,
+
+        repeat:4,
+
+        onComplete:()=>{
+
+            this.player.setAlpha(
+                1
+            );
+
+        }
+
+    });
+
+
+    if(
+        lives <= 0
+    ){
+
+        this.playerRest();
+
+        return;
+
+    }
+
+
+    this.time.delayedCall(
+        900,
+        ()=>{
+
+            this.invulnerable =
+            false;
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   PLAYER REST 3 SEC
+========================================================== */
+
+playerRest(){
+
+    playerResting =
+    true;
+
+
+    this.invulnerable =
+    true;
+
+
+    this.player.setVelocity(
+        0,
+        0
+    );
+
+
+    this.enemyBullets.clear(
+        true,
+        true
+    );
+
+
+    restOverlay.classList.add(
+        "show"
+    );
+
+
+    let seconds =
+    3;
+
+
+    restTime.textContent =
+    seconds;
+
+
+    const countdown =
+    setInterval(
+        ()=>{
+
+            seconds--;
+
+            restTime.textContent =
+            seconds;
+
+
+            if(
+                seconds <= 0
+            ){
+
+                clearInterval(
+                    countdown
+                );
+
+
+                restOverlay.classList.remove(
+                    "show"
+                );
+
+
+                lives =
+                3;
+
+
+                updateLives();
+
+
+                this.resetPlayer();
+
+
+                playerResting =
+                false;
+
+
+                this.invulnerable =
+                true;
+
+
+                this.time.delayedCall(
+                    1000,
+                    ()=>{
+
+                        this.invulnerable =
+                        false;
+
+                    }
+                );
+
+            }
+
+        },
+        1000
+    );
+
+}
+
+
+/* ==========================================================
+   EFFECTS
+========================================================== */
+
+answerBurst(
+    x,
+    y
+){
+
+    const colors = [
+
+        0xffdd50,
+        0xffffff,
+        0xff9fbd,
+        0xa8e77d
+
+    ];
+
+
+    for(
+        let i=0;
+        i<16;
+        i++
+    ){
+
+        const particle =
+        this.add.circle(
+
+            x,
+            y,
+
+            Phaser.Math.Between(
+                3,
+                6
+            ),
+
+            Phaser.Utils.Array
+            .GetRandom(
+                colors
+            )
+
+        )
+        .setDepth(
+            20
+        );
+
+
+        const angle =
+        Phaser.Math.FloatBetween(
+            0,
+            Math.PI*2
+        );
+
+
+        const distance =
+        Phaser.Math.Between(
+            45,
+            100
+        );
+
+
+        this.tweens.add({
+
+            targets:particle,
+
+            x:
+            x +
+            Math.cos(angle)*
+            distance,
+
+            y:
+            y +
+            Math.sin(angle)*
+            distance,
+
+            alpha:0,
+
+            scale:.2,
+
+            duration:
+            Phaser.Math.Between(
+                450,
+                700
+            ),
+
+            onComplete:()=>{
+
+                particle.destroy();
+
+            }
+
+        });
+
+    }
+
+}
+
+
+enemyBurst(
+    x,
+    y
+){
+
+    for(
+        let i=0;
+        i<10;
+        i++
+    ){
+
+        const particle =
+        this.add.circle(
+
+            x,
+            y,
+
+            Phaser.Math.Between(
+                3,
+                6
+            ),
+
+            Phaser.Utils.Array
+            .GetRandom(
+                [
+                    0xffa234,
+                    0xff6545,
+                    0x49362f
+                ]
+            )
+
+        )
+        .setDepth(
+            20
+        );
+
+
+        const angle =
+        Phaser.Math.FloatBetween(
+            0,
+            Math.PI*2
+        );
+
+
+        const distance =
+        Phaser.Math.Between(
+            30,
+            75
+        );
+
+
+        this.tweens.add({
+
+            targets:particle,
+
+            x:
+            x +
+            Math.cos(angle)*
+            distance,
+
+            y:
+            y +
+            Math.sin(angle)*
+            distance,
+
+            alpha:0,
+
+            duration:400,
+
+            onComplete:()=>{
+
+                particle.destroy();
+
+            }
+
+        });
+
+    }
+
+}
+
+
+/* ==========================================================
+   CLEAN COMBAT
+========================================================== */
+
+clearCombat(){
+
+    this.playerBullets.clear(
+        true,
+        true
+    );
+
+
+    this.enemyBullets.clear(
+        true,
+        true
+    );
+
+
+    this.enemies.clear(
+        true,
+        true
+    );
+
+}
+
+
+/* ==========================================================
+   FINISH
+========================================================== */
+
+finishGame(){
+
+    gameFinished =
+    true;
+
+
+    this.roundLocked =
+    true;
+
+
+    this.player.setVelocity(
+        0,
+        0
+    );
+
+
+    this.flowers.forEach(
+        flower=>{
+
+            flower.setVelocity(
+                0,
+                0
+            );
+
+        }
+    );
+
+
+    this.enemies.children.each(
+        enemy=>{
+
+            if(enemy){
+
+                enemy.setVelocity(
+                    0,
+                    0
+                );
+
+            }
+
+        }
+    );
+
+
+    this.enemyBullets.clear(
+        true,
+        true
+    );
+
+
+    progressFillEl.style.width =
+    "100%";
+
+
+    questionCounterEl.textContent =
+    "25 / 25 Selesai";
+
+
+    feedbackEl.textContent =
+    "Tahniah! Semua soalan berjaya diselesaikan.";
+
+
+    feedbackEl.className =
+    "feedback correct";
+
+
+    finalResult.innerHTML =
+    `
+    25 / 25 soalan selesai
+    <br>
+    Jumlah jawapan salah: ${mistakes}
+    `;
+
+
+    correctSound();
+
+
+    this.time.delayedCall(
+        700,
+        ()=>{
+
+            endOverlay.classList.remove(
+                "hidden"
+            );
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   RESIZE
+========================================================== */
+
+onResize(){
+
+    this.drawBackground();
+
+
+    this.physics.world.setBounds(
+        0,
+        0,
+        this.scale.width,
+        this.scale.height
+    );
+
+
+    if(this.player){
+
+        this.player.x =
+        Phaser.Math.Clamp(
+
+            this.player.x,
+
+            35,
+
+            this.scale.width-35
+
+        );
+
+
+        this.player.y =
+        Phaser.Math.Clamp(
+
+            this.player.y,
+
+            65,
+
+            this.scale.height-65
+
+        );
+
+    }
+
+}
+
+
+/* ==========================================================
+   UPDATE
+========================================================== */
+
+update(
+    time,
+    delta
+){
+
+    if(
+        !this.player
+    ){
+        return;
+    }
+
+
+    /* =========================
+       FLOWER LABEL FOLLOW
+    ========================= */
+
+    this.flowers.forEach(
+        flower=>{
+
+            if(
+                !flower.active
+            ){
+                return;
+            }
+
+
+            flower.label.setPosition(
+
+                flower.x,
+
+                flower.y-4
+
+            );
+
+
+            /* stop flowers from moving too near
+               joystick / bottom */
+
+            const minY =
+            65;
+
+            const maxY =
+            this.scale.height - 135;
+
+
+            if(
+                flower.y <
+                minY
+            ){
+
+                flower.y =
+                minY;
+
+                flower.body.velocity.y =
+                Math.abs(
+                    flower.body.velocity.y
+                );
+
+            }
+
+
+            if(
+                flower.y >
+                maxY
+            ){
+
+                flower.y =
+                maxY;
+
+                flower.body.velocity.y =
+                -Math.abs(
+                    flower.body.velocity.y
+                );
+
+            }
+
+        }
+    );
+
+
+    /* =========================
+       DELETE OLD BULLETS
+    ========================= */
+
+    this.playerBullets
+    .children
+    .each(
+        bullet=>{
+
+            if(
+                !bullet ||
+                !bullet.active
+            ){
+                return;
+            }
+
+
+            bullet.life +=
+            delta;
+
+
+            if(
+                bullet.life > 1600 ||
+                bullet.x < -30 ||
+                bullet.x >
+                this.scale.width+30 ||
+                bullet.y < -30 ||
+                bullet.y >
+                this.scale.height+30
+            ){
+
+                bullet.destroy();
+
+            }
+
+        }
+    );
+
+
+    this.enemyBullets
+    .children
+    .each(
+        bullet=>{
+
+            if(
+                !bullet ||
+                !bullet.active
+            ){
+                return;
+            }
+
+
+            bullet.life +=
+            delta;
+
+
+            if(
+                bullet.life > 3500 ||
+                bullet.x < -30 ||
+                bullet.x >
+                this.scale.width+30 ||
+                bullet.y < -30 ||
+                bullet.y >
+                this.scale.height+30
+            ){
+
+                bullet.destroy();
+
+            }
+
+        }
+    );
+
+
+    if(
+        !gameStarted ||
+        gameFinished ||
+        playerResting
+    ){
+
+        this.player.setVelocity(
+            0,
+            0
+        );
+
+        return;
+
+    }
+
+
+    /* =========================
+       KEYBOARD
+    ========================= */
+
+    let keyboardX =
+    0;
+
+    let keyboardY =
+    0;
+
+
+    if(
+        this.cursors.left.isDown ||
+        this.keys.A.isDown
+    ){
+        keyboardX -= 1;
+    }
+
+
+    if(
+        this.cursors.right.isDown ||
+        this.keys.D.isDown
+    ){
+        keyboardX += 1;
+    }
+
+
+    if(
+        this.cursors.up.isDown ||
+        this.keys.W.isDown
+    ){
+        keyboardY -= 1;
+    }
+
+
+    if(
+        this.cursors.down.isDown ||
+        this.keys.S.isDown
+    ){
+        keyboardY += 1;
+    }
+
+
+    /* =========================
+       COMBINE ANALOG + KEY
+    ========================= */
+
+    let moveX =
+    analog.x;
+
+    let moveY =
+    analog.y;
+
+
+    if(
+        keyboardX !== 0 ||
+        keyboardY !== 0
+    ){
+
+        moveX =
+        keyboardX;
+
+        moveY =
+        keyboardY;
+
+    }
+
+
+    const move =
+    new Phaser.Math.Vector2(
+
+        moveX,
+
+        moveY
+
+    );
+
+
+    if(
+        move.length() >
+        0.08
+    ){
+
+        move.normalize();
+
+
+        this.player.setVelocity(
+
+            move.x *
+            this.playerSpeed,
+
+            move.y *
+            this.playerSpeed
+
+        );
+
+
+        this.lastAim.x =
+        move.x;
+
+        this.lastAim.y =
+        move.y;
+
+
+        if(
+            move.x < -.1
+        ){
+
+            this.player.setFlipX(
+                true
+            );
+
+        }
+
+
+        if(
+            move.x > .1
+        ){
+
+            this.player.setFlipX(
+                false
+            );
+
+        }
+
+    }
+
+    else{
+
+        this.player.setVelocity(
+            0,
+            0
+        );
+
+    }
+
+
+    /* =========================
+       SHOOT
+    ========================= */
+
+    if(
+        fireHeld ||
+        this.keys.SPACE.isDown
+    ){
+
+        this.shootPlayer();
+
+    }
+
+
+    /* gentle bee movement */
+
+    this.player.setAngle(
+
+        Math.sin(
+            time*.01
+        ) * 3
+
+    );
+
+
+    /* =========================
+       LIMIT ENEMY VERTICAL AREA
+    ========================= */
+
+    this.enemies.children.each(
+        enemy=>{
+
+            if(
+                !enemy ||
+                !enemy.active
+            ){
+                return;
+            }
+
+
+            const minY =
+            65;
+
+            const maxY =
+            this.scale.height-125;
+
+
+            if(
+                enemy.y <
+                minY
+            ){
+
+                enemy.y =
+                minY;
+
+                enemy.body.velocity.y =
+                Math.abs(
+                    enemy.body.velocity.y
+                );
+
+            }
+
+
+            if(
+                enemy.y >
+                maxY
+            ){
+
+                enemy.y =
+                maxY;
+
+                enemy.body.velocity.y =
+                -Math.abs(
+                    enemy.body.velocity.y
+                );
+
+            }
+
+        }
+    );
+
+}
+
+}
+
+
+/* ==========================================================
    PHASER CONFIG
-============================================================ */
+========================================================== */
 
 const config = {
 
-    type: Phaser.AUTO,
+type:
+Phaser.AUTO,
 
-    parent: "game",
+parent:
+"game",
 
-    transparent: true,
+transparent:
+true,
 
-    backgroundColor: "#aee4f4",
+backgroundColor:
+"#aee3f1",
 
-    physics: {
-        default: "arcade",
+physics:{
 
-        arcade: {
-            gravity: {
-                y: 0
-            },
+    default:
+    "arcade",
 
-            debug: false
-        }
-    },
+    arcade:{
 
-    scale: {
-        mode: Phaser.Scale.RESIZE,
-        width: "100%",
-        height: "100%"
-    },
+        gravity:{
+            y:0
+        },
 
-    render: {
-        antialias: true,
-        pixelArt: false,
-        roundPixels: true
-    },
+        debug:false
 
-    scene: GardenScene
+    }
+
+},
+
+scale:{
+
+    mode:
+    Phaser.Scale.RESIZE,
+
+    width:"100%",
+
+    height:"100%"
+
+},
+
+render:{
+
+    antialias:true,
+
+    pixelArt:false,
+
+    roundPixels:true
+
+},
+
+scene:
+GardenGame
+
 };
 
 
-const game = new Phaser.Game(
+const game =
+new Phaser.Game(
     config
 );
 
 
-/* ============================================================
-   START GAME
-============================================================ */
+/* ==========================================================
+   ANALOG JOYSTICK
+========================================================== */
 
-startBtn.addEventListener(
-    "click",
-    () => {
+const joystickZone =
+document.getElementById(
+    "joystickZone"
+);
 
-        gameStarted = true;
-        gameFinished = false;
+const joystickBase =
+document.getElementById(
+    "joystickBase"
+);
 
-        currentQuestion = 0;
-        mistakes = 0;
-
-        startOverlay.classList.add(
-            "hidden"
-        );
-
-        endOverlay.classList.add(
-            "hidden"
-        );
-
-        updateQuestionUI();
-
-        if (gardenScene) {
-            gardenScene.startRound();
-        }
-
-        beep(
-            470,
-            .12,
-            "sine",
-            .03
-        );
-    }
+const joystickKnob =
+document.getElementById(
+    "joystickKnob"
 );
 
 
-/* ============================================================
-   RESTART
-============================================================ */
+let joystickActive =
+false;
 
-restartBtn.addEventListener(
-    "click",
-    () => {
-
-        currentQuestion = 0;
-        mistakes = 0;
-
-        gameStarted = true;
-        gameFinished = false;
-
-        previousOrder = "";
-
-        endOverlay.classList.add(
-            "hidden"
-        );
-
-        updateQuestionUI();
-
-        if (gardenScene) {
-
-            gardenScene.answerLocked =
-                false;
-
-            gardenScene.autoTarget =
-                null;
-
-            gardenScene.placeBeeAtStart();
-
-            gardenScene.positionFlowers(
-                true
-            );
-        }
-
-        beep(
-            470,
-            .12,
-            "sine",
-            .03
-        );
-    }
-);
+let joystickPointer =
+null;
 
 
-/* ============================================================
-   MOBILE D-PAD
-============================================================ */
+function updateJoystick(
+    clientX,
+    clientY
+){
 
-const moveButtons =
-    document.querySelectorAll(
-        ".move-btn"
+    const rect =
+    joystickBase.getBoundingClientRect();
+
+
+    const centerX =
+    rect.left +
+    rect.width/2;
+
+
+    const centerY =
+    rect.top +
+    rect.height/2;
+
+
+    let dx =
+    clientX -
+    centerX;
+
+
+    let dy =
+    clientY -
+    centerY;
+
+
+    const maxDistance =
+    rect.width *
+    .31;
+
+
+    const distance =
+    Math.sqrt(
+        dx*dx +
+        dy*dy
     );
 
 
-moveButtons.forEach(
-    button => {
+    if(
+        distance >
+        maxDistance
+    ){
 
-        const direction =
-            button.dataset.direction;
-
-
-        function startMove(event) {
-
-            event.preventDefault();
-
-            button.classList.add(
-                "active"
-            );
-
-            if (gardenScene) {
-
-                gardenScene.setVirtual(
-                    direction,
-                    true
-                );
-            }
-        }
+        dx =
+        dx /
+        distance *
+        maxDistance;
 
 
-        function stopMove(event) {
+        dy =
+        dy /
+        distance *
+        maxDistance;
 
-            if (event) {
-                event.preventDefault();
-            }
-
-            button.classList.remove(
-                "active"
-            );
-
-            if (gardenScene) {
-
-                gardenScene.setVirtual(
-                    direction,
-                    false
-                );
-            }
-        }
+    }
 
 
-        button.addEventListener(
-            "pointerdown",
-            startMove
+    joystickKnob.style.transform =
+    `translate(
+        calc(-50% + ${dx}px),
+        calc(-50% + ${dy}px)
+    )`;
+
+
+    analog.x =
+    dx /
+    maxDistance;
+
+
+    analog.y =
+    dy /
+    maxDistance;
+
+
+    const deadZone =
+    .13;
+
+
+    if(
+        Math.abs(analog.x) <
+        deadZone
+    ){
+
+        analog.x =
+        0;
+
+    }
+
+
+    if(
+        Math.abs(analog.y) <
+        deadZone
+    ){
+
+        analog.y =
+        0;
+
+    }
+
+}
+
+
+function resetJoystick(){
+
+    joystickActive =
+    false;
+
+
+    joystickPointer =
+    null;
+
+
+    analog.x =
+    0;
+
+    analog.y =
+    0;
+
+
+    joystickKnob.style.transform =
+    "translate(-50%,-50%)";
+
+}
+
+
+joystickZone.addEventListener(
+    "pointerdown",
+    e=>{
+
+        e.preventDefault();
+
+
+        joystickActive =
+        true;
+
+
+        joystickPointer =
+        e.pointerId;
+
+
+        joystickZone.setPointerCapture(
+            e.pointerId
         );
 
-        button.addEventListener(
-            "pointerup",
-            stopMove
+
+        updateJoystick(
+            e.clientX,
+            e.clientY
         );
 
-        button.addEventListener(
-            "pointercancel",
-            stopMove
-        );
-
-        button.addEventListener(
-            "pointerleave",
-            stopMove
-        );
     }
 );
 
 
-/* Stop stuck controls if finger/mouse released outside button */
+joystickZone.addEventListener(
+    "pointermove",
+    e=>{
+
+        if(
+            !joystickActive ||
+            e.pointerId !==
+            joystickPointer
+        ){
+            return;
+        }
+
+
+        e.preventDefault();
+
+
+        updateJoystick(
+            e.clientX,
+            e.clientY
+        );
+
+    }
+);
+
+
+joystickZone.addEventListener(
+    "pointerup",
+    e=>{
+
+        e.preventDefault();
+
+        resetJoystick();
+
+    }
+);
+
+
+joystickZone.addEventListener(
+    "pointercancel",
+    resetJoystick
+);
+
+
+joystickZone.addEventListener(
+    "lostpointercapture",
+    resetJoystick
+);
+
+
+/* ==========================================================
+   FIRE BUTTON
+========================================================== */
+
+fireBtn.addEventListener(
+    "pointerdown",
+    e=>{
+
+        e.preventDefault();
+
+
+        fireHeld =
+        true;
+
+
+        fireBtn.classList.add(
+            "active"
+        );
+
+
+        if(sceneRef){
+
+            sceneRef.shootPlayer();
+
+        }
+
+    }
+);
+
+
+function stopFire(){
+
+    fireHeld =
+    false;
+
+
+    fireBtn.classList.remove(
+        "active"
+    );
+
+}
+
+
+fireBtn.addEventListener(
+    "pointerup",
+    stopFire
+);
+
+
+fireBtn.addEventListener(
+    "pointercancel",
+    stopFire
+);
+
+
+fireBtn.addEventListener(
+    "pointerleave",
+    stopFire
+);
+
 
 window.addEventListener(
     "pointerup",
-    () => {
+    ()=>{
 
-        moveButtons.forEach(
-            button => {
-                button.classList.remove(
-                    "active"
-                );
-            }
-        );
+        fireHeld =
+        false;
 
-        if (gardenScene) {
-
-            gardenScene.virtual.up =
-                false;
-
-            gardenScene.virtual.down =
-                false;
-
-            gardenScene.virtual.left =
-                false;
-
-            gardenScene.virtual.right =
-                false;
-        }
     }
 );
 
 
-/* ============================================================
-   PREVENT ARROW KEY PAGE SCROLLING WHILE PLAYING
-============================================================ */
+/* ==========================================================
+   START
+========================================================== */
+
+startBtn.addEventListener(
+    "click",
+    ()=>{
+
+        currentQuestion =
+        0;
+
+
+        mistakes =
+        0;
+
+
+        lives =
+        3;
+
+
+        gameStarted =
+        true;
+
+
+        gameFinished =
+        false;
+
+
+        playerResting =
+        false;
+
+
+        startOverlay
+        .classList
+        .add(
+            "hidden"
+        );
+
+
+        endOverlay
+        .classList
+        .add(
+            "hidden"
+        );
+
+
+        updateQuestionUI();
+
+
+        if(sceneRef){
+
+            sceneRef.startGameRound();
+
+        }
+
+
+        beep(
+            480,
+            .12
+        );
+
+    }
+);
+
+
+/* ==========================================================
+   RESTART
+========================================================== */
+
+restartBtn.addEventListener(
+    "click",
+    ()=>{
+
+        currentQuestion =
+        0;
+
+
+        mistakes =
+        0;
+
+
+        lives =
+        3;
+
+
+        gameStarted =
+        true;
+
+
+        gameFinished =
+        false;
+
+
+        playerResting =
+        false;
+
+
+        restOverlay
+        .classList
+        .remove(
+            "show"
+        );
+
+
+        endOverlay
+        .classList
+        .add(
+            "hidden"
+        );
+
+
+        updateQuestionUI();
+
+
+        resetJoystick();
+
+
+        if(sceneRef){
+
+            sceneRef.roundLocked =
+            false;
+
+
+            sceneRef.startGameRound();
+
+        }
+
+    }
+);
+
+
+/* ==========================================================
+   STOP ARROW / SPACE PAGE SCROLL
+========================================================== */
 
 window.addEventListener(
     "keydown",
-    event => {
+    e=>{
 
-        if (
+        if(
             [
                 "ArrowUp",
                 "ArrowDown",
                 "ArrowLeft",
                 "ArrowRight",
                 " "
-            ].includes(event.key)
-        ) {
+            ].includes(
+                e.key
+            ) &&
+            gameStarted
+        ){
 
-            if (gameStarted) {
-                event.preventDefault();
-            }
+            e.preventDefault();
+
         }
+
     },
     {
-        passive: false
+        passive:false
     }
 );
 
 
-/* Initial UI */
+/* ==========================================================
+   INITIAL SCREEN
+========================================================== */
 
 questionTextEl.textContent =
-    "Tekan MULA GAME untuk memulakan misi.";
+"Tekan MULA GAME untuk memulakan misi.";
+
 
 optionsEl.innerHTML = `
-    <div class="option">
-        <div class="option-letter">A</div>
-        <div>Pilihan jawapan akan muncul di sini.</div>
-    </div>
 
-    <div class="option">
-        <div class="option-letter">B</div>
-        <div>Pilih bunga yang betul.</div>
-    </div>
+<div class="option">
+    <div class="letter">A</div>
+    <div>Bunga jawapan akan bergerak secara rawak.</div>
+</div>
 
-    <div class="option">
-        <div class="option-letter">C</div>
-        <div>Gerakkan lebah ke jawapan.</div>
-    </div>
+<div class="option">
+    <div class="letter">B</div>
+    <div>Gunakan analog untuk mengawal lebah.</div>
+</div>
 
-    <div class="option">
-        <div class="option-letter">D</div>
-        <div>Selesaikan semua 25 soalan.</div>
-    </div>
+<div class="option">
+    <div class="letter">C</div>
+    <div>Enemy akan menembak peluru merah.</div>
+</div>
+
+<div class="option">
+    <div class="letter">D</div>
+    <div>Tembak enemy dan cari jawapan betul.</div>
+</div>
+
 `;
+
 </script>
 
 </body>
