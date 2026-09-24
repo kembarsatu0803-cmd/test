@@ -22,8 +22,15 @@ html,body{
     margin:0;
     min-height:100%;
     font-family:"Trebuchet MS",Arial,sans-serif;
+
     background:
-        radial-gradient(circle at top,#dff8ff 0%,#a8e2ef 40%,#6ebbd0 100%);
+        radial-gradient(
+            circle at top,
+            #dff8ff 0%,
+            #a8e2ef 42%,
+            #6ebbd0 100%
+        );
+
     color:#173c4d;
 }
 
@@ -34,7 +41,7 @@ body{
 
     padding:
         max(12px,env(safe-area-inset-top))
-        8px
+        7px
         max(18px,env(safe-area-inset-bottom));
 }
 
@@ -44,8 +51,8 @@ body{
 
 .topbar{
     display:flex;
-    align-items:center;
     justify-content:space-between;
+    align-items:center;
     gap:8px;
     margin-bottom:8px;
 }
@@ -64,11 +71,15 @@ body{
 .top-btn{
     border:0;
     border-radius:13px;
+
     background:#fff;
     color:#174156;
+
     font-weight:900;
+
     min-height:37px;
     padding:7px 12px;
+
     cursor:pointer;
 
     box-shadow:
@@ -78,13 +89,12 @@ body{
 
 .top-btn:active{
     transform:translateY(3px);
+
     box-shadow:
         0 2px 0 #77b9cd;
 }
 
-/*
-    Game tidak memenuhi seluruh website.
-*/
+/* Game tidak memenuhi seluruh website */
 .game-frame{
     position:relative;
 
@@ -100,7 +110,7 @@ body{
 
     border:5px solid rgba(255,255,255,.8);
 
-    background:#102f4d;
+    background:#09243c;
 
     box-shadow:
         0 16px 45px rgba(16,64,83,.28);
@@ -109,6 +119,7 @@ body{
 #game{
     position:absolute;
     inset:0;
+
     width:100%;
     height:100%;
 }
@@ -120,9 +131,11 @@ body{
 .help{
     margin:9px auto 0;
     max-width:760px;
+
     padding:0 8px;
 
     text-align:center;
+
     font-size:12px;
     font-weight:700;
     line-height:1.45;
@@ -166,7 +179,6 @@ body{
     .game-frame{
         min-height:545px;
     }
-
 }
 </style>
 </head>
@@ -206,9 +218,10 @@ body{
 
 
     <div class="help">
-        ◀ ▶ untuk ubah arah. Tahan <b>FIRE</b> untuk tambah kuasa,
+        ◀ ▶ untuk ubah arah.
+        Tahan <b>FIRE</b> untuk tambah kuasa,
         kemudian lepaskan untuk menembak bola magnet.
-        Bola mesti terkena kapsul jawapan yang betul.
+        Sasarkan kapsul jawapan yang betul.
     </div>
 
 </div>
@@ -529,8 +542,6 @@ const QUESTIONS = [
 
 /* =========================================================
    AUDIO
-   Semua audio dijana melalui Web Audio.
-   Tidak perlukan MP3 / WAV.
 ========================================================= */
 
 class GameAudio{
@@ -541,16 +552,16 @@ class GameAudio{
 
         this.enabled = true;
 
-        this.musicInterval = null;
+        this.musicTimer = null;
 
-        this.musicIndex = 0;
+        this.noteIndex = 0;
 
-        this.melody = [
+        this.notes = [
             261.63,
             329.63,
-            392.00,
+            392,
             523.25,
-            392.00,
+            392,
             349.23,
             329.63,
             293.66
@@ -562,27 +573,35 @@ class GameAudio{
 
         if(this.ctx){
 
-            if(this.ctx.state === "suspended"){
+            if(
+                this.ctx.state ===
+                "suspended"
+            ){
                 this.ctx.resume();
             }
 
             return;
         }
 
-        const AC =
+
+        const AudioContext =
             window.AudioContext ||
             window.webkitAudioContext;
 
-        if(!AC) return;
 
-        this.ctx = new AC();
+        if(!AudioContext) return;
+
+
+        this.ctx =
+            new AudioContext();
+
 
         this.startMusic();
     }
 
 
     tone(
-        frequency,
+        freq,
         duration=.1,
         type="sine",
         volume=.04,
@@ -594,43 +613,60 @@ class GameAudio{
             !this.enabled
         ) return;
 
+
         const now =
-            this.ctx.currentTime +
+            this.ctx.currentTime+
             delay;
+
 
         const osc =
             this.ctx.createOscillator();
 
+
         const gain =
             this.ctx.createGain();
 
+
         osc.type = type;
 
-        osc.frequency.setValueAtTime(
-            frequency,
-            now
-        );
 
-        gain.gain.setValueAtTime(
-            .0001,
-            now
-        );
+        osc.frequency
+            .setValueAtTime(
+                freq,
+                now
+            );
 
-        gain.gain.exponentialRampToValueAtTime(
-            Math.max(.0002,volume),
-            now+.015
-        );
 
-        gain.gain.exponentialRampToValueAtTime(
-            .0001,
-            now+duration
-        );
+        gain.gain
+            .setValueAtTime(
+                .0001,
+                now
+            );
+
+
+        gain.gain
+            .exponentialRampToValueAtTime(
+                Math.max(
+                    volume,
+                    .0002
+                ),
+                now+.015
+            );
+
+
+        gain.gain
+            .exponentialRampToValueAtTime(
+                .0001,
+                now+duration
+            );
+
 
         osc.connect(gain);
 
         gain.connect(
             this.ctx.destination
         );
+
 
         osc.start(now);
 
@@ -644,9 +680,10 @@ class GameAudio{
 
     startMusic(){
 
-        if(this.musicInterval) return;
+        if(this.musicTimer) return;
 
-        this.musicInterval =
+
+        this.musicTimer =
             setInterval(()=>{
 
                 if(
@@ -654,28 +691,32 @@ class GameAudio{
                     !this.enabled
                 ) return;
 
+
                 const n =
-                    this.melody[
-                        this.musicIndex %
-                        this.melody.length
+                    this.notes[
+                        this.noteIndex %
+                        this.notes.length
                     ];
+
 
                 this.tone(
                     n,
-                    .19,
+                    .18,
                     "triangle",
                     .009
                 );
 
+
                 this.tone(
                     n/2,
-                    .23,
+                    .22,
                     "sine",
                     .005,
                     .02
                 );
 
-                this.musicIndex++;
+
+                this.noteIndex++;
 
             },480);
     }
@@ -684,7 +725,7 @@ class GameAudio{
     button(){
 
         this.tone(
-            460,
+            470,
             .055,
             "square",
             .018
@@ -692,29 +733,19 @@ class GameAudio{
     }
 
 
-    charge(){
-
-        this.tone(
-            230,
-            .06,
-            "sawtooth",
-            .012
-        );
-    }
-
-
     launch(){
 
         this.tone(
-            260,
+            250,
             .08,
             "sawtooth",
             .035
         );
 
+
         this.tone(
             520,
-            .14,
+            .13,
             "triangle",
             .03,
             .05
@@ -726,9 +757,9 @@ class GameAudio{
 
         this.tone(
             650,
-            .06,
+            .055,
             "square",
-            .025
+            .022
         );
     }
 
@@ -742,6 +773,7 @@ class GameAudio{
             .045
         );
 
+
         this.tone(
             659,
             .12,
@@ -750,9 +782,10 @@ class GameAudio{
             .09
         );
 
+
         this.tone(
             784,
-            .2,
+            .19,
             "triangle",
             .05,
             .18
@@ -768,6 +801,7 @@ class GameAudio{
             "sawtooth",
             .035
         );
+
 
         this.tone(
             145,
@@ -793,7 +827,7 @@ class GameAudio{
                     n,
                     .28,
                     "triangle",
-                    .055,
+                    .05,
                     i*.12
                 );
             }
@@ -806,6 +840,7 @@ class GameAudio{
         this.enabled =
             !this.enabled;
 
+
         if(
             this.enabled &&
             this.ctx
@@ -813,12 +848,15 @@ class GameAudio{
             this.ctx.resume();
         }
 
+
         return this.enabled;
     }
 }
 
+
 const AUDIO =
     new GameAudio();
+
 
 
 /* =========================================================
@@ -830,7 +868,9 @@ extends Phaser.Scene{
 
     constructor(){
 
-        super("PinballScene");
+        super(
+            "PinballScene"
+        );
     }
 
 
@@ -842,9 +882,9 @@ extends Phaser.Scene{
 
         this.started = false;
 
-        this.ballReady = true;
-
         this.resolving = false;
+
+        this.ballReady = true;
 
         this.charging = false;
 
@@ -852,15 +892,10 @@ extends Phaser.Scene{
 
         this.chargeDirection = 1;
 
-        /*
-            Aim angle dalam degree.
-
-            -90 = atas
-        */
         this.aimAngle = -90;
 
-
         this.leftHeld = false;
+
         this.rightHeld = false;
 
 
@@ -868,31 +903,26 @@ extends Phaser.Scene{
 
         this.bumpers = [];
 
-        this.sparkObjects = [];
-
-
-        /* GRAPHICS */
 
         this.backgroundG =
             this.add.graphics();
 
+
         this.arenaG =
             this.add.graphics();
+
 
         this.launcherG =
             this.add.graphics();
 
+
         this.aimG =
             this.add.graphics();
+
 
         this.powerG =
             this.add.graphics();
 
-        this.decorG =
-            this.add.graphics();
-
-
-        /* TEXT UI */
 
         this.progressText =
             this.add.text(
@@ -906,7 +936,7 @@ extends Phaser.Scene{
                     color:"#ffffff"
                 }
             )
-            .setDepth(40);
+            .setDepth(100);
 
 
         this.categoryText =
@@ -918,13 +948,13 @@ extends Phaser.Scene{
 
                     fontStyle:"bold",
 
-                    color:"#68e9ff",
+                    color:"#6eeaff",
 
                     align:"center"
                 }
             )
             .setOrigin(.5,0)
-            .setDepth(40);
+            .setDepth(100);
 
 
         this.questionText =
@@ -944,7 +974,23 @@ extends Phaser.Scene{
                 }
             )
             .setOrigin(.5,0)
-            .setDepth(40);
+            .setDepth(100);
+
+
+        this.wrongText =
+            this.add.text(
+                0,0,"",
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontStyle:"bold",
+
+                    color:"#ffe261"
+                }
+            )
+            .setOrigin(1,.5)
+            .setDepth(100);
 
 
         this.feedbackText =
@@ -956,53 +1002,52 @@ extends Phaser.Scene{
 
                     fontStyle:"bold",
 
-                    align:"center",
+                    color:"#ffffff",
 
-                    stroke:"#071e31",
+                    stroke:"#051a2b",
 
                     strokeThickness:5
                 }
             )
             .setOrigin(.5)
-            .setDepth(200);
+            .setDepth(500);
 
-
-        this.comboText =
-            this.add.text(
-                0,0,"",
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontStyle:"bold",
-
-                    color:"#ffe45f"
-                }
-            )
-            .setOrigin(1,.5)
-            .setDepth(40);
-
-
-        /* PHYSICS */
 
         this.physics.world.gravity.y =
-            250;
+            260;
 
 
         this.createBall();
 
         this.createButtons();
 
-        this.createBumpers();
-
 
         this.scale.on(
             "resize",
             ()=>{
+
                 this.layout();
             }
         );
 
+
+        this.bindKeyboard();
+
+
+        this.layout();
+
+        this.loadQuestion();
+
+        this.showInstructions();
+    }
+
+
+
+    /* =====================================================
+       KEYBOARD
+    ===================================================== */
+
+    bindKeyboard(){
 
         this.input.keyboard.on(
             "keydown-LEFT",
@@ -1011,8 +1056,25 @@ extends Phaser.Scene{
             }
         );
 
+
         this.input.keyboard.on(
             "keyup-LEFT",
+            ()=>{
+                this.leftHeld = false;
+            }
+        );
+
+
+        this.input.keyboard.on(
+            "keydown-A",
+            ()=>{
+                this.leftHeld = true;
+            }
+        );
+
+
+        this.input.keyboard.on(
+            "keyup-A",
             ()=>{
                 this.leftHeld = false;
             }
@@ -1026,25 +1088,11 @@ extends Phaser.Scene{
             }
         );
 
+
         this.input.keyboard.on(
             "keyup-RIGHT",
             ()=>{
                 this.rightHeld = false;
-            }
-        );
-
-
-        this.input.keyboard.on(
-            "keydown-A",
-            ()=>{
-                this.leftHeld = true;
-            }
-        );
-
-        this.input.keyboard.on(
-            "keyup-A",
-            ()=>{
-                this.leftHeld = false;
             }
         );
 
@@ -1055,6 +1103,7 @@ extends Phaser.Scene{
                 this.rightHeld = true;
             }
         );
+
 
         this.input.keyboard.on(
             "keyup-D",
@@ -1072,7 +1121,7 @@ extends Phaser.Scene{
                     this.started &&
                     this.ballReady
                 ){
-                    this.beginCharge();
+                    this.startCharge();
                 }
             }
         );
@@ -1090,13 +1139,6 @@ extends Phaser.Scene{
                 }
             }
         );
-
-
-        this.layout();
-
-        this.loadQuestion();
-
-        this.showInstructions();
     }
 
 
@@ -1110,26 +1152,26 @@ extends Phaser.Scene{
         this.ballGlow =
             this.add.circle(
                 0,0,
-                22,
-                0x59e8ff,
-                .2
+                21,
+                0x60e8ff,
+                .20
             )
-            .setDepth(19);
+            .setDepth(30);
 
 
         this.ball =
             this.add.circle(
                 0,0,
                 12,
-                0xeafcff,
+                0xf4fdff,
                 1
             )
             .setStrokeStyle(
                 4,
-                0x49c9ea,
+                0x49cce9,
                 1
             )
-            .setDepth(20);
+            .setDepth(31);
 
 
         this.physics.add.existing(
@@ -1146,16 +1188,12 @@ extends Phaser.Scene{
 
 
         this.ball.body
-            .setCollideWorldBounds(false);
-
-
-        this.ball.body
-            .setDrag(3,3);
+            .setDrag(2,2);
 
 
         this.ball.body
             .setMaxVelocity(
-                750,
+                800,
                 850
             );
 
@@ -1173,24 +1211,24 @@ extends Phaser.Scene{
     createButtons(){
 
         this.leftButton =
-            this.createButton(
+            this.makeButton(
                 "◀",
                 0x176fa1
             );
 
 
-        this.rightButton =
-            this.createButton(
-                "▶",
-                0x176fa1
+        this.fireButton =
+            this.makeButton(
+                "🔥 FIRE",
+                0xf5bd35,
+                0x49300a
             );
 
 
-        this.fireButton =
-            this.createButton(
-                "🔥 FIRE",
-                0xf3b934,
-                0x51370b
+        this.rightButton =
+            this.makeButton(
+                "▶",
+                0x176fa1
             );
 
 
@@ -1198,7 +1236,9 @@ extends Phaser.Scene{
             "pointerdown",
             ()=>{
 
-                if(!this.started) return;
+                if(!this.started)
+                    return;
+
 
                 this.leftHeld = true;
 
@@ -1210,6 +1250,7 @@ extends Phaser.Scene{
         this.leftButton.hit.on(
             "pointerup",
             ()=>{
+
                 this.leftHeld = false;
             }
         );
@@ -1218,6 +1259,7 @@ extends Phaser.Scene{
         this.leftButton.hit.on(
             "pointerout",
             ()=>{
+
                 this.leftHeld = false;
             }
         );
@@ -1227,7 +1269,9 @@ extends Phaser.Scene{
             "pointerdown",
             ()=>{
 
-                if(!this.started) return;
+                if(!this.started)
+                    return;
+
 
                 this.rightHeld = true;
 
@@ -1239,6 +1283,7 @@ extends Phaser.Scene{
         this.rightButton.hit.on(
             "pointerup",
             ()=>{
+
                 this.rightHeld = false;
             }
         );
@@ -1247,6 +1292,7 @@ extends Phaser.Scene{
         this.rightButton.hit.on(
             "pointerout",
             ()=>{
+
                 this.rightHeld = false;
             }
         );
@@ -1261,7 +1307,8 @@ extends Phaser.Scene{
                     !this.ballReady
                 ) return;
 
-                this.beginCharge();
+
+                this.startCharge();
             }
         );
 
@@ -1274,6 +1321,7 @@ extends Phaser.Scene{
                     !this.started ||
                     !this.ballReady
                 ) return;
+
 
                 this.releaseBall();
             }
@@ -1296,7 +1344,7 @@ extends Phaser.Scene{
 
 
 
-    createButton(
+    makeButton(
         label,
         color,
         textColor=0xffffff
@@ -1304,15 +1352,15 @@ extends Phaser.Scene{
 
         const container =
             this.add.container()
-            .setDepth(80);
+            .setDepth(300);
 
 
         const shadow =
             this.add.rectangle(
                 0,5,
                 100,50,
-                0x08253b,
-                .85
+                0x041727,
+                .95
             );
 
 
@@ -1373,23 +1421,25 @@ extends Phaser.Scene{
 
 
     sizeButton(
-        btn,
+        button,
         width,
         height,
         fontSize
     ){
 
-        btn.hit.setSize(
+        button.hit.setSize(
             width,
             height
         );
 
-        btn.shadow.setSize(
+
+        button.shadow.setSize(
             width,
             height
         );
 
-        btn.text.setFontSize(
+
+        button.text.setFontSize(
             fontSize
         );
     }
@@ -1397,159 +1447,7 @@ extends Phaser.Scene{
 
 
     /* =====================================================
-       BUMPERS
-    ===================================================== */
-
-    createBumpers(){
-
-        const colors = [
-            0xff618b,
-            0x65e8ff,
-            0xffd34e
-        ];
-
-
-        for(let i=0;i<3;i++){
-
-            const glow =
-                this.add.circle(
-                    0,0,
-                    31,
-                    colors[i],
-                    .15
-                )
-                .setDepth(5);
-
-
-            const ring =
-                this.add.circle(
-                    0,0,
-                    22,
-                    colors[i],
-                    1
-                )
-                .setStrokeStyle(
-                    5,
-                    0xffffff,
-                    .8
-                )
-                .setDepth(6);
-
-
-            const center =
-                this.add.circle(
-                    0,0,
-                    8,
-                    0xffffff,
-                    .95
-                )
-                .setDepth(7);
-
-
-            this.physics.add.existing(
-                ring,
-                true
-            );
-
-
-            ring.body.setCircle(22);
-
-
-            const bumper = {
-                glow,
-                ring,
-                center
-            };
-
-
-            this.bumpers.push(
-                bumper
-            );
-
-
-            this.physics.add.collider(
-                this.ball,
-                ring,
-                ()=>{
-                    this.hitBumper(
-                        bumper
-                    );
-                }
-            );
-        }
-    }
-
-
-
-    hitBumper(bumper){
-
-        if(
-            !this.started ||
-            this.ballReady
-        ) return;
-
-
-        AUDIO.bumper();
-
-
-        const dx =
-            this.ball.x -
-            bumper.ring.x;
-
-        const dy =
-            this.ball.y -
-            bumper.ring.y;
-
-
-        const len =
-            Math.max(
-                1,
-                Math.sqrt(
-                    dx*dx +
-                    dy*dy
-                )
-            );
-
-
-        const bonus =
-            90;
-
-
-        this.ball.body.velocity.x +=
-            dx/len*bonus;
-
-        this.ball.body.velocity.y +=
-            dy/len*bonus;
-
-
-        this.tweens.add({
-
-            targets:[
-                bumper.ring,
-                bumper.center
-            ],
-
-            scaleX:1.22,
-            scaleY:1.22,
-
-            duration:80,
-
-            yoyo:true
-        });
-
-
-        this.createSparks(
-            bumper.ring.x,
-            bumper.ring.y,
-            0xffffff,
-            7
-        );
-    }
-
-
-
-    /* =====================================================
-       RESPONSIVE LAYOUT
+       LAYOUT
     ===================================================== */
 
     layout(){
@@ -1557,11 +1455,13 @@ extends Phaser.Scene{
         const size =
             this.scale.gameSize;
 
+
         this.W =
             Math.max(
                 300,
                 size.width
             );
+
 
         this.H =
             Math.max(
@@ -1576,7 +1476,7 @@ extends Phaser.Scene{
 
         this.questionPanelH =
             this.mobile
-            ? 170
+            ? 174
             : 145;
 
 
@@ -1587,16 +1487,16 @@ extends Phaser.Scene{
 
 
         this.arenaTop =
-            this.questionPanelH + 8;
+            this.questionPanelH+8;
 
 
         this.arenaBottom =
-            this.H -
+            this.H-
             this.controlAreaH;
 
 
         this.arenaHeight =
-            this.arenaBottom -
+            this.arenaBottom-
             this.arenaTop;
 
 
@@ -1609,11 +1509,11 @@ extends Phaser.Scene{
 
 
         this.launchY =
-            this.arenaBottom -
+            this.arenaBottom-
             (
                 this.mobile
-                ? 35
-                : 42
+                ? 36
+                : 43
             );
 
 
@@ -1625,12 +1525,22 @@ extends Phaser.Scene{
 
         this.layoutButtons();
 
-        this.layoutBumpers();
-
         this.layoutAnswers();
 
 
+        /*
+            Bumper dirandom selepas
+            kedudukan jawapan diketahui.
+        */
+        if(
+            this.bumpers.length
+        ){
+            this.placeRandomBumpers();
+        }
+
+
         if(this.ballReady){
+
             this.resetBall();
         }
     }
@@ -1651,7 +1561,7 @@ extends Phaser.Scene{
             );
 
 
-        this.comboText
+        this.wrongText
             .setFontSize(
                 this.mobile
                 ? 11
@@ -1670,7 +1580,7 @@ extends Phaser.Scene{
                 : 14
             )
             .setWordWrapWidth(
-                this.W-34
+                this.W-35
             )
             .setPosition(
                 this.centerX,
@@ -1687,7 +1597,7 @@ extends Phaser.Scene{
                 : 18
             )
             .setWordWrapWidth(
-                this.W -
+                this.W-
                 (
                     this.mobile
                     ? 30
@@ -1710,8 +1620,8 @@ extends Phaser.Scene{
             )
             .setPosition(
                 this.centerX,
-                this.arenaTop +
-                this.arenaHeight/2
+                this.arenaTop+
+                this.arenaHeight*.54
             );
     }
 
@@ -1719,10 +1629,10 @@ extends Phaser.Scene{
 
     layoutButtons(){
 
-        const controlY =
-            this.H -
-            this.controlAreaH/2 +
-            1;
+        const y =
+            this.H-
+            this.controlAreaH/2+
+            2;
 
 
         if(this.mobile){
@@ -1745,15 +1655,14 @@ extends Phaser.Scene{
 
 
             const total =
-                sideW*2 +
-                fireW +
+                sideW*2+
+                fireW+
                 gap*2;
 
 
             const start =
                 (
-                    this.W -
-                    total
+                    this.W-total
                 )/2;
 
 
@@ -1781,33 +1690,36 @@ extends Phaser.Scene{
             );
 
 
-            this.leftButton.container
+            this.leftButton
+                .container
                 .setPosition(
-                    start +
+                    start+
                     sideW/2,
-                    controlY
+                    y
                 );
 
 
-            this.fireButton.container
+            this.fireButton
+                .container
                 .setPosition(
-                    start +
-                    sideW +
-                    gap +
+                    start+
+                    sideW+
+                    gap+
                     fireW/2,
-                    controlY
+                    y
                 );
 
 
-            this.rightButton.container
+            this.rightButton
+                .container
                 .setPosition(
-                    start +
-                    sideW +
-                    gap +
-                    fireW +
-                    gap +
+                    start+
+                    sideW+
+                    gap+
+                    fireW+
+                    gap+
                     sideW/2,
-                    controlY
+                    y
                 );
 
         }else{
@@ -1836,139 +1748,65 @@ extends Phaser.Scene{
             );
 
 
-            this.leftButton.container
+            this.leftButton
+                .container
                 .setPosition(
                     this.centerX-155,
-                    controlY
+                    y
                 );
 
 
-            this.fireButton.container
+            this.fireButton
+                .container
                 .setPosition(
                     this.centerX,
-                    controlY
+                    y
                 );
 
 
-            this.rightButton.container
+            this.rightButton
+                .container
                 .setPosition(
                     this.centerX+155,
-                    controlY
+                    y
                 );
         }
     }
 
 
 
-    layoutBumpers(){
-
-        if(
-            this.bumpers.length < 3
-        ) return;
-
-
-        const h =
-            this.arenaHeight;
-
-
-        const positions = [
-
-            {
-                x:this.W*.30,
-                y:this.arenaTop +
-                  h*.49
-            },
-
-            {
-                x:this.W*.70,
-                y:this.arenaTop +
-                  h*.49
-            },
-
-            {
-                x:this.W*.50,
-                y:this.arenaTop +
-                  h*.67
-            }
-
-        ];
-
-
-        this.bumpers.forEach(
-            (b,i)=>{
-
-                const p =
-                    positions[i];
-
-
-                b.ring
-                    .setPosition(
-                        p.x,
-                        p.y
-                    );
-
-
-                b.glow
-                    .setPosition(
-                        p.x,
-                        p.y
-                    );
-
-
-                b.center
-                    .setPosition(
-                        p.x,
-                        p.y
-                    );
-
-
-                if(
-                    b.ring.body &&
-                    b.ring.body.updateFromGameObject
-                ){
-                    b.ring.body
-                        .updateFromGameObject();
-                }
-            }
-        );
-    }
-
-
-
     /* =====================================================
-       BACKGROUND / ARENA
+       BACKGROUND
     ===================================================== */
 
     drawBackground(){
 
-        const w = this.W;
-        const h = this.H;
-
-
         this.backgroundG.clear();
 
 
-        /* Main dark laboratory */
         this.backgroundG.fillStyle(
             0x09243c,
             1
         );
 
+
         this.backgroundG.fillRect(
-            0,0,w,h
+            0,0,
+            this.W,
+            this.H
         );
 
 
-        /* top panel */
         this.backgroundG.fillStyle(
             0x123d5a,
             1
         );
 
+
         this.backgroundG.fillRoundedRect(
             7,
             7,
-            w-14,
+            this.W-14,
             this.questionPanelH-13,
             17
         );
@@ -1976,35 +1814,35 @@ extends Phaser.Scene{
 
         this.backgroundG.lineStyle(
             2,
-            0x47c5e1,
+            0x48c9e4,
             .65
         );
+
 
         this.backgroundG.strokeRoundedRect(
             7,
             7,
-            w-14,
+            this.W-14,
             this.questionPanelH-13,
             17
         );
 
 
-        /* top subtle gradient bands */
         this.backgroundG.fillStyle(
             0x1d5471,
             .45
         );
 
+
         this.backgroundG.fillRoundedRect(
             12,
             12,
-            w-24,
+            this.W-24,
             33,
             12
         );
 
 
-        /* background grid */
         this.backgroundG.lineStyle(
             1,
             0x6ddff1,
@@ -2014,9 +1852,10 @@ extends Phaser.Scene{
 
         for(
             let x=0;
-            x<w;
+            x<this.W;
             x+=32
         ){
+
             this.backgroundG.lineBetween(
                 x,
                 this.arenaTop,
@@ -2031,10 +1870,11 @@ extends Phaser.Scene{
             y<this.arenaBottom;
             y+=32
         ){
+
             this.backgroundG.lineBetween(
                 0,
                 y,
-                w,
+                this.W,
                 y
             );
         }
@@ -2043,9 +1883,6 @@ extends Phaser.Scene{
 
 
     drawArena(){
-
-        if(!this.arenaG) return;
-
 
         this.arenaG.clear();
 
@@ -2056,17 +1893,10 @@ extends Phaser.Scene{
             this.W-7;
 
 
-        const top =
-            this.arenaTop;
-
-
-        const bottom =
-            this.arenaBottom;
-
-
-        /* outer lab wall */
         this.arenaG.lineStyle(
-            this.mobile ? 9 : 12,
+            this.mobile
+            ? 9
+            : 12,
             0x176183,
             1
         );
@@ -2074,30 +1904,34 @@ extends Phaser.Scene{
 
         this.arenaG.beginPath();
 
+
         this.arenaG.moveTo(
             left,
-            bottom
+            this.arenaBottom
         );
+
 
         this.arenaG.lineTo(
             left,
-            top
+            this.arenaTop
         );
+
 
         this.arenaG.lineTo(
             right,
-            top
+            this.arenaTop
         );
+
 
         this.arenaG.lineTo(
             right,
-            bottom
+            this.arenaBottom
         );
+
 
         this.arenaG.strokePath();
 
 
-        /* inner glow */
         this.arenaG.lineStyle(
             2,
             0x73eaff,
@@ -2107,67 +1941,32 @@ extends Phaser.Scene{
 
         this.arenaG.beginPath();
 
+
         this.arenaG.moveTo(
             left+7,
-            bottom
+            this.arenaBottom
         );
+
 
         this.arenaG.lineTo(
             left+7,
-            top+6
+            this.arenaTop+6
         );
+
 
         this.arenaG.lineTo(
             right-7,
-            top+6
+            this.arenaTop+6
         );
+
 
         this.arenaG.lineTo(
             right-7,
-            bottom
+            this.arenaBottom
         );
+
 
         this.arenaG.strokePath();
-
-
-        /* decorative side lights */
-
-        for(let i=0;i<6;i++){
-
-            const yy =
-                top +
-                35 +
-                i*
-                (
-                    (
-                        bottom-top-80
-                    )/5
-                );
-
-
-            this.arenaG.fillStyle(
-                0x58dcef,
-                .4
-            );
-
-
-            this.arenaG.fillRoundedRect(
-                10,
-                yy,
-                8,
-                28,
-                4
-            );
-
-
-            this.arenaG.fillRoundedRect(
-                this.W-18,
-                yy,
-                8,
-                28,
-                4
-            );
-        }
 
 
         this.drawLauncher();
@@ -2177,20 +1976,17 @@ extends Phaser.Scene{
 
     drawLauncher(){
 
-        if(!this.launcherG) return;
-
-
         this.launcherG.clear();
 
 
         const x =
             this.launchX;
 
+
         const y =
             this.launchY;
 
 
-        /* platform */
         this.launcherG.fillStyle(
             0x061c2e,
             .9
@@ -2221,10 +2017,6 @@ extends Phaser.Scene{
             12
         );
 
-
-        /*
-            Horseshoe magnet launcher
-        */
 
         const s =
             this.mobile
@@ -2273,8 +2065,6 @@ extends Phaser.Scene{
         this.launcherG.strokePath();
 
 
-        /* magnet tips */
-
         this.launcherG.fillStyle(
             0xf3f7ff,
             1
@@ -2299,7 +2089,6 @@ extends Phaser.Scene{
         );
 
 
-        /* N */
         this.launcherG.fillStyle(
             0x3476d3,
             1
@@ -2318,7 +2107,7 @@ extends Phaser.Scene{
 
 
     /* =====================================================
-       QUESTIONS
+       QUESTION
     ===================================================== */
 
     loadQuestion(){
@@ -2337,19 +2126,17 @@ extends Phaser.Scene{
         );
 
 
-        this.categoryText
-            .setText(
-                q.category
-            );
+        this.categoryText.setText(
+            q.category
+        );
 
 
-        this.questionText
-            .setText(
-                q.q
-            );
+        this.questionText.setText(
+            q.q
+        );
 
 
-        this.comboText.setText(
+        this.wrongText.setText(
             "SALAH: " +
             this.wrongCount
         );
@@ -2362,51 +2149,33 @@ extends Phaser.Scene{
 
         this.destroyAnswerPods();
 
-        this.createAnswerPods(
-            q
-        );
+        this.destroyBumpers();
+
+
+        this.createAnswerPods(q);
 
 
         this.layout();
+
+
+        /*
+            Selepas kedudukan jawapan
+            siap barulah penghalang
+            dirandom.
+        */
+        this.createRandomBumpers();
+
 
         this.resetBall();
     }
 
 
 
-    destroyAnswerPods(){
-
-        this.answerPods
-            .forEach(p=>{
-
-                if(
-                    p.collider &&
-                    p.collider.destroy
-                ){
-                    p.collider.destroy();
-                }
-
-
-                p.hit.destroy();
-
-                p.shadow.destroy();
-
-                p.box.destroy();
-
-                p.letterCircle.destroy();
-
-                p.letterText.destroy();
-
-                p.answerText.destroy();
-
-                p.glow.destroy();
-            });
-
-
-        this.answerPods = [];
-    }
-
-
+    /* =====================================================
+       ANSWERS
+       Setiap jawapan ada ZON sendiri.
+       Jadi tidak akan bertindih.
+    ===================================================== */
 
     createAnswerPods(q){
 
@@ -2423,7 +2192,7 @@ extends Phaser.Scene{
                     0x57e8ff,
                     .11
                 )
-                .setDepth(9);
+                .setDepth(20);
 
 
             const shadow =
@@ -2433,7 +2202,7 @@ extends Phaser.Scene{
                     0x041827,
                     .75
                 )
-                .setDepth(10);
+                .setDepth(21);
 
 
             const box =
@@ -2448,7 +2217,7 @@ extends Phaser.Scene{
                     0x4ad5ed,
                     1
                 )
-                .setDepth(11);
+                .setDepth(22);
 
 
             const hit =
@@ -2456,9 +2225,9 @@ extends Phaser.Scene{
                     0,0,
                     100,50,
                     0xffffff,
-                    0.001
+                    .001
                 )
-                .setDepth(8)
+                .setDepth(19)
                 .setInteractive({
                     useHandCursor:true
                 });
@@ -2487,7 +2256,7 @@ extends Phaser.Scene{
                     0x176e9c,
                     1
                 )
-                .setDepth(12);
+                .setDepth(23);
 
 
             const letterText =
@@ -2504,7 +2273,7 @@ extends Phaser.Scene{
                     }
                 )
                 .setOrigin(.5)
-                .setDepth(13);
+                .setDepth(24);
 
 
             const answerText =
@@ -2523,7 +2292,7 @@ extends Phaser.Scene{
                     }
                 )
                 .setOrigin(.5)
-                .setDepth(13);
+                .setDepth(24);
 
 
             const pod = {
@@ -2542,25 +2311,31 @@ extends Phaser.Scene{
                 baseX:0,
                 baseY:0,
 
-                amplitude:
+                /*
+                    Pergerakan kecil sahaja
+                    supaya tak keluar zon.
+                */
+                moveX:
                     Phaser.Math.Between(
-                        10,25
+                        4,11
+                    ),
+
+                moveY:
+                    Phaser.Math.Between(
+                        2,6
                     ),
 
                 speed:
                     Phaser.Math.FloatBetween(
-                        .00065,
-                        .00105
+                        .00075,
+                        .00115
                     ),
 
                 phase:
                     Phaser.Math.FloatBetween(
                         0,
                         Math.PI*2
-                    ),
-
-                currentX:0,
-                currentY:0
+                    )
             };
 
 
@@ -2572,6 +2347,7 @@ extends Phaser.Scene{
                         !this.started ||
                         !this.ballReady
                     ) return;
+
 
                     this.aimAtPod(
                         pod
@@ -2585,6 +2361,7 @@ extends Phaser.Scene{
                     this.ball,
                     hit,
                     ()=>{
+
                         this.hitAnswer(
                             pod
                         );
@@ -2600,6 +2377,41 @@ extends Phaser.Scene{
 
 
 
+    destroyAnswerPods(){
+
+        this.answerPods.forEach(
+            p=>{
+
+                if(
+                    p.collider &&
+                    p.collider.destroy
+                ){
+                    p.collider.destroy();
+                }
+
+
+                p.glow.destroy();
+
+                p.shadow.destroy();
+
+                p.box.destroy();
+
+                p.hit.destroy();
+
+                p.letterCircle.destroy();
+
+                p.letterText.destroy();
+
+                p.answerText.destroy();
+            }
+        );
+
+
+        this.answerPods = [];
+    }
+
+
+
     layoutAnswers(){
 
         if(
@@ -2607,70 +2419,77 @@ extends Phaser.Scene{
         ) return;
 
 
-        const arenaH =
-            this.arenaHeight;
-
-
         const podW =
             this.mobile
             ? Math.min(
-                148,
-                this.W*.40
+                145,
+                this.W*.39
             )
             : Math.min(
-                192,
-                this.W*.29
+                190,
+                this.W*.28
             );
 
 
         const podH =
             this.mobile
-            ? 59
-            : 68;
+            ? 58
+            : 67;
 
 
-        const leftX =
+        /*
+            4 ZON BERASINGAN
+
+            A      B
+
+            C      D
+
+            Jarak besar supaya
+            tak pernah bertindih.
+        */
+
+        const xLeft =
             this.mobile
             ? this.W*.27
             : this.W*.26;
 
 
-        const rightX =
+        const xRight =
             this.mobile
             ? this.W*.73
             : this.W*.74;
 
 
-        const topY =
-            this.arenaTop +
-            arenaH*.17;
+        const yTop =
+            this.arenaTop+
+            this.arenaHeight*.15;
 
 
-        const secondY =
-            this.arenaTop +
-            arenaH*.34;
+        const yBottom =
+            this.arenaTop+
+            this.arenaHeight*.34;
 
 
-        const bases = [
+        const positions = [
 
             {
-                x:leftX,
-                y:topY
+                x:xLeft,
+                y:yTop
             },
 
             {
-                x:rightX,
-                y:topY
+                x:xRight,
+                y:yTop
             },
 
             {
-                x:leftX,
-                y:secondY
+                x:xLeft,
+                y:yBottom
             },
 
             {
-                x:rightX,
-                y:secondY
+                x:xRight,
+                y:yBottom
             }
 
         ];
@@ -2680,10 +2499,19 @@ extends Phaser.Scene{
             (p,i)=>{
 
                 p.baseX =
-                    bases[i].x;
+                    positions[i].x;
+
 
                 p.baseY =
-                    bases[i].y;
+                    positions[i].y;
+
+
+                p.podWidth =
+                    podW;
+
+
+                p.podHeight =
+                    podH;
 
 
                 p.box.setSize(
@@ -2699,8 +2527,8 @@ extends Phaser.Scene{
 
 
                 p.glow.setSize(
-                    podW+14,
-                    podH+14
+                    podW+12,
+                    podH+12
                 );
 
 
@@ -2719,28 +2547,26 @@ extends Phaser.Scene{
                 }
 
 
-                const letterX =
+                p.letterOffsetX =
                     -podW/2+20;
 
 
-                p.letterCircle
-                    .setRadius(
-                        this.mobile
-                        ? 14
-                        : 16
-                    );
+                p.textOffsetX =
+                    12;
 
 
-                p.letterText
-                    .setFontSize(
-                        this.mobile
-                        ? 14
-                        : 16
-                    );
+                p.letterCircle.setRadius(
+                    this.mobile
+                    ? 14
+                    : 16
+                );
 
 
-                p.letterOffsetX =
-                    letterX;
+                p.letterText.setFontSize(
+                    this.mobile
+                    ? 14
+                    : 16
+                );
 
 
                 p.answerText
@@ -2754,8 +2580,11 @@ extends Phaser.Scene{
                     );
 
 
-                p.textOffsetX =
-                    12;
+                this.setPodPosition(
+                    p,
+                    p.baseX,
+                    p.baseY
+                );
             }
         );
     }
@@ -2764,92 +2593,109 @@ extends Phaser.Scene{
 
     updateAnswerPositions(time){
 
+        if(this.resolving)
+            return;
+
+
         this.answerPods.forEach(
-            (p,i)=>{
+            p=>{
 
-                if(
-                    this.resolving
-                ) return;
-
+                /*
+                    Gerakan kecil dalam zon
+                    masing-masing sahaja.
+                */
 
                 const x =
-                    p.baseX +
+                    p.baseX+
                     Math.sin(
                         time*
-                        p.speed +
+                        p.speed+
                         p.phase
                     )*
-                    p.amplitude;
+                    p.moveX;
 
 
                 const y =
-                    p.baseY +
+                    p.baseY+
                     Math.cos(
                         time*
-                        p.speed*
-                        .75 +
+                        p.speed*.8+
                         p.phase
                     )*
-                    5;
+                    p.moveY;
 
 
-                p.currentX = x;
-                p.currentY = y;
-
-
-                p.hit.setPosition(
-                    x,y
-                );
-
-
-                if(
-                    p.hit.body &&
-                    p.hit.body.updateFromGameObject
-                ){
-                    p.hit.body
-                        .updateFromGameObject();
-                }
-
-
-                p.shadow.setPosition(
+                this.setPodPosition(
+                    p,
                     x,
-                    y+5
-                );
-
-
-                p.glow.setPosition(
-                    x,
-                    y
-                );
-
-
-                p.box.setPosition(
-                    x,
-                    y
-                );
-
-
-                p.letterCircle.setPosition(
-                    x +
-                    p.letterOffsetX,
-                    y
-                );
-
-
-                p.letterText.setPosition(
-                    x +
-                    p.letterOffsetX,
-                    y
-                );
-
-
-                p.answerText.setPosition(
-                    x +
-                    p.textOffsetX,
                     y
                 );
             }
         );
+    }
+
+
+
+    setPodPosition(
+        p,
+        x,
+        y
+    ){
+
+        p.currentX = x;
+
+        p.currentY = y;
+
+
+        p.glow.setPosition(
+            x,y
+        );
+
+
+        p.shadow.setPosition(
+            x,
+            y+5
+        );
+
+
+        p.box.setPosition(
+            x,y
+        );
+
+
+        p.hit.setPosition(
+            x,y
+        );
+
+
+        p.letterCircle.setPosition(
+            x+
+            p.letterOffsetX,
+            y
+        );
+
+
+        p.letterText.setPosition(
+            x+
+            p.letterOffsetX,
+            y
+        );
+
+
+        p.answerText.setPosition(
+            x+
+            p.textOffsetX,
+            y
+        );
+
+
+        if(
+            p.hit.body &&
+            p.hit.body.updateFromGameObject
+        ){
+            p.hit.body
+                .updateFromGameObject();
+        }
     }
 
 
@@ -2865,21 +2711,22 @@ extends Phaser.Scene{
             );
 
 
-        let deg =
+        let degrees =
             Phaser.Math.RadToDeg(
                 angle
             );
 
 
-        deg =
+        degrees =
             Phaser.Math.Clamp(
-                deg,
+                degrees,
                 -150,
                 -30
             );
 
 
-        this.aimAngle = deg;
+        this.aimAngle =
+            degrees;
 
 
         AUDIO.button();
@@ -2904,10 +2751,604 @@ extends Phaser.Scene{
 
 
     /* =====================================================
-       AIM + POWER
+       RANDOM BUMPERS
+
+       - Tidak dekat penembak
+       - Tidak dekat jawapan
+       - Tidak bertindih bumper lain
+       - Kedudukan berubah setiap soalan
     ===================================================== */
 
-    beginCharge(){
+    createRandomBumpers(){
+
+        this.destroyBumpers();
+
+
+        /*
+            Phone: 3 penghalang
+            Tablet/laptop: 4
+        */
+
+        let count =
+            this.mobile
+            ? 3
+            : 4;
+
+
+        /*
+            Soalan selepas 10
+            tambah sedikit cabaran.
+        */
+
+        if(
+            this.questionIndex >= 10 &&
+            !this.mobile
+        ){
+            count = 5;
+        }
+
+
+        const colors = [
+
+            0xff5f83,
+
+            0x55ddff,
+
+            0xffcf43,
+
+            0x9d7cff,
+
+            0x66e5a3
+        ];
+
+
+        const positions =
+            this.generateSafeBumperPositions(
+                count
+            );
+
+
+        positions.forEach(
+            (pos,i)=>{
+
+                const radius =
+                    this.mobile
+                    ? Phaser.Math.Between(
+                        18,22
+                    )
+                    : Phaser.Math.Between(
+                        21,26
+                    );
+
+
+                const color =
+                    colors[
+                        i %
+                        colors.length
+                    ];
+
+
+                const glow =
+                    this.add.circle(
+                        pos.x,
+                        pos.y,
+                        radius+10,
+                        color,
+                        .14
+                    )
+                    .setDepth(7);
+
+
+                const ring =
+                    this.add.circle(
+                        pos.x,
+                        pos.y,
+                        radius,
+                        color,
+                        1
+                    )
+                    .setStrokeStyle(
+                        4,
+                        0xffffff,
+                        .8
+                    )
+                    .setDepth(8);
+
+
+                const center =
+                    this.add.circle(
+                        pos.x,
+                        pos.y,
+                        Math.max(
+                            6,
+                            radius*.34
+                        ),
+                        0xffffff,
+                        .95
+                    )
+                    .setDepth(9);
+
+
+                this.physics.add.existing(
+                    ring,
+                    true
+                );
+
+
+                ring.body.setCircle(
+                    radius
+                );
+
+
+                const bumper = {
+
+                    x:pos.x,
+
+                    y:pos.y,
+
+                    radius,
+
+                    glow,
+
+                    ring,
+
+                    center,
+
+                    collider:null
+                };
+
+
+                bumper.collider =
+                    this.physics.add.collider(
+                        this.ball,
+                        ring,
+                        ()=>{
+
+                            this.hitBumper(
+                                bumper
+                            );
+                        }
+                    );
+
+
+                this.bumpers.push(
+                    bumper
+                );
+            }
+        );
+    }
+
+
+
+    generateSafeBumperPositions(
+        count
+    ){
+
+        const result = [];
+
+
+        /*
+            Kawasan bumper hanya
+            bahagian tengah arena.
+
+            Elak bahagian paling bawah
+            tempat launcher.
+        */
+
+        const minX =
+            this.mobile
+            ? 48
+            : 65;
+
+
+        const maxX =
+            this.W-
+            minX;
+
+
+        /*
+            Mula selepas jawapan
+            supaya bumper tak rapat
+            dengan kapsul.
+        */
+
+        const minY =
+            this.arenaTop+
+            this.arenaHeight*.47;
+
+
+        /*
+            Berhenti sebelum launcher.
+        */
+
+        const maxY =
+            this.launchY-
+            (
+                this.mobile
+                ? 85
+                : 100
+            );
+
+
+        let attempts = 0;
+
+
+        while(
+            result.length < count &&
+            attempts < 500
+        ){
+
+            attempts++;
+
+
+            const x =
+                Phaser.Math.Between(
+                    Math.round(minX),
+                    Math.round(maxX)
+                );
+
+
+            const y =
+                Phaser.Math.Between(
+                    Math.round(minY),
+                    Math.round(maxY)
+                );
+
+
+            /*
+                1. JANGAN DEKAT LAUNCHER
+            */
+
+            const shooterDistance =
+                Phaser.Math.Distance.Between(
+                    x,
+                    y,
+                    this.launchX,
+                    this.launchY
+                );
+
+
+            const minShooterDistance =
+                this.mobile
+                ? 120
+                : 150;
+
+
+            if(
+                shooterDistance <
+                minShooterDistance
+            ){
+                continue;
+            }
+
+
+            /*
+                2. JANGAN DEKAT JAWAPAN
+            */
+
+            let tooCloseToAnswer =
+                false;
+
+
+            for(
+                const pod of
+                this.answerPods
+            ){
+
+                const d =
+                    Phaser.Math.Distance.Between(
+                        x,
+                        y,
+                        pod.baseX,
+                        pod.baseY
+                    );
+
+
+                const answerSafe =
+                    this.mobile
+                    ? 90
+                    : 115;
+
+
+                if(
+                    d <
+                    answerSafe
+                ){
+
+                    tooCloseToAnswer =
+                        true;
+
+                    break;
+                }
+            }
+
+
+            if(
+                tooCloseToAnswer
+            ){
+                continue;
+            }
+
+
+            /*
+                3. JANGAN TERLALU RAPAT
+                DENGAN BUMPER LAIN
+            */
+
+            let tooCloseToBumper =
+                false;
+
+
+            for(
+                const existing of
+                result
+            ){
+
+                const d =
+                    Phaser.Math.Distance.Between(
+                        x,
+                        y,
+                        existing.x,
+                        existing.y
+                    );
+
+
+                const minDistance =
+                    this.mobile
+                    ? 78
+                    : 95;
+
+
+                if(
+                    d <
+                    minDistance
+                ){
+
+                    tooCloseToBumper =
+                        true;
+
+                    break;
+                }
+            }
+
+
+            if(
+                tooCloseToBumper
+            ){
+                continue;
+            }
+
+
+            result.push({
+                x,
+                y
+            });
+        }
+
+
+        /*
+            Fallback kalau ruang phone
+            sempit sangat.
+        */
+
+        if(
+            result.length < count
+        ){
+
+            const fallback = [
+
+                {
+                    x:this.W*.25,
+                    y:this.arenaTop+
+                      this.arenaHeight*.55
+                },
+
+                {
+                    x:this.W*.75,
+                    y:this.arenaTop+
+                      this.arenaHeight*.55
+                },
+
+                {
+                    x:this.W*.38,
+                    y:this.arenaTop+
+                      this.arenaHeight*.72
+                },
+
+                {
+                    x:this.W*.65,
+                    y:this.arenaTop+
+                      this.arenaHeight*.71
+                },
+
+                {
+                    x:this.W*.50,
+                    y:this.arenaTop+
+                      this.arenaHeight*.60
+                }
+
+            ];
+
+
+            while(
+                result.length < count
+            ){
+
+                result.push(
+                    fallback[
+                        result.length %
+                        fallback.length
+                    ]
+                );
+            }
+        }
+
+
+        return result;
+    }
+
+
+
+    placeRandomBumpers(){
+
+        if(
+            !this.bumpers.length
+        ) return;
+
+
+        const positions =
+            this.generateSafeBumperPositions(
+                this.bumpers.length
+            );
+
+
+        this.bumpers.forEach(
+            (bumper,i)=>{
+
+                const p =
+                    positions[i];
+
+
+                bumper.x =
+                    p.x;
+
+                bumper.y =
+                    p.y;
+
+
+                bumper.glow.setPosition(
+                    p.x,
+                    p.y
+                );
+
+
+                bumper.ring.setPosition(
+                    p.x,
+                    p.y
+                );
+
+
+                bumper.center.setPosition(
+                    p.x,
+                    p.y
+                );
+
+
+                if(
+                    bumper.ring.body &&
+                    bumper.ring.body.updateFromGameObject
+                ){
+                    bumper.ring.body
+                        .updateFromGameObject();
+                }
+            }
+        );
+    }
+
+
+
+    destroyBumpers(){
+
+        this.bumpers.forEach(
+            b=>{
+
+                if(
+                    b.collider &&
+                    b.collider.destroy
+                ){
+                    b.collider.destroy();
+                }
+
+
+                b.glow.destroy();
+
+                b.ring.destroy();
+
+                b.center.destroy();
+            }
+        );
+
+
+        this.bumpers = [];
+    }
+
+
+
+    hitBumper(bumper){
+
+        if(
+            !this.started ||
+            this.ballReady
+        ) return;
+
+
+        AUDIO.bumper();
+
+
+        const dx =
+            this.ball.x-
+            bumper.ring.x;
+
+
+        const dy =
+            this.ball.y-
+            bumper.ring.y;
+
+
+        const len =
+            Math.max(
+                1,
+                Math.sqrt(
+                    dx*dx+
+                    dy*dy
+                )
+            );
+
+
+        const power =
+            100;
+
+
+        this.ball.body.velocity.x +=
+            dx/len*power;
+
+
+        this.ball.body.velocity.y +=
+            dy/len*power;
+
+
+        this.tweens.add({
+
+            targets:[
+                bumper.ring,
+                bumper.center,
+                bumper.glow
+            ],
+
+            scaleX:1.22,
+            scaleY:1.22,
+
+            duration:80,
+
+            yoyo:true
+        });
+
+
+        this.createSparks(
+            bumper.ring.x,
+            bumper.ring.y,
+            0xffffff,
+            7
+        );
+    }
+
+
+
+    /* =====================================================
+       FIRE
+    ===================================================== */
+
+    startCharge(){
 
         if(
             !this.ballReady ||
@@ -2917,17 +3358,14 @@ extends Phaser.Scene{
 
         this.charging = true;
 
-        this.chargeDirection = 1;
-
 
         if(
-            this.chargePower < .12
+            this.chargePower <
+            .12
         ){
-            this.chargePower = .12;
+            this.chargePower =
+                .12;
         }
-
-
-        AUDIO.charge();
     }
 
 
@@ -2966,13 +3404,22 @@ extends Phaser.Scene{
             .setAllowGravity(true);
 
 
-        this.ball.body.setVelocity(
-            Math.cos(rad)*power,
-            Math.sin(rad)*power
-        );
+        this.ball.body
+            .setVelocity(
+                Math.cos(rad)*
+                power,
+
+                Math.sin(rad)*
+                power
+            );
 
 
-        this.ballReady = false;
+        this.ballReady =
+            false;
+
+
+        this.chargePower =
+            0;
 
 
         AUDIO.launch();
@@ -2981,15 +3428,59 @@ extends Phaser.Scene{
         this.createSparks(
             this.ball.x,
             this.ball.y,
-            0x76eaff,
+            0x6cecff,
             12
         );
-
-
-        this.chargePower = 0;
     }
 
 
+
+    resetBall(){
+
+        this.ballReady =
+            true;
+
+
+        this.charging =
+            false;
+
+
+        this.chargePower =
+            0;
+
+
+        this.ball.body
+            .setAllowGravity(false);
+
+
+        this.ball.body
+            .setVelocity(
+                0,0
+            );
+
+
+        this.ball.setScale(1);
+
+        this.ballGlow.setScale(1);
+
+
+        this.ball.setPosition(
+            this.launchX,
+            this.launchY
+        );
+
+
+        this.ballGlow.setPosition(
+            this.launchX,
+            this.launchY
+        );
+    }
+
+
+
+    /* =====================================================
+       AIM
+    ===================================================== */
 
     drawAim(){
 
@@ -3009,32 +3500,24 @@ extends Phaser.Scene{
             );
 
 
-        const startX =
-            this.launchX;
-
-        const startY =
-            this.launchY;
-
-
-        const lineLength =
+        const len =
             this.mobile
-            ? 100
-            : 130;
+            ? 105
+            : 135;
 
 
         const endX =
-            startX +
+            this.launchX+
             Math.cos(rad)*
-            lineLength;
+            len;
 
 
         const endY =
-            startY +
+            this.launchY+
             Math.sin(rad)*
-            lineLength;
+            len;
 
 
-        /* aim glow */
         this.aimG.lineStyle(
             11,
             0x57e7ff,
@@ -3043,83 +3526,69 @@ extends Phaser.Scene{
 
 
         this.aimG.lineBetween(
-            startX,
-            startY,
+            this.launchX,
+            this.launchY,
             endX,
             endY
         );
 
 
-        /* dashed line */
+        for(let i=0;i<8;i++){
 
-        for(let i=0;i<7;i++){
-
-            if(i%2===1) continue;
+            if(i%2===1)
+                continue;
 
 
             const t1 =
-                i/7;
+                i/8;
 
 
             const t2 =
                 Math.min(
                     1,
-                    (i+.6)/7
-                );
-
-
-            const x1 =
-                Phaser.Math.Linear(
-                    startX,
-                    endX,
-                    t1
-                );
-
-
-            const y1 =
-                Phaser.Math.Linear(
-                    startY,
-                    endY,
-                    t1
-                );
-
-
-            const x2 =
-                Phaser.Math.Linear(
-                    startX,
-                    endX,
-                    t2
-                );
-
-
-            const y2 =
-                Phaser.Math.Linear(
-                    startY,
-                    endY,
-                    t2
+                    (i+.6)/8
                 );
 
 
             this.aimG.lineStyle(
                 3,
-                0x87efff,
+                0x89efff,
                 .95
             );
 
 
             this.aimG.lineBetween(
-                x1,
-                y1,
-                x2,
-                y2
+
+                Phaser.Math.Linear(
+                    this.launchX,
+                    endX,
+                    t1
+                ),
+
+                Phaser.Math.Linear(
+                    this.launchY,
+                    endY,
+                    t1
+                ),
+
+                Phaser.Math.Linear(
+                    this.launchX,
+                    endX,
+                    t2
+                ),
+
+                Phaser.Math.Linear(
+                    this.launchY,
+                    endY,
+                    t2
+                )
             );
         }
 
 
-        /* arrow */
         this.aimG.fillStyle(
             0xffffff,
-            .95
+            1
         );
 
 
@@ -3146,22 +3615,22 @@ extends Phaser.Scene{
             : 190;
 
 
-        const barH = 11;
-
-
         const x =
-            this.centerX -
+            this.centerX-
             barW/2;
 
 
         const y =
-            this.arenaBottom -
-            7;
+            this.arenaBottom-8;
+
+
+        const barH =
+            11;
 
 
         this.powerG.fillStyle(
             0x04192a,
-            .85
+            .88
         );
 
 
@@ -3177,9 +3646,7 @@ extends Phaser.Scene{
         const fillW =
             Math.max(
                 0,
-                (
-                    barW-4
-                )*
+                (barW-4)*
                 this.chargePower
             );
 
@@ -3204,7 +3671,7 @@ extends Phaser.Scene{
                 .82
             ){
                 color =
-                    0xff6c5b;
+                    0xff6758;
             }
 
 
@@ -3227,7 +3694,7 @@ extends Phaser.Scene{
         this.powerG.lineStyle(
             1,
             0x83edff,
-            .65
+            .7
         );
 
 
@@ -3243,46 +3710,7 @@ extends Phaser.Scene{
 
 
     /* =====================================================
-       BALL RESET
-    ===================================================== */
-
-    resetBall(){
-
-        if(!this.ball) return;
-
-
-        this.ballReady = true;
-
-        this.charging = false;
-
-        this.chargePower = 0;
-
-
-        this.ball.body
-            .setAllowGravity(false);
-
-
-        this.ball.body.setVelocity(
-            0,0
-        );
-
-
-        this.ball.setPosition(
-            this.launchX,
-            this.launchY
-        );
-
-
-        this.ballGlow.setPosition(
-            this.launchX,
-            this.launchY
-        );
-    }
-
-
-
-    /* =====================================================
-       ANSWER COLLISION
+       HIT ANSWER
     ===================================================== */
 
     hitAnswer(pod){
@@ -3294,7 +3722,8 @@ extends Phaser.Scene{
         ) return;
 
 
-        this.resolving = true;
+        this.resolving =
+            true;
 
 
         const question =
@@ -3303,20 +3732,18 @@ extends Phaser.Scene{
             ];
 
 
-        const correct =
+        if(
             pod.index ===
-            question.answer;
+            question.answer
+        ){
 
-
-        if(correct){
-
-            this.handleCorrect(
+            this.correctAnswer(
                 pod
             );
 
         }else{
 
-            this.handleWrong(
+            this.wrongAnswer(
                 pod
             );
         }
@@ -3324,14 +3751,15 @@ extends Phaser.Scene{
 
 
 
-    handleCorrect(pod){
+    correctAnswer(pod){
 
         AUDIO.correct();
 
 
-        this.ball.body.setVelocity(
-            0,0
-        );
+        this.ball.body
+            .setVelocity(
+                0,0
+            );
 
 
         this.ball.body
@@ -3370,15 +3798,11 @@ extends Phaser.Scene{
         this.createSparks(
             pod.hit.x,
             pod.hit.y,
-            0x70ff9e,
+            0x72ff9d,
             22
         );
 
 
-        /*
-            Bola ditarik masuk ke
-            kapsul jawapan.
-        */
         this.tweens.add({
 
             targets:[
@@ -3387,9 +3811,11 @@ extends Phaser.Scene{
             ],
 
             x:pod.hit.x,
+
             y:pod.hit.y,
 
             scaleX:.35,
+
             scaleY:.35,
 
             duration:350,
@@ -3406,6 +3832,7 @@ extends Phaser.Scene{
                             this.questionIndex ===
                             QUESTIONS.length-1
                         ){
+
                             this.showWin();
 
                             return;
@@ -3417,11 +3844,6 @@ extends Phaser.Scene{
 
                         this.aimAngle =
                             -90;
-
-
-                        this.ball.setScale(1);
-
-                        this.ballGlow.setScale(1);
 
 
                         this.resolving =
@@ -3437,13 +3859,13 @@ extends Phaser.Scene{
 
 
 
-    handleWrong(pod){
+    wrongAnswer(pod){
 
         this.wrongCount++;
 
 
-        this.comboText.setText(
-            "SALAH: " +
+        this.wrongText.setText(
+            "SALAH: "+
             this.wrongCount
         );
 
@@ -3452,14 +3874,14 @@ extends Phaser.Scene{
 
 
         pod.box.setFillStyle(
-            0xffdad8,
+            0xffd9d6,
             1
         );
 
 
         pod.box.setStrokeStyle(
             4,
-            0xf24f48,
+            0xf24e47,
             1
         );
 
@@ -3472,10 +3894,10 @@ extends Phaser.Scene{
 
         this.feedbackText
             .setText(
-                "✕ CUBA LAGI"
+                "✕ CUBA LAGI!"
             )
             .setColor(
-                "#ffd4cf"
+                "#ffd7d2"
             )
             .setAlpha(1);
 
@@ -3494,18 +3916,13 @@ extends Phaser.Scene{
         );
 
 
-        /*
-            TOLAK bola daripada
-            jawapan salah.
-        */
-
         const dx =
-            this.ball.x -
+            this.ball.x-
             pod.hit.x;
 
 
         const dy =
-            this.ball.y -
+            this.ball.y-
             pod.hit.y;
 
 
@@ -3513,20 +3930,20 @@ extends Phaser.Scene{
             Math.max(
                 1,
                 Math.sqrt(
-                    dx*dx +
+                    dx*dx+
                     dy*dy
                 )
             );
 
 
         this.ball.body.setVelocity(
-            dx/len*360,
-            dy/len*360
+            dx/len*370,
+            dy/len*370
         );
 
 
         this.time.delayedCall(
-            450,
+            430,
             ()=>{
 
                 pod.box.setFillStyle(
@@ -3561,14 +3978,14 @@ extends Phaser.Scene{
 
 
     /* =====================================================
-       SPARK PARTICLES
+       PARTICLES
     ===================================================== */
 
     createSparks(
         x,
         y,
         color,
-        count=10
+        count
     ){
 
         for(
@@ -3577,23 +3994,20 @@ extends Phaser.Scene{
             i++
         ){
 
-            const radius =
-                Phaser.Math.Between(
-                    2,5
-                );
-
-
             const p =
                 this.add.circle(
-                    x,y,
-                    radius,
+                    x,
+                    y,
+                    Phaser.Math.Between(
+                        2,5
+                    ),
                     color,
                     1
                 )
-                .setDepth(300);
+                .setDepth(800);
 
 
-            const angle =
+            const a =
                 Phaser.Math.FloatBetween(
                     0,
                     Math.PI*2
@@ -3612,27 +4026,28 @@ extends Phaser.Scene{
 
                 x:
                     x+
-                    Math.cos(angle)*
+                    Math.cos(a)*
                     distance,
 
                 y:
                     y+
-                    Math.sin(angle)*
+                    Math.sin(a)*
                     distance,
 
                 alpha:0,
 
-                scale:.15,
+                scale:.2,
 
                 duration:
                     Phaser.Math.Between(
                         280,
-                        650
+                        620
                     ),
 
                 ease:"Quad.easeOut",
 
                 onComplete:()=>{
+
                     p.destroy();
                 }
             });
@@ -3642,14 +4057,14 @@ extends Phaser.Scene{
 
 
     /* =====================================================
-       INTRO WINDOW
+       INTRO
     ===================================================== */
 
     showInstructions(){
 
         const overlay =
             this.add.container()
-            .setDepth(2000);
+            .setDepth(5000);
 
 
         const shade =
@@ -3677,7 +4092,7 @@ extends Phaser.Scene{
             );
 
 
-        const magnet =
+        const icon =
             this.add.text(
                 0,0,
                 "🧲",
@@ -3710,16 +4125,16 @@ extends Phaser.Scene{
             this.add.text(
                 0,0,
 
-                "Selesaikan 25 misi magnet!\n\n" +
+                "Selesaikan 25 soalan magnet!\n\n"+
 
-                "① Baca soalan.\n" +
-                "② Cari kapsul A, B, C atau D.\n" +
-                "③ Gunakan ◀ ▶ untuk ubah arah.\n" +
-                "④ Tahan FIRE untuk tambah kuasa.\n" +
-                "⑤ Lepaskan FIRE untuk menembak.\n\n" +
+                "① Baca soalan.\n"+
+                "② Cari jawapan A, B, C atau D.\n"+
+                "③ Gerakkan arah dengan ◀ ▶.\n"+
+                "④ Tahan FIRE untuk tambah kuasa.\n"+
+                "⑤ Lepaskan FIRE untuk menembak.\n\n"+
 
-                "Bola boleh melantun pada bumper.\n" +
-                "Terkena jawapan salah? Cuba lagi!",
+                "Penghalang berubah kedudukan setiap soalan.\n"+
+                "Gunakan lantunan bola untuk sampai ke jawapan!",
 
                 {
                     fontFamily:
@@ -3784,7 +4199,7 @@ extends Phaser.Scene{
         overlay.add([
             shade,
             card,
-            magnet,
+            icon,
             title,
             desc,
             startShadow,
@@ -3795,7 +4210,8 @@ extends Phaser.Scene{
 
         const arrange = ()=>{
 
-            if(!overlay.active) return;
+            if(!overlay.active)
+                return;
 
 
             const W =
@@ -3844,7 +4260,7 @@ extends Phaser.Scene{
                 );
 
 
-            magnet
+            icon
                 .setFontSize(
                     mobile
                     ? 49
@@ -3885,7 +4301,7 @@ extends Phaser.Scene{
                 );
 
 
-            const btnY =
+            const buttonY =
                 H/2+
                 cardH*.38;
 
@@ -3893,21 +4309,21 @@ extends Phaser.Scene{
             start
                 .setPosition(
                     W/2,
-                    btnY
+                    buttonY
                 );
 
 
             startShadow
                 .setPosition(
                     W/2,
-                    btnY+5
+                    buttonY+5
                 );
 
 
             startText
                 .setPosition(
                     W/2,
-                    btnY
+                    buttonY
                 );
         };
 
@@ -3952,26 +4368,32 @@ extends Phaser.Scene{
 
     showWin(){
 
-        this.started = false;
+        this.started =
+            false;
 
-        this.resolving = true;
+
+        this.resolving =
+            true;
 
 
         AUDIO.win();
 
 
-        this.ball.body.setVelocity(
-            0,0
-        );
+        this.ball.body
+            .setVelocity(
+                0,0
+            );
 
 
         this.ball.body
-            .setAllowGravity(false);
+            .setAllowGravity(
+                false
+            );
 
 
         const overlay =
             this.add.container()
-            .setDepth(3000);
+            .setDepth(6000);
 
 
         const shade =
@@ -4061,8 +4483,8 @@ extends Phaser.Scene{
                 this.W/2,
                 this.H/2+35,
 
-                "25 / 25 soalan selesai!\n\n" +
-                "Jumlah percubaan salah: " +
+                "25 / 25 soalan selesai!\n\n"+
+                "Percubaan salah: "+
                 this.wrongCount,
 
                 {
@@ -4146,26 +4568,27 @@ extends Phaser.Scene{
                 );
 
 
-                this.questionIndex = 0;
-
-                this.wrongCount = 0;
-
-                this.aimAngle = -90;
-
-                this.resolving = false;
-
-                this.started = true;
+                this.questionIndex =
+                    0;
 
 
-                this.ball.setScale(1);
+                this.wrongCount =
+                    0;
 
-                this.ballGlow.setScale(1);
+
+                this.aimAngle =
+                    -90;
+
+
+                this.resolving =
+                    false;
+
+
+                this.started =
+                    true;
 
 
                 this.loadQuestion();
-
-
-                AUDIO.button();
             }
         );
     }
@@ -4173,12 +4596,13 @@ extends Phaser.Scene{
 
 
     /* =====================================================
-       UPDATE LOOP
+       UPDATE
     ===================================================== */
 
     update(time,delta){
 
-        if(!this.W) return;
+        if(!this.W)
+            return;
 
 
         this.updateAnswerPositions(
@@ -4239,7 +4663,10 @@ extends Phaser.Scene{
                     this.chargePower >=
                     1
                 ){
-                    this.chargePower = 1;
+
+                    this.chargePower =
+                        1;
+
 
                     this.chargeDirection =
                         -1;
@@ -4250,8 +4677,10 @@ extends Phaser.Scene{
                     this.chargePower <=
                     .12
                 ){
+
                     this.chargePower =
                         .12;
+
 
                     this.chargeDirection =
                         1;
@@ -4263,36 +4692,23 @@ extends Phaser.Scene{
         this.drawAim();
 
 
-        if(this.ball){
-
-            this.ballGlow
-                .setPosition(
-                    this.ball.x,
-                    this.ball.y
-                );
+        this.ballGlow.setPosition(
+            this.ball.x,
+            this.ball.y
+        );
 
 
-            /*
-                rotating glowing pulse
-            */
-
-            const pulse =
-                1 +
-                Math.sin(
-                    time*.006
-                )*.08;
+        const glowPulse =
+            1+
+            Math.sin(
+                time*.006
+            )*.08;
 
 
-            this.ballGlow.setScale(
-                pulse
-            );
-        }
+        this.ballGlow.setScale(
+            glowPulse
+        );
 
-
-        /*
-            Fake physics side wall bounce
-            supaya senang dikawal selepas resize.
-        */
 
         if(
             !this.ballReady &&
@@ -4305,66 +4721,78 @@ extends Phaser.Scene{
                 : 21;
 
 
+            /* LEFT WALL */
+
             if(
                 this.ball.x <
                 margin &&
-                this.ball.body.velocity.x < 0
+                this.ball.body.velocity.x <
+                0
             ){
 
                 this.ball.x =
                     margin;
 
+
                 this.ball.body.velocity.x =
                     Math.abs(
                         this.ball.body.velocity.x
-                    )*.92;
+                    )*.93;
+
 
                 AUDIO.bumper();
             }
 
 
+            /* RIGHT WALL */
+
             if(
                 this.ball.x >
                 this.W-margin &&
-                this.ball.body.velocity.x > 0
+                this.ball.body.velocity.x >
+                0
             ){
 
                 this.ball.x =
                     this.W-margin;
 
+
                 this.ball.body.velocity.x =
                     -Math.abs(
                         this.ball.body.velocity.x
-                    )*.92;
+                    )*.93;
+
 
                 AUDIO.bumper();
             }
 
 
-            /*
-                Ceiling
-            */
+            /* CEILING */
 
             if(
                 this.ball.y <
                 this.arenaTop+17 &&
-                this.ball.body.velocity.y < 0
+                this.ball.body.velocity.y <
+                0
             ){
 
                 this.ball.y =
                     this.arenaTop+17;
+
 
                 this.ball.body.velocity.y =
                     Math.abs(
                         this.ball.body.velocity.y
                     )*.93;
 
+
                 AUDIO.bumper();
             }
 
 
             /*
-                Ball terjatuh bawah
+                Bola jatuh bawah
+                = boleh cuba semula.
             */
 
             if(
@@ -4374,23 +4802,25 @@ extends Phaser.Scene{
 
                 this.resetBall();
 
+
                 this.feedbackText
                     .setText(
-                        "CUBA TEMBAK LAGI!"
+                        "TEMBAK LAGI!"
                     )
                     .setColor(
-                        "#bcefff"
+                        "#c4f4ff"
                     )
                     .setAlpha(1);
 
 
                 this.time.delayedCall(
-                    650,
+                    600,
                     ()=>{
 
                         if(
                             !this.resolving
                         ){
+
                             this.feedbackText
                                 .setAlpha(0);
                         }
@@ -4403,8 +4833,9 @@ extends Phaser.Scene{
 }
 
 
+
 /* =========================================================
-   PHASER CONFIG
+   CONFIG
 ========================================================= */
 
 const config = {
@@ -4426,7 +4857,7 @@ const config = {
         arcade:{
 
             gravity:{
-                y:250
+                y:260
             },
 
             debug:false
@@ -4471,8 +4902,9 @@ const game =
     );
 
 
+
 /* =========================================================
-   WEBSITE BUTTON
+   WEBSITE BUTTONS
 ========================================================= */
 
 document
@@ -4499,6 +4931,7 @@ document
 
         AUDIO.init();
 
+
         const enabled =
             AUDIO.toggle();
 
@@ -4515,11 +4948,11 @@ document
 );
 
 
-/* Elak long press / context menu */
 document.addEventListener(
     "contextmenu",
     e=>e.preventDefault()
 );
+
 </script>
 
 </body>
