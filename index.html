@@ -38,12 +38,16 @@ body{
 
 #gameWrap{
     position:relative;
+
     width:100vw;
     height:100vh;
     height:100svh;
     height:100dvh;
+
     max-width:900px;
+
     overflow:hidden;
+
     background:#d8fad0;
 }
 
@@ -59,15 +63,17 @@ body{
     touch-action:none;
 }
 
-/* =========================================================
+/* =====================================================
 HUD
-========================================================= */
+===================================================== */
 
 #hud{
     position:absolute;
+
     top:max(12px,env(safe-area-inset-top));
     left:12px;
     right:12px;
+
     z-index:50;
 
     display:flex;
@@ -129,14 +135,15 @@ HUD
     0 6px 0 #965716;
 
     text-decoration:none;
+
     font-size:25px;
 
     pointer-events:auto;
 }
 
-/* =========================================================
+/* =====================================================
 CONTROLS
-========================================================= */
+===================================================== */
 
 #controls{
     position:absolute;
@@ -182,6 +189,7 @@ CONTROLS
     font-weight:900;
 
     pointer-events:auto;
+
     touch-action:none;
 }
 
@@ -191,9 +199,9 @@ CONTROLS
     box-shadow:0 2px 0 #945716;
 }
 
-/* =========================================================
+/* =====================================================
 START
-========================================================= */
+===================================================== */
 
 #startScreen{
     position:absolute;
@@ -284,9 +292,9 @@ START
     font-weight:900;
 }
 
-/* =========================================================
+/* =====================================================
 QUESTION
-========================================================= */
+===================================================== */
 
 #questionModal{
     position:absolute;
@@ -334,6 +342,7 @@ QUESTION
     display:flex;
     justify-content:space-between;
     align-items:center;
+
     gap:10px;
 
     margin-bottom:12px;
@@ -414,6 +423,7 @@ QUESTION
 
 #feedback{
     min-height:26px;
+
     margin-top:12px;
 
     text-align:center;
@@ -422,9 +432,9 @@ QUESTION
     font-weight:900;
 }
 
-/* =========================================================
-COUNTDOWN
-========================================================= */
+/* =====================================================
+REST
+===================================================== */
 
 #restOverlay{
     position:absolute;
@@ -484,9 +494,54 @@ COUNTDOWN
     font-weight:900;
 }
 
-/* =========================================================
+/* =====================================================
+TELEPORT MESSAGE
+===================================================== */
+
+#teleportText{
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:
+    translate(-50%,-50%)
+    scale(.85);
+
+    z-index:90;
+
+    opacity:0;
+
+    padding:11px 17px;
+
+    border:3px solid #5c3614;
+    border-radius:50px;
+
+    background:rgba(255,245,159,.95);
+
+    color:#4c2d0d;
+
+    font-size:14px;
+    font-weight:900;
+
+    pointer-events:none;
+
+    transition:
+    opacity .2s,
+    transform .2s;
+}
+
+#teleportText.show{
+    opacity:1;
+
+    transform:
+    translate(-50%,-50%)
+    scale(1);
+}
+
+/* =====================================================
 COMPLETE
-========================================================= */
+===================================================== */
 
 #completeScreen{
     position:absolute;
@@ -539,9 +594,9 @@ COMPLETE
     font-weight:800;
 }
 
-/* =========================================================
+/* =====================================================
 MOBILE
-========================================================= */
+===================================================== */
 
 @media(max-width:600px){
 
@@ -632,6 +687,10 @@ MOBILE
 
 </div>
 
+<div id="teleportText">
+    🐿️ Tupai kembali ke daun!
+</div>
+
 <!-- START -->
 
 <div id="startScreen">
@@ -647,21 +706,22 @@ MOBILE
         </h1>
 
         <p>
-            Bantu tupai mendaki pokok dengan
-            melompat dari daun ke daun.
+            Bantu tupai melompat dari
+            daun ke daun.
             <br><br>
 
-            Daun dan batang bergerak secara
-            endless.
+            Daun dan batang pokok akan
+            bergerak secara endless.
             <br><br>
 
-            Cari lampu LED 💡 untuk menjawab
+            Kalau tupai terjatuh,
+            hanya tupai akan kembali ke
+            daun yang selamat.
+            Daun tidak akan berpindah.
+            <br><br>
+
+            Cari lampu LED 💡 dan jawab
             semua 25 soalan.
-            <br><br>
-
-            Kalau satu soalan terlepas,
-            soalan itu akan masuk ke belakang
-            dan muncul semula kemudian.
         </p>
 
         <button
@@ -706,7 +766,7 @@ MOBILE
 
 </div>
 
-<!-- COUNTDOWN -->
+<!-- REST -->
 
 <div id="restOverlay">
 
@@ -774,9 +834,9 @@ MOBILE
 
 <script>
 
-/* =========================================================
+/* =====================================================
 QUESTIONS
-========================================================= */
+===================================================== */
 
 const QUESTIONS=[
 
@@ -1107,9 +1167,9 @@ correct:0
 
 ];
 
-/* =========================================================
+/* =====================================================
 DOM
-========================================================= */
+===================================================== */
 
 const startScreen=
 document.getElementById("startScreen");
@@ -1156,12 +1216,15 @@ document.getElementById("countdownNumber");
 const completeScreen=
 document.getElementById("completeScreen");
 
+const teleportText=
+document.getElementById("teleportText");
+
 let mobileLeft=false;
 let mobileRight=false;
 
-/* =========================================================
-BUTTON INPUT
-========================================================= */
+/* =====================================================
+TOUCH BUTTON
+===================================================== */
 
 function setupButton(
 button,
@@ -1234,9 +1297,9 @@ rightBtn,
 "right"
 );
 
-/* =========================================================
-SCENE
-========================================================= */
+/* =====================================================
+GAME SCENE
+===================================================== */
 
 class TreeGame extends Phaser.Scene{
 
@@ -1248,9 +1311,9 @@ constructor(){
 
 create(){
 
-    /* =====================================================
-    TREE
-    ===================================================== */
+    /* =================================================
+    TREE SETTINGS
+    ================================================= */
 
     this.TREE_X=450;
 
@@ -1265,23 +1328,27 @@ create(){
     this.TREE_WIDTH/2;
 
     /*
-    Leaf overlaps trunk.
+    Leaves overlap the trunk.
     */
 
     this.LEAF_OFFSET=205;
 
     /*
-    Distance between endless leaves.
+    Smaller gap = continuous leaves.
     */
 
     this.STAGE_GAP=150;
 
     /*
-    More stages than screen needs,
-    ensuring leaves are always entering from top.
+    Enough recycled leaves to fill entire
+    endless tree.
     */
 
-    this.STAGE_COUNT=16;
+    this.STAGE_COUNT=17;
+
+    /*
+    Entire tree system moves at same speed.
+    */
 
     this.scrollSpeed=78;
 
@@ -1295,19 +1362,15 @@ create(){
 
     this.invulnerable=false;
 
+    this.teleporting=false;
+
     this.lives=3;
 
     this.answeredCount=0;
 
-    /* =====================================================
-    QUESTION QUEUE
-
-    Original:
-    [1,2,3,...25]
-
-    Miss 1:
-    [2,3,...25,1]
-    ===================================================== */
+    /* =================================================
+    QUESTION ROTATION QUEUE
+    ================================================= */
 
     this.questionQueue=
     QUESTIONS.map(
@@ -1322,7 +1385,14 @@ create(){
 
     this.stages=[];
 
-    this.bees=[];
+    /*
+    Store last stage squirrel successfully touched.
+
+    IMPORTANT:
+    We never move this stage when player falls.
+    */
+
+    this.lastLandedStage=null;
 
     this.createTextures();
 
@@ -1336,7 +1406,7 @@ create(){
 
     this.createPlayer();
 
-    this.createEnemySystem();
+    this.createBeeSystem();
 
     this.setupCollision();
 
@@ -1370,9 +1440,9 @@ create(){
 
 }
 
-/* =========================================================
-TEXTURES
-========================================================= */
+/* =====================================================
+TEXTURE SETUP
+===================================================== */
 
 createTextures(){
 
@@ -1390,9 +1460,9 @@ createTextures(){
 
 }
 
-/* =========================================================
-BARK
-========================================================= */
+/* =====================================================
+TREE BARK
+===================================================== */
 
 createBark(){
 
@@ -1413,8 +1483,6 @@ createBark(){
         650
     );
 
-    /* LEFT SHADOW */
-
     g.fillStyle(
         0x703816,
         1
@@ -1427,8 +1495,6 @@ createBark(){
         650
     );
 
-    /* RIGHT */
-
     g.fillStyle(
         0x613016,
         1
@@ -1440,8 +1506,6 @@ createBark(){
         40,
         650
     );
-
-    /* HIGHLIGHT */
 
     g.fillStyle(
         0xb96c2c,
@@ -1467,8 +1531,6 @@ createBark(){
         650
     );
 
-    /* BARK LINES */
-
     g.lineStyle(
         7,
         0x5e2f15,
@@ -1478,11 +1540,17 @@ createBark(){
     const lines=[
 
         [54,35,65,125],
+
         [218,55,205,145],
+
         [142,155,152,255],
+
         [78,286,63,382],
+
         [238,327,220,445],
+
         [160,462,170,580],
+
         [48,485,63,610]
 
     ];
@@ -1506,8 +1574,6 @@ createBark(){
 
         }
     );
-
-    /* KNOT */
 
     g.fillStyle(
         0x542911,
@@ -1543,9 +1609,9 @@ createBark(){
 
 }
 
-/* =========================================================
-LEAF PLATFORM
-========================================================= */
+/* =====================================================
+LEAF
+===================================================== */
 
 createLeaf(){
 
@@ -1602,8 +1668,6 @@ createLeaf(){
         11
     );
 
-    /* LEAF VEIN */
-
     g.lineStyle(
         5,
         0x1e671d,
@@ -1634,9 +1698,9 @@ createLeaf(){
 
 }
 
-/* =========================================================
+/* =====================================================
 SQUIRREL
-========================================================= */
+===================================================== */
 
 createSquirrel(){
 
@@ -1684,8 +1748,6 @@ createSquirrel(){
         56,
         69
     );
-
-    /* BELLY */
 
     g.fillStyle(
         0xf1bd6c,
@@ -1852,9 +1914,9 @@ createSquirrel(){
 
 }
 
-/* =========================================================
+/* =====================================================
 BEE
-========================================================= */
+===================================================== */
 
 createBee(){
 
@@ -1982,9 +2044,9 @@ createBee(){
 
 }
 
-/* =========================================================
-RED BULLET
-========================================================= */
+/* =====================================================
+BULLET
+===================================================== */
 
 createBullet(){
 
@@ -2025,9 +2087,9 @@ createBullet(){
 
 }
 
-/* =========================================================
+/* =====================================================
 LED
-========================================================= */
+===================================================== */
 
 createLED(){
 
@@ -2035,8 +2097,6 @@ createLED(){
     this.make.graphics({
         add:false
     });
-
-    /* OUTER GLOW */
 
     g.fillStyle(
         0xffe951,
@@ -2048,8 +2108,6 @@ createLED(){
         31,
         31
     );
-
-    /* BULB */
 
     g.fillStyle(
         0xffff8c,
@@ -2073,8 +2131,6 @@ createLED(){
         13
     );
 
-    /* SHINE */
-
     g.fillStyle(
         0xffffff,
         1
@@ -2085,8 +2141,6 @@ createLED(){
         21,
         6
     );
-
-    /* BASE */
 
     g.fillStyle(
         0x555555,
@@ -2122,9 +2176,9 @@ createLED(){
 
 }
 
-/* =========================================================
+/* =====================================================
 BACKGROUND
-========================================================= */
+===================================================== */
 
 createBackground(){
 
@@ -2197,18 +2251,11 @@ createBackground(){
 
 }
 
-/* =========================================================
+/* =====================================================
 TREE
-========================================================= */
+===================================================== */
 
 createTree(){
-
-    /*
-    Endless trunk.
-
-    tileSprite itself stays on screen,
-    bark texture scrolls continuously.
-    */
 
     this.tree=
     this.add.tileSprite(
@@ -2222,9 +2269,9 @@ createTree(){
 
 }
 
-/* =========================================================
+/* =====================================================
 GROUPS
-========================================================= */
+===================================================== */
 
 createGroups(){
 
@@ -2246,23 +2293,16 @@ createGroups(){
 
 }
 
-/* =========================================================
-ENDLESS INITIAL LEAVES
-========================================================= */
+/* =====================================================
+INITIAL ENDLESS LEAVES
+===================================================== */
 
 createInitialStages(){
 
     /*
-    16 leaves are permanently recycled.
+    17 stages continuously recycled.
 
-    They never disappear permanently.
-
-    Once a leaf exits bottom,
-    SAME leaf is immediately positioned above
-    the highest leaf.
-
-    Therefore:
-    tree endless = leaves endless.
+    They NEVER teleport because player falls.
     */
 
     let y=1450;
@@ -2288,27 +2328,44 @@ createInitialStages(){
 
         }
 
-        let question=false;
+        let hasQuestion=false;
 
         /*
-        First question appears after a few leaves.
+        First LED question.
         */
 
-        if(
-            i===3 &&
-            this.questionQueue.length>0
-        ){
+        if(i===3){
 
-            question=true;
+            hasQuestion=true;
 
         }
 
+        const stage=
         this.createStage(
             side,
             y,
-            question,
+            false,
             i===0
         );
+
+        /*
+        Starting leaf is our initial safe leaf.
+        */
+
+        if(i===0){
+
+            this.lastLandedStage=
+            stage;
+
+        }
+
+        if(hasQuestion){
+
+            this.assignNextQuestion(
+                stage
+            );
+
+        }
 
         y-=this.STAGE_GAP;
 
@@ -2316,9 +2373,9 @@ createInitialStages(){
 
 }
 
-/* =========================================================
+/* =====================================================
 CREATE STAGE
-========================================================= */
+===================================================== */
 
 createStage(
 side,
@@ -2336,12 +2393,6 @@ start=false
 
     }else{
 
-        /*
-        Very small variation only.
-
-        Leaf still overlaps trunk.
-        */
-
         x=
         this.TREE_X+
         side*
@@ -2355,11 +2406,9 @@ start=false
 
     }
 
-    /* =====================================================
-    SHORT STEM
-
-    Stem starts well INSIDE trunk.
-    ===================================================== */
+    /* =================================================
+    STEM
+    ================================================= */
 
     let stem;
 
@@ -2411,9 +2460,9 @@ start=false
 
     }
 
-    /* =====================================================
+    /* =================================================
     LEAF
-    ===================================================== */
+    ================================================= */
 
     const leaf=
     this.platformGroup.create(
@@ -2472,19 +2521,13 @@ start=false
         stage
     );
 
-    if(question){
-
-        this.assignNextQuestion(
-            stage
-        );
-
-    }
+    return stage;
 
 }
 
-/* =========================================================
-ASSIGN NEXT QUESTION
-========================================================= */
+/* =====================================================
+QUESTION ASSIGNMENT
+===================================================== */
 
 assignNextQuestion(stage){
 
@@ -2495,24 +2538,10 @@ assignNextQuestion(stage){
         return;
     }
 
-    /*
-    IMPORTANT:
-
-    Do NOT remove question from queue yet.
-
-    queue[0] remains there until:
-
-    1. Player answers = shift/remove.
-    2. Player misses = shift + push to back.
-    */
-
-    const questionIndex=
-    this.questionQueue[0];
-
     stage.question=true;
 
     stage.questionIndex=
-    questionIndex;
+    this.questionQueue[0];
 
     stage.used=false;
 
@@ -2542,23 +2571,20 @@ assignNextQuestion(stage){
 
     });
 
-    stage.led=
-    led;
+    stage.led=led;
 
     this.activeQuestionStage=
     stage;
 
 }
 
-/* =========================================================
-CLEAR LED
-========================================================= */
+/* =====================================================
+CLEAR QUESTION
+===================================================== */
 
-clearQuestionFromStage(stage){
+clearQuestionStage(stage){
 
-    if(
-        stage.led
-    ){
+    if(stage.led){
 
         this.tweens.killTweensOf(
             stage.led
@@ -2588,11 +2614,11 @@ clearQuestionFromStage(stage){
 
 }
 
-/* =========================================================
-ROTATE MISSED QUESTION
-========================================================= */
+/* =====================================================
+ROTATE SKIPPED QUESTION
+===================================================== */
 
-rotateMissedQuestion(stage){
+rotateSkippedQuestion(stage){
 
     if(
         !stage.question ||
@@ -2604,16 +2630,13 @@ rotateMissedQuestion(stage){
     /*
     Example:
 
-    BEFORE
-    [1,2,3,4...25]
+    1 2 3 ... 25
 
-    Miss Q1
+    miss Q1
 
-    shift Q1
-    push Q1
+    becomes:
 
-    AFTER
-    [2,3,4...25,1]
+    2 3 ... 25 1
     */
 
     if(
@@ -2629,22 +2652,17 @@ rotateMissedQuestion(stage){
 
     }
 
-    this.clearQuestionFromStage(
+    this.clearQuestionStage(
         stage
     );
-
-    /*
-    Allow next question to be assigned
-    a little later.
-    */
 
     this.stagesSinceQuestion=0;
 
 }
 
-/* =========================================================
+/* =====================================================
 PLAYER
-========================================================= */
+===================================================== */
 
 createPlayer(){
 
@@ -2680,16 +2698,14 @@ createPlayer(){
 
 }
 
-/* =========================================================
+/* =====================================================
 BEE SYSTEM
-========================================================= */
+===================================================== */
 
-createEnemySystem(){
+createBeeSystem(){
 
     /*
-    NO bees placed around tree.
-
-    Bees spawn ONLY from above screen.
+    Bees ONLY arrive from top.
     */
 
     this.time.addEvent({
@@ -2717,31 +2733,22 @@ createEnemySystem(){
 
 }
 
-/* =========================================================
-SPAWN BEE FROM TOP
-========================================================= */
+/* =====================================================
+SPAWN BEE
+===================================================== */
 
 spawnBeeFromTop(){
 
-    /*
-    Random positions across upper area.
-
-    Avoid extreme edges.
-    */
-
     const x=
     Phaser.Math.Between(
-        110,
-        790
+        100,
+        800
     );
-
-    const y=
-    -80;
 
     const bee=
     this.beeGroup.create(
         x,
-        y,
+        -80,
         "bee"
     );
 
@@ -2757,29 +2764,22 @@ spawnBeeFromTop(){
     bee.body.allowGravity=
     false;
 
-    /*
-    Bee travels DOWN.
-    */
-
-    const speed=
-    Phaser.Math.Between(
-        130,
-        190
-    );
-
     bee.setVelocityY(
-        speed
+        Phaser.Math.Between(
+            140,
+            195
+        )
     );
 
     /*
-    Slight diagonal movement.
-    Not circling tree.
+    Slight movement left/right,
+    but still clearly travelling downward.
     */
 
     bee.setVelocityX(
         Phaser.Math.Between(
-            -45,
-            45
+            -40,
+            40
         )
     );
 
@@ -2791,20 +2791,16 @@ spawnBeeFromTop(){
     bee.setData(
         "shootY",
         Phaser.Math.Between(
-            260,
-            720
+            250,
+            700
         )
-    );
-
-    this.bees.push(
-        bee
     );
 
 }
 
-/* =========================================================
+/* =====================================================
 BEE SHOOT
-========================================================= */
+===================================================== */
 
 beeShoot(bee){
 
@@ -2846,9 +2842,9 @@ beeShoot(bee){
 
 }
 
-/* =========================================================
-COLLISIONS
-========================================================= */
+/* =====================================================
+COLLISION
+===================================================== */
 
 setupCollision(){
 
@@ -2878,9 +2874,9 @@ setupCollision(){
 
 }
 
-/* =========================================================
+/* =====================================================
 CAN LAND
-========================================================= */
+===================================================== */
 
 canLand(
 player,
@@ -2891,7 +2887,8 @@ leaf
         !this.gameStarted ||
         this.questionActive ||
         this.resting ||
-        this.gameCompleted
+        this.gameCompleted ||
+        this.teleporting
     ){
         return false;
     }
@@ -2909,9 +2906,9 @@ leaf
 
 }
 
-/* =========================================================
+/* =====================================================
 LAND
-========================================================= */
+===================================================== */
 
 land(
 player,
@@ -2921,7 +2918,8 @@ leaf
     if(
         this.questionActive ||
         this.resting ||
-        this.gameCompleted
+        this.gameCompleted ||
+        this.teleporting
     ){
         return;
     }
@@ -2932,8 +2930,20 @@ leaf
     );
 
     /*
-    LAND ON QUESTION LEAF.
+    Remember actual leaf.
+
+    We DO NOT move that leaf.
+
+    We only use its location if squirrel
+    needs a respawn later.
     */
+
+    if(stage){
+
+        this.lastLandedStage=
+        stage;
+
+    }
 
     if(
         stage &&
@@ -2960,9 +2970,9 @@ leaf
 
 }
 
-/* =========================================================
-JUMP
-========================================================= */
+/* =====================================================
+AUTO JUMP
+===================================================== */
 
 jump(){
 
@@ -2970,7 +2980,8 @@ jump(){
         !this.gameStarted ||
         this.questionActive ||
         this.resting ||
-        this.gameCompleted
+        this.gameCompleted ||
+        this.teleporting
     ){
         return;
     }
@@ -3003,9 +3014,9 @@ jump(){
 
 }
 
-/* =========================================================
-OPEN QUESTION
-========================================================= */
+/* =====================================================
+QUESTION
+===================================================== */
 
 openQuestion(stage){
 
@@ -3024,13 +3035,6 @@ openQuestion(stage){
     QUESTIONS[
         stage.questionIndex
     ];
-
-    /*
-    Shows ORIGINAL question number.
-
-    So if Q1 was skipped and appears after Q25,
-    it will still say "Soalan 1".
-    */
 
     questionNumber.textContent=
     `Soalan ${data.id}`;
@@ -3090,9 +3094,9 @@ openQuestion(stage){
 
 }
 
-/* =========================================================
-ANSWER QUESTION
-========================================================= */
+/* =====================================================
+ANSWER
+===================================================== */
 
 answerQuestion(
 stage,
@@ -3138,9 +3142,7 @@ button
         "#247020";
 
         /*
-        Current queue item has now been answered.
-
-        Remove it permanently.
+        Remove answered question.
         */
 
         if(
@@ -3150,12 +3152,7 @@ button
 
             this.questionQueue.shift();
 
-        }
-        else{
-
-            /*
-            Safety fallback.
-            */
+        }else{
 
             const position=
             this.questionQueue.indexOf(
@@ -3178,7 +3175,7 @@ button
         progressText.textContent=
         `${this.answeredCount} / 25`;
 
-        this.clearQuestionFromStage(
+        this.clearQuestionStage(
             stage
         );
 
@@ -3246,9 +3243,9 @@ button
 
 }
 
-/* =========================================================
-HIT BULLET
-========================================================= */
+/* =====================================================
+DAMAGE
+===================================================== */
 
 hitBullet(
 player,
@@ -3261,7 +3258,8 @@ bullet
         this.invulnerable ||
         this.resting ||
         this.questionActive ||
-        this.gameCompleted
+        this.gameCompleted ||
+        this.teleporting
     ){
         return;
     }
@@ -3269,10 +3267,6 @@ bullet
     this.damage();
 
 }
-
-/* =========================================================
-HIT BEE
-========================================================= */
 
 hitBee(
 player,
@@ -3283,24 +3277,17 @@ bee
         this.invulnerable ||
         this.resting ||
         this.questionActive ||
-        this.gameCompleted
+        this.gameCompleted ||
+        this.teleporting
     ){
         return;
     }
-
-    /*
-    Remove the bee after collision.
-    */
 
     bee.destroy();
 
     this.damage();
 
 }
-
-/* =========================================================
-DAMAGE
-========================================================= */
 
 damage(){
 
@@ -3353,9 +3340,9 @@ damage(){
 
 }
 
-/* =========================================================
+/* =====================================================
 LIVES
-========================================================= */
+===================================================== */
 
 updateLives(){
 
@@ -3377,13 +3364,352 @@ updateLives(){
 
 }
 
-/* =========================================================
-REST 10 SEC
-========================================================= */
+/* =====================================================
+FIND EXISTING SAFE LEAF
+===================================================== */
+
+findSafeTeleportStage(){
+
+    /*
+    IMPORTANT:
+
+    THIS FUNCTION DOES NOT MOVE A LEAF.
+
+    It only searches for a leaf already
+    present on screen.
+
+    Priority:
+    - visible
+    - lower part of screen
+    - not question leaf
+    - enough room above it for squirrel
+    */
+
+    let candidates=
+    this.stages.filter(
+        stage=>
+        !stage.question &&
+        stage.y>1050 &&
+        stage.y<1490
+    );
+
+    /*
+    Prefer the highest of lower-screen leaves
+    so squirrel has room to jump.
+    */
+
+    if(candidates.length>0){
+
+        candidates.sort(
+            (a,b)=>
+            a.y-b.y
+        );
+
+        /*
+        Pick one around middle/lower area.
+        */
+
+        return candidates[
+            Math.min(
+                1,
+                candidates.length-1
+            )
+        ];
+
+    }
+
+    /*
+    Fallback:
+    any visible non-question leaf.
+    */
+
+    candidates=
+    this.stages.filter(
+        stage=>
+        !stage.question &&
+        stage.y>750 &&
+        stage.y<1500
+    );
+
+    if(candidates.length>0){
+
+        candidates.sort(
+            (a,b)=>
+            b.y-a.y
+        );
+
+        return candidates[0];
+
+    }
+
+    /*
+    Final fallback:
+    use last landed stage only if still visible.
+
+    Still no leaf movement.
+    */
+
+    if(
+        this.lastLandedStage &&
+        this.lastLandedStage.y>650 &&
+        this.lastLandedStage.y<1510
+    ){
+
+        return this.lastLandedStage;
+
+    }
+
+    return null;
+
+}
+
+/* =====================================================
+TELEPORT ONLY THE SQUIRREL
+===================================================== */
+
+teleportSquirrelToLeaf(
+showMessage=true
+){
+
+    if(
+        this.teleporting ||
+        this.gameCompleted
+    ){
+        return;
+    }
+
+    this.teleporting=true;
+
+    mobileLeft=false;
+    mobileRight=false;
+
+    leftBtn.classList.remove(
+        "active"
+    );
+
+    rightBtn.classList.remove(
+        "active"
+    );
+
+    const safeStage=
+    this.findSafeTeleportStage();
+
+    /*
+    Leaves remain exactly where they are.
+
+    ONLY squirrel changes position.
+    */
+
+    if(safeStage){
+
+        /*
+        Small fade effect.
+        */
+
+        this.player.setAlpha(
+            .25
+        );
+
+        this.player.setVelocity(
+            0,
+            0
+        );
+
+        this.time.delayedCall(
+            130,
+            ()=>{
+
+                /*
+                Place squirrel ABOVE existing leaf.
+                */
+
+                this.player.setPosition(
+                    safeStage.leaf.x,
+                    safeStage.y-88
+                );
+
+                this.player.setVelocity(
+                    0,
+                    0
+                );
+
+                this.lastLandedStage=
+                safeStage;
+
+                this.player.setAlpha(
+                    1
+                );
+
+                if(showMessage){
+
+                    this.showTeleportMessage();
+
+                }
+
+                /*
+                Temporary safety so bullet does not
+                instantly hit the squirrel.
+                */
+
+                this.invulnerable=true;
+
+                this.player.setTint(
+                    0xfff2a6
+                );
+
+                this.time.delayedCall(
+                    800,
+                    ()=>{
+
+                        this.player.clearTint();
+
+                        this.invulnerable=false;
+
+                    }
+                );
+
+                /*
+                Resume jumping.
+                */
+
+                this.time.delayedCall(
+                    180,
+                    ()=>{
+
+                        this.teleporting=false;
+
+                        this.jump();
+
+                    }
+                );
+
+            }
+        );
+
+    }else{
+
+        /*
+        There should normally always be a safe leaf
+        because the leaves are endless.
+
+        If not found, place squirrel near trunk only.
+        We STILL do not move any leaf.
+        */
+
+        this.player.setPosition(
+            this.TREE_X,
+            1250
+        );
+
+        this.player.setVelocity(
+            0,
+            0
+        );
+
+        this.player.setAlpha(
+            1
+        );
+
+        this.time.delayedCall(
+            150,
+            ()=>{
+
+                this.teleporting=false;
+
+                this.jump();
+
+            }
+        );
+
+    }
+
+}
+
+/* =====================================================
+TELEPORT MESSAGE
+===================================================== */
+
+showTeleportMessage(){
+
+    teleportText.classList.add(
+        "show"
+    );
+
+    clearTimeout(
+        this.teleportMessageTimer
+    );
+
+    this.teleportMessageTimer=
+    setTimeout(
+        ()=>{
+
+            teleportText.classList.remove(
+                "show"
+            );
+
+        },
+        900
+    );
+
+}
+
+/* =====================================================
+PLAYER FALL
+===================================================== */
+
+playerFell(){
+
+    if(
+        this.resting ||
+        this.questionActive ||
+        this.gameCompleted ||
+        this.teleporting
+    ){
+        return;
+    }
+
+    /*
+    Lose 1 life when the squirrel misses
+    the leaf and falls.
+    */
+
+    this.lives--;
+
+    this.updateLives();
+
+    if(
+        this.lives<=0
+    ){
+
+        this.startRest();
+
+        return;
+
+    }
+
+    /*
+    IMPORTANT:
+    NO LEAF IS MOVED HERE.
+
+    Only squirrel is teleported.
+    */
+
+    this.teleportSquirrelToLeaf(
+        true
+    );
+
+}
+
+/* =====================================================
+REST
+===================================================== */
 
 startRest(){
 
-    if(this.resting){
+    if(
+        this.resting ||
+        this.gameCompleted
+    ){
         return;
     }
 
@@ -3391,8 +3717,15 @@ startRest(){
 
     this.invulnerable=true;
 
+    this.teleporting=false;
+
     mobileLeft=false;
     mobileRight=false;
+
+    this.player.setVelocity(
+        0,
+        0
+    );
 
     this.physics.world.pause();
 
@@ -3433,9 +3766,9 @@ startRest(){
 
 }
 
-/* =========================================================
+/* =====================================================
 FINISH REST
-========================================================= */
+===================================================== */
 
 finishRest(){
 
@@ -3448,8 +3781,13 @@ finishRest(){
 
     this.player.clearTint();
 
+    this.player.setAlpha(
+        1
+    );
+
     /*
-    Clear dangerous objects.
+    Clear enemies and bullets only.
+    Leaves are untouched.
     */
 
     this.bulletGroup.clear(
@@ -3462,175 +3800,24 @@ finishRest(){
         true
     );
 
-    this.bees=
-    this.bees.filter(
-        bee=>bee.active
-    );
-
-    /*
-    Return squirrel to bottom.
-    */
-
-    this.player.setPosition(
-        this.TREE_X,
-        1325
-    );
-
-    this.player.setVelocity(
-        0,
-        0
-    );
-
-    /*
-    Use one existing leaf as safe support,
-    rather than endlessly adding extra objects.
-    */
-
-    this.placeSafeStage();
-
     this.resting=false;
 
     this.physics.world.resume();
 
-    this.invulnerable=true;
-
-    this.time.delayedCall(
-        1000,
-        ()=>{
-
-            this.invulnerable=false;
-
-        }
-    );
-
-    this.time.delayedCall(
-        180,
-        ()=>{
-
-            this.jump();
-
-        }
-    );
-
-}
-
-/* =========================================================
-SAFE STAGE
-========================================================= */
-
-placeSafeStage(){
-
     /*
-    Select a non-question stage currently low
-    or recycle one if needed.
+    Again:
+    ONLY SQUIRREL TELEPORTS.
     */
 
-    let safeStage=
-    this.stages.find(
-        stage=>
-        !stage.question &&
-        stage.y>1200
-    );
-
-    if(!safeStage){
-
-        safeStage=
-        this.stages.find(
-            stage=>!stage.question
-        );
-
-    }
-
-    if(!safeStage){
-        return;
-    }
-
-    safeStage.side=0;
-
-    safeStage.y=1435;
-
-    safeStage.leaf.setPosition(
-        this.TREE_X,
-        safeStage.y
-    );
-
-    safeStage.leaf.body.updateFromGameObject();
-
-    safeStage.stem.setPosition(
-        this.TREE_X,
-        safeStage.y+8
-    );
-
-    safeStage.stem.displayWidth=
-    90;
-
-}
-
-/* =========================================================
-PLAYER FELL
-========================================================= */
-
-playerFell(){
-
-    if(
-        this.resting ||
-        this.questionActive ||
-        this.gameCompleted
-    ){
-        return;
-    }
-
-    this.lives--;
-
-    this.updateLives();
-
-    if(
-        this.lives<=0
-    ){
-
-        this.startRest();
-
-        return;
-
-    }
-
-    this.player.setPosition(
-        this.TREE_X,
-        1325
-    );
-
-    this.player.setVelocity(
-        0,
-        0
-    );
-
-    this.placeSafeStage();
-
-    this.invulnerable=true;
-
-    this.time.delayedCall(
-        900,
-        ()=>{
-
-            this.invulnerable=false;
-
-        }
-    );
-
-    this.time.delayedCall(
-        180,
-        ()=>{
-
-            this.jump();
-
-        }
+    this.teleportSquirrelToLeaf(
+        false
     );
 
 }
 
-/* =========================================================
+/* =====================================================
 FINISH
-========================================================= */
+===================================================== */
 
 finishGame(){
 
@@ -3645,9 +3832,9 @@ finishGame(){
 
 }
 
-/* =========================================================
+/* =====================================================
 KEYBOARD
-========================================================= */
+===================================================== */
 
 setupKeyboard(){
 
@@ -3666,20 +3853,27 @@ setupKeyboard(){
 
 }
 
-/* =========================================================
-HIGHEST LEAF
-========================================================= */
+/* =====================================================
+TOP STAGE
+===================================================== */
 
-getHighestStage(){
+getHighestStage(
+excludedStage=null
+){
 
-    let topStage=
-    null;
+    let result=null;
 
     let smallestY=
     Infinity;
 
     this.stages.forEach(
         stage=>{
+
+            if(
+                stage===excludedStage
+            ){
+                return;
+            }
 
             if(
                 stage.y<
@@ -3689,7 +3883,7 @@ getHighestStage(){
                 smallestY=
                 stage.y;
 
-                topStage=
+                result=
                 stage;
 
             }
@@ -3697,25 +3891,20 @@ getHighestStage(){
         }
     );
 
-    return topStage;
+    return result;
 
 }
 
-/* =========================================================
-RECYCLE ENDLESS LEAF
-========================================================= */
+/* =====================================================
+RECYCLE ENDLESS STAGE
+===================================================== */
 
 recycleStage(stage){
 
     /*
-    ================================================
-    QUESTION SKIPPED
-    ================================================
-
-    A question leaf has gone below the screen
-    without player landing on it.
-
-    Rotate question to BACK.
+    If a QUESTION leaf leaves the bottom
+    without being answered,
+    rotate its question to the back.
     */
 
     if(
@@ -3723,25 +3912,27 @@ recycleStage(stage){
         stage.questionIndex!==null
     ){
 
-        this.rotateMissedQuestion(
+        this.rotateSkippedQuestion(
             stage
         );
 
     }
 
     /*
-    Find current top leaf.
+    Recycle the leaf ONLY because it reached
+    the bottom of endless world.
+
+    This has NOTHING to do with squirrel falling.
     */
 
     const topStage=
-    this.getHighestStage();
+    this.getHighestStage(
+        stage
+    );
 
     let newY;
 
-    if(
-        topStage &&
-        topStage!==stage
-    ){
+    if(topStage){
 
         newY=
         topStage.y-
@@ -3754,27 +3945,20 @@ recycleStage(stage){
 
     }
 
-    /*
-    Alternate left-right forever.
-    */
-
-    let side=
+    const side=
     this.nextSide;
 
     this.nextSide*=-1;
-
-    const variation=
-    Phaser.Math.Between(
-        -6,
-        6
-    );
 
     const x=
     this.TREE_X+
     side*
     (
         this.LEAF_OFFSET+
-        variation
+        Phaser.Math.Between(
+            -6,
+            6
+        )
     );
 
     stage.side=
@@ -3796,9 +3980,9 @@ recycleStage(stage){
 
     stage.leaf.body.updateFromGameObject();
 
-    /* =====================================================
-    REATTACH SHORT STEM
-    ===================================================== */
+    /* =================================================
+    REATTACH STEM
+    ================================================= */
 
     const anchorX=
     side<0
@@ -3833,14 +4017,9 @@ recycleStage(stage){
     stage.stem.displayHeight=
     21;
 
-    /* =====================================================
-    QUESTION GENERATION
-
-    Every few leaves create next queue question.
-
-    Because stages are ALWAYS recycled,
-    question stages are also endless.
-    ===================================================== */
+    /*
+    New question appears every few stages.
+    */
 
     this.stagesSinceQuestion++;
 
@@ -3860,9 +4039,9 @@ recycleStage(stage){
 
 }
 
-/* =========================================================
+/* =====================================================
 WORLD SCROLL
-========================================================= */
+===================================================== */
 
 scrollWorld(delta){
 
@@ -3872,20 +4051,14 @@ scrollWorld(delta){
     1000;
 
     /*
-    Bark endless movement.
+    Endless bark.
     */
 
     this.tree.tilePositionY-=
     move;
 
     /*
-    =====================================================
-    ALL LEAVES MOVE WITH TREE
-
-    Same scroll amount.
-
-    Leaf + stem + LED = one visual stage.
-    =====================================================
+    Leaf + stem + LED move together.
     */
 
     this.stages.forEach(
@@ -3901,9 +4074,7 @@ scrollWorld(delta){
             stage.stem.y=
             stage.y+8;
 
-            if(
-                stage.led
-            ){
+            if(stage.led){
 
                 stage.led.x=
                 stage.leaf.x;
@@ -3917,8 +4088,7 @@ scrollWorld(delta){
     );
 
     /*
-    Recycle after positions were updated.
-    Separate loop avoids top calculation problems.
+    Recycle only when leaf leaves screen.
     */
 
     this.stages.forEach(
@@ -3938,7 +4108,7 @@ scrollWorld(delta){
     );
 
     /*
-    Background foliage.
+    Background parallax.
     */
 
     this.bgLeaves.forEach(
@@ -3964,17 +4134,11 @@ scrollWorld(delta){
 
 }
 
-/* =========================================================
-UPDATE BEES
-========================================================= */
+/* =====================================================
+BEE UPDATE
+===================================================== */
 
 updateBees(){
-
-    /*
-    Bees do NOT orbit.
-
-    They simply travel from top to bottom.
-    */
 
     this.beeGroup.children.iterate(
         bee=>{
@@ -3984,8 +4148,7 @@ updateBees(){
             }
 
             /*
-            Shoot once when reaching its
-            preselected vertical position.
+            Fire once.
             */
 
             if(
@@ -4019,15 +4182,14 @@ updateBees(){
             );
 
             /*
-            Bounce gently from horizontal edges,
-            but still continues DOWN.
+            Keep within screen.
             */
 
             if(
-                bee.x<60
+                bee.x<55
             ){
 
-                bee.x=60;
+                bee.x=55;
 
                 bee.setVelocityX(
                     Math.abs(
@@ -4038,10 +4200,10 @@ updateBees(){
             }
 
             if(
-                bee.x>840
+                bee.x>845
             ){
 
-                bee.x=840;
+                bee.x=845;
 
                 bee.setVelocityX(
                     -Math.abs(
@@ -4052,9 +4214,9 @@ updateBees(){
             }
 
             /*
-            Destroy at bottom.
+            Remove when bee reaches bottom.
 
-            New bee will later spawn from TOP.
+            Next bee will spawn again from top.
             */
 
             if(
@@ -4068,22 +4230,11 @@ updateBees(){
         }
     );
 
-    /*
-    Clean local array.
-    */
-
-    this.bees=
-    this.bees.filter(
-        bee=>
-        bee &&
-        bee.active
-    );
-
 }
 
-/* =========================================================
+/* =====================================================
 CLEAN BULLETS
-========================================================= */
+===================================================== */
 
 cleanBullets(){
 
@@ -4110,9 +4261,9 @@ cleanBullets(){
 
 }
 
-/* =========================================================
+/* =====================================================
 PLAYER CONTROL
-========================================================= */
+===================================================== */
 
 updatePlayer(){
 
@@ -4169,7 +4320,8 @@ updatePlayer(){
         this.player.x<45
     ){
 
-        this.player.x=45;
+        this.player.x=
+        45;
 
         this.player.setVelocityX(
             Math.abs(
@@ -4183,7 +4335,8 @@ updatePlayer(){
         this.player.x>855
     ){
 
-        this.player.x=855;
+        this.player.x=
+        855;
 
         this.player.setVelocityX(
             -Math.abs(
@@ -4195,9 +4348,9 @@ updatePlayer(){
 
 }
 
-/* =========================================================
+/* =====================================================
 UPDATE
-========================================================= */
+===================================================== */
 
 update(
 time,
@@ -4219,7 +4372,7 @@ delta
     }
 
     /*
-    Endless trunk + endless leaves.
+    Endless tree and leaves continue.
     */
 
     this.scrollWorld(
@@ -4227,35 +4380,64 @@ delta
     );
 
     /*
-    Squirrel.
+    Player controls paused briefly
+    during teleport.
     */
 
-    this.updatePlayer();
+    if(
+        !this.teleporting
+    ){
 
-    /*
-    Bees coming from top.
-    */
+        this.updatePlayer();
+
+    }
 
     this.updateBees();
 
     this.cleanBullets();
 
     /*
-    FALL
+    =================================================
+    CHECK MISSED QUESTION
+
+    If LED leaf has gone very low and squirrel
+    did not land on it, rotate question.
+    =================================================
     */
 
     if(
-        this.player.y>1690
+        this.activeQuestionStage &&
+        !this.activeQuestionStage.used &&
+        this.activeQuestionStage.y>1540
+    ){
+
+        this.rotateSkippedQuestion(
+            this.activeQuestionStage
+        );
+
+    }
+
+    /*
+    =================================================
+    SQUIRREL FALL
+
+    Only squirrel teleports.
+
+    NO stage or leaf reposition here.
+    =================================================
+    */
+
+    if(
+        this.player.y>1685
     ){
 
         this.playerFell();
 
         return;
-
     }
 
     /*
-    Prevent leaving through top.
+    Prevent squirrel escaping top.
     */
 
     if(
@@ -4281,9 +4463,9 @@ delta
 
 }
 
-/* =========================================================
-PHASER CONFIG
-========================================================= */
+/* =====================================================
+CONFIG
+===================================================== */
 
 const config={
 
@@ -4304,7 +4486,8 @@ const config={
 
     physics:{
 
-        default:"arcade",
+        default:
+        "arcade",
 
         arcade:{
 
@@ -4355,9 +4538,9 @@ new Phaser.Game(
     config
 );
 
-/* =========================================================
+/* =====================================================
 PREVENT MOBILE PAGE SCROLL
-========================================================= */
+===================================================== */
 
 document.addEventListener(
     "touchmove",
@@ -4379,15 +4562,16 @@ document.addEventListener(
     }
 );
 
-/* =========================================================
-RESET INPUT
-========================================================= */
+/* =====================================================
+RESET CONTROL
+===================================================== */
 
 window.addEventListener(
     "blur",
     ()=>{
 
         mobileLeft=false;
+
         mobileRight=false;
 
         leftBtn.classList.remove(
