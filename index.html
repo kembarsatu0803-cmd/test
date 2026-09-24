@@ -1,23 +1,31 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-<meta charset="UTF-8">
-
-<meta
-name="viewport"
+<meta charset="UTF-8" />
+<meta name="viewport"
 content="width=device-width,
 initial-scale=1,
 maximum-scale=1,
 user-scalable=no,
-viewport-fit=cover">
+viewport-fit=cover" />
 
-<title>Tree Hop Climb — Unit 6</title>
+<title>Stickman Plant Adventure — Set 6</title>
+
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 
 <style>
+:root{
+    --ink:#173c2b;
+    --cream:#fff8dc;
+    --green:#55a94f;
+    --dark:#245a35;
+    --gold:#ffd45c;
+}
+
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
-    user-select:none;
+    touch-action:none;
 }
 
 html,
@@ -26,707 +34,653 @@ body{
     width:100%;
     height:100%;
     overflow:hidden;
+    background:#bfe9ff;
     font-family:"Trebuchet MS",Arial,sans-serif;
-    background:#d8fad0;
+    color:var(--ink);
 }
 
-body{
+#app{
+    position:fixed;
+    inset:0;
+
     display:flex;
-    justify-content:center;
     align-items:center;
-}
+    justify-content:center;
 
-#gameWrap{
-    position:relative;
-
-    width:100vw;
-    height:100vh;
-    height:100svh;
-    height:100dvh;
-
-    max-width:900px;
-
-    overflow:hidden;
-
-    background:#d8fad0;
+    background:
+    linear-gradient(
+        #bfeaff 0 62%,
+        #b8dfa1 62% 100%
+    );
 }
 
 #game{
-    position:absolute;
-    inset:0;
+    width:100%;
+    height:100%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
-#game canvas{
-    display:block!important;
-    width:100%!important;
-    height:100%!important;
-    touch-action:none;
+canvas{
+    display:block;
+
+    max-width:100%;
+    max-height:100%;
+
+    image-rendering:auto;
 }
 
-/* =====================================================
+/* =========================
 HUD
-===================================================== */
+========================= */
 
 #hud{
-    position:absolute;
+    position:fixed;
+    z-index:20;
 
-    top:max(12px,env(safe-area-inset-top));
-    left:12px;
-    right:12px;
+    left:max(
+        10px,
+        env(safe-area-inset-left)
+    );
 
-    z-index:50;
+    right:max(
+        10px,
+        env(safe-area-inset-right)
+    );
+
+    top:max(
+        10px,
+        env(safe-area-inset-top)
+    );
 
     display:flex;
     justify-content:space-between;
-    align-items:flex-start;
+
+    gap:8px;
 
     pointer-events:none;
 }
 
-.hudCard{
-    min-width:150px;
+.pill{
+    background:rgba(255,255,255,.94);
 
-    padding:9px 13px;
+    border:3px solid #214d35;
 
-    border:4px solid #603611;
-    border-radius:20px;
+    border-radius:999px;
 
-    background:
-    linear-gradient(
-        #fff9b5,
-        #ffd358
+    padding:8px 13px;
+
+    font-weight:900;
+
+    font-size:
+    clamp(
+        12px,
+        2vw,
+        17px
     );
 
     box-shadow:
-    0 6px 0 #965716,
-    0 10px 18px rgba(0,0,0,.18);
+    0 4px 0
+    rgba(33,77,53,.22);
 
-    color:#49300f;
-
-    font-size:14px;
-    font-weight:900;
-    line-height:1.55;
-
-    pointer-events:auto;
+    white-space:nowrap;
 }
 
-#livesText{
-    letter-spacing:2px;
+#hudRight{
+    display:flex;
+    gap:8px;
 }
 
 #homeBtn{
-    width:54px;
-    height:54px;
+    pointer-events:auto;
 
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    border:3px solid #214d35;
 
-    border:4px solid #603611;
-    border-radius:50%;
+    border-radius:999px;
 
-    background:
-    linear-gradient(
-        #fff89a,
-        #ffc53b
-    );
+    background:#fff6c9;
+
+    color:#214d35;
+
+    padding:8px 13px;
+
+    font:
+    900 clamp(
+        12px,
+        2vw,
+        17px
+    )
+    "Trebuchet MS",
+    Arial;
 
     box-shadow:
-    0 6px 0 #965716;
+    0 4px 0
+    rgba(33,77,53,.22);
 
-    text-decoration:none;
-
-    font-size:25px;
-
-    pointer-events:auto;
+    cursor:pointer;
 }
 
-/* =====================================================
-CONTROLS
-===================================================== */
+/* =========================
+TOUCH CONTROL
+========================= */
 
-#controls{
-    position:absolute;
+#touch{
+    position:fixed;
+
+    z-index:25;
 
     left:0;
     right:0;
 
-    bottom:max(
-        18px,
+    bottom:
+    max(
+        12px,
         env(safe-area-inset-bottom)
     );
 
-    z-index:45;
+    display:none;
 
-    display:flex;
     justify-content:space-between;
 
-    padding:0 20px;
+    align-items:flex-end;
+
+    padding:
+    0
+    max(
+        16px,
+        env(safe-area-inset-left)
+    )
+    0
+    max(
+        16px,
+        env(safe-area-inset-right)
+    );
 
     pointer-events:none;
 }
 
-.moveBtn{
-    width:92px;
-    height:92px;
-
-    border:5px solid #623a12;
-    border-radius:50%;
-
-    background:
-    linear-gradient(
-        #fff681,
-        #ffc43b
-    );
-
-    box-shadow:
-    0 8px 0 #945716,
-    0 12px 22px rgba(0,0,0,.22);
-
-    color:#4a2b0b;
-
-    font-size:41px;
-    font-weight:900;
+.pad{
+    display:flex;
+    gap:12px;
 
     pointer-events:auto;
-
-    touch-action:none;
 }
 
-.moveBtn.active,
-.moveBtn:active{
-    transform:translateY(6px);
-    box-shadow:0 2px 0 #945716;
+.ctrl{
+    width:68px;
+    height:68px;
+
+    border-radius:50%;
+
+    border:
+    4px solid
+    rgba(24,76,48,.85);
+
+    background:
+    rgba(255,255,255,.78);
+
+    box-shadow:
+    0 5px 0
+    rgba(24,76,48,.25);
+
+    font-size:30px;
+    font-weight:900;
+
+    color:#1b5133;
+
+    display:grid;
+    place-items:center;
+
+    user-select:none;
 }
 
-/* =====================================================
-START
-===================================================== */
+.ctrl:active,
+.ctrl.on{
+    transform:
+    translateY(3px);
 
-#startScreen{
-    position:absolute;
+    box-shadow:
+    0 2px 0
+    rgba(24,76,48,.25);
+
+    background:#fff4ad;
+}
+
+#jumpBtn{
+    width:78px;
+    height:78px;
+
+    background:
+    rgba(255,224,99,.9);
+}
+
+/* =========================
+OVERLAY
+========================= */
+
+.overlay{
+    position:fixed;
+
+    z-index:40;
+
     inset:0;
 
-    z-index:100;
+    background:
+    rgba(16,49,35,.48);
 
     display:flex;
-    justify-content:center;
+
     align-items:center;
-
-    padding:20px;
-
-    background:rgba(221,255,214,.96);
-
-    backdrop-filter:blur(3px);
-}
-
-.startCard{
-    width:min(92%,500px);
-
-    padding:27px 22px;
-
-    border:5px solid #603a14;
-    border-radius:30px;
-
-    background:
-    linear-gradient(
-        #fffbd0,
-        #ffe16c
-    );
-
-    box-shadow:
-    0 10px 0 #965817,
-    0 19px 35px rgba(0,0,0,.23);
-
-    text-align:center;
-}
-
-.startIcon{
-    font-size:66px;
-}
-
-.startCard h1{
-    margin:7px 0;
-
-    color:#3d7825;
-
-    font-size:clamp(
-        28px,
-        7vw,
-        42px
-    );
-}
-
-.startCard p{
-    color:#513515;
-
-    line-height:1.5;
-
-    font-size:16px;
-    font-weight:700;
-}
-
-.bigBtn{
-    width:100%;
-
-    margin-top:10px;
-
-    padding:16px;
-
-    border:4px solid #34731f;
-    border-radius:18px;
-
-    background:
-    linear-gradient(
-        #90e653,
-        #4bad2f
-    );
-
-    box-shadow:
-    0 7px 0 #28651a;
-
-    color:white;
-
-    font-family:inherit;
-    font-size:20px;
-    font-weight:900;
-}
-
-/* =====================================================
-QUESTION
-===================================================== */
-
-#questionModal{
-    position:absolute;
-    inset:0;
-
-    z-index:130;
-
-    display:none;
     justify-content:center;
-    align-items:center;
 
-    padding:
-    max(18px,env(safe-area-inset-top))
-    15px
-    max(18px,env(safe-area-inset-bottom));
-
-    background:rgba(28,73,28,.77);
-
-    backdrop-filter:blur(4px);
+    padding:18px;
 }
 
-.questionCard{
-    width:min(95%,600px);
-    max-height:92vh;
+.card{
+    width:min(
+        680px,
+        94vw
+    );
+
+    max-height:92dvh;
 
     overflow:auto;
 
-    padding:20px;
+    background:#fffdf0;
 
-    border:5px solid #623d16;
-    border-radius:28px;
+    border:
+    4px solid
+    #214d35;
 
-    background:
-    linear-gradient(
-        #fffbd5,
-        #ffe98c
+    border-radius:26px;
+
+    padding:
+    clamp(
+        18px,
+        4vw,
+        30px
     );
 
     box-shadow:
-    0 10px 0 #875017,
-    0 20px 40px rgba(0,0,0,.35);
+    0 12px 0
+    rgba(23,60,43,.22);
+
+    text-align:center;
 }
 
-.questionTop{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    gap:10px;
-
-    margin-bottom:12px;
+.card h1,
+.card h2{
+    margin:
+    0 0 12px;
 }
 
-.badge{
-    padding:7px 13px;
+.card p{
+    line-height:1.45;
 
-    border:3px solid #477826;
-    border-radius:50px;
+    margin:
+    8px 0 16px;
+}
 
-    background:#72c842;
+.small{
+    font-size:14px;
+    opacity:.8;
+}
+
+.bigBtn{
+    border:0;
+
+    border-radius:16px;
+
+    background:#5cb85c;
 
     color:white;
 
-    font-size:14px;
-    font-weight:900;
-}
+    font:
+    900 18px
+    "Trebuchet MS",
+    Arial;
 
-#tpBadge{
-    background:#ffe45b;
-    border-color:#a16c15;
-    color:#55350d;
-}
-
-#questionText{
-    margin:13px 0 16px;
-
-    color:#422c13;
-
-    font-size:clamp(
-        18px,
-        4.8vw,
-        24px
-    );
-
-    line-height:1.4;
-    font-weight:900;
-}
-
-#answerList{
-    display:grid;
-    gap:10px;
-}
-
-.answerBtn{
-    width:100%;
-    min-height:58px;
-
-    padding:12px 15px;
-
-    border:3px solid #71501e;
-    border-radius:16px;
-
-    background:#fffdf1;
+    padding:
+    13px 22px;
 
     box-shadow:
-    0 4px 0 #baa04d;
+    0 5px 0
+    #347a39;
 
-    color:#422e15;
+    cursor:pointer;
+}
+
+.bigBtn:active{
+    transform:
+    translateY(3px);
+
+    box-shadow:
+    0 2px 0
+    #347a39;
+}
+
+/* =========================
+QUESTION
+========================= */
+
+#questionOverlay{
+    display:none;
+}
+
+.questionTitle{
+    font-size:14px;
+
+    font-weight:900;
+
+    color:#56805d;
+
+    text-transform:uppercase;
+
+    letter-spacing:.08em;
+}
+
+.questionText{
+    font-size:
+    clamp(
+        18px,
+        3vw,
+        25px
+    );
+
+    font-weight:900;
+
+    line-height:1.35;
+
+    margin:
+    10px 0 16px;
+}
+
+.answers{
+    display:grid;
+
+    grid-template-columns:
+    1fr 1fr;
+
+    gap:10px;
 
     text-align:left;
+}
 
-    font-family:inherit;
-    font-size:16px;
+.ans{
+    border:
+    3px solid
+    #366a45;
+
+    border-radius:15px;
+
+    background:white;
+
+    color:#173c2b;
+
+    padding:
+    12px 14px;
+
+    font:
+    800
+    clamp(
+        14px,
+        2.2vw,
+        17px
+    )
+    "Trebuchet MS",
+    Arial;
+
+    cursor:pointer;
+
+    min-height:54px;
+}
+
+.ans:hover{
+    background:#f0ffe8;
+}
+
+.ans.correct{
+    background:#c9f7c8;
+
+    border-color:#2d8c3c;
+}
+
+.ans.wrong{
+    background:#ffd0ce;
+
+    border-color:#c74740;
+}
+
+.ans:disabled{
+    cursor:default;
+}
+
+.letter{
+    display:inline-grid;
+
+    place-items:center;
+
+    width:28px;
+    height:28px;
+
+    margin-right:8px;
+
+    border-radius:50%;
+
+    background:#e7f4dc;
+
     font-weight:900;
-}
-
-.answerBtn.correct{
-    background:#8ee472;
-    border-color:#348629;
-}
-
-.answerBtn.wrong{
-    background:#ff958d;
-    border-color:#b73832;
 }
 
 #feedback{
-    min-height:26px;
+    min-height:28px;
 
     margin-top:12px;
 
-    text-align:center;
-
-    font-size:16px;
     font-weight:900;
 }
 
-/* =====================================================
-REST
-===================================================== */
-
-#restOverlay{
-    position:absolute;
-    inset:0;
-
-    z-index:145;
-
-    display:none;
-    justify-content:center;
-    align-items:center;
-
-    background:rgba(31,69,29,.60);
-
-    backdrop-filter:blur(4px);
+.ok{
+    color:#267b38;
 }
 
-.restCard{
-    min-width:270px;
-
-    padding:24px;
-
-    border:5px solid #623b15;
-    border-radius:28px;
-
-    background:
-    linear-gradient(
-        #fff8af,
-        #ffc94f
-    );
-
-    box-shadow:
-    0 9px 0 #955717,
-    0 18px 34px rgba(0,0,0,.30);
-
-    text-align:center;
+.bad{
+    color:#b23832;
 }
 
-.restIcon{
-    font-size:52px;
-}
+/* =========================
+TOAST
+========================= */
 
-.restTitle{
-    color:#513010;
+#toast{
+    position:fixed;
 
-    font-size:21px;
-    font-weight:900;
-}
-
-#countdownNumber{
-    margin:5px;
-
-    color:#c42621;
-
-    font-size:74px;
-    line-height:1;
-
-    font-weight:900;
-}
-
-/* =====================================================
-TELEPORT MESSAGE
-===================================================== */
-
-#teleportText{
-    position:absolute;
+    z-index:30;
 
     left:50%;
-    top:50%;
+
+    bottom:120px;
 
     transform:
-    translate(-50%,-50%)
-    scale(.85);
+    translateX(-50%)
+    translateY(20px);
 
-    z-index:90;
+    background:#173c2b;
+
+    color:white;
+
+    padding:
+    11px 16px;
+
+    border-radius:999px;
+
+    font-weight:900;
 
     opacity:0;
 
-    padding:11px 17px;
-
-    border:3px solid #5c3614;
-    border-radius:50px;
-
-    background:rgba(255,245,159,.95);
-
-    color:#4c2d0d;
-
-    font-size:14px;
-    font-weight:900;
-
     pointer-events:none;
 
-    transition:
-    opacity .2s,
-    transform .2s;
+    transition:.2s;
+
+    white-space:nowrap;
+
+    max-width:90vw;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
 }
 
-#teleportText.show{
+#toast.show{
     opacity:1;
 
     transform:
-    translate(-50%,-50%)
-    scale(1);
+    translateX(-50%)
+    translateY(0);
 }
 
-/* =====================================================
-COMPLETE
-===================================================== */
-
-#completeScreen{
-    position:absolute;
-    inset:0;
-
-    z-index:160;
-
+#endOverlay{
     display:none;
-    justify-content:center;
-    align-items:center;
-
-    padding:20px;
-
-    background:rgba(28,87,34,.82);
 }
 
-.completeCard{
-    width:min(92%,500px);
+/* =========================
+RESPONSIVE
+========================= */
 
-    padding:27px 22px;
+@media
+(hover:none),
+(pointer:coarse),
+(max-width:1024px){
 
-    border:5px solid #623d16;
-    border-radius:30px;
-
-    background:
-    linear-gradient(
-        #fffac5,
-        #ffd45f
-    );
-
-    box-shadow:
-    0 10px 0 #925619,
-    0 20px 38px rgba(0,0,0,.35);
-
-    text-align:center;
+    #touch{
+        display:flex;
+    }
 }
 
-.completeIcon{
-    font-size:70px;
-}
+@media(max-width:560px){
 
-.completeCard h2{
-    color:#347c28;
-    font-size:34px;
-}
-
-.completeCard p{
-    color:#4f3214;
-    line-height:1.5;
-    font-weight:800;
-}
-
-/* =====================================================
-MOBILE
-===================================================== */
-
-@media(max-width:600px){
-
-    .hudCard{
-        min-width:135px;
-        padding:7px 10px;
-        font-size:12px;
+    .answers{
+        grid-template-columns:1fr;
     }
 
+    .ctrl{
+        width:62px;
+        height:62px;
+    }
+
+    #jumpBtn{
+        width:72px;
+        height:72px;
+    }
+
+    .pill,
     #homeBtn{
-        width:47px;
-        height:47px;
-        font-size:21px;
-    }
-
-    .moveBtn{
-        width:78px;
-        height:78px;
-        font-size:35px;
-        border-width:4px;
-    }
-
-    #controls{
-        padding:0 15px;
-    }
-
-    .questionCard{
-        padding:16px;
-    }
-
-    .answerBtn{
-        min-height:51px;
-        font-size:14px;
+        padding:
+        7px 10px;
     }
 }
-
 </style>
 </head>
 
 <body>
 
-<div id="gameWrap">
-
-<div id="game"></div>
+<div id="app">
+    <div id="game"></div>
+</div>
 
 <!-- HUD -->
 
 <div id="hud">
 
-    <div class="hudCard">
+    <div
+    class="pill"
+    id="progress">
+        Soalan 0/25
+    </div>
 
-        💡 Dijawab:
-        <span id="progressText">
-            0 / 25
-        </span>
+    <div id="hudRight">
 
-        <br>
+        <div
+        class="pill"
+        id="lives">
+            ❤❤❤
+        </div>
 
-        <span id="livesText">
-            ❤️❤️❤️
-        </span>
+        <button id="homeBtn">
+            ⌂ Home
+        </button>
 
     </div>
 
-    <a
-    id="homeBtn"
-    href="index.html">
-        🏠
-    </a>
+</div>
+
+<!-- MOBILE CONTROL -->
+
+<div id="touch">
+
+    <div class="pad">
+
+        <div
+        class="ctrl"
+        id="leftBtn">
+            ◀
+        </div>
+
+        <div
+        class="ctrl"
+        id="rightBtn">
+            ▶
+        </div>
+
+    </div>
+
+    <div class="pad">
+
+        <div
+        class="ctrl"
+        id="jumpBtn">
+            ▲
+        </div>
+
+    </div>
 
 </div>
 
-<!-- CONTROLS -->
-
-<div id="controls">
-
-    <button
-    id="leftBtn"
-    class="moveBtn">
-        ◀
-    </button>
-
-    <button
-    id="rightBtn"
-    class="moveBtn">
-        ▶
-    </button>
-
-</div>
-
-<div id="teleportText">
-    🐿️ Tupai kembali ke daun!
-</div>
+<div id="toast"></div>
 
 <!-- START -->
 
-<div id="startScreen">
+<div
+class="overlay"
+id="startOverlay">
 
-    <div class="startCard">
-
-        <div class="startIcon">
-            🌳🐿️🐝
-        </div>
+    <div class="card">
 
         <h1>
-            TREE HOP CLIMB
+            🌿 Stickman Plant Adventure
         </h1>
 
         <p>
-            Bantu tupai melompat dari
-            daun ke daun.
-            <br><br>
+            Bergerak seperti game platform ala Mario.
+            Lompat melepasi duri dan serangga,
+            kemudian sentuh papan <b>?</b>
+            untuk menjawab semua 25 soalan Set 6.
+        </p>
 
-            Daun dan batang pokok akan
-            bergerak secara endless.
-            <br><br>
-
-            Kalau tupai terjatuh,
-            hanya tupai akan kembali ke
-            daun yang selamat.
-            Daun tidak akan berpindah.
-            <br><br>
-
-            Cari lampu LED 💡 dan jawab
-            semua 25 soalan.
+        <p class="small">
+            <b>Laptop:</b>
+            A/D atau ←/→ untuk bergerak,
+            W/↑/Space untuk lompat.
+            <br>
+            <b>Phone/Tablet:</b>
+            guna butang pada skrin.
         </p>
 
         <button
-        id="startBtn"
-        class="bigBtn">
+        class="bigBtn"
+        id="startBtn">
             MULA GAME
         </button>
 
@@ -736,29 +690,27 @@ MOBILE
 
 <!-- QUESTION -->
 
-<div id="questionModal">
+<div
+class="overlay"
+id="questionOverlay">
 
-    <div class="questionCard">
+    <div class="card">
 
-        <div class="questionTop">
-
-            <span
-            id="questionNumber"
-            class="badge">
-                Soalan
-            </span>
-
-            <span
-            id="tpBadge"
-            class="badge">
-                TP1
-            </span>
-
+        <div
+        class="questionTitle"
+        id="questionNo">
+            SOALAN 1 / 25
         </div>
 
-        <div id="questionText"></div>
+        <div
+        class="questionText"
+        id="questionText">
+        </div>
 
-        <div id="answerList"></div>
+        <div
+        class="answers"
+        id="answers">
+        </div>
 
         <div id="feedback"></div>
 
@@ -766,1370 +718,1472 @@ MOBILE
 
 </div>
 
-<!-- REST -->
+<!-- END -->
 
-<div id="restOverlay">
+<div
+class="overlay"
+id="endOverlay">
 
-    <div class="restCard">
+    <div class="card">
 
-        <div class="restIcon">
-            🐿️💤
-        </div>
-
-        <div class="restTitle">
-            Nyawa habis!
-        </div>
-
-        <div id="countdownNumber">
-            10
-        </div>
-
-        <div>
-            Tunggu sebelum sambung semula
-        </div>
-
-    </div>
-
-</div>
-
-<!-- COMPLETE -->
-
-<div id="completeScreen">
-
-    <div class="completeCard">
-
-        <div class="completeIcon">
-            🐿️🏆🌳
-        </div>
-
-        <h2>
-            Tahniah!
-        </h2>
+        <h1>
+            🏆 Tahniah!
+        </h1>
 
         <p>
-            Semua 25 soalan telah
-            berjaya dijawab.
-            <br><br>
-
-            Misi Tree Hop Climb selesai!
+            Semua <b>25 soalan</b>
+            telah dijawab dengan betul
+            dan Stickman berjaya sampai
+            ke Taman Ilmu Tumbuhan.
         </p>
 
-        <a
-        href="index.html"
-        style="text-decoration:none">
-
-            <button class="bigBtn">
-                KEMBALI KE HOME
-            </button>
-
-        </a>
+        <button
+        class="bigBtn"
+        id="restartBtn">
+            MAIN SEMULA
+        </button>
 
     </div>
 
 </div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <script>
 
 /* =====================================================
-QUESTIONS
+SOALAN SET 6
 ===================================================== */
 
-const QUESTIONS=[
+const QUESTIONS = [
 
 {
-id:1,
-tp:"TP1",
-q:"Bahagian tumbuhan yang tumbuh di atas akar ialah ____.",
-options:[
+q:
+"Bahagian tumbuhan yang tumbuh di atas akar ialah ____.",
+
+o:[
 "Daun",
 "Batang",
 "Bunga",
 "Akar"
 ],
-correct:1
+
+a:1
 },
 
 {
-id:2,
-tp:"TP2",
-q:"Lina mahu melabel bahagian pokok yang berada di bawah batang. Label yang betul ialah ____.",
-options:[
+q:
+"Lina mahu melabel bahagian pokok yang berada di bawah batang. Label yang betul ialah ____.",
+
+o:[
 "Buah",
 "Bunga",
 "Daun",
 "Akar"
 ],
-correct:3
+
+a:3
 },
 
 {
-id:3,
-tp:"TP2",
-q:"Jika bahagian tumbuhan ditunjukkan di tengah-tengah pokok dan menyokong cabang, apakah labelnya?",
-options:[
+q:
+"Jika bahagian tumbuhan ditunjukkan di tengah-tengah pokok dan menyokong cabang, apakah labelnya?",
+
+o:[
 "Daun",
 "Bunga",
 "Batang",
 "Akar"
 ],
-correct:2
+
+a:2
 },
 
 {
-id:4,
-tp:"TP1",
-q:"Apakah nama bahagian pokok yang biasanya mempunyai banyak helaian hijau?",
-options:[
+q:
+"Apakah nama bahagian pokok yang biasanya mempunyai banyak helaian hijau?",
+
+o:[
 "Daun",
 "Batang",
 "Tanah",
 "Akar"
 ],
-correct:0
+
+a:0
 },
 
 {
-id:5,
-tp:"TP2",
-q:"Jika satu gambar menunjukkan akar, batang dan daun tetapi satu label belum diisi pada bahagian berkelopak, label itu ialah ____.",
-options:[
+q:
+"Jika satu gambar menunjukkan akar, batang dan daun tetapi satu label belum diisi pada bahagian berkelopak, label itu ialah ____.",
+
+o:[
 "Batang",
 "Bunga",
 "Daun",
 "Akar"
 ],
-correct:1
+
+a:1
 },
 
 {
-id:6,
-tp:"TP1",
-q:"Pokok bunga raya mempunyai bahagian seperti bunga, daun, batang dan ____.",
-options:[
+q:
+"Pokok bunga raya mempunyai bahagian seperti bunga, daun, batang dan ____.",
+
+o:[
 "Akar",
 "Kepak",
 "Cangkerang",
 "Paruh"
 ],
-correct:0
+
+a:0
 },
 
 {
-id:7,
-tp:"TP2",
-q:"Jika satu tumbuhan mempunyai batang seperti pokok betik, batang itu dikelaskan sebagai ____.",
-options:[
+q:
+"Jika satu tumbuhan mempunyai batang seperti pokok betik, batang itu dikelaskan sebagai ____.",
+
+o:[
 "Jejala",
 "Berkayu",
 "Tidak berkayu",
 "Tunjang"
 ],
-correct:2
+
+a:2
 },
 
 {
-id:8,
-tp:"TP1",
-q:"Antara berikut, yang manakah ciri urat daun?",
-options:[
+q:
+"Antara berikut, yang manakah ciri urat daun?",
+
+o:[
 "Berbunga atau tidak berbunga",
 "Jejala atau selari",
 "Tunjang atau serabut",
 "Berkayu atau tidak berkayu"
 ],
-correct:1
+
+a:1
 },
 
 {
-id:9,
-tp:"TP1",
-q:"Pokok paku pakis ialah tumbuhan yang ____.",
-options:[
+q:
+"Pokok paku pakis ialah tumbuhan yang ____.",
+
+o:[
 "Berbunga",
 "Berbuah besar",
 "Berbatang berkayu",
 "Tidak berbunga"
 ],
-correct:3
+
+a:3
 },
 
 {
-id:10,
-tp:"TP1",
-q:"Antara berikut, yang manakah ciri batang?",
-options:[
+q:
+"Antara berikut, yang manakah ciri batang?",
+
+o:[
 "Berkayu atau tidak berkayu",
 "Berbunga atau tidak berbunga",
 "Jejala atau selari",
 "Tunjang atau serabut"
 ],
-correct:0
+
+a:0
 },
 
 {
-id:11,
-tp:"TP2",
-q:"Aina membandingkan bunga ros dengan pandan. Perbezaan akar yang betul ialah ____.",
-options:[
+q:
+"Aina membandingkan bunga ros dengan pandan. Perbezaan akar yang betul ialah ____.",
+
+o:[
 "Bunga ros serabut, pandan tunjang",
 "Kedua-duanya tunjang",
 "Kedua-duanya serabut",
 "Bunga ros tunjang, pandan serabut"
 ],
-correct:3
+
+a:3
 },
 
 {
-id:12,
-tp:"TP2",
-q:"Daun yang mempunyai corak urat seperti jaring dikelaskan sebagai urat daun ____.",
-options:[
+q:
+"Daun yang mempunyai corak urat seperti jaring dikelaskan sebagai urat daun ____.",
+
+o:[
 "Tunjang",
 "Serabut",
 "Jejala",
 "Selari"
 ],
-correct:2
+
+a:2
 },
 
 {
-id:13,
-tp:"TP1",
-q:"Apakah fungsi utama bunga yang dinyatakan dalam Unit 6?",
-options:[
+q:
+"Apakah fungsi utama bunga yang dinyatakan dalam Unit 6?",
+
+o:[
 "Bahagian pembiakan tumbuhan",
 "Menyerap air daripada tanah",
 "Membuat makanan",
 "Menyokong pokok"
 ],
-correct:0
+
+a:0
 },
 
 {
-id:14,
-tp:"TP2",
-q:"Apakah yang berlaku kepada bunga seperti yang diterangkan dalam buku?",
-options:[
+q:
+"Apakah yang berlaku kepada bunga seperti yang diterangkan dalam buku?",
+
+o:[
 "Bertukar menjadi batu",
 "Bertukar menjadi buah dan biji benih",
 "Bertukar menjadi tanah",
 "Bertukar menjadi akar"
 ],
-correct:1
+
+a:1
 },
 
 {
-id:15,
-tp:"TP2",
-q:"Daun telah membuat makanan. Bahagian yang mengangkut makanan itu ialah ____.",
-options:[
+q:
+"Daun telah membuat makanan. Bahagian yang mengangkut makanan itu ialah ____.",
+
+o:[
 "Akar",
 "Bunga",
 "Buah",
 "Batang"
 ],
-correct:3
+
+a:3
 },
 
 {
-id:16,
-tp:"TP2",
-q:"Makanan yang dibuat oleh daun dihantar ke bahagian lain melalui ____.",
-options:[
+q:
+"Makanan yang dibuat oleh daun dihantar ke bahagian lain melalui ____.",
+
+o:[
 "Akar sahaja",
 "Tanah",
 "Batang",
 "Bunga sahaja"
 ],
-correct:2
+
+a:2
 },
 
 {
-id:17,
-tp:"TP1",
-q:"Bahagian tumbuhan yang digunakan untuk membuat makanan ialah ____.",
-options:[
+q:
+"Bahagian tumbuhan yang digunakan untuk membuat makanan ialah ____.",
+
+o:[
 "Akar",
 "Batang",
 "Bunga",
 "Daun"
 ],
-correct:3
+
+a:3
 },
 
 {
-id:18,
-tp:"TP1",
-q:"Apakah hasil yang boleh terbentuk selepas bunga berkembang seperti diterangkan dalam buku?",
-options:[
+q:
+"Apakah hasil yang boleh terbentuk selepas bunga berkembang seperti diterangkan dalam buku?",
+
+o:[
 "Batang dan akar",
 "Buah dan biji benih",
 "Air dan nutrien",
 "Daun dan tanah"
 ],
-correct:1
+
+a:1
 },
 
 {
-id:19,
-tp:"TP2",
-q:"Pokok tanpa akar mudah tumbang kerana akar membantu ____.",
-options:[
+q:
+"Pokok tanpa akar mudah tumbang kerana akar membantu ____.",
+
+o:[
 "Menyokong pokok",
 "Menukar warna daun",
 "Membuat bunyi",
 "Menghasilkan cahaya"
 ],
-correct:0
+
+a:0
 },
 
 {
-id:20,
-tp:"TP1",
-q:"Daun pokok bunga raya dan bunga ros sama-sama berurat ____.",
-options:[
+q:
+"Daun pokok bunga raya dan bunga ros sama-sama berurat ____.",
+
+o:[
 "Selari",
 "Serabut",
 "Jejala",
 "Tunjang"
 ],
-correct:2
+
+a:2
 },
 
 {
-id:21,
-tp:"TP2",
-q:"Apabila dua tumbuhan mempunyai batang berkayu yang sama, kita mengatakan ciri batangnya ____.",
-options:[
+q:
+"Apabila dua tumbuhan mempunyai batang berkayu yang sama, kita mengatakan ciri batangnya ____.",
+
+o:[
 "Berbeza sepenuhnya",
 "Serupa",
 "Tiada",
 "Tidak dapat dibandingkan"
 ],
-correct:1
+
+a:1
 },
 
 {
-id:22,
-tp:"TP2",
-q:"Apabila dua tumbuhan mempunyai akar tunjang yang sama, kita mengatakan ciri akarnya ____.",
-options:[
+q:
+"Apabila dua tumbuhan mempunyai akar tunjang yang sama, kita mengatakan ciri akarnya ____.",
+
+o:[
 "Bertentangan",
 "Tidak wujud",
 "Hilang",
 "Serupa"
 ],
-correct:3
+
+a:3
 },
 
 {
-id:23,
-tp:"TP1",
-q:"Dalam subtopik 'Berbeza Tapi Serupa', kita mengenal pasti ____ antara tumbuhan berlainan.",
-options:[
+q:
+"Dalam subtopik 'Berbeza Tapi Serupa', kita mengenal pasti ____ antara tumbuhan berlainan.",
+
+o:[
 "Rasa makanan",
 "Ciri bahagian yang sama",
 "Bunyi haiwan",
 "Warna pakaian"
 ],
-correct:1
+
+a:1
 },
 
 {
-id:24,
-tp:"TP2",
-q:"Bunga raya dan bunga ros mempunyai akar tunjang. Pernyataan ini menunjukkan ____.",
-options:[
+q:
+"Bunga raya dan bunga ros mempunyai akar tunjang. Pernyataan ini menunjukkan ____.",
+
+o:[
 "Perbezaan bunga",
 "Perbezaan daun",
 "Persamaan ciri akar",
 "Tiada akar"
 ],
-correct:2
+
+a:2
 },
 
 {
-id:25,
-tp:"TP1",
-q:"Dua tumbuhan boleh dibandingkan berdasarkan bunga, daun, batang dan ____.",
-options:[
+q:
+"Dua tumbuhan boleh dibandingkan berdasarkan bunga, daun, batang dan ____.",
+
+o:[
 "Akar",
 "Sirip",
 "Sayap",
 "Paruh"
 ],
-correct:0
+
+a:0
 }
 
 ];
 
-/* =====================================================
-DOM
-===================================================== */
-
-const startScreen=
-document.getElementById("startScreen");
-
-const startBtn=
-document.getElementById("startBtn");
-
-const leftBtn=
-document.getElementById("leftBtn");
-
-const rightBtn=
-document.getElementById("rightBtn");
-
-const progressText=
-document.getElementById("progressText");
-
-const livesText=
-document.getElementById("livesText");
-
-const questionModal=
-document.getElementById("questionModal");
-
-const questionNumber=
-document.getElementById("questionNumber");
-
-const tpBadge=
-document.getElementById("tpBadge");
-
-const questionText=
-document.getElementById("questionText");
-
-const answerList=
-document.getElementById("answerList");
-
-const feedback=
-document.getElementById("feedback");
-
-const restOverlay=
-document.getElementById("restOverlay");
-
-const countdownNumber=
-document.getElementById("countdownNumber");
-
-const completeScreen=
-document.getElementById("completeScreen");
-
-const teleportText=
-document.getElementById("teleportText");
-
-let mobileLeft=false;
-let mobileRight=false;
 
 /* =====================================================
-TOUCH BUTTON
+SCREEN SETTINGS
 ===================================================== */
 
-function setupButton(
-button,
-direction
-){
+const isPortrait =
+innerHeight > innerWidth;
 
-    button.addEventListener(
-        "pointerdown",
-        e=>{
+const GAME_W =
+isPortrait
+? 540
+: 960;
 
-            e.preventDefault();
+const GAME_H =
+isPortrait
+? 960
+: 540;
 
-            if(direction==="left"){
-                mobileLeft=true;
-            }
+const WORLD_W =
+14550;
 
-            if(direction==="right"){
-                mobileRight=true;
-            }
+const GROUND_Y =
+GAME_H - 70;
 
-            button.classList.add(
-                "active"
-            );
 
-        }
+/* =====================================================
+TOUCH STATES
+===================================================== */
+
+const touchState = {
+
+    left:false,
+
+    right:false,
+
+    jump:false
+};
+
+let sceneRef = null;
+
+
+/* =====================================================
+HTML ELEMENTS
+===================================================== */
+
+const progressEl =
+document.getElementById(
+    "progress"
+);
+
+const livesEl =
+document.getElementById(
+    "lives"
+);
+
+const startOverlay =
+document.getElementById(
+    "startOverlay"
+);
+
+const questionOverlay =
+document.getElementById(
+    "questionOverlay"
+);
+
+const endOverlay =
+document.getElementById(
+    "endOverlay"
+);
+
+const qNoEl =
+document.getElementById(
+    "questionNo"
+);
+
+const qTextEl =
+document.getElementById(
+    "questionText"
+);
+
+const answersEl =
+document.getElementById(
+    "answers"
+);
+
+const feedbackEl =
+document.getElementById(
+    "feedback"
+);
+
+const toastEl =
+document.getElementById(
+    "toast"
+);
+
+
+/* =====================================================
+TOAST
+===================================================== */
+
+function toast(msg){
+
+    toastEl.textContent =
+    msg;
+
+    toastEl.classList.add(
+        "show"
     );
 
-    const stop=e=>{
+    clearTimeout(
+        toast._t
+    );
+
+    toast._t =
+    setTimeout(
+        () => {
+
+            toastEl
+            .classList
+            .remove(
+                "show"
+            );
+
+        },
+        1500
+    );
+}
+
+
+/* =====================================================
+TOUCH CONTROL
+===================================================== */
+
+function bindHold(
+    id,
+    key
+){
+
+    const el =
+    document.getElementById(
+        id
+    );
+
+    const on =
+    e => {
 
         e.preventDefault();
 
-        if(direction==="left"){
-            mobileLeft=false;
-        }
+        touchState[key] =
+        true;
 
-        if(direction==="right"){
-            mobileRight=false;
-        }
-
-        button.classList.remove(
-            "active"
+        el.classList.add(
+            "on"
         );
-
     };
 
-    button.addEventListener(
+    const off =
+    e => {
+
+        e.preventDefault();
+
+        touchState[key] =
+        false;
+
+        el.classList.remove(
+            "on"
+        );
+    };
+
+    el.addEventListener(
+        "pointerdown",
+        on
+    );
+
+    [
         "pointerup",
-        stop
-    );
-
-    button.addEventListener(
         "pointercancel",
-        stop
-    );
+        "pointerleave"
+    ]
+    .forEach(
+        ev => {
 
-    button.addEventListener(
-        "pointerleave",
-        stop
-    );
+            el.addEventListener(
+                ev,
+                off
+            );
 
+        }
+    );
 }
 
-setupButton(
-leftBtn,
-"left"
+bindHold(
+    "leftBtn",
+    "left"
 );
 
-setupButton(
-rightBtn,
-"right"
+bindHold(
+    "rightBtn",
+    "right"
 );
+
+bindHold(
+    "jumpBtn",
+    "jump"
+);
+
 
 /* =====================================================
-GAME SCENE
+HTML BUTTONS
 ===================================================== */
 
-class TreeGame extends Phaser.Scene{
+document
+.getElementById(
+    "homeBtn"
+)
+.onclick =
+() => {
 
-constructor(){
+    location.href =
+    "index.html";
 
-    super("TreeGame");
+};
 
-}
+document
+.getElementById(
+    "restartBtn"
+)
+.onclick =
+() => {
 
-create(){
+    location.reload();
 
-    /* =================================================
-    TREE SETTINGS
-    ================================================= */
+};
 
-    this.TREE_X=450;
+document
+.getElementById(
+    "startBtn"
+)
+.onclick =
+() => {
 
-    this.TREE_WIDTH=330;
+    startOverlay.style.display =
+    "none";
 
-    this.TREE_LEFT=
-    this.TREE_X-
-    this.TREE_WIDTH/2;
+    if(sceneRef){
 
-    this.TREE_RIGHT=
-    this.TREE_X+
-    this.TREE_WIDTH/2;
+        sceneRef.started =
+        true;
 
-    /*
-    Leaves overlap the trunk.
-    */
+        sceneRef.physics.resume();
+    }
+};
 
-    this.LEAF_OFFSET=205;
 
-    /*
-    Smaller gap = continuous leaves.
-    */
+/* =====================================================
+PAUSE WHEN TAB IS HIDDEN
+===================================================== */
 
-    this.STAGE_GAP=150;
+document.addEventListener(
+    "visibilitychange",
+    () => {
 
-    /*
-    Enough recycled leaves to fill entire
-    endless tree.
-    */
-
-    this.STAGE_COUNT=17;
-
-    /*
-    Entire tree system moves at same speed.
-    */
-
-    this.scrollSpeed=78;
-
-    this.gameStarted=false;
-
-    this.gameCompleted=false;
-
-    this.questionActive=false;
-
-    this.resting=false;
-
-    this.invulnerable=false;
-
-    this.teleporting=false;
-
-    this.lives=3;
-
-    this.answeredCount=0;
-
-    /* =================================================
-    QUESTION ROTATION QUEUE
-    ================================================= */
-
-    this.questionQueue=
-    QUESTIONS.map(
-        (_,index)=>index
-    );
-
-    this.activeQuestionStage=null;
-
-    this.stagesSinceQuestion=0;
-
-    this.nextSide=-1;
-
-    this.stages=[];
-
-    /*
-    Store last stage squirrel successfully touched.
-
-    IMPORTANT:
-    We never move this stage when player falls.
-    */
-
-    this.lastLandedStage=null;
-
-    this.createTextures();
-
-    this.createBackground();
-
-    this.createTree();
-
-    this.createGroups();
-
-    this.createInitialStages();
-
-    this.createPlayer();
-
-    this.createBeeSystem();
-
-    this.setupCollision();
-
-    this.setupKeyboard();
-
-    this.physics.world.pause();
-
-    startBtn.onclick=()=>{
-
-        if(this.gameStarted){
+        if(!sceneRef){
             return;
         }
 
-        this.gameStarted=true;
+        if(document.hidden){
 
-        startScreen.style.display=
-        "none";
+            sceneRef.physics.pause();
 
-        this.physics.world.resume();
+        }
+        else if(
+            sceneRef.started &&
+            !sceneRef.questionOpen &&
+            !sceneRef.won
+        ){
 
-        this.time.delayedCall(
-            350,
-            ()=>{
+            sceneRef.physics.resume();
+        }
 
-                this.jump();
+    }
+);
 
-            }
-        );
-
-    };
-
-}
 
 /* =====================================================
-TEXTURE SETUP
+MAIN GAME
 ===================================================== */
 
-createTextures(){
+class PlantAdventure
+extends Phaser.Scene{
 
-    this.createBark();
+constructor(){
 
-    this.createLeaf();
-
-    this.createSquirrel();
-
-    this.createBee();
-
-    this.createBullet();
-
-    this.createLED();
-
+    super(
+        "main"
+    );
 }
 
+
 /* =====================================================
-TREE BARK
+CREATE
 ===================================================== */
 
-createBark(){
+create(){
 
-    const g=
-    this.make.graphics({
-        add:false
-    });
+    sceneRef =
+    this;
 
-    g.fillStyle(
-        0x985321,
-        1
+    this.started =
+    false;
+
+    this.questionOpen =
+    false;
+
+    this.won =
+    false;
+
+    this.answersDone =
+    Array(25).fill(
+        false
     );
 
-    g.fillRect(
+    this.answerCount =
+    0;
+
+    this.lives =
+    3;
+
+    this.invincible =
+    false;
+
+    this.lastCheckpointX =
+    120;
+
+    this.finishCooldown =
+    0;
+
+    this.jumpWasDown =
+    false;
+
+
+    /* TEXTURES */
+
+    this.makeTextures();
+
+
+    /* WORLD */
+
+    this.cameras.main
+    .setBackgroundColor(
+        "#bce9ff"
+    );
+
+    this.physics.world
+    .setBounds(
         0,
         0,
-        330,
-        650
+        WORLD_W,
+        GAME_H
     );
 
-    g.fillStyle(
-        0x703816,
-        1
-    );
-
-    g.fillRect(
+    this.cameras.main
+    .setBounds(
         0,
         0,
-        40,
-        650
+        WORLD_W,
+        GAME_H
     );
 
-    g.fillStyle(
-        0x613016,
-        1
+
+    /* CREATE WORLD */
+
+    this.makeBackground();
+
+    this.makeLevel();
+
+    this.makeQuestions();
+
+    this.makeEnemies();
+
+    this.makeHazards();
+
+    this.makeFinish();
+
+
+    /* PLAYER */
+
+    this.player =
+    this.physics.add.sprite(
+        130,
+        GROUND_Y - 110,
+        "stick"
     );
 
-    g.fillRect(
-        290,
-        0,
-        40,
-        650
+    this.player
+    .setCollideWorldBounds(
+        true
+    )
+    .setDepth(
+        10
     );
 
-    g.fillStyle(
-        0xb96c2c,
-        .75
+    this.player.body
+    .setSize(
+        28,
+        64
+    )
+    .setOffset(
+        10,
+        7
     );
 
-    g.fillRect(
-        75,
-        0,
-        55,
-        650
+    this.player
+    .setBounce(
+        0.02
     );
 
-    g.fillStyle(
-        0xc77a34,
-        .3
+
+    /* COLLISION */
+
+    this.physics.add.collider(
+        this.player,
+        this.platforms
     );
 
-    g.fillRect(
-        150,
-        0,
-        38,
-        650
+    this.physics.add.collider(
+        this.enemies,
+        this.platforms
     );
 
-    g.lineStyle(
-        7,
-        0x5e2f15,
-        .85
-    );
+    this.physics.add.collider(
+        this.player,
+        this.enemies,
+        (
+            player,
+            enemy
+        ) => {
 
-    const lines=[
-
-        [54,35,65,125],
-
-        [218,55,205,145],
-
-        [142,155,152,255],
-
-        [78,286,63,382],
-
-        [238,327,220,445],
-
-        [160,462,170,580],
-
-        [48,485,63,610]
-
-    ];
-
-    lines.forEach(
-        l=>{
-
-            g.beginPath();
-
-            g.moveTo(
-                l[0],
-                l[1]
+            this.hitEnemy(
+                player,
+                enemy
             );
-
-            g.lineTo(
-                l[2],
-                l[3]
-            );
-
-            g.strokePath();
 
         }
     );
 
-    g.fillStyle(
-        0x542911,
-        1
+    this.physics.add.overlap(
+        this.player,
+        this.hazards,
+        () => {
+
+            this.hurtPlayer();
+
+        }
     );
 
-    g.fillEllipse(
-        217,
-        260,
-        55,
-        72
+    this.physics.add.overlap(
+        this.player,
+        this.qGroup,
+        (
+            player,
+            q
+        ) => {
+
+            this.tryQuestion(
+                q
+            );
+
+        }
     );
 
-    g.fillStyle(
-        0x2a170d,
-        1
+    this.physics.add.overlap(
+        this.player,
+        this.finishZone,
+        () => {
+
+            this.tryFinish();
+
+        }
     );
 
-    g.fillEllipse(
-        217,
-        260,
-        27,
-        43
+
+    /* KEYBOARD */
+
+    this.cursors =
+    this.input.keyboard
+    .createCursorKeys();
+
+    this.keys =
+    this.input.keyboard
+    .addKeys(
+        "A,D,W,SPACE"
     );
 
-    g.generateTexture(
-        "bark",
-        330,
-        650
+
+    /* CAMERA */
+
+    this.cameras.main
+    .startFollow(
+        this.player,
+        true,
+        .10,
+        .10,
+        isPortrait
+        ? -70
+        : 0,
+        0
     );
 
-    g.destroy();
+    this.cameras.main
+    .setDeadzone(
+        isPortrait
+        ? 150
+        : 260,
+        180
+    );
 
+
+    /* WAIT FOR START */
+
+    this.physics.pause();
+
+    this.updateHud();
 }
 
+
 /* =====================================================
-LEAF
+GENERATE GAME GRAPHICS
+NO IMAGE FILE NEEDED
 ===================================================== */
 
-createLeaf(){
+makeTextures(){
 
-    const g=
+    const g =
     this.make.graphics({
+        x:0,
+        y:0,
         add:false
     });
 
+
+    /* ======================
+    STICKMAN
+    ====================== */
+
+    g.clear();
+
     g.fillStyle(
-        0x267e22,
+        0xffffff,
         1
     );
 
-    g.fillEllipse(
-        120,
-        44,
-        240,
-        73
-    );
-
-    g.fillStyle(
-        0x40aa2e,
-        1
-    );
-
-    g.fillEllipse(
-        117,
-        37,
-        211,
-        52
-    );
-
-    g.fillStyle(
-        0x70d149,
-        1
-    );
-
-    g.fillEllipse(
-        103,
-        28,
-        148,
-        22
-    );
-
-    g.fillStyle(
-        0xa4eb70,
-        .85
-    );
-
-    g.fillEllipse(
-        84,
-        23,
-        82,
+    g.fillCircle(
+        24,
+        14,
         11
     );
 
     g.lineStyle(
         5,
-        0x1e671d,
+        0x17251c,
         1
     );
 
-    g.beginPath();
-
-    g.moveTo(
-        7,
-        45
-    );
-
-    g.lineTo(
-        232,
-        45
-    );
-
-    g.strokePath();
-
-    g.generateTexture(
-        "leaf",
-        240,
-        90
-    );
-
-    g.destroy();
-
-}
-
-/* =====================================================
-SQUIRREL
-===================================================== */
-
-createSquirrel(){
-
-    const g=
-    this.make.graphics({
-        add:false
-    });
-
-    /* TAIL */
-
-    g.fillStyle(
-        0x884719,
-        1
-    );
-
-    g.fillEllipse(
-        28,
-        65,
-        51,
-        81
-    );
-
-    g.fillStyle(
-        0xc57730,
-        1
-    );
-
-    g.fillEllipse(
-        30,
-        60,
-        33,
-        60
-    );
-
-    /* BODY */
-
-    g.fillStyle(
-        0xaa5b24,
-        1
-    );
-
-    g.fillEllipse(
-        73,
-        72,
-        56,
-        69
-    );
-
-    g.fillStyle(
-        0xf1bd6c,
-        1
-    );
-
-    g.fillEllipse(
-        74,
-        80,
-        33,
-        45
-    );
-
-    /* FEET */
-
-    g.fillStyle(
-        0x613416,
-        1
-    );
-
-    g.fillEllipse(
-        63,
-        103,
-        23,
-        13
-    );
-
-    g.fillEllipse(
-        90,
-        103,
-        23,
-        13
-    );
-
-    /* HEAD */
-
-    g.fillStyle(
-        0xb96829,
-        1
-    );
-
-    g.fillCircle(
-        76,
-        36,
-        28
-    );
-
-    /* EARS */
-
-    g.fillTriangle(
-        54,18,
-        61,1,
-        69,20
-    );
-
-    g.fillTriangle(
-        83,18,
-        94,2,
-        96,23
-    );
-
-    /* MUZZLE */
-
-    g.fillStyle(
-        0xf2c98d,
-        1
-    );
-
-    g.fillEllipse(
-        79,
-        46,
-        35,
-        25
-    );
-
-    /* EYES */
-
-    g.fillStyle(
-        0xffffff,
-        1
-    );
-
-    g.fillCircle(
-        67,
-        32,
-        8
-    );
-
-    g.fillCircle(
-        86,
-        32,
-        8
-    );
-
-    g.fillStyle(
-        0x17130e,
-        1
-    );
-
-    g.fillCircle(
-        68,
-        33,
-        4
-    );
-
-    g.fillCircle(
-        85,
-        33,
-        4
-    );
-
-    /* NOSE */
-
-    g.fillStyle(
-        0x20140d,
-        1
-    );
-
-    g.fillCircle(
-        79,
-        45,
-        5
-    );
-
-    /* ARMS */
-
-    g.lineStyle(
-        8,
-        0x804318,
-        1
-    );
-
-    g.beginPath();
-
-    g.moveTo(
-        57,
-        65
-    );
-
-    g.lineTo(
-        43,
-        80
-    );
-
-    g.moveTo(
-        89,
-        65
-    );
-
-    g.lineTo(
-        104,
-        78
-    );
-
-    g.strokePath();
-
-    g.generateTexture(
-        "squirrel",
-        118,
-        118
-    );
-
-    g.destroy();
-
-}
-
-/* =====================================================
-BEE
-===================================================== */
-
-createBee(){
-
-    const g=
-    this.make.graphics({
-        add:false
-    });
-
-    /* WINGS */
-
-    g.fillStyle(
-        0xd5f8ff,
-        1
-    );
-
-    g.fillEllipse(
-        31,
-        22,
-        34,
-        27
-    );
-
-    g.fillEllipse(
-        69,
-        22,
-        34,
-        27
-    );
-
-    /* BODY */
-
-    g.fillStyle(
-        0xffcd31,
-        1
-    );
-
-    g.fillEllipse(
-        49,
-        47,
-        68,
-        50
-    );
-
-    /* STRIPES */
-
-    g.fillStyle(
-        0x272216,
-        1
-    );
-
-    g.fillRect(
-        34,
-        27,
-        9,
-        39
-    );
-
-    g.fillRect(
-        52,
+    g.strokeCircle(
         24,
-        9,
-        44
-    );
-
-    /* HEAD */
-
-    g.fillStyle(
-        0xffdb42,
-        1
-    );
-
-    g.fillCircle(
-        78,
-        44,
-        20
-    );
-
-    /* EYE */
-
-    g.fillStyle(
-        0xffffff,
-        1
-    );
-
-    g.fillCircle(
-        83,
-        39,
-        7
-    );
-
-    g.fillStyle(
-        0x111111,
-        1
-    );
-
-    g.fillCircle(
-        84,
-        40,
-        3
-    );
-
-    /* STINGER */
-
-    g.fillStyle(
-        0x272216,
-        1
-    );
-
-    g.fillTriangle(
-        15,
-        47,
-        1,
-        40,
-        1,
-        54
-    );
-
-    g.generateTexture(
-        "bee",
-        102,
-        82
-    );
-
-    g.destroy();
-
-}
-
-/* =====================================================
-BULLET
-===================================================== */
-
-createBullet(){
-
-    const g=
-    this.make.graphics({
-        add:false
-    });
-
-    g.fillStyle(
-        0xff1111,
-        1
-    );
-
-    g.fillCircle(
-        12,
-        12,
+        14,
         11
     );
 
+    g.lineBetween(
+        24,
+        25,
+        24,
+        48
+    );
+
+    g.lineBetween(
+        24,
+        31,
+        9,
+        42
+    );
+
+    g.lineBetween(
+        24,
+        31,
+        39,
+        41
+    );
+
+    g.lineBetween(
+        24,
+        48,
+        12,
+        68
+    );
+
+    g.lineBetween(
+        24,
+        48,
+        38,
+        68
+    );
+
+    g.lineStyle(
+        7,
+        0x4eaf55,
+        1
+    );
+
+    g.lineBetween(
+        23,
+        28,
+        23,
+        47
+    );
+
     g.fillStyle(
-        0xff8c8c,
+        0xffd95f,
         1
     );
 
     g.fillCircle(
+        20,
+        12,
+        2
+    );
+
+    g.fillCircle(
+        28,
+        12,
+        2
+    );
+
+    g.generateTexture(
+        "stick",
+        48,
+        76
+    );
+
+
+    /* ======================
+    GROUND
+    ====================== */
+
+    g.clear();
+
+    g.fillStyle(
+        0x8d5d35,
+        1
+    );
+
+    g.fillRect(
+        0,
+        0,
+        64,
+        64
+    );
+
+    g.fillStyle(
+        0x72bd57,
+        1
+    );
+
+    g.fillRect(
+        0,
+        0,
+        64,
+        14
+    );
+
+    g.lineStyle(
+        2,
+        0x6d4729,
+        1
+    );
+
+    for(
+        let y=24;
+        y<64;
+        y+=16
+    ){
+
+        g.lineBetween(
+            0,
+            y,
+            64,
+            y
+        );
+    }
+
+    g.generateTexture(
+        "ground",
+        64,
+        64
+    );
+
+
+    /* ======================
+    PLATFORM
+    ====================== */
+
+    g.clear();
+
+    g.fillStyle(
+        0x85552f,
+        1
+    );
+
+    g.fillRoundedRect(
+        0,
         8,
+        80,
+        28,
+        8
+    );
+
+    g.fillStyle(
+        0x59aa49,
+        1
+    );
+
+    g.fillRect(
+        0,
+        8,
+        80,
+        8
+    );
+
+    g.generateTexture(
+        "platform",
+        80,
+        44
+    );
+
+
+    /* ======================
+    QUESTION SIGN
+    ====================== */
+
+    g.clear();
+
+    g.fillStyle(
+        0x714a2d,
+        1
+    );
+
+    g.fillRect(
+        28,
+        46,
+        8,
+        38
+    );
+
+    g.fillStyle(
+        0x3a9d4a,
+        1
+    );
+
+    g.fillEllipse(
+        22,
+        57,
+        23,
+        13
+    );
+
+    g.fillEllipse(
+        43,
+        68,
+        23,
+        13
+    );
+
+    g.fillStyle(
+        0xffe16a,
+        1
+    );
+
+    g.fillRoundedRect(
         7,
+        4,
+        50,
+        48,
+        10
+    );
+
+    g.lineStyle(
+        4,
+        0x2c6a3f,
+        1
+    );
+
+    g.strokeRoundedRect(
+        7,
+        4,
+        50,
+        48,
+        10
+    );
+
+    g.fillStyle(
+        0x214d35,
+        1
+    );
+
+    g.fillCircle(
+        32,
+        28,
+        4
+    );
+
+    g.fillRect(
+        29,
+        34,
+        6,
+        9
+    );
+
+    g.generateTexture(
+        "qsign",
+        64,
+        88
+    );
+
+
+    /* ======================
+    BUG
+    ====================== */
+
+    g.clear();
+
+    g.fillStyle(
+        0x552f22,
+        1
+    );
+
+    g.fillEllipse(
+        23,
+        17,
+        38,
+        24
+    );
+
+    g.fillStyle(
+        0xd74c3f,
+        1
+    );
+
+    g.fillEllipse(
+        25,
+        14,
+        30,
+        20
+    );
+
+    g.fillStyle(
+        0x1f251f,
+        1
+    );
+
+    g.fillCircle(
+        15,
+        11,
+        3
+    );
+
+    g.fillCircle(
+        25,
+        8,
+        3
+    );
+
+    g.fillCircle(
+        34,
+        13,
+        3
+    );
+
+    g.lineStyle(
+        3,
+        0x30251f,
+        1
+    );
+
+    g.lineBetween(
+        6,
+        20,
+        0,
+        27
+    );
+
+    g.lineBetween(
+        14,
+        24,
+        10,
+        31
+    );
+
+    g.lineBetween(
+        35,
+        23,
+        41,
+        30
+    );
+
+    g.lineBetween(
+        42,
+        19,
+        48,
+        25
+    );
+
+    g.generateTexture(
+        "bug",
+        50,
+        34
+    );
+
+
+    /* ======================
+    THORN
+    ====================== */
+
+    g.clear();
+
+    g.fillStyle(
+        0x3b8c45,
+        1
+    );
+
+    g.fillTriangle(
+        0,
+        30,
+        14,
+        0,
+        28,
+        30
+    );
+
+    g.fillTriangle(
+        22,
+        30,
+        38,
+        0,
+        54,
+        30
+    );
+
+    g.fillStyle(
+        0xe9dd7a,
+        1
+    );
+
+    g.fillRect(
+        0,
+        29,
+        54,
         4
     );
 
     g.generateTexture(
-        "bullet",
-        24,
-        24
+        "thorn",
+        54,
+        34
     );
 
-    g.destroy();
 
-}
+    /* ======================
+    TREE
+    ====================== */
 
-/* =====================================================
-LED
-===================================================== */
-
-createLED(){
-
-    const g=
-    this.make.graphics({
-        add:false
-    });
+    g.clear();
 
     g.fillStyle(
-        0xffe951,
-        .55
+        0x2e7d43,
+        1
     );
 
-    g.fillCircle(
-        35,
-        31,
-        31
+    g.fillRect(
+        0,
+        0,
+        90,
+        130
     );
 
     g.fillStyle(
-        0xffff8c,
+        0xb37842,
+        1
+    );
+
+    g.fillRect(
+        37,
+        50,
+        16,
+        80
+    );
+
+    g.fillStyle(
+        0x47a958,
         1
     );
 
     g.fillCircle(
-        35,
-        29,
+        45,
+        38,
+        36
+    );
+
+    g.fillCircle(
+        18,
+        52,
         22
     );
 
+    g.fillCircle(
+        72,
+        54,
+        23
+    );
+
+    g.generateTexture(
+        "tree",
+        90,
+        130
+    );
+
+
+    /* ======================
+    BUSH
+    ====================== */
+
+    g.clear();
+
     g.fillStyle(
-        0xffcf13,
+        0x69b65c,
         1
     );
 
-    g.fillCircle(
-        35,
-        31,
-        13
+    g.fillEllipse(
+        45,
+        30,
+        80,
+        48
     );
+
+    g.fillStyle(
+        0x86ce72,
+        1
+    );
+
+    g.fillEllipse(
+        25,
+        20,
+        42,
+        30
+    );
+
+    g.fillEllipse(
+        67,
+        19,
+        40,
+        28
+    );
+
+    g.generateTexture(
+        "bush",
+        90,
+        54
+    );
+
+
+    /* ======================
+    CLOUD
+    ====================== */
+
+    g.clear();
 
     g.fillStyle(
         0xffffff,
@@ -2137,2337 +2191,1610 @@ createLED(){
     );
 
     g.fillCircle(
-        28,
-        21,
-        6
+        20,
+        20,
+        16
     );
 
-    g.fillStyle(
-        0x555555,
-        1
-    );
-
-    g.fillRect(
-        26,
-        50,
-        19,
-        12
-    );
-
-    g.fillStyle(
-        0x303030,
-        1
-    );
-
-    g.fillRect(
-        28,
-        62,
+    g.fillCircle(
+        40,
         15,
-        6
+        21
+    );
+
+    g.fillCircle(
+        62,
+        22,
+        16
+    );
+
+    g.fillRect(
+        18,
+        20,
+        47,
+        20
     );
 
     g.generateTexture(
-        "led",
-        70,
-        70
+        "cloud",
+        82,
+        44
     );
 
-    g.destroy();
 
+    /* ======================
+    SUN
+    ====================== */
+
+    g.clear();
+
+    g.fillStyle(
+        0xf8c54e,
+        1
+    );
+
+    g.fillCircle(
+        24,
+        24,
+        20
+    );
+
+    g.lineStyle(
+        4,
+        0xf8c54e,
+        1
+    );
+
+    for(
+        let a=0;
+        a<360;
+        a+=45
+    ){
+
+        const r =
+        36;
+
+        const rad =
+        Phaser.Math
+        .DegToRad(
+            a
+        );
+
+        g.lineBetween(
+
+            24 +
+            Math.cos(rad)
+            * 26,
+
+            24 +
+            Math.sin(rad)
+            * 26,
+
+            24 +
+            Math.cos(rad)
+            * r,
+
+            24 +
+            Math.sin(rad)
+            * r
+        );
+    }
+
+    g.generateTexture(
+        "sun",
+        48,
+        48
+    );
+
+
+    /* ======================
+    FINISH
+    ====================== */
+
+    g.clear();
+
+    g.fillStyle(
+        0x6e4831,
+        1
+    );
+
+    g.fillRect(
+        10,
+        18,
+        12,
+        40
+    );
+
+    g.fillRect(
+        58,
+        18,
+        12,
+        40
+    );
+
+    g.fillStyle(
+        0x3d8147,
+        1
+    );
+
+    g.fillRoundedRect(
+        0,
+        0,
+        80,
+        24,
+        8
+    );
+
+    g.fillStyle(
+        0xffe164,
+        1
+    );
+
+    g.fillCircle(
+        16,
+        12,
+        5
+    );
+
+    g.fillCircle(
+        40,
+        12,
+        5
+    );
+
+    g.fillCircle(
+        64,
+        12,
+        5
+    );
+
+    g.generateTexture(
+        "finish",
+        80,
+        60
+    );
 }
+
 
 /* =====================================================
 BACKGROUND
 ===================================================== */
 
-createBackground(){
+makeBackground(){
 
-    this.add.rectangle(
-        450,
-        800,
-        900,
-        1600,
-        0xd8fad0
+    this.add
+    .image(
+        100,
+        80,
+        "sun"
     )
-    .setDepth(-100);
+    .setScrollFactor(
+        .05
+    )
+    .setScale(
+        1.5
+    )
+    .setDepth(
+        -10
+    );
 
-    this.bgLeaves=[];
 
-    const colours=[
-        0xa5dd79,
-        0x90d269,
-        0xb6e78e
-    ];
+    /* CLOUDS */
 
     for(
-        let i=0;
-        i<18;
-        i++
+        let x=180;
+        x<WORLD_W;
+        x+=430
     ){
 
-        const left=
-        i%2===0;
-
-        const x=
-        left
-        ? Phaser.Math.Between(
-            -45,
-            95
-        )
-        : Phaser.Math.Between(
-            805,
-            945
-        );
-
-        const y=
+        const y =
         Phaser.Math.Between(
-            -100,
-            1650
+            70,
+            Math.max(
+                120,
+                GROUND_Y - 320
+            )
         );
 
-        const radius=
-        Phaser.Math.Between(
-            55,
-            110
-        );
-
-        const obj=
-        this.add.circle(
+        this.add
+        .image(
             x,
             y,
-            radius,
-            Phaser.Math.RND.pick(
-                colours
+            "cloud"
+        )
+        .setAlpha(
+            .85
+        )
+        .setScrollFactor(
+            .22
+        )
+        .setScale(
+            Phaser.Math.FloatBetween(
+                .8,
+                1.35
             )
         )
-        .setAlpha(.52)
-        .setDepth(-95);
-
-        this.bgLeaves.push(
-            obj
+        .setDepth(
+            -9
         );
-
     }
 
+
+    /* TREES & BUSHES */
+
+    for(
+        let x=250;
+        x<WORLD_W;
+        x+=520
+    ){
+
+        this.add
+        .image(
+            x +
+            Phaser.Math.Between(
+                -80,
+                80
+            ),
+
+            GROUND_Y - 95,
+
+            "tree"
+        )
+        .setDepth(
+            -3
+        )
+        .setScale(
+            Phaser.Math.FloatBetween(
+                .9,
+                1.2
+            )
+        );
+
+
+        this.add
+        .image(
+            x + 120,
+            GROUND_Y - 55,
+            "bush"
+        )
+        .setDepth(
+            -2
+        )
+        .setScale(
+            Phaser.Math.FloatBetween(
+                .8,
+                1.1
+            )
+        );
+    }
+
+
+    /* SMALL FLOWERS */
+
+    const flowerColors = [
+        0xff6b85,
+        0xffd05a,
+        0x8b72df
+    ];
+
+    let c =
+    0;
+
+    for(
+        let x=100;
+        x<WORLD_W;
+        x+=180
+    ){
+
+        const flower =
+        this.add.circle(
+
+            x +
+            Phaser.Math.Between(
+                -30,
+                30
+            ),
+
+            GROUND_Y - 40,
+
+            5,
+
+            flowerColors[
+                c % 3
+            ]
+        )
+        .setDepth(
+            -1
+        );
+
+        c++;
+
+
+        this.add.rectangle(
+            flower.x,
+            flower.y + 13,
+            3,
+            21,
+            0x3d8e47
+        )
+        .setDepth(
+            -2
+        );
+    }
 }
 
+
 /* =====================================================
-TREE
+LEVEL
 ===================================================== */
 
-createTree(){
+makeLevel(){
 
-    this.tree=
-    this.add.tileSprite(
-        this.TREE_X,
-        800,
-        this.TREE_WIDTH,
-        1800,
-        "bark"
-    )
-    .setDepth(-20);
+    this.platforms =
+    this.physics.add
+    .staticGroup();
 
+
+    /* MAIN GROUND */
+
+    for(
+        let x=320;
+        x<WORLD_W;
+        x+=620
+    ){
+
+        const w =
+        Math.min(
+            640,
+            WORLD_W - x + 320
+        );
+
+        this.platforms
+        .create(
+            x,
+            GROUND_Y + 32,
+            "ground"
+        )
+        .setDisplaySize(
+            w,
+            64
+        )
+        .refreshBody();
+    }
+
+
+    /* MARIO STYLE PLATFORMS */
+
+    const layouts = [
+
+        [850,-125,190],
+
+        [1500,-175,220],
+
+        [2250,-115,180],
+
+        [3050,-160,220],
+
+        [3850,-120,180],
+
+        [4550,-185,220],
+
+        [5350,-130,190],
+
+        [6200,-165,230],
+
+        [7050,-120,180],
+
+        [7900,-185,220],
+
+        [8800,-125,200],
+
+        [9650,-170,220],
+
+        [10500,-120,180],
+
+        [11350,-180,220],
+
+        [12250,-130,190],
+
+        [13150,-170,230]
+
+    ];
+
+
+    layouts.forEach(
+        data => {
+
+            const [
+                x,
+                dy,
+                w
+            ] = data;
+
+            this.platforms
+            .create(
+                x,
+                GROUND_Y + dy,
+                "platform"
+            )
+            .setDisplaySize(
+                w,
+                44
+            )
+            .refreshBody();
+
+        }
+    );
 }
 
-/* =====================================================
-GROUPS
-===================================================== */
-
-createGroups(){
-
-    this.platformGroup=
-    this.physics.add.group({
-        allowGravity:false,
-        immovable:true
-    });
-
-    this.beeGroup=
-    this.physics.add.group({
-        allowGravity:false
-    });
-
-    this.bulletGroup=
-    this.physics.add.group({
-        allowGravity:false
-    });
-
-}
 
 /* =====================================================
-INITIAL ENDLESS LEAVES
+25 QUESTION CHECKPOINTS
 ===================================================== */
 
-createInitialStages(){
+makeQuestions(){
 
-    /*
-    17 stages continuously recycled.
+    this.qGroup =
+    this.physics.add
+    .staticGroup();
 
-    They NEVER teleport because player falls.
-    */
+    this.qSigns =
+    [];
 
-    let y=1450;
 
     for(
         let i=0;
-        i<this.STAGE_COUNT;
+        i<25;
         i++
     ){
 
-        let side;
+        const x =
+        610 +
+        i * 515;
 
-        if(i===0){
 
-            side=0;
-
-        }else{
-
-            side=
-            this.nextSide;
-
-            this.nextSide*=-1;
-
-        }
-
-        let hasQuestion=false;
-
-        /*
-        First LED question.
-        */
-
-        if(i===3){
-
-            hasQuestion=true;
-
-        }
-
-        const stage=
-        this.createStage(
-            side,
-            y,
-            false,
-            i===0
-        );
-
-        /*
-        Starting leaf is our initial safe leaf.
-        */
-
-        if(i===0){
-
-            this.lastLandedStage=
-            stage;
-
-        }
-
-        if(hasQuestion){
-
-            this.assignNextQuestion(
-                stage
-            );
-
-        }
-
-        y-=this.STAGE_GAP;
-
-    }
-
-}
-
-/* =====================================================
-CREATE STAGE
-===================================================== */
-
-createStage(
-side,
-y,
-question=false,
-start=false
-){
-
-    let x;
-
-    if(side===0){
-
-        x=
-        this.TREE_X;
-
-    }else{
-
-        x=
-        this.TREE_X+
-        side*
-        (
-            this.LEAF_OFFSET+
-            Phaser.Math.Between(
-                -6,
-                6
-            )
-        );
-
-    }
-
-    /* =================================================
-    STEM
-    ================================================= */
-
-    let stem;
-
-    if(side===0){
-
-        stem=
-        this.add.rectangle(
-            this.TREE_X,
-            y+8,
-            90,
-            21,
-            0x673717
+        const sign =
+        this.qGroup
+        .create(
+            x,
+            GROUND_Y - 75,
+            "qsign"
         )
-        .setDepth(3);
-
-    }else{
-
-        const anchorX=
-        side<0
-        ? this.TREE_LEFT+75
-        : this.TREE_RIGHT-75;
-
-        const insideLeaf=
-        side<0
-        ? x+70
-        : x-70;
-
-        const stemX=
-        (
-            anchorX+
-            insideLeaf
-        )/2;
-
-        const stemWidth=
-        Math.abs(
-            insideLeaf-
-            anchorX
-        )+45;
-
-        stem=
-        this.add.rectangle(
-            stemX,
-            y+8,
-            stemWidth,
-            21,
-            0x673717
-        )
-        .setDepth(3);
-
-    }
-
-    /* =================================================
-    LEAF
-    ================================================= */
-
-    const leaf=
-    this.platformGroup.create(
-        x,
-        y,
-        "leaf"
-    );
-
-    leaf.setDepth(
-        8
-    );
-
-    leaf.body.setSize(
-        205,
-        28
-    );
-
-    leaf.body.setOffset(
-        17,
-        30
-    );
-
-    leaf.body.setImmovable(
-        true
-    );
-
-    leaf.body.allowGravity=
-    false;
-
-    const stage={
-
-        side:side,
-
-        y:y,
-
-        leaf:leaf,
-
-        stem:stem,
-
-        led:null,
-
-        question:false,
-
-        questionIndex:null,
-
-        used:start
-
-    };
-
-    leaf.setData(
-        "stage",
-        stage
-    );
-
-    this.stages.push(
-        stage
-    );
-
-    return stage;
-
-}
-
-/* =====================================================
-QUESTION ASSIGNMENT
-===================================================== */
-
-assignNextQuestion(stage){
-
-    if(
-        this.questionQueue.length===0 ||
-        this.activeQuestionStage!==null
-    ){
-        return;
-    }
-
-    stage.question=true;
-
-    stage.questionIndex=
-    this.questionQueue[0];
-
-    stage.used=false;
-
-    const led=
-    this.add.sprite(
-        stage.leaf.x,
-        stage.y-66,
-        "led"
-    )
-    .setDepth(16)
-    .setScale(.84);
-
-    this.tweens.add({
-
-        targets:led,
-
-        scaleX:1.04,
-        scaleY:1.04,
-
-        duration:430,
-
-        yoyo:true,
-
-        repeat:-1,
-
-        ease:"Sine.InOut"
-
-    });
-
-    stage.led=led;
-
-    this.activeQuestionStage=
-    stage;
-
-}
-
-/* =====================================================
-CLEAR QUESTION
-===================================================== */
-
-clearQuestionStage(stage){
-
-    if(stage.led){
-
-        this.tweens.killTweensOf(
-            stage.led
-        );
-
-        stage.led.destroy();
-
-        stage.led=null;
-
-    }
-
-    stage.question=false;
-
-    stage.questionIndex=null;
-
-    stage.used=false;
-
-    if(
-        this.activeQuestionStage===
-        stage
-    ){
-
-        this.activeQuestionStage=
-        null;
-
-    }
-
-}
-
-/* =====================================================
-ROTATE SKIPPED QUESTION
-===================================================== */
-
-rotateSkippedQuestion(stage){
-
-    if(
-        !stage.question ||
-        stage.questionIndex===null
-    ){
-        return;
-    }
-
-    /*
-    Example:
-
-    1 2 3 ... 25
-
-    miss Q1
-
-    becomes:
-
-    2 3 ... 25 1
-    */
-
-    if(
-        this.questionQueue.length>1
-    ){
-
-        const missed=
-        this.questionQueue.shift();
-
-        this.questionQueue.push(
-            missed
-        );
-
-    }
-
-    this.clearQuestionStage(
-        stage
-    );
-
-    this.stagesSinceQuestion=0;
-
-}
-
-/* =====================================================
-PLAYER
-===================================================== */
-
-createPlayer(){
-
-    this.player=
-    this.physics.add.sprite(
-        this.TREE_X,
-        1335,
-        "squirrel"
-    );
-
-    this.player
-    .setDepth(30)
-    .setScale(.9);
-
-    this.player.body.setSize(
-        65,
-        74
-    );
-
-    this.player.body.setOffset(
-        27,
-        24
-    );
-
-    this.player.body.setGravityY(
-        1500
-    );
-
-    this.player.body.setMaxVelocity(
-        390,
-        1050
-    );
-
-}
-
-/* =====================================================
-BEE SYSTEM
-===================================================== */
-
-createBeeSystem(){
-
-    /*
-    Bees ONLY arrive from top.
-    */
-
-    this.time.addEvent({
-
-        delay:2600,
-
-        loop:true,
-
-        callback:()=>{
-
-            if(
-                !this.gameStarted ||
-                this.gameCompleted ||
-                this.questionActive ||
-                this.resting
-            ){
-                return;
-            }
-
-            this.spawnBeeFromTop();
-
-        }
-
-    });
-
-}
-
-/* =====================================================
-SPAWN BEE
-===================================================== */
-
-spawnBeeFromTop(){
-
-    const x=
-    Phaser.Math.Between(
-        100,
-        800
-    );
-
-    const bee=
-    this.beeGroup.create(
-        x,
-        -80,
-        "bee"
-    );
-
-    bee
-    .setDepth(24)
-    .setScale(.82);
-
-    bee.body.setSize(
-        72,
-        45
-    );
-
-    bee.body.allowGravity=
-    false;
-
-    bee.setVelocityY(
-        Phaser.Math.Between(
-            140,
-            195
-        )
-    );
-
-    /*
-    Slight movement left/right,
-    but still clearly travelling downward.
-    */
-
-    bee.setVelocityX(
-        Phaser.Math.Between(
-            -40,
-            40
-        )
-    );
-
-    bee.setData(
-        "hasShot",
-        false
-    );
-
-    bee.setData(
-        "shootY",
-        Phaser.Math.Between(
-            250,
-            700
-        )
-    );
-
-}
-
-/* =====================================================
-BEE SHOOT
-===================================================== */
-
-beeShoot(bee){
-
-    if(
-        !bee.active ||
-        !this.player.active
-    ){
-        return;
-    }
-
-    const bullet=
-    this.bulletGroup.create(
-        bee.x,
-        bee.y,
-        "bullet"
-    );
-
-    bullet.setDepth(
-        28
-    );
-
-    bullet.body.allowGravity=
-    false;
-
-    const angle=
-    Phaser.Math.Angle.Between(
-        bee.x,
-        bee.y,
-        this.player.x,
-        this.player.y
-    );
-
-    const speed=350;
-
-    bullet.setVelocity(
-        Math.cos(angle)*speed,
-        Math.sin(angle)*speed
-    );
-
-}
-
-/* =====================================================
-COLLISION
-===================================================== */
-
-setupCollision(){
-
-    this.physics.add.collider(
-        this.player,
-        this.platformGroup,
-        this.land,
-        this.canLand,
-        this
-    );
-
-    this.physics.add.overlap(
-        this.player,
-        this.bulletGroup,
-        this.hitBullet,
-        null,
-        this
-    );
-
-    this.physics.add.overlap(
-        this.player,
-        this.beeGroup,
-        this.hitBee,
-        null,
-        this
-    );
-
-}
-
-/* =====================================================
-CAN LAND
-===================================================== */
-
-canLand(
-player,
-leaf
-){
-
-    if(
-        !this.gameStarted ||
-        this.questionActive ||
-        this.resting ||
-        this.gameCompleted ||
-        this.teleporting
-    ){
-        return false;
-    }
-
-    if(
-        player.body.velocity.y<=35
-    ){
-        return false;
-    }
-
-    return(
-        player.body.bottom<
-        leaf.body.top+48
-    );
-
-}
-
-/* =====================================================
-LAND
-===================================================== */
-
-land(
-player,
-leaf
-){
-
-    if(
-        this.questionActive ||
-        this.resting ||
-        this.gameCompleted ||
-        this.teleporting
-    ){
-        return;
-    }
-
-    const stage=
-    leaf.getData(
-        "stage"
-    );
-
-    /*
-    Remember actual leaf.
-
-    We DO NOT move that leaf.
-
-    We only use its location if squirrel
-    needs a respawn later.
-    */
-
-    if(stage){
-
-        this.lastLandedStage=
-        stage;
-
-    }
-
-    if(
-        stage &&
-        stage.question &&
-        !stage.used
-    ){
-
-        stage.used=true;
-
-        this.player.setVelocity(
-            0,
-            0
-        );
-
-        this.openQuestion(
-            stage
-        );
-
-        return;
-
-    }
-
-    this.jump();
-
-}
-
-/* =====================================================
-AUTO JUMP
-===================================================== */
-
-jump(){
-
-    if(
-        !this.gameStarted ||
-        this.questionActive ||
-        this.resting ||
-        this.gameCompleted ||
-        this.teleporting
-    ){
-        return;
-    }
-
-    this.player.setVelocityY(
-        -815
-    );
-
-    this.tweens.killTweensOf(
-        this.player
-    );
-
-    this.player.setScale(
-        .98,
-        .78
-    );
-
-    this.tweens.add({
-
-        targets:this.player,
-
-        scaleX:.9,
-        scaleY:.9,
-
-        duration:145,
-
-        ease:"Back.Out"
-
-    });
-
-}
-
-/* =====================================================
-QUESTION
-===================================================== */
-
-openQuestion(stage){
-
-    if(
-        !stage ||
-        stage.questionIndex===null
-    ){
-        return;
-    }
-
-    this.questionActive=true;
-
-    this.physics.world.pause();
-
-    const data=
-    QUESTIONS[
-        stage.questionIndex
-    ];
-
-    questionNumber.textContent=
-    `Soalan ${data.id}`;
-
-    tpBadge.textContent=
-    data.tp;
-
-    questionText.textContent=
-    data.q;
-
-    feedback.textContent=
-    "";
-
-    answerList.innerHTML=
-    "";
-
-    const labels=[
-        "A",
-        "B",
-        "C",
-        "D"
-    ];
-
-    data.options.forEach(
-        (option,index)=>{
-
-            const button=
-            document.createElement(
-                "button"
-            );
-
-            button.className=
-            "answerBtn";
-
-            button.innerHTML=
-            `<b>${labels[index]}.</b> ${option}`;
-
-            button.onclick=()=>{
-
-                this.answerQuestion(
-                    stage,
-                    index,
-                    button
-                );
-
-            };
-
-            answerList.appendChild(
-                button
-            );
-
-        }
-    );
-
-    questionModal.style.display=
-    "flex";
-
-}
-
-/* =====================================================
-ANSWER
-===================================================== */
-
-answerQuestion(
-stage,
-choice,
-button
-){
-
-    if(
-        !this.questionActive
-    ){
-        return;
-    }
-
-    const questionIndex=
-    stage.questionIndex;
-
-    const data=
-    QUESTIONS[
-        questionIndex
-    ];
-
-    if(
-        choice===
-        data.correct
-    ){
-
-        document
-        .querySelectorAll(
-            ".answerBtn"
-        )
-        .forEach(
-            btn=>btn.disabled=true
-        );
-
-        button.classList.add(
-            "correct"
-        );
-
-        feedback.textContent=
-        "✓ Betul! Teruskan mendaki!";
-
-        feedback.style.color=
-        "#247020";
-
-        /*
-        Remove answered question.
-        */
-
-        if(
-            this.questionQueue[0]===
-            questionIndex
-        ){
-
-            this.questionQueue.shift();
-
-        }else{
-
-            const position=
-            this.questionQueue.indexOf(
-                questionIndex
-            );
-
-            if(position>=0){
-
-                this.questionQueue.splice(
-                    position,
-                    1
-                );
-
-            }
-
-        }
-
-        this.answeredCount++;
-
-        progressText.textContent=
-        `${this.answeredCount} / 25`;
-
-        this.clearQuestionStage(
-            stage
-        );
-
-        this.stagesSinceQuestion=0;
-
-        this.time.delayedCall(
-            650,
-            ()=>{
-
-                questionModal.style.display=
-                "none";
-
-                if(
-                    this.answeredCount>=25
-                ){
-
-                    this.finishGame();
-
-                }else{
-
-                    this.questionActive=false;
-
-                    this.physics.world.resume();
-
-                    this.jump();
-
-                }
-
-            }
-        );
-
-    }else{
-
-        button.classList.add(
-            "wrong"
-        );
-
-        button.disabled=true;
-
-        feedback.textContent=
-        "Belum tepat. Cuba lagi.";
-
-        feedback.style.color=
-        "#ae2823";
-
-        this.cameras.main.shake(
-            100,
-            .005
-        );
-
-        this.time.delayedCall(
-            450,
-            ()=>{
-
-                button.classList.remove(
-                    "wrong"
-                );
-
-                button.disabled=false;
-
-            }
-        );
-
-    }
-
-}
-
-/* =====================================================
-DAMAGE
-===================================================== */
-
-hitBullet(
-player,
-bullet
-){
-
-    bullet.destroy();
-
-    if(
-        this.invulnerable ||
-        this.resting ||
-        this.questionActive ||
-        this.gameCompleted ||
-        this.teleporting
-    ){
-        return;
-    }
-
-    this.damage();
-
-}
-
-hitBee(
-player,
-bee
-){
-
-    if(
-        this.invulnerable ||
-        this.resting ||
-        this.questionActive ||
-        this.gameCompleted ||
-        this.teleporting
-    ){
-        return;
-    }
-
-    bee.destroy();
-
-    this.damage();
-
-}
-
-damage(){
-
-    this.lives--;
-
-    this.updateLives();
-
-    this.invulnerable=true;
-
-    this.player.setTint(
-        0xff5555
-    );
-
-    this.cameras.main.shake(
-        160,
-        .008
-    );
-
-    if(
-        this.lives<=0
-    ){
-
-        this.startRest();
-
-        return;
-
-    }
-
-    this.player.setVelocityY(
-        -470
-    );
-
-    this.time.delayedCall(
-        1000,
-        ()=>{
-
-            if(
-                this.player &&
-                this.player.active
-            ){
-
-                this.player.clearTint();
-
-            }
-
-            this.invulnerable=false;
-
-        }
-    );
-
-}
-
-/* =====================================================
-LIVES
-===================================================== */
-
-updateLives(){
-
-    if(
-        this.lives<=0
-    ){
-
-        livesText.textContent=
-        "💔";
-
-        return;
-
-    }
-
-    livesText.textContent=
-    "❤️".repeat(
-        this.lives
-    );
-
-}
-
-/* =====================================================
-FIND EXISTING SAFE LEAF
-===================================================== */
-
-findSafeTeleportStage(){
-
-    /*
-    IMPORTANT:
-
-    THIS FUNCTION DOES NOT MOVE A LEAF.
-
-    It only searches for a leaf already
-    present on screen.
-
-    Priority:
-    - visible
-    - lower part of screen
-    - not question leaf
-    - enough room above it for squirrel
-    */
-
-    let candidates=
-    this.stages.filter(
-        stage=>
-        !stage.question &&
-        stage.y>1050 &&
-        stage.y<1490
-    );
-
-    /*
-    Prefer the highest of lower-screen leaves
-    so squirrel has room to jump.
-    */
-
-    if(candidates.length>0){
-
-        candidates.sort(
-            (a,b)=>
-            a.y-b.y
-        );
-
-        /*
-        Pick one around middle/lower area.
-        */
-
-        return candidates[
-            Math.min(
-                1,
-                candidates.length-1
-            )
-        ];
-
-    }
-
-    /*
-    Fallback:
-    any visible non-question leaf.
-    */
-
-    candidates=
-    this.stages.filter(
-        stage=>
-        !stage.question &&
-        stage.y>750 &&
-        stage.y<1500
-    );
-
-    if(candidates.length>0){
-
-        candidates.sort(
-            (a,b)=>
-            b.y-a.y
-        );
-
-        return candidates[0];
-
-    }
-
-    /*
-    Final fallback:
-    use last landed stage only if still visible.
-
-    Still no leaf movement.
-    */
-
-    if(
-        this.lastLandedStage &&
-        this.lastLandedStage.y>650 &&
-        this.lastLandedStage.y<1510
-    ){
-
-        return this.lastLandedStage;
-
-    }
-
-    return null;
-
-}
-
-/* =====================================================
-TELEPORT ONLY THE SQUIRREL
-===================================================== */
-
-teleportSquirrelToLeaf(
-showMessage=true
-){
-
-    if(
-        this.teleporting ||
-        this.gameCompleted
-    ){
-        return;
-    }
-
-    this.teleporting=true;
-
-    mobileLeft=false;
-    mobileRight=false;
-
-    leftBtn.classList.remove(
-        "active"
-    );
-
-    rightBtn.classList.remove(
-        "active"
-    );
-
-    const safeStage=
-    this.findSafeTeleportStage();
-
-    /*
-    Leaves remain exactly where they are.
-
-    ONLY squirrel changes position.
-    */
-
-    if(safeStage){
-
-        /*
-        Small fade effect.
-        */
-
-        this.player.setAlpha(
-            .25
-        );
-
-        this.player.setVelocity(
-            0,
-            0
-        );
-
-        this.time.delayedCall(
-            130,
-            ()=>{
-
-                /*
-                Place squirrel ABOVE existing leaf.
-                */
-
-                this.player.setPosition(
-                    safeStage.leaf.x,
-                    safeStage.y-88
-                );
-
-                this.player.setVelocity(
-                    0,
-                    0
-                );
-
-                this.lastLandedStage=
-                safeStage;
-
-                this.player.setAlpha(
-                    1
-                );
-
-                if(showMessage){
-
-                    this.showTeleportMessage();
-
-                }
-
-                /*
-                Temporary safety so bullet does not
-                instantly hit the squirrel.
-                */
-
-                this.invulnerable=true;
-
-                this.player.setTint(
-                    0xfff2a6
-                );
-
-                this.time.delayedCall(
-                    800,
-                    ()=>{
-
-                        this.player.clearTint();
-
-                        this.invulnerable=false;
-
-                    }
-                );
-
-                /*
-                Resume jumping.
-                */
-
-                this.time.delayedCall(
-                    180,
-                    ()=>{
-
-                        this.teleporting=false;
-
-                        this.jump();
-
-                    }
-                );
-
-            }
-        );
-
-    }else{
-
-        /*
-        There should normally always be a safe leaf
-        because the leaves are endless.
-
-        If not found, place squirrel near trunk only.
-        We STILL do not move any leaf.
-        */
-
-        this.player.setPosition(
-            this.TREE_X,
-            1250
-        );
-
-        this.player.setVelocity(
-            0,
-            0
-        );
-
-        this.player.setAlpha(
-            1
-        );
-
-        this.time.delayedCall(
-            150,
-            ()=>{
-
-                this.teleporting=false;
-
-                this.jump();
-
-            }
-        );
-
-    }
-
-}
-
-/* =====================================================
-TELEPORT MESSAGE
-===================================================== */
-
-showTeleportMessage(){
-
-    teleportText.classList.add(
-        "show"
-    );
-
-    clearTimeout(
-        this.teleportMessageTimer
-    );
-
-    this.teleportMessageTimer=
-    setTimeout(
-        ()=>{
-
-            teleportText.classList.remove(
-                "show"
-            );
-
-        },
-        900
-    );
-
-}
-
-/* =====================================================
-PLAYER FALL
-===================================================== */
-
-playerFell(){
-
-    if(
-        this.resting ||
-        this.questionActive ||
-        this.gameCompleted ||
-        this.teleporting
-    ){
-        return;
-    }
-
-    /*
-    Lose 1 life when the squirrel misses
-    the leaf and falls.
-    */
-
-    this.lives--;
-
-    this.updateLives();
-
-    if(
-        this.lives<=0
-    ){
-
-        this.startRest();
-
-        return;
-
-    }
-
-    /*
-    IMPORTANT:
-    NO LEAF IS MOVED HERE.
-
-    Only squirrel is teleported.
-    */
-
-    this.teleportSquirrelToLeaf(
-        true
-    );
-
-}
-
-/* =====================================================
-REST
-===================================================== */
-
-startRest(){
-
-    if(
-        this.resting ||
-        this.gameCompleted
-    ){
-        return;
-    }
-
-    this.resting=true;
-
-    this.invulnerable=true;
-
-    this.teleporting=false;
-
-    mobileLeft=false;
-    mobileRight=false;
-
-    this.player.setVelocity(
-        0,
-        0
-    );
-
-    this.physics.world.pause();
-
-    restOverlay.style.display=
-    "flex";
-
-    let seconds=10;
-
-    countdownNumber.textContent=
-    seconds;
-
-    this.time.addEvent({
-
-        delay:1000,
-
-        repeat:9,
-
-        callback:()=>{
-
-            seconds--;
-
-            if(
-                seconds>0
-            ){
-
-                countdownNumber.textContent=
-                seconds;
-
-            }else{
-
-                this.finishRest();
-
-            }
-
-        }
-
-    });
-
-}
-
-/* =====================================================
-FINISH REST
-===================================================== */
-
-finishRest(){
-
-    restOverlay.style.display=
-    "none";
-
-    this.lives=3;
-
-    this.updateLives();
-
-    this.player.clearTint();
-
-    this.player.setAlpha(
-        1
-    );
-
-    /*
-    Clear enemies and bullets only.
-    Leaves are untouched.
-    */
-
-    this.bulletGroup.clear(
-        true,
-        true
-    );
-
-    this.beeGroup.clear(
-        true,
-        true
-    );
-
-    this.resting=false;
-
-    this.physics.world.resume();
-
-    /*
-    Again:
-    ONLY SQUIRREL TELEPORTS.
-    */
-
-    this.teleportSquirrelToLeaf(
-        false
-    );
-
-}
-
-/* =====================================================
-FINISH
-===================================================== */
-
-finishGame(){
-
-    this.gameCompleted=true;
-
-    this.questionActive=true;
-
-    this.physics.world.pause();
-
-    completeScreen.style.display=
-    "flex";
-
-}
-
-/* =====================================================
-KEYBOARD
-===================================================== */
-
-setupKeyboard(){
-
-    this.cursors=
-    this.input.keyboard.createCursorKeys();
-
-    this.keyA=
-    this.input.keyboard.addKey(
-        Phaser.Input.Keyboard.KeyCodes.A
-    );
-
-    this.keyD=
-    this.input.keyboard.addKey(
-        Phaser.Input.Keyboard.KeyCodes.D
-    );
-
-}
-
-/* =====================================================
-TOP STAGE
-===================================================== */
-
-getHighestStage(
-excludedStage=null
-){
-
-    let result=null;
-
-    let smallestY=
-    Infinity;
-
-    this.stages.forEach(
-        stage=>{
-
-            if(
-                stage===excludedStage
-            ){
-                return;
-            }
-
-            if(
-                stage.y<
-                smallestY
-            ){
-
-                smallestY=
-                stage.y;
-
-                result=
-                stage;
-
-            }
-
-        }
-    );
-
-    return result;
-
-}
-
-/* =====================================================
-RECYCLE ENDLESS STAGE
-===================================================== */
-
-recycleStage(stage){
-
-    /*
-    If a QUESTION leaf leaves the bottom
-    without being answered,
-    rotate its question to the back.
-    */
-
-    if(
-        stage.question &&
-        stage.questionIndex!==null
-    ){
-
-        this.rotateSkippedQuestion(
-            stage
-        );
-
-    }
-
-    /*
-    Recycle the leaf ONLY because it reached
-    the bottom of endless world.
-
-    This has NOTHING to do with squirrel falling.
-    */
-
-    const topStage=
-    this.getHighestStage(
-        stage
-    );
-
-    let newY;
-
-    if(topStage){
-
-        newY=
-        topStage.y-
-        this.STAGE_GAP;
-
-    }else{
-
-        newY=
-        -this.STAGE_GAP;
-
-    }
-
-    const side=
-    this.nextSide;
-
-    this.nextSide*=-1;
-
-    const x=
-    this.TREE_X+
-    side*
-    (
-        this.LEAF_OFFSET+
-        Phaser.Math.Between(
-            -6,
+        .setDepth(
             6
-        )
-    );
-
-    stage.side=
-    side;
-
-    stage.y=
-    newY;
-
-    stage.used=false;
-
-    stage.question=false;
-
-    stage.questionIndex=null;
-
-    stage.leaf.setPosition(
-        x,
-        newY
-    );
-
-    stage.leaf.body.updateFromGameObject();
-
-    /* =================================================
-    REATTACH STEM
-    ================================================= */
-
-    const anchorX=
-    side<0
-    ? this.TREE_LEFT+75
-    : this.TREE_RIGHT-75;
-
-    const insideLeaf=
-    side<0
-    ? x+70
-    : x-70;
-
-    const stemX=
-    (
-        anchorX+
-        insideLeaf
-    )/2;
-
-    const stemWidth=
-    Math.abs(
-        insideLeaf-
-        anchorX
-    )+45;
-
-    stage.stem.setPosition(
-        stemX,
-        newY+8
-    );
-
-    stage.stem.displayWidth=
-    stemWidth;
-
-    stage.stem.displayHeight=
-    21;
-
-    /*
-    New question appears every few stages.
-    */
-
-    this.stagesSinceQuestion++;
-
-    if(
-        this.questionQueue.length>0 &&
-        this.activeQuestionStage===null &&
-        this.stagesSinceQuestion>=3
-    ){
-
-        this.stagesSinceQuestion=0;
-
-        this.assignNextQuestion(
-            stage
         );
 
+
+        sign.qIndex =
+        i;
+
+
+        sign.body
+        .setSize(
+            54,
+            82
+        )
+        .setOffset(
+            5,
+            4
+        );
+
+
+        sign.refreshBody();
+
+
+        this.qSigns.push(
+            sign
+        );
+
+
+        /* NUMBER ABOVE SIGN */
+
+        this.add.text(
+
+            x,
+
+            GROUND_Y - 112,
+
+            String(
+                i + 1
+            ),
+
+            {
+
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:
+                "16px",
+
+                fontStyle:
+                "bold",
+
+                color:
+                "#173c2b",
+
+                backgroundColor:
+                "#fff8d8",
+
+                padding:{
+                    x:5,
+                    y:2
+                }
+
+            }
+
+        )
+        .setOrigin(
+            .5
+        )
+        .setDepth(
+            7
+        );
     }
-
 }
 
+
 /* =====================================================
-WORLD SCROLL
+ENEMIES
 ===================================================== */
 
-scrollWorld(delta){
+makeEnemies(){
 
-    const move=
-    this.scrollSpeed*
-    delta/
-    1000;
+    this.enemies =
+    this.physics.add.group({
+        allowGravity:true
+    });
 
-    /*
-    Endless bark.
-    */
 
-    this.tree.tilePositionY-=
-    move;
+    for(
+        let x=1100;
+        x<13500;
+        x+=760
+    ){
 
-    /*
-    Leaf + stem + LED move together.
-    */
+        const enemy =
+        this.enemies.create(
 
-    this.stages.forEach(
-        stage=>{
+            x,
 
-            stage.y+=move;
+            GROUND_Y - 90,
 
-            stage.leaf.y=
-            stage.y;
+            "bug"
+        )
+        .setDepth(
+            8
+        );
 
-            stage.leaf.body.updateFromGameObject();
 
-            stage.stem.y=
-            stage.y+8;
+        enemy.setBounce(
+            0
+        );
 
-            if(stage.led){
 
-                stage.led.x=
-                stage.leaf.x;
+        enemy.setCollideWorldBounds(
+            false
+        );
 
-                stage.led.y=
-                stage.y-66;
 
-            }
+        enemy.setVelocityX(
+            Phaser.Math.RND.pick([
+                -70,
+                70
+            ])
+        );
 
-        }
-    );
 
-    /*
-    Recycle only when leaf leaves screen.
-    */
+        enemy.body
+        .setSize(
+            42,
+            25
+        )
+        .setOffset(
+            4,
+            6
+        );
 
-    this.stages.forEach(
-        stage=>{
 
-            if(
-                stage.y>1725
-            ){
+        enemy.minX =
+        x - 120;
 
-                this.recycleStage(
-                    stage
-                );
 
-            }
-
-        }
-    );
-
-    /*
-    Background parallax.
-    */
-
-    this.bgLeaves.forEach(
-        leaf=>{
-
-            leaf.y+=
-            move*.35;
-
-            if(
-                leaf.y>1730
-            ){
-
-                leaf.y=
-                Phaser.Math.Between(
-                    -250,
-                    -80
-                );
-
-            }
-
-        }
-    );
-
+        enemy.maxX =
+        x + 120;
+    }
 }
 
+
 /* =====================================================
-BEE UPDATE
+THORNS
 ===================================================== */
 
-updateBees(){
+makeHazards(){
 
-    this.beeGroup.children.iterate(
-        bee=>{
+    this.hazards =
+    this.physics.add
+    .staticGroup();
 
-            if(!bee){
-                return;
-            }
 
-            /*
-            Fire once.
-            */
+    const hazardXs = [
 
-            if(
-                !bee.getData(
-                    "hasShot"
-                ) &&
-                bee.y>=
-                bee.getData(
-                    "shootY"
-                )
-            ){
+        1320,
 
-                bee.setData(
-                    "hasShot",
-                    true
-                );
+        2020,
 
-                this.beeShoot(
-                    bee
-                );
+        2780,
 
-            }
+        3550,
 
-            /*
-            Face squirrel.
-            */
+        4320,
 
-            bee.setFlipX(
-                this.player.x<
-                bee.x
+        5070,
+
+        5850,
+
+        6600,
+
+        7420,
+
+        8200,
+
+        9000,
+
+        9800,
+
+        10600,
+
+        11400,
+
+        12170,
+
+        12950,
+
+        13620
+
+    ];
+
+
+    hazardXs.forEach(
+        x => {
+
+            const h =
+            this.hazards
+            .create(
+                x,
+                GROUND_Y - 16,
+                "thorn"
+            )
+            .setDepth(
+                5
             );
 
-            /*
-            Keep within screen.
-            */
 
-            if(
-                bee.x<55
-            ){
+            h.body
+            .setSize(
+                48,
+                24
+            )
+            .setOffset(
+                3,
+                7
+            );
 
-                bee.x=55;
 
-                bee.setVelocityX(
-                    Math.abs(
-                        bee.body.velocity.x
-                    )
-                );
-
-            }
-
-            if(
-                bee.x>845
-            ){
-
-                bee.x=845;
-
-                bee.setVelocityX(
-                    -Math.abs(
-                        bee.body.velocity.x
-                    )
-                );
-
-            }
-
-            /*
-            Remove when bee reaches bottom.
-
-            Next bee will spawn again from top.
-            */
-
-            if(
-                bee.y>1710
-            ){
-
-                bee.destroy();
-
-            }
+            h.refreshBody();
 
         }
     );
-
 }
 
+
 /* =====================================================
-CLEAN BULLETS
+FINISH AREA
 ===================================================== */
 
-cleanBullets(){
+makeFinish(){
 
-    this.bulletGroup.children.iterate(
-        bullet=>{
+    this.finishGate =
+    this.add.image(
 
-            if(!bullet){
-                return;
-            }
+        14030,
 
-            if(
-                bullet.x<-80 ||
-                bullet.x>980 ||
-                bullet.y<-100 ||
-                bullet.y>1740
-            ){
+        GROUND_Y - 70,
 
-                bullet.destroy();
+        "finish"
+    )
+    .setScale(
+        1.25
+    )
+    .setDepth(
+        5
+    );
 
+
+    this.add.text(
+
+        14030,
+
+        GROUND_Y - 150,
+
+        "TAMAN ILMU",
+
+        {
+
+            fontFamily:
+            "Trebuchet MS",
+
+            fontSize:
+            "20px",
+
+            fontStyle:
+            "bold",
+
+            color:
+            "#1f5834",
+
+            backgroundColor:
+            "#fff7bf",
+
+            padding:{
+                x:10,
+                y:5
             }
 
         }
+
+    )
+    .setOrigin(
+        .5
+    )
+    .setDepth(
+        6
     );
 
+
+    this.finishZone =
+    this.physics.add
+    .staticImage(
+
+        14030,
+
+        GROUND_Y - 80,
+
+        "finish"
+    )
+    .setVisible(
+        false
+    )
+    .setDisplaySize(
+        110,
+        150
+    )
+    .refreshBody();
 }
 
+
 /* =====================================================
-PLAYER CONTROL
+GAME LOOP
 ===================================================== */
 
-updatePlayer(){
+update(){
 
-    const left=
+    if(
+        !this.started ||
+        this.questionOpen ||
+        this.won ||
+        !this.player
+    ){
+
+        return;
+    }
+
+
+    const left =
+
     this.cursors.left.isDown ||
-    this.keyA.isDown ||
-    mobileLeft;
 
-    const right=
+    this.keys.A.isDown ||
+
+    touchState.left;
+
+
+    const right =
+
     this.cursors.right.isDown ||
-    this.keyD.isDown ||
-    mobileRight;
 
-    const speed=310;
+    this.keys.D.isDown ||
+
+    touchState.right;
+
+
+    const jumpDown =
+
+    this.cursors.up.isDown ||
+
+    this.keys.W.isDown ||
+
+    this.keys.SPACE.isDown ||
+
+    touchState.jump;
+
+
+    const onGround =
+
+    this.player.body.blocked.down ||
+
+    this.player.body.touching.down;
+
+
+    /* ======================
+    LEFT / RIGHT
+    ====================== */
 
     if(
         left &&
         !right
     ){
 
-        this.player.setVelocityX(
-            -speed
+        this.player
+        .setVelocityX(
+            -225
         );
 
-        this.player.setFlipX(
+        this.player
+        .setFlipX(
             true
         );
-
     }
+
     else if(
         right &&
         !left
     ){
 
-        this.player.setVelocityX(
-            speed
+        this.player
+        .setVelocityX(
+            225
         );
 
-        this.player.setFlipX(
+        this.player
+        .setFlipX(
             false
         );
-
     }
+
     else{
 
-        this.player.setVelocityX(
-            this.player.body.velocity.x*
-            .82
+        this.player
+        .setVelocityX(
+            0
         );
-
     }
+
+
+    /* ======================
+    JUMP
+    ====================== */
 
     if(
-        this.player.x<45
+        jumpDown &&
+        !this.jumpWasDown &&
+        onGround
     ){
 
-        this.player.x=
-        45;
-
-        this.player.setVelocityX(
-            Math.abs(
-                this.player.body.velocity.x
-            )
+        this.player
+        .setVelocityY(
+            -470
         );
-
     }
+
+
+    this.jumpWasDown =
+    jumpDown;
+
+
+    /* LITTLE RUNNING BOUNCE */
 
     if(
-        this.player.x>855
+        Math.abs(
+            this.player.body.velocity.x
+        ) > 5 &&
+        onGround
     ){
 
-        this.player.x=
-        855;
+        this.player.y +=
 
-        this.player.setVelocityX(
-            -Math.abs(
-                this.player.body.velocity.x
-            )
-        );
-
+        Math.sin(
+            this.time.now *
+            .025
+        )
+        *
+        .25;
     }
 
+
+    /* ======================
+    ENEMY MOVEMENT
+    ====================== */
+
+    this.enemies
+    .getChildren()
+    .forEach(
+
+        enemy => {
+
+            if(
+                !enemy.active
+            ){
+                return;
+            }
+
+
+            if(
+                enemy.x <=
+                enemy.minX
+            ){
+
+                enemy.setVelocityX(
+                    72
+                );
+
+                enemy.setFlipX(
+                    false
+                );
+            }
+
+
+            if(
+                enemy.x >=
+                enemy.maxX
+            ){
+
+                enemy.setVelocityX(
+                    -72
+                );
+
+                enemy.setFlipX(
+                    true
+                );
+            }
+
+        }
+    );
+
+
+    /* FALL */
+
+    if(
+        this.player.y >
+        GAME_H + 120
+    ){
+
+        this.respawn();
+    }
 }
 
+
 /* =====================================================
-UPDATE
+ENEMY COLLISION
 ===================================================== */
 
-update(
-time,
-delta
+hitEnemy(
+    player,
+    enemy
 ){
 
     if(
-        !this.gameStarted ||
-        this.gameCompleted
+        !enemy.active
     ){
         return;
     }
 
-    if(
-        this.questionActive ||
-        this.resting
-    ){
-        return;
-    }
 
-    /*
-    Endless tree and leaves continue.
-    */
+    const stomp =
 
-    this.scrollWorld(
-        delta
-    );
+    player.body.velocity.y >
+    80
 
-    /*
-    Player controls paused briefly
-    during teleport.
-    */
+    &&
+
+    player.body.bottom <
+    enemy.body.top + 18;
+
 
     if(
-        !this.teleporting
+        stomp
     ){
 
-        this.updatePlayer();
-
-    }
-
-    this.updateBees();
-
-    this.cleanBullets();
-
-    /*
-    =================================================
-    CHECK MISSED QUESTION
-
-    If LED leaf has gone very low and squirrel
-    did not land on it, rotate question.
-    =================================================
-    */
-
-    if(
-        this.activeQuestionStage &&
-        !this.activeQuestionStage.used &&
-        this.activeQuestionStage.y>1540
-    ){
-
-        this.rotateSkippedQuestion(
-            this.activeQuestionStage
+        enemy.disableBody(
+            true,
+            true
         );
 
+
+        player.setVelocityY(
+            -300
+        );
+
+
+        toast(
+            "Serangga ditewaskan!"
+        );
     }
 
-    /*
-    =================================================
-    SQUIRREL FALL
+    else{
 
-    Only squirrel teleports.
+        this.hurtPlayer();
+    }
+}
 
-    NO stage or leaf reposition here.
-    =================================================
-    */
+
+/* =====================================================
+PLAYER DAMAGE
+===================================================== */
+
+hurtPlayer(){
 
     if(
-        this.player.y>1685
+        this.invincible ||
+        this.questionOpen ||
+        this.won
     ){
-
-        this.playerFell();
 
         return;
     }
 
-    /*
-    Prevent squirrel escaping top.
-    */
+
+    this.lives--;
+
+
+    this.updateHud();
+
+
+    this.invincible =
+    true;
+
+
+    this.player.setTint(
+        0xff7777
+    );
+
+
+    this.player
+    .setVelocityY(
+        -260
+    );
+
+
+    this.player
+    .setVelocityX(
+
+        this.player.flipX
+        ? 160
+        : -160
+    );
+
+
+    toast(
+
+        this.lives > 0
+
+        ?
+
+        "Awas! Nyawa berkurang."
+
+        :
+
+        "Nyawa habis — kembali ke checkpoint."
+    );
+
+
+    this.time.delayedCall(
+
+        900,
+
+        () => {
+
+            if(
+                !this.player
+            ){
+                return;
+            }
+
+
+            this.player
+            .clearTint();
+
+
+            this.invincible =
+            false;
+
+
+            if(
+                this.lives <= 0
+            ){
+
+                this.lives =
+                3;
+
+
+                this.updateHud();
+
+
+                this.respawn();
+            }
+
+        }
+
+    );
+}
+
+
+/* =====================================================
+RESPAWN
+===================================================== */
+
+respawn(){
+
+    this.player
+    .setVelocity(
+        0,
+        0
+    );
+
+
+    this.player
+    .setPosition(
+
+        Math.max(
+
+            120,
+
+            this.lastCheckpointX
+            - 70
+        ),
+
+        GROUND_Y - 120
+    );
+
+
+    this.cameras.main
+    .centerOn(
+
+        this.player.x,
+
+        this.player.y
+    );
+}
+
+
+/* =====================================================
+QUESTION COLLISION
+===================================================== */
+
+tryQuestion(
+    sign
+){
+
+    const i =
+    sign.qIndex;
+
 
     if(
-        this.player.y<155
+        this.questionOpen ||
+        this.answersDone[i] ||
+        !this.started
     ){
 
-        this.player.y=
-        155;
+        return;
+    }
 
-        if(
-            this.player.body.velocity.y<0
-        ){
 
-            this.player.setVelocityY(
-                40
+    this.openQuestion(
+        i,
+        sign
+    );
+}
+
+
+/* =====================================================
+OPEN QUESTION
+===================================================== */
+
+openQuestion(
+    i,
+    sign
+){
+
+    this.questionOpen =
+    true;
+
+
+    this.physics.pause();
+
+
+    touchState.left =
+    false;
+
+    touchState.right =
+    false;
+
+    touchState.jump =
+    false;
+
+
+    document
+    .querySelectorAll(
+        ".ctrl"
+    )
+    .forEach(
+        element => {
+
+            element.classList
+            .remove(
+                "on"
+            );
+
+        }
+    );
+
+
+    const item =
+    QUESTIONS[i];
+
+
+    qNoEl.textContent =
+    `SOALAN ${i+1} / 25`;
+
+
+    qTextEl.textContent =
+    item.q;
+
+
+    feedbackEl.textContent =
+    "";
+
+
+    feedbackEl.className =
+    "";
+
+
+    answersEl.innerHTML =
+    "";
+
+
+    item.o.forEach(
+
+        (
+            txt,
+            idx
+        ) => {
+
+            const button =
+            document.createElement(
+                "button"
+            );
+
+
+            button.className =
+            "ans";
+
+
+            button.innerHTML =
+            `
+            <span class="letter">
+                ${"ABCD"[idx]}
+            </span>
+            ${txt}
+            `;
+
+
+            button.onclick =
+            () => {
+
+                this.chooseAnswer(
+                    i,
+                    idx,
+                    button,
+                    sign
+                );
+
+            };
+
+
+            answersEl.appendChild(
+                button
             );
 
         }
 
-    }
+    );
 
+
+    questionOverlay.style.display =
+    "flex";
 }
 
-}
 
 /* =====================================================
-CONFIG
+ANSWER QUESTION
 ===================================================== */
 
-const config={
+chooseAnswer(
+    i,
+    idx,
+    button,
+    sign
+){
+
+    const item =
+    QUESTIONS[i];
+
+
+    const buttons =
+    [
+        ...answersEl
+        .querySelectorAll(
+            ".ans"
+        )
+    ];
+
+
+    buttons.forEach(
+        b => {
+
+            b.disabled =
+            true;
+
+        }
+    );
+
+
+    /* =====================
+    CORRECT
+    ===================== */
+
+    if(
+        idx === item.a
+    ){
+
+        button.classList.add(
+            "correct"
+        );
+
+
+        feedbackEl.textContent =
+        "✓ Betul!";
+
+
+        feedbackEl.className =
+        "ok";
+
+
+        if(
+            !this.answersDone[i]
+        ){
+
+            this.answersDone[i] =
+            true;
+
+
+            this.answerCount++;
+
+
+            this.lastCheckpointX =
+            sign.x;
+
+
+            sign
+            .setTint(
+                0x8fe58f
+            )
+            .setAlpha(
+                .68
+            );
+
+
+            this.updateHud();
+        }
+
+
+        this.time.delayedCall(
+
+            650,
+
+            () => {
+
+                this.closeQuestion();
+
+            }
+
+        );
+    }
+
+
+    /* =====================
+    WRONG
+    ===================== */
+
+    else{
+
+        button.classList.add(
+            "wrong"
+        );
+
+
+        feedbackEl.textContent =
+        "✗ Belum tepat. Cuba lagi.";
+
+
+        feedbackEl.className =
+        "bad";
+
+
+        this.time.delayedCall(
+
+            650,
+
+            () => {
+
+                buttons.forEach(
+
+                    b => {
+
+                        b.disabled =
+                        false;
+
+
+                        b.classList.remove(
+                            "wrong"
+                        );
+
+                    }
+
+                );
+
+
+                feedbackEl.textContent =
+                "";
+
+            }
+
+        );
+    }
+}
+
+
+/* =====================================================
+CLOSE QUESTION
+===================================================== */
+
+closeQuestion(){
+
+    questionOverlay.style.display =
+    "none";
+
+
+    this.questionOpen =
+    false;
+
+
+    if(
+        !this.won
+    ){
+
+        this.physics.resume();
+    }
+}
+
+
+/* =====================================================
+FINISH
+===================================================== */
+
+tryFinish(){
+
+    if(
+        this.won ||
+        this.time.now <
+        this.finishCooldown
+    ){
+
+        return;
+    }
+
+
+    this.finishCooldown =
+    this.time.now + 1400;
+
+
+    /* NOT ALL QUESTIONS DONE */
+
+    if(
+        this.answerCount <
+        25
+    ){
+
+        const left =
+        25 -
+        this.answerCount;
+
+
+        toast(
+            `Belum boleh tamat — baki ${left} soalan.`
+        );
+
+
+        this.player
+        .setVelocityX(
+            -160
+        );
+
+
+        return;
+    }
+
+
+    this.winGame();
+}
+
+
+/* =====================================================
+WIN
+===================================================== */
+
+winGame(){
+
+    this.won =
+    true;
+
+
+    this.physics.pause();
+
+
+    endOverlay.style.display =
+    "flex";
+}
+
+
+/* =====================================================
+HUD
+===================================================== */
+
+updateHud(){
+
+    progressEl.textContent =
+    `Soalan ${this.answerCount}/25`;
+
+
+    livesEl.textContent =
+
+    "❤".repeat(
+        Math.max(
+            0,
+            this.lives
+        )
+    )
+
+    +
+
+    "♡".repeat(
+        Math.max(
+            0,
+            3 -
+            this.lives
+        )
+    );
+}
+
+}
+
+
+/* =====================================================
+PHASER CONFIG
+===================================================== */
+
+const config = {
 
     type:
     Phaser.AUTO,
@@ -4476,13 +3803,13 @@ const config={
     "game",
 
     width:
-    900,
+    GAME_W,
 
     height:
-    1600,
+    GAME_H,
 
     backgroundColor:
-    "#d8fad0",
+    "#bce9ff",
 
     physics:{
 
@@ -4492,13 +3819,11 @@ const config={
         arcade:{
 
             gravity:{
-                y:0
+                y:1050
             },
 
             debug:false
-
         }
-
     },
 
     scale:{
@@ -4510,11 +3835,10 @@ const config={
         Phaser.Scale.CENTER_BOTH,
 
         width:
-        900,
+        GAME_W,
 
         height:
-        1600
-
+        GAME_H
     },
 
     render:{
@@ -4524,65 +3848,20 @@ const config={
         pixelArt:false,
 
         roundPixels:false
-
     },
 
-    scene:[
-        TreeGame
-    ]
+    input:{
 
+        activePointers:4
+    },
+
+    scene:
+    PlantAdventure
 };
 
-const game=
+
 new Phaser.Game(
     config
-);
-
-/* =====================================================
-PREVENT MOBILE PAGE SCROLL
-===================================================== */
-
-document.addEventListener(
-    "touchmove",
-    e=>{
-
-        if(
-            e.target.closest(
-                ".questionCard"
-            )
-        ){
-            return;
-        }
-
-        e.preventDefault();
-
-    },
-    {
-        passive:false
-    }
-);
-
-/* =====================================================
-RESET CONTROL
-===================================================== */
-
-window.addEventListener(
-    "blur",
-    ()=>{
-
-        mobileLeft=false;
-
-        mobileRight=false;
-
-        leftBtn.classList.remove(
-            "active"
-        );
-
-        rightBtn.classList.remove(
-            "active"
-        );
-
-    }
 );
 
 </script>
