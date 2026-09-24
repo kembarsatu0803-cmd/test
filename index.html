@@ -10,9 +10,7 @@ maximum-scale=1,
 user-scalable=no,
 viewport-fit=cover">
 
-<title>Magnet Lab — Bola Besi</title>
-
-<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+<title>Orbit Magnet Lab — Sains Tahun 1</title>
 
 <style>
 *{
@@ -20,389 +18,140 @@ viewport-fit=cover">
     -webkit-tap-highlight-color:transparent;
 }
 
-html,
-body{
+html,body{
     margin:0;
-    width:100%;
+    padding:0;
     min-height:100%;
     font-family:"Trebuchet MS",Arial,sans-serif;
     background:
-        linear-gradient(
-            135deg,
-            #dff5ff,
-            #c6e8ef,
-            #dcf4e7
-        );
-    color:#173b45;
+        radial-gradient(circle at top,#dff7ff,#a7dded 48%,#73bfd5);
+    color:#17384a;
 }
 
 body{
-    padding:14px 8px 35px;
+    display:flex;
+    justify-content:center;
+    padding:
+        max(14px,env(safe-area-inset-top))
+        12px
+        max(18px,env(safe-area-inset-bottom));
 }
 
-.page-title{
-    margin:0 auto 10px;
-    text-align:center;
-    font-size:clamp(20px,4vw,32px);
-    font-weight:900;
-    color:#174d5d;
-}
-
+/* GAME BUKAN FULL WEBSITE */
 .game-shell{
-    width:min(960px,97vw);
+    width:min(970px,100%);
     margin:auto;
-    border:5px solid #24576a;
-    border-radius:23px;
-    overflow:hidden;
-    background:#dff3f6;
-    box-shadow:
-        0 10px 0 #173d4b,
-        0 20px 35px rgba(0,0,0,.18);
 }
 
 .game-topbar{
-    min-height:52px;
-    padding:6px 9px;
-
     display:flex;
     align-items:center;
     justify-content:space-between;
-
-    gap:5px;
-
-    background:
-        linear-gradient(
-            #3c7385,
-            #24596b
-        );
-
-    border-bottom:4px solid #173d4b;
+    gap:10px;
+    margin-bottom:8px;
 }
 
 .game-name{
-    color:white;
-    font-size:17px;
+    font-size:clamp(17px,3vw,24px);
     font-weight:900;
-    letter-spacing:.5px;
+    color:#12394d;
 }
 
-.actions{
+.top-buttons{
     display:flex;
-    gap:6px;
+    gap:7px;
 }
 
 .top-btn{
     border:0;
-    border-bottom:4px solid rgba(0,0,0,.25);
-    border-radius:10px;
-
-    padding:7px 10px;
-
-    font-family:inherit;
-    font-size:13px;
+    background:#ffffff;
+    color:#14394c;
     font-weight:900;
-
-    background:#fff3b6;
-    color:#20434d;
-
+    border-radius:14px;
+    min-height:38px;
+    padding:8px 13px;
     cursor:pointer;
+    box-shadow:
+        0 5px 0 #8bc5d6,
+        0 7px 13px rgba(0,0,0,.12);
 }
 
 .top-btn:active{
-    transform:translateY(2px);
-    border-bottom-width:2px;
-}
-
-#game-stage{
-    position:relative;
-
-    width:100%;
-    height:600px;
-
-    max-height:70vh;
-    min-height:500px;
-
-    overflow:hidden;
-
-    background:#dceff1;
-
-    touch-action:none;
-}
-
-#game-container{
-    position:absolute;
-    inset:0;
-}
-
-#game-container canvas{
-    display:block !important;
-    width:100% !important;
-    height:100% !important;
-    touch-action:none;
-}
-
-.overlay{
-    position:absolute;
-    inset:0;
-
-    z-index:50;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    padding:15px;
-
-    background:rgba(17,52,64,.55);
-    backdrop-filter:blur(3px);
-}
-
-.panel{
-    width:min(570px,96%);
-    max-height:94%;
-
-    overflow:auto;
-
-    padding:19px;
-
-    text-align:center;
-
-    background:
-        linear-gradient(
-            #fffef7,
-            #e9fbff
-        );
-
-    border:4px solid #244e5e;
-    border-radius:20px;
-
-    box-shadow:
-        0 8px 0 #193f4d,
-        0 18px 30px rgba(0,0,0,.2);
-}
-
-.panel h2{
-    margin:0 0 7px;
-    font-size:30px;
-    color:#1c596b;
-}
-
-.tag{
-    display:inline-block;
-
-    margin-bottom:10px;
-    padding:5px 12px;
-
-    border-radius:50px;
-
-    background:#d9f6e0;
-    color:#276342;
-
-    font-size:13px;
-    font-weight:900;
-}
-
-.instructions{
-    margin:5px auto 14px;
-
-    max-width:500px;
-
-    text-align:left;
-
-    color:#31525d;
-
-    font-size:14px;
-    line-height:1.4;
-    font-weight:700;
-}
-
-.instructions div{
-    display:flex;
-    align-items:flex-start;
-
-    gap:8px;
-
-    margin:7px 0;
-}
-
-.number{
-    flex:0 0 25px;
-
-    width:25px;
-    height:25px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    background:#ffdc66;
-
-    border:2px solid #ab7b18;
-    border-radius:50%;
-
-    color:#513a00;
-
-    font-size:12px;
-    font-weight:900;
-}
-
-.start-btn{
-    min-width:160px;
-
-    border:0;
-    border-bottom:5px solid #12623d;
-    border-radius:14px;
-
-    padding:12px 20px;
-
-    background:#35be74;
-    color:white;
-
-    font-family:inherit;
-    font-size:18px;
-    font-weight:900;
-
-    cursor:pointer;
-}
-
-.start-btn:active{
     transform:translateY(3px);
-    border-bottom-width:2px;
+    box-shadow:
+        0 2px 0 #8bc5d6,
+        0 3px 7px rgba(0,0,0,.12);
 }
 
-.note{
-    margin-top:10px;
-    color:#67838a;
-    font-size:11px;
+.game-frame{
+    width:100%;
+    height:min(76vh,700px);
+    min-height:570px;
+    max-height:700px;
+    overflow:hidden;
+    border-radius:24px;
+    border:5px solid rgba(255,255,255,.75);
+    background:#8ed5e8;
+    box-shadow:
+        0 16px 40px rgba(21,74,97,.24),
+        inset 0 0 0 2px rgba(15,91,115,.15);
+    position:relative;
+}
+
+#game{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+}
+
+#game canvas{
+    display:block;
+}
+
+.hint{
+    text-align:center;
+    margin:10px auto 0;
+    max-width:760px;
+    padding:0 10px;
+    font-size:13px;
     font-weight:700;
+    line-height:1.45;
+    color:#245a6f;
 }
 
-.hidden{
-    display:none !important;
-}
-
-
-/* =====================================================
-   PHONE PORTRAIT
-===================================================== */
-
-@media
-(max-width:640px),
-(orientation:portrait) and (max-width:850px){
-
+@media(max-width:600px){
     body{
-        padding:
-            max(
-                5px,
-                env(safe-area-inset-top)
-            )
-            3px
-            25px;
+        padding-left:7px;
+        padding-right:7px;
     }
 
-    .page-title{
-        margin-bottom:5px;
-        font-size:18px;
-    }
-
-    .game-shell{
-        width:99vw;
-
+    .game-frame{
+        height:min(75svh,690px);
+        min-height:555px;
+        border-radius:18px;
         border-width:3px;
-        border-radius:15px;
-
-        box-shadow:
-            0 6px 0 #173d4b,
-            0 10px 18px rgba(0,0,0,.17);
-    }
-
-    .game-topbar{
-        min-height:43px;
-        padding:4px 5px;
-        border-bottom-width:3px;
     }
 
     .game-name{
-        font-size:12px;
+        font-size:17px;
     }
 
     .top-btn{
-        padding:6px 7px;
-        font-size:10px;
-        border-radius:7px;
-        border-bottom-width:3px;
-    }
-
-    #game-stage{
-        width:100%;
-
-        height:
-            calc(
-                100svh - 95px
-            );
-
-        min-height:650px;
-        max-height:880px;
-
-        aspect-ratio:auto;
-    }
-
-    .overlay{
-        padding:7px;
-    }
-
-    .panel{
-        width:97%;
-        max-height:94%;
-
-        padding:13px 11px;
-
-        border-width:3px;
-        border-radius:15px;
-
-        box-shadow:
-            0 5px 0 #193f4d,
-            0 10px 20px rgba(0,0,0,.2);
-    }
-
-    .panel h2{
-        font-size:23px;
-        margin-bottom:5px;
-    }
-
-    .tag{
-        font-size:11px;
-        margin-bottom:6px;
-    }
-
-    .instructions{
+        padding:7px 10px;
+        min-height:35px;
         font-size:12px;
-        line-height:1.3;
-        margin-bottom:9px;
     }
 
-    .instructions div{
-        margin:5px 0;
-        gap:6px;
-    }
-
-    .number{
-        flex-basis:21px;
-        width:21px;
-        height:21px;
-        font-size:10px;
-    }
-
-    .start-btn{
-        min-width:135px;
-        padding:9px 15px;
-        font-size:15px;
-        border-bottom-width:4px;
-    }
-
-    .note{
+    .hint{
+        font-size:11px;
         margin-top:7px;
-        font-size:9px;
+    }
+}
+
+@media(max-width:390px){
+    .game-frame{
+        min-height:535px;
     }
 }
 </style>
@@ -410,154 +159,50 @@ body{
 
 <body>
 
-<h1 class="page-title">
-🧲 Magnet Lab — Bola Besi
-</h1>
-
 <div class="game-shell">
 
-<div class="game-topbar">
+    <div class="game-topbar">
 
-    <div class="game-name">
-        MAGNET LAB
-    </div>
+        <div class="game-name">
+            🧲 Orbit Magnet Lab
+        </div>
 
-    <div class="actions">
+        <div class="top-buttons">
+            <button class="top-btn" id="soundBtn">
+                🔊
+            </button>
 
-        <button
-        class="top-btn"
-        id="soundBtn">
-        🔊 Bunyi
-        </button>
-
-        <button
-        class="top-btn"
-        onclick="location.href='index.html'">
-        🏠 Home
-        </button>
+            <button class="top-btn" id="homeBtn">
+                🏠 Home
+            </button>
+        </div>
 
     </div>
 
-</div>
+    <div class="game-frame">
+        <div id="game"></div>
+    </div>
 
-
-<div id="game-stage">
-
-<div id="game-container"></div>
-
-
-<!-- START -->
-
-<div
-class="overlay"
-id="startOverlay">
-
-<div class="panel">
-
-<h2>🧲 Misi Bola Besi</h2>
-
-<div class="tag">
-25 Soalan Magnet
-</div>
-
-<div class="instructions">
-
-<div>
-<span class="number">1</span>
-<span>
-Baca soalan yang dipaparkan.
-</span>
-</div>
-
-<div>
-<span class="number">2</span>
-<span>
-Gerakkan magnet menggunakan sentuhan, mouse, WASD atau kekunci anak panah.
-</span>
-</div>
-
-<div>
-<span class="number">3</span>
-<span>
-Dekatkan magnet kepada bola besi sehingga bola masuk dalam lingkungan magnet.
-</span>
-</div>
-
-<div>
-<span class="number">4</span>
-<span>
-Selepas bola berjaya ditarik, gerakkan magnet dengan terkawal supaya bola terus mengikut magnet.
-</span>
-</div>
-
-<div>
-<span class="number">5</span>
-<span>
-Bawa bola ke dok jawapan A, B, C atau D yang betul.
-</span>
-</div>
+    <div class="hint">
+        Gerakkan sasaran magnet menggunakan ◀ ▶.
+        Sejajarkan dengan jawapan dan tekan <b>TARIK</b>.
+        Anda juga boleh tekan kapsul jawapan untuk sasaran lebih cepat.
+    </div>
 
 </div>
 
-<button
-class="start-btn"
-id="startBtn">
-▶ MULA
-</button>
 
-<div class="note">
-Muzik dan sound effect dijana terus dalam game.
-</div>
-
-</div>
-</div>
-
-
-<!-- FINISH -->
-
-<div
-class="overlay hidden"
-id="finishOverlay">
-
-<div class="panel">
-
-<h2>🏆 Tahniah!</h2>
-
-<div class="tag">
-Semua Misi Selesai
-</div>
-
-<p style="
-font-weight:800;
-color:#31525d;
-line-height:1.5;
-">
-Anda berjaya menyelesaikan kesemua 25 soalan magnet.
-</p>
-
-<button
-class="start-btn"
-onclick="location.reload()">
-↻ MAIN SEMULA
-</button>
-
-</div>
-</div>
-
-</div>
-</div>
-
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <script>
-
 /* =========================================================
    SOALAN
 ========================================================= */
 
-const QUESTIONS=[
+const QUESTIONS = [
 
 {
-c:"Apakah Gunanya Magnet?",
+category:"Apakah Gunanya Magnet?",
 q:"Pintu peti sejuk tidak mahu tertutup rapat. Bahagian yang berkaitan dengan fungsi ini ialah ____.",
 o:[
 "Pemadam di atas meja",
@@ -569,7 +214,7 @@ a:1
 },
 
 {
-c:"Apakah Gunanya Magnet?",
+category:"Apakah Gunanya Magnet?",
 q:"Antara berikut, yang manakah turut menggunakan magnet menurut buku?",
 o:[
 "Permainan dart",
@@ -581,7 +226,7 @@ a:0
 },
 
 {
-c:"Apakah Gunanya Magnet?",
+category:"Apakah Gunanya Magnet?",
 q:"Mengapakah pemutar skru bermagnet berguna?",
 o:[
 "Skru menjadi plastik",
@@ -593,7 +238,7 @@ a:3
 },
 
 {
-c:"Apakah Gunanya Magnet?",
+category:"Apakah Gunanya Magnet?",
 q:"Kotak pensel boleh ditutup rapat apabila penutupnya mempunyai ____.",
 o:[
 "Kertas",
@@ -605,7 +250,7 @@ a:1
 },
 
 {
-c:"Apakah Gunanya Magnet?",
+category:"Apakah Gunanya Magnet?",
 q:"Jika tanda nama mempunyai magnet, tanda nama itu boleh ____.",
 o:[
 "Mengukur panjang",
@@ -617,7 +262,7 @@ a:2
 },
 
 {
-c:"Bentuk Magnet",
+category:"Bentuk Magnet",
 q:"Seorang murid melihat magnet berbentuk gelang. Nama yang sesuai ialah ____.",
 o:[
 "Magnet bar",
@@ -629,7 +274,7 @@ a:1
 },
 
 {
-c:"Bentuk Magnet",
+category:"Bentuk Magnet",
 q:"Apakah nama magnet yang berbentuk seperti huruf U?",
 o:[
 "Magnet bar",
@@ -641,7 +286,7 @@ a:3
 },
 
 {
-c:"Bentuk Magnet",
+category:"Bentuk Magnet",
 q:"Jika magnet jelas berbentuk huruf U, magnet itu dinamakan ____.",
 o:[
 "Magnet bentuk U",
@@ -653,7 +298,7 @@ a:0
 },
 
 {
-c:"Bentuk Magnet",
+category:"Bentuk Magnet",
 q:"Apakah nama magnet bulat dan padat seperti butang?",
 o:[
 "Magnet bar",
@@ -665,7 +310,7 @@ a:2
 },
 
 {
-c:"Bentuk Magnet",
+category:"Bentuk Magnet",
 q:"Apakah nama magnet yang berbentuk seperti silinder?",
 o:[
 "Magnet cincin",
@@ -677,7 +322,7 @@ a:1
 },
 
 {
-c:"Hebatnya Magnet",
+category:"Hebatnya Magnet",
 q:"Sebelum mencatat keputusan aktiviti, apakah yang perlu dilakukan kepada magnet dan objek?",
 o:[
 "Jauhkan magnet sepanjang masa",
@@ -689,7 +334,7 @@ a:2
 },
 
 {
-c:"Hebatnya Magnet",
+category:"Hebatnya Magnet",
 q:"Paku dalam contoh buku menunjukkan bahawa magnet boleh ____ objek tertentu.",
 o:[
 "Menarik",
@@ -701,7 +346,7 @@ a:0
 },
 
 {
-c:"Hebatnya Magnet",
+category:"Hebatnya Magnet",
 q:"Klip kertas bercampur dengan bedak. Apakah cara mudah untuk mengasingkan klip kertas?",
 o:[
 "Gunakan pembaris plastik",
@@ -713,7 +358,7 @@ a:3
 },
 
 {
-c:"Hebatnya Magnet",
+category:"Hebatnya Magnet",
 q:"Dalam aktiviti 'Hebatnya Magnet', objek manakah yang dapat ditarik magnet?",
 o:[
 "Pemadam",
@@ -725,7 +370,7 @@ a:1
 },
 
 {
-c:"Hebatnya Magnet",
+category:"Hebatnya Magnet",
 q:"Apakah cara paling sesuai untuk menentukan sama ada sesuatu objek boleh ditarik magnet?",
 o:[
 "Goncang objek tanpa magnet",
@@ -737,7 +382,7 @@ a:2
 },
 
 {
-c:"Tarikan dan Tolakan Magnet",
+category:"Tarikan dan Tolakan Magnet",
 q:"Dua magnet saling menolak apabila didekatkan. Kutub yang saling berhadapan ialah kutub yang ____.",
 o:[
 "Sama",
@@ -749,7 +394,7 @@ a:0
 },
 
 {
-c:"Tarikan dan Tolakan Magnet",
+category:"Tarikan dan Tolakan Magnet",
 q:"Kutub magnet yang berlainan apabila didekatkan akan ____.",
 o:[
 "Mencair",
@@ -761,7 +406,7 @@ a:3
 },
 
 {
-c:"Tarikan dan Tolakan Magnet",
+category:"Tarikan dan Tolakan Magnet",
 q:"Aina menukar satu magnet supaya kutub yang berlainan saling berhadapan. Apakah yang sepatutnya diperhatikan?",
 o:[
 "Magnet hilang warna",
@@ -773,7 +418,7 @@ a:2
 },
 
 {
-c:"Tarikan dan Tolakan Magnet",
+category:"Tarikan dan Tolakan Magnet",
 q:"Setiap magnet mempunyai dua kutub, iaitu kutub Utara dan kutub ____.",
 o:[
 "Selatan",
@@ -785,7 +430,7 @@ a:0
 },
 
 {
-c:"Tarikan dan Tolakan Magnet",
+category:"Tarikan dan Tolakan Magnet",
 q:"Apakah dua jenis tindakan apabila dua magnet didekatkan?",
 o:[
 "Panas dan sejuk",
@@ -797,7 +442,7 @@ a:3
 },
 
 {
-c:"Kekuatan Magnet",
+category:"Kekuatan Magnet",
 q:"Jika dua magnet menarik bilangan klip yang berbeza, perkara yang sedang dibandingkan ialah ____.",
 o:[
 "Bentuk klip",
@@ -809,7 +454,7 @@ a:1
 },
 
 {
-c:"Kekuatan Magnet",
+category:"Kekuatan Magnet",
 q:"Adakah setiap magnet mempunyai kekuatan yang sama?",
 o:[
 "Semua tiada kekuatan",
@@ -821,7 +466,7 @@ a:2
 },
 
 {
-c:"Kekuatan Magnet",
+category:"Kekuatan Magnet",
 q:"Setiap magnet mempunyai kekuatan yang ____.",
 o:[
 "Berbeza",
@@ -833,7 +478,7 @@ a:0
 },
 
 {
-c:"Kekuatan Magnet",
+category:"Kekuatan Magnet",
 q:"Dalam penyiasatan, magnet digerakkan mendekati klip dan dihentikan apabila klip mula tertarik. Apakah yang diperhatikan?",
 o:[
 "Warna magnet",
@@ -845,7 +490,7 @@ a:1
 },
 
 {
-c:"Kekuatan Magnet",
+category:"Kekuatan Magnet",
 q:"Magnet A menarik klip apabila masih jauh. Magnet B perlu didekatkan lagi sebelum klip tertarik. Yang manakah lebih kuat?",
 o:[
 "Kedua-duanya sama",
@@ -860,3577 +505,2292 @@ a:3
 
 
 /* =========================================================
-   AUDIO
+   AUDIO - TIADA FAIL AUDIO LUAR
 ========================================================= */
 
-let audioCtx=null;
-let masterGain=null;
-let musicTimer=null;
-let musicStep=0;
-let soundEnabled=true;
+class AudioEngine{
 
-const melody=[
-261.63,
-329.63,
-392,
-329.63,
-293.66,
-349.23,
-440,
-349.23
-];
+    constructor(){
+        this.ctx = null;
+        this.enabled = true;
+        this.musicTimer = null;
+        this.noteIndex = 0;
 
+        this.notes = [
+            261.63,
+            329.63,
+            392.00,
+            329.63,
+            440.00,
+            392.00,
+            329.63,
+            293.66
+        ];
+    }
 
-function initAudio(){
+    init(){
 
-    if(audioCtx)return;
+        if(this.ctx) return;
 
-    const AC=
-        window.AudioContext||
-        window.webkitAudioContext;
+        const AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
 
-    audioCtx=new AC();
+        if(!AudioContext) return;
 
-    masterGain=
-        audioCtx.createGain();
+        this.ctx = new AudioContext();
 
-    masterGain.gain.value=.28;
+        if(this.ctx.state === "suspended"){
+            this.ctx.resume();
+        }
 
-    masterGain.connect(
-        audioCtx.destination
-    );
+        this.startMusic();
+    }
+
+    tone(freq,duration=0.1,type="sine",volume=0.05,delay=0){
+
+        if(!this.ctx || !this.enabled) return;
+
+        const now = this.ctx.currentTime + delay;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq,now);
+
+        gain.gain.setValueAtTime(0.0001,now);
+        gain.gain.exponentialRampToValueAtTime(
+            Math.max(volume,0.0002),
+            now + 0.015
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.0001,
+            now + duration
+        );
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + duration + 0.03);
+    }
+
+    startMusic(){
+
+        if(this.musicTimer) return;
+
+        this.musicTimer = setInterval(()=>{
+
+            if(!this.enabled || !this.ctx) return;
+
+            const note =
+                this.notes[this.noteIndex % this.notes.length];
+
+            this.tone(
+                note,
+                0.22,
+                "triangle",
+                0.012
+            );
+
+            this.tone(
+                note / 2,
+                0.28,
+                "sine",
+                0.007,
+                0.02
+            );
+
+            this.noteIndex++;
+
+        },480);
+    }
+
+    move(){
+        this.tone(430,0.055,"square",0.018);
+    }
+
+    lock(){
+        this.tone(570,0.08,"triangle",0.025);
+    }
+
+    pull(){
+        this.tone(330,0.08,"sawtooth",0.025);
+        this.tone(500,0.11,"triangle",0.025,0.06);
+    }
+
+    correct(){
+        this.tone(523,0.12,"triangle",0.04);
+        this.tone(659,0.13,"triangle",0.04,0.10);
+        this.tone(784,0.20,"triangle",0.05,0.20);
+    }
+
+    wrong(){
+        this.tone(220,0.15,"sawtooth",0.035);
+        this.tone(165,0.20,"square",0.025,0.10);
+    }
+
+    win(){
+        const notes = [
+            523,
+            659,
+            784,
+            1046
+        ];
+
+        notes.forEach((n,i)=>{
+            this.tone(
+                n,
+                0.3,
+                "triangle",
+                0.05,
+                i*0.13
+            );
+        });
+    }
+
+    toggle(){
+
+        this.enabled = !this.enabled;
+
+        if(this.enabled && this.ctx){
+            this.ctx.resume();
+        }
+
+        return this.enabled;
+    }
 }
 
-
-function tone(
-freq,
-duration=.1,
-type="sine",
-volume=.1,
-delay=0
-){
-
-    if(!soundEnabled)return;
-
-    initAudio();
-
-    const t=
-        audioCtx.currentTime+
-        delay;
-
-    const osc=
-        audioCtx.createOscillator();
-
-    const gain=
-        audioCtx.createGain();
-
-    osc.type=type;
-
-    osc.frequency.setValueAtTime(
-        freq,
-        t
-    );
-
-    gain.gain.setValueAtTime(
-        .0001,
-        t
-    );
-
-    gain.gain.exponentialRampToValueAtTime(
-        Math.max(
-            .001,
-            volume
-        ),
-        t+.01
-    );
-
-    gain.gain.exponentialRampToValueAtTime(
-        .0001,
-        t+duration
-    );
-
-    osc.connect(gain);
-
-    gain.connect(
-        masterGain
-    );
-
-    osc.start(t);
-
-    osc.stop(
-        t+
-        duration+
-        .03
-    );
-}
+const AUDIO = new AudioEngine();
 
 
-function startMusic(){
+/* =========================================================
+   GAME
+========================================================= */
 
-    if(musicTimer)return;
+class MagnetGame extends Phaser.Scene{
 
-    musicTimer=
-        setInterval(
+    constructor(){
+        super("MagnetGame");
+    }
+
+    create(){
+
+        this.questionIndex = 0;
+        this.mistakes = 0;
+
+        this.orbitAngle = 0;
+
+        /* default pointer ke atas */
+        this.selectorAngle = -Math.PI / 2;
+
+        this.leftHeld = false;
+        this.rightHeld = false;
+
+        this.resolving = false;
+        this.started = false;
+
+        this.answerNodes = [];
+
+        this.bgG = this.add.graphics();
+        this.decorG = this.add.graphics();
+        this.panelG = this.add.graphics();
+        this.arenaG = this.add.graphics();
+        this.selectorG = this.add.graphics();
+        this.magnetG = this.add.graphics();
+
+        this.createTexts();
+        this.createControls();
+
+        this.loadQuestion();
+
+        this.scale.on(
+            "resize",
+            ()=>this.layout(),
+            this
+        );
+
+        this.layout();
+
+        this.createIntro();
+
+        this.input.keyboard.on("keydown-LEFT",()=>{
+            this.leftHeld = true;
+        });
+
+        this.input.keyboard.on("keyup-LEFT",()=>{
+            this.leftHeld = false;
+        });
+
+        this.input.keyboard.on("keydown-A",()=>{
+            this.leftHeld = true;
+        });
+
+        this.input.keyboard.on("keyup-A",()=>{
+            this.leftHeld = false;
+        });
+
+        this.input.keyboard.on("keydown-RIGHT",()=>{
+            this.rightHeld = true;
+        });
+
+        this.input.keyboard.on("keyup-RIGHT",()=>{
+            this.rightHeld = false;
+        });
+
+        this.input.keyboard.on("keydown-D",()=>{
+            this.rightHeld = true;
+        });
+
+        this.input.keyboard.on("keyup-D",()=>{
+            this.rightHeld = false;
+        });
+
+        this.input.keyboard.on("keydown-SPACE",()=>{
+            if(this.started){
+                this.attemptPull();
+            }
+        });
+    }
+
+
+    createTexts(){
+
+        this.progressText = this.add.text(
+            0,0,"",
+            {
+                fontFamily:"Trebuchet MS",
+                fontStyle:"bold",
+                color:"#184256"
+            }
+        ).setOrigin(0,0.5);
+
+        this.categoryText = this.add.text(
+            0,0,"",
+            {
+                fontFamily:"Trebuchet MS",
+                fontStyle:"bold",
+                color:"#08718c"
+            }
+        ).setOrigin(.5);
+
+        this.questionText = this.add.text(
+            0,0,"",
+            {
+                fontFamily:"Trebuchet MS",
+                fontStyle:"bold",
+                color:"#17384a",
+                align:"center",
+                lineSpacing:4
+            }
+        ).setOrigin(.5);
+
+        this.feedbackText = this.add.text(
+            0,0,"",
+            {
+                fontFamily:"Trebuchet MS",
+                fontStyle:"bold",
+                align:"center",
+                color:"#ffffff",
+                stroke:"#17495c",
+                strokeThickness:4
+            }
+        )
+        .setOrigin(.5)
+        .setDepth(30);
+    }
+
+
+    createControls(){
+
+        this.leftBtn =
+            this.makeButton(
+                "◀",
+                "#1f91ba",
+                "#116784"
+            );
+
+        this.rightBtn =
+            this.makeButton(
+                "▶",
+                "#1f91ba",
+                "#116784"
+            );
+
+        this.pullBtn =
+            this.makeButton(
+                "🧲 TARIK",
+                "#ffd44d",
+                "#c38c10",
+                "#3e3210"
+            );
+
+
+        /* HOLD BUTTON */
+        this.leftBtn.bg.on("pointerdown",()=>{
+            if(!this.started) return;
+            this.leftHeld = true;
+            AUDIO.move();
+        });
+
+        this.leftBtn.bg.on("pointerup",()=>{
+            this.leftHeld = false;
+        });
+
+        this.leftBtn.bg.on("pointerout",()=>{
+            this.leftHeld = false;
+        });
+
+
+        this.rightBtn.bg.on("pointerdown",()=>{
+            if(!this.started) return;
+            this.rightHeld = true;
+            AUDIO.move();
+        });
+
+        this.rightBtn.bg.on("pointerup",()=>{
+            this.rightHeld = false;
+        });
+
+        this.rightBtn.bg.on("pointerout",()=>{
+            this.rightHeld = false;
+        });
+
+
+        this.pullBtn.bg.on(
+            "pointerdown",
             ()=>{
+                if(this.started){
+                    this.attemptPull();
+                }
+            }
+        );
+    }
 
-                if(!soundEnabled)
-                    return;
 
-                const note=
-                    melody[
-                        musicStep%
-                        melody.length
-                    ];
+    makeButton(
+        text,
+        color,
+        bottomColor,
+        textColor="#ffffff"
+    ){
 
-                tone(
-                    note,
-                    .22,
-                    "triangle",
-                    .035
+        const c = this.add.container();
+
+        const shadow =
+            this.add.rectangle(
+                0,5,
+                100,52,
+                bottomColor,
+                1
+            )
+            .setOrigin(.5)
+            .setStrokeStyle(2,"0x0b5268");
+
+        const bg =
+            this.add.rectangle(
+                0,0,
+                100,52,
+                color,
+                1
+            )
+            .setOrigin(.5)
+            .setStrokeStyle(2,0xffffff,.55)
+            .setInteractive({
+                useHandCursor:true
+            });
+
+        const label =
+            this.add.text(
+                0,-1,
+                text,
+                {
+                    fontFamily:"Trebuchet MS",
+                    fontStyle:"bold",
+                    color:textColor,
+                    fontSize:"21px"
+                }
+            ).setOrigin(.5);
+
+        c.add([
+            shadow,
+            bg,
+            label
+        ]);
+
+        c.bg = bg;
+        c.shadow = shadow;
+        c.label = label;
+
+        return c;
+    }
+
+
+    /* =====================================================
+       QUESTION
+    ===================================================== */
+
+    loadQuestion(){
+
+        this.destroyAnswers();
+
+        const data =
+            QUESTIONS[this.questionIndex];
+
+        this.categoryText.setText(
+            data.category
+        );
+
+        this.questionText.setText(
+            data.q
+        );
+
+        this.progressText.setText(
+            `Soalan ${this.questionIndex+1} / ${QUESTIONS.length}`
+        );
+
+        this.feedbackText.setText("");
+
+        const letters = ["A","B","C","D"];
+
+        for(let i=0;i<4;i++){
+
+            const node =
+                this.createAnswerNode(
+                    i,
+                    letters[i],
+                    data.o[i]
                 );
 
-                if(
-                    musicStep%2===0
-                ){
+            this.answerNodes.push(node);
+        }
 
-                    tone(
-                        note/2,
-                        .26,
-                        "sine",
-                        .018
+        this.layout();
+    }
+
+
+    createAnswerNode(index,letter,text){
+
+        const node =
+            this.add.container(0,0);
+
+        node.answerIndex = index;
+
+        const glow =
+            this.add.circle(
+                0,0,40,
+                0x69e9ff,
+                .10
+            );
+
+        const shadow =
+            this.add.rectangle(
+                0,5,
+                140,68,
+                0x146178,
+                .55
+            )
+            .setOrigin(.5);
+
+        const box =
+            this.add.rectangle(
+                0,0,
+                140,68,
+                0xf8fdff,
+                1
+            )
+            .setOrigin(.5)
+            .setStrokeStyle(
+                3,
+                0x3aa6c3,
+                1
+            );
+
+        const letterCircle =
+            this.add.circle(
+                -53,0,
+                18,
+                0x177d9d,
+                1
+            );
+
+        const letterText =
+            this.add.text(
+                -53,0,
+                letter,
+                {
+                    fontFamily:"Trebuchet MS",
+                    fontStyle:"bold",
+                    color:"#ffffff",
+                    fontSize:"17px"
+                }
+            ).setOrigin(.5);
+
+        const answerText =
+            this.add.text(
+                10,0,
+                text,
+                {
+                    fontFamily:"Trebuchet MS",
+                    fontStyle:"bold",
+                    color:"#173b4d",
+                    fontSize:"13px",
+                    align:"center",
+                    wordWrap:{
+                        width:93
+                    }
+                }
+            ).setOrigin(.5);
+
+        node.add([
+            glow,
+            shadow,
+            box,
+            letterCircle,
+            letterText,
+            answerText
+        ]);
+
+        node.glow = glow;
+        node.box = box;
+        node.shadow = shadow;
+        node.answerText = answerText;
+        node.letterCircle = letterCircle;
+        node.letterText = letterText;
+
+        box.setInteractive({
+            useHandCursor:true
+        });
+
+        box.on("pointerdown",()=>{
+
+            if(
+                !this.started ||
+                this.resolving
+            ) return;
+
+            this.selectorAngle =
+                node.currentAngle;
+
+            AUDIO.lock();
+
+            this.tweens.add({
+                targets:node,
+                scaleX:1.08,
+                scaleY:1.08,
+                duration:90,
+                yoyo:true
+            });
+        });
+
+        return node;
+    }
+
+
+    destroyAnswers(){
+
+        this.answerNodes.forEach(n=>{
+            n.destroy(true);
+        });
+
+        this.answerNodes = [];
+    }
+
+
+    /* =====================================================
+       RESPONSIVE LAYOUT
+    ===================================================== */
+
+    layout(){
+
+        if(!this.scale) return;
+
+        const w =
+            this.scale.gameSize.width;
+
+        const h =
+            this.scale.gameSize.height;
+
+        if(w < 50 || h < 50) return;
+
+        this.W = w;
+        this.H = h;
+
+        this.mobile =
+            w < 580;
+
+        this.drawBackground();
+
+
+        /* HEADER */
+        this.progressText
+            .setFontSize(
+                this.mobile ? 13 : 16
+            )
+            .setPosition(
+                18,
+                22
+            );
+
+
+        /* QUESTION PANEL */
+        const panelX = 12;
+
+        const panelY =
+            this.mobile ? 43 : 46;
+
+        const panelW =
+            w - 24;
+
+        const panelH =
+            this.mobile ? 174 : 140;
+
+        this.panelRect = {
+            x:panelX,
+            y:panelY,
+            w:panelW,
+            h:panelH
+        };
+
+        this.drawPanel();
+
+        this.categoryText
+            .setFontSize(
+                this.mobile ? 13 : 15
+            )
+            .setPosition(
+                w/2,
+                panelY + 24
+            );
+
+        this.questionText
+            .setFontSize(
+                this.mobile ? 16 : 18
+            )
+            .setWordWrapWidth(
+                panelW - 36
+            )
+            .setPosition(
+                w/2,
+                panelY + panelH/2 + 8
+            );
+
+
+        /* CONTROL AREA */
+        const controlsH =
+            this.mobile ? 78 : 82;
+
+        this.controlY =
+            h - controlsH/2 - 5;
+
+
+        /* ARENA */
+        const arenaTop =
+            panelY + panelH + 9;
+
+        const arenaBottom =
+            h - controlsH - 4;
+
+        const arenaH =
+            Math.max(
+                230,
+                arenaBottom - arenaTop
+            );
+
+        this.centerX =
+            w/2;
+
+        this.centerY =
+            arenaTop + arenaH/2;
+
+
+        const nodeW =
+            this.mobile
+            ? Math.min(
+                134,
+                w * .34
+            )
+            : Math.min(
+                182,
+                w * .22
+            );
+
+        const nodeH =
+            this.mobile ? 64 : 72;
+
+
+        let maxRadiusByWidth =
+            w/2 -
+            nodeW/2 -
+            16;
+
+        let maxRadiusByHeight =
+            arenaH/2 -
+            nodeH/2 -
+            12;
+
+        this.radius =
+            Math.max(
+                80,
+                Math.min(
+                    maxRadiusByWidth,
+                    maxRadiusByHeight,
+                    this.mobile
+                        ? 124
+                        : 175
+                )
+            );
+
+
+        this.nodeW =
+            nodeW;
+
+        this.nodeH =
+            nodeH;
+
+        this.drawArena();
+        this.drawMagnet();
+
+
+        /* ANSWER SIZE */
+        this.answerNodes.forEach(node=>{
+
+            node.box.setSize(
+                nodeW,
+                nodeH
+            );
+
+            node.shadow.setSize(
+                nodeW,
+                nodeH
+            );
+
+            node.glow.setRadius(
+                Math.min(
+                    46,
+                    nodeH*.68
+                )
+            );
+
+            node.letterCircle.setPosition(
+                -nodeW/2 + 21,
+                0
+            );
+
+            node.letterText.setPosition(
+                -nodeW/2 + 21,
+                0
+            );
+
+            const textWidth =
+                nodeW - 50;
+
+            node.answerText
+                .setFontSize(
+                    this.mobile
+                        ? 11.2
+                        : 13
+                )
+                .setWordWrapWidth(
+                    textWidth - 6
+                )
+                .setPosition(
+                    15,
+                    0
+                );
+        });
+
+
+        /* CONTROL BUTTONS */
+        if(this.mobile){
+
+            const sideW =
+                Math.min(
+                    72,
+                    w*.18
+                );
+
+            const pullW =
+                Math.min(
+                    145,
+                    w*.37
+                );
+
+            this.setButtonSize(
+                this.leftBtn,
+                sideW,
+                52,
+                23
+            );
+
+            this.setButtonSize(
+                this.rightBtn,
+                sideW,
+                52,
+                23
+            );
+
+            this.setButtonSize(
+                this.pullBtn,
+                pullW,
+                52,
+                17
+            );
+
+            const gap = 8;
+
+            const total =
+                sideW*2 +
+                pullW +
+                gap*2;
+
+            const start =
+                (w-total)/2;
+
+            this.leftBtn.setPosition(
+                start + sideW/2,
+                this.controlY
+            );
+
+            this.pullBtn.setPosition(
+                start +
+                sideW +
+                gap +
+                pullW/2,
+                this.controlY
+            );
+
+            this.rightBtn.setPosition(
+                start +
+                sideW +
+                gap +
+                pullW +
+                gap +
+                sideW/2,
+                this.controlY
+            );
+
+        }else{
+
+            this.setButtonSize(
+                this.leftBtn,
+                86,54,24
+            );
+
+            this.setButtonSize(
+                this.rightBtn,
+                86,54,24
+            );
+
+            this.setButtonSize(
+                this.pullBtn,
+                174,54,19
+            );
+
+            this.leftBtn.setPosition(
+                w/2-150,
+                this.controlY
+            );
+
+            this.pullBtn.setPosition(
+                w/2,
+                this.controlY
+            );
+
+            this.rightBtn.setPosition(
+                w/2+150,
+                this.controlY
+            );
+        }
+
+
+        this.feedbackText
+            .setFontSize(
+                this.mobile ? 19 : 24
+            )
+            .setPosition(
+                this.centerX,
+                this.centerY
+            );
+
+        this.positionAnswers();
+    }
+
+
+    setButtonSize(btn,w,h,fontSize){
+
+        btn.bg.setSize(w,h);
+        btn.shadow.setSize(w,h);
+
+        btn.label.setFontSize(
+            fontSize
+        );
+    }
+
+
+    /* =====================================================
+       DRAWING
+    ===================================================== */
+
+    drawBackground(){
+
+        const w = this.W;
+        const h = this.H;
+
+        this.bgG.clear();
+
+        this.bgG.fillStyle(
+            0x8bd4e7,
+            1
+        );
+
+        this.bgG.fillRect(
+            0,0,w,h
+        );
+
+
+        /* LAB WALL LINES */
+        this.bgG.lineStyle(
+            1,
+            0xffffff,
+            .13
+        );
+
+        for(let x=0;x<w;x+=42){
+
+            this.bgG.lineBetween(
+                x,0,x,h
+            );
+        }
+
+        for(let y=0;y<h;y+=42){
+
+            this.bgG.lineBetween(
+                0,y,w,y
+            );
+        }
+
+
+        /* LAB BUBBLES */
+        this.decorG.clear();
+
+        const bubbles = [
+            [.08,.72,15],
+            [.91,.55,10],
+            [.13,.42,7],
+            [.86,.81,17],
+            [.73,.34,7],
+            [.32,.82,6]
+        ];
+
+        bubbles.forEach(b=>{
+
+            this.decorG.fillStyle(
+                0xffffff,
+                .13
+            );
+
+            this.decorG.fillCircle(
+                w*b[0],
+                h*b[1],
+                b[2]
+            );
+        });
+    }
+
+
+    drawPanel(){
+
+        const p =
+            this.panelRect;
+
+        if(!p) return;
+
+        this.panelG.clear();
+
+        /* shadow */
+        this.panelG.fillStyle(
+            0x276c80,
+            .22
+        );
+
+        this.panelG.fillRoundedRect(
+            p.x,
+            p.y+5,
+            p.w,
+            p.h,
+            18
+        );
+
+        this.panelG.fillStyle(
+            0xffffff,
+            .94
+        );
+
+        this.panelG.fillRoundedRect(
+            p.x,
+            p.y,
+            p.w,
+            p.h,
+            18
+        );
+
+        this.panelG.lineStyle(
+            2,
+            0x55b8d0,
+            .55
+        );
+
+        this.panelG.strokeRoundedRect(
+            p.x,
+            p.y,
+            p.w,
+            p.h,
+            18
+        );
+    }
+
+
+    drawArena(){
+
+        if(!this.centerX) return;
+
+        this.arenaG.clear();
+
+        /* outer field */
+        this.arenaG.fillStyle(
+            0xffffff,
+            .12
+        );
+
+        this.arenaG.fillCircle(
+            this.centerX,
+            this.centerY,
+            this.radius+36
+        );
+
+
+        /* magnetic field circles */
+        for(let i=0;i<3;i++){
+
+            this.arenaG.lineStyle(
+                2,
+                0xe8fbff,
+                .28 - i*.06
+            );
+
+            this.arenaG.strokeCircle(
+                this.centerX,
+                this.centerY,
+                this.radius - i*22
+            );
+        }
+
+
+        /* orbit */
+        this.arenaG.lineStyle(
+            3,
+            0xffffff,
+            .55
+        );
+
+        this.arenaG.strokeCircle(
+            this.centerX,
+            this.centerY,
+            this.radius
+        );
+
+
+        /* small orbit dots */
+        for(let i=0;i<20;i++){
+
+            const a =
+                (Math.PI*2/20)*i;
+
+            const x =
+                this.centerX +
+                Math.cos(a)*
+                this.radius;
+
+            const y =
+                this.centerY +
+                Math.sin(a)*
+                this.radius;
+
+            this.arenaG.fillStyle(
+                0xffffff,
+                .45
+            );
+
+            this.arenaG.fillCircle(
+                x,y,2
+            );
+        }
+    }
+
+
+    drawMagnet(){
+
+        this.magnetG.clear();
+
+        const x =
+            this.centerX;
+
+        const y =
+            this.centerY;
+
+        const s =
+            this.mobile ? .76 : 1;
+
+
+        /* magnetic glow */
+        this.magnetG.fillStyle(
+            0xffffff,
+            .13
+        );
+
+        this.magnetG.fillCircle(
+            x,y,
+            58*s
+        );
+
+
+        /*
+          U MAGNET
+          guna line stroke tebal
+        */
+
+        this.magnetG.lineStyle(
+            22*s,
+            0xe64646,
+            1
+        );
+
+        this.magnetG.beginPath();
+
+        this.magnetG.moveTo(
+            x-27*s,
+            y-28*s
+        );
+
+        this.magnetG.lineTo(
+            x-27*s,
+            y+8*s
+        );
+
+        this.magnetG.arc(
+            x,
+            y+8*s,
+            27*s,
+            Math.PI,
+            0,
+            true
+        );
+
+        this.magnetG.lineTo(
+            x+27*s,
+            y-28*s
+        );
+
+        this.magnetG.strokePath();
+
+
+        /* pole tips */
+        this.magnetG.fillStyle(
+            0xf6f7fb,
+            1
+        );
+
+        this.magnetG.fillRoundedRect(
+            x-38*s,
+            y-41*s,
+            22*s,
+            24*s,
+            5*s
+        );
+
+        this.magnetG.fillRoundedRect(
+            x+16*s,
+            y-41*s,
+            22*s,
+            24*s,
+            5*s
+        );
+
+
+        this.magnetG.fillStyle(
+            0x2c76c8,
+            1
+        );
+
+        this.magnetG.fillRoundedRect(
+            x-38*s,
+            y-41*s,
+            22*s,
+            11*s,
+            4*s
+        );
+
+
+        /* N S */
+        this.magnetG.fillStyle(
+            0xffffff,
+            1
+        );
+
+        this.magnetG.fillCircle(
+            x-27*s,
+            y-35*s,
+            6*s
+        );
+
+        this.magnetG.fillCircle(
+            x+27*s,
+            y-35*s,
+            6*s
+        );
+    }
+
+
+    drawSelector(){
+
+        if(!this.centerX) return;
+
+        this.selectorG.clear();
+
+        const a =
+            this.selectorAngle;
+
+        const inner =
+            this.mobile ? 46 : 60;
+
+        const outer =
+            this.radius - 12;
+
+        const sx =
+            this.centerX +
+            Math.cos(a)*inner;
+
+        const sy =
+            this.centerY +
+            Math.sin(a)*inner;
+
+        const ex =
+            this.centerX +
+            Math.cos(a)*outer;
+
+        const ey =
+            this.centerY +
+            Math.sin(a)*outer;
+
+
+        /* glowing beam */
+        this.selectorG.lineStyle(
+            this.mobile ? 13 : 17,
+            0xffe45d,
+            .13
+        );
+
+        this.selectorG.lineBetween(
+            sx,sy,ex,ey
+        );
+
+        this.selectorG.lineStyle(
+            4,
+            0xffdd39,
+            .9
+        );
+
+        this.selectorG.lineBetween(
+            sx,sy,ex,ey
+        );
+
+
+        /* target */
+        const tx =
+            this.centerX +
+            Math.cos(a)*
+            this.radius;
+
+        const ty =
+            this.centerY +
+            Math.sin(a)*
+            this.radius;
+
+        this.selectorG.fillStyle(
+            0xfff04f,
+            .20
+        );
+
+        this.selectorG.fillCircle(
+            tx,ty,
+            this.mobile ? 27 : 32
+        );
+
+        this.selectorG.lineStyle(
+            4,
+            0xffe24e,
+            1
+        );
+
+        this.selectorG.strokeCircle(
+            tx,ty,
+            this.mobile ? 22 : 27
+        );
+
+        this.selectorG.lineStyle(
+            2,
+            0xffffff,
+            .95
+        );
+
+        this.selectorG.strokeCircle(
+            tx,ty,
+            this.mobile ? 15 : 19
+        );
+    }
+
+
+    /* =====================================================
+       UPDATE
+    ===================================================== */
+
+    update(time,delta){
+
+        if(
+            !this.started ||
+            !this.centerX
+        ){
+            this.drawSelector();
+            return;
+        }
+
+        const dt =
+            Math.min(delta,40)/1000;
+
+
+        if(!this.resolving){
+
+            /* ORBIT BERGERAK */
+            this.orbitAngle +=
+                dt *
+                (this.mobile ? .34 : .30);
+
+
+            /* POINTER */
+            const selectorSpeed =
+                this.mobile ? 2.35 : 2.2;
+
+            if(this.leftHeld){
+
+                this.selectorAngle -=
+                    selectorSpeed*dt;
+            }
+
+            if(this.rightHeld){
+
+                this.selectorAngle +=
+                    selectorSpeed*dt;
+            }
+
+            this.selectorAngle =
+                Phaser.Math.Angle.Wrap(
+                    this.selectorAngle
+                );
+        }
+
+        this.positionAnswers();
+
+        this.drawSelector();
+    }
+
+
+    positionAnswers(){
+
+        if(
+            !this.answerNodes ||
+            !this.centerX
+        ) return;
+
+        const count =
+            this.answerNodes.length;
+
+        this.answerNodes.forEach(
+            (node,i)=>{
+
+            if(node.locked) return;
+
+            const angle =
+                this.orbitAngle +
+                (Math.PI*2/count)*i -
+                Math.PI/2;
+
+            node.currentAngle =
+                Phaser.Math.Angle.Wrap(
+                    angle
+                );
+
+            node.x =
+                this.centerX +
+                Math.cos(angle)*
+                this.radius;
+
+            node.y =
+                this.centerY +
+                Math.sin(angle)*
+                this.radius;
+
+            /*
+              depth berdasarkan kedudukan
+            */
+            node.setDepth(
+                10 +
+                Math.round(
+                    Math.sin(angle)*3
+                )
+            );
+        });
+    }
+
+
+    /* =====================================================
+       TARIK ANSWER
+    ===================================================== */
+
+    attemptPull(){
+
+        if(
+            this.resolving ||
+            !this.started
+        ) return;
+
+        AUDIO.pull();
+
+        let closest = null;
+        let minDiff = Infinity;
+
+        this.answerNodes.forEach(node=>{
+
+            let diff =
+                Math.abs(
+                    Phaser.Math.Angle.Wrap(
+                        node.currentAngle -
+                        this.selectorAngle
+                    )
+                );
+
+            if(diff < minDiff){
+
+                minDiff = diff;
+                closest = node;
+            }
+        });
+
+
+        /*
+          julat lock agak luas untuk phone
+        */
+        const tolerance =
+            this.mobile ? .53 : .45;
+
+        if(
+            !closest ||
+            minDiff > tolerance
+        ){
+
+            this.feedbackText
+                .setText(
+                    "Sejajarkan sasaran!"
+                )
+                .setColor(
+                    "#fff6a8"
+                )
+                .setAlpha(1);
+
+            this.tweens.killTweensOf(
+                this.feedbackText
+            );
+
+            this.tweens.add({
+                targets:this.feedbackText,
+                alpha:0,
+                delay:500,
+                duration:350
+            });
+
+            this.cameras.main.shake(
+                100,
+                .003
+            );
+
+            return;
+        }
+
+        this.evaluateAnswer(
+            closest
+        );
+    }
+
+
+    evaluateAnswer(node){
+
+        if(this.resolving) return;
+
+        this.resolving = true;
+
+        const data =
+            QUESTIONS[this.questionIndex];
+
+        const correct =
+            node.answerIndex === data.a;
+
+
+        if(correct){
+
+            AUDIO.correct();
+
+            node.locked = true;
+
+            node.box.setFillStyle(
+                0xd7ffd9,
+                1
+            );
+
+            node.box.setStrokeStyle(
+                4,
+                0x30b95a,
+                1
+            );
+
+            node.letterCircle.setFillStyle(
+                0x2eb95b
+            );
+
+            this.feedbackText
+                .setText(
+                    "✓ BETUL!"
+                )
+                .setColor(
+                    "#d8ffd8"
+                )
+                .setAlpha(1);
+
+            this.createMagneticParticles(
+                node.x,
+                node.y,
+                0x7dff9b
+            );
+
+            this.tweens.add({
+
+                targets:node,
+
+                x:this.centerX,
+                y:this.centerY,
+
+                scaleX:.30,
+                scaleY:.30,
+
+                angle:180,
+
+                duration:550,
+
+                ease:"Cubic.easeIn",
+
+                onComplete:()=>{
+
+                    this.createMagneticParticles(
+                        this.centerX,
+                        this.centerY,
+                        0xffff86
+                    );
+
+                    node.setVisible(false);
+
+                    this.time.delayedCall(
+                        550,
+                        ()=>{
+
+                            if(
+                                this.questionIndex >=
+                                QUESTIONS.length-1
+                            ){
+                                this.showWin();
+                                return;
+                            }
+
+                            this.questionIndex++;
+
+                            this.orbitAngle = 0;
+
+                            this.selectorAngle =
+                                -Math.PI/2;
+
+                            this.resolving = false;
+
+                            this.loadQuestion();
+                        }
                     );
                 }
+            });
 
-                musicStep++;
+        }else{
 
-            },
-            420
+            this.mistakes++;
+
+            AUDIO.wrong();
+
+            node.box.setFillStyle(
+                0xffdad7,
+                1
+            );
+
+            node.box.setStrokeStyle(
+                4,
+                0xe8463c,
+                1
+            );
+
+            node.letterCircle.setFillStyle(
+                0xd94038
+            );
+
+            this.feedbackText
+                .setText(
+                    "✕ Cuba lagi!"
+                )
+                .setColor(
+                    "#ffd7d2"
+                )
+                .setAlpha(1);
+
+            this.cameras.main.shake(
+                180,
+                .006
+            );
+
+            /*
+              Kesan magnet MENOLAK
+            */
+            const dx =
+                node.x -
+                this.centerX;
+
+            const dy =
+                node.y -
+                this.centerY;
+
+            const len =
+                Math.max(
+                    1,
+                    Math.sqrt(
+                        dx*dx +
+                        dy*dy
+                    )
+                );
+
+            const push =
+                this.mobile ? 38 : 55;
+
+            this.tweens.add({
+
+                targets:node,
+
+                x:
+                    node.x +
+                    dx/len*push,
+
+                y:
+                    node.y +
+                    dy/len*push,
+
+                scaleX:1.12,
+                scaleY:1.12,
+
+                duration:170,
+
+                yoyo:true,
+
+                ease:"Quad.easeOut",
+
+                onComplete:()=>{
+
+                    node.box.setFillStyle(
+                        0xf8fdff,
+                        1
+                    );
+
+                    node.box.setStrokeStyle(
+                        3,
+                        0x3aa6c3,
+                        1
+                    );
+
+                    node.letterCircle.setFillStyle(
+                        0x177d9d
+                    );
+
+                    this.feedbackText
+                        .setAlpha(0);
+
+                    this.resolving = false;
+                }
+            });
+
+            this.createMagneticParticles(
+                node.x,
+                node.y,
+                0xff6f66
+            );
+        }
+    }
+
+
+    createMagneticParticles(
+        x,
+        y,
+        color
+    ){
+
+        for(let i=0;i<12;i++){
+
+            const p =
+                this.add.circle(
+                    x,y,
+                    Phaser.Math.Between(
+                        2,5
+                    ),
+                    color,
+                    1
+                )
+                .setDepth(40);
+
+            const a =
+                Phaser.Math.FloatBetween(
+                    0,
+                    Math.PI*2
+                );
+
+            const distance =
+                Phaser.Math.Between(
+                    35,90
+                );
+
+            this.tweens.add({
+
+                targets:p,
+
+                x:
+                    x +
+                    Math.cos(a)*
+                    distance,
+
+                y:
+                    y +
+                    Math.sin(a)*
+                    distance,
+
+                alpha:0,
+
+                scale:.2,
+
+                duration:
+                    Phaser.Math.Between(
+                        350,650
+                    ),
+
+                ease:"Quad.easeOut",
+
+                onComplete:()=>{
+                    p.destroy();
+                }
+            });
+        }
+    }
+
+
+    /* =====================================================
+       INTRO
+    ===================================================== */
+
+    createIntro(){
+
+        const overlay =
+            this.add.container()
+            .setDepth(1000);
+
+        const shade =
+            this.add.rectangle(
+                0,0,
+                10,10,
+                0x103847,
+                .78
+            )
+            .setOrigin(0);
+
+        const card =
+            this.add.rectangle(
+                0,0,
+                100,100,
+                0xffffff,
+                1
+            )
+            .setStrokeStyle(
+                4,
+                0x51bad2,
+                1
+            );
+
+        const icon =
+            this.add.text(
+                0,0,
+                "🧲",
+                {
+                    fontSize:"58px"
+                }
+            ).setOrigin(.5);
+
+        const title =
+            this.add.text(
+                0,0,
+                "ORBIT MAGNET LAB",
+                {
+                    fontFamily:"Trebuchet MS",
+                    fontStyle:"bold",
+                    color:"#164d63",
+                    align:"center"
+                }
+            ).setOrigin(.5);
+
+        const info =
+            this.add.text(
+                0,0,
+                "1. Baca soalan.\n\n2. Cari kapsul jawapan yang betul.\n\n3. Gerakkan sasaran ◀ ▶ atau tekan kapsul.\n\n4. Tekan TARIK apabila sasaran sejajar.\n\nJawapan betul akan DITARIK.\nJawapan salah akan DITOLAK.",
+                {
+                    fontFamily:"Trebuchet MS",
+                    fontStyle:"bold",
+                    color:"#315767",
+                    align:"center",
+                    lineSpacing:3
+                }
+            ).setOrigin(.5);
+
+        const startShadow =
+            this.add.rectangle(
+                0,4,
+                190,54,
+                0x13805b,
+                1
+            );
+
+        const start =
+            this.add.rectangle(
+                0,0,
+                190,54,
+                0x37d38e,
+                1
+            )
+            .setStrokeStyle(
+                3,
+                0xffffff,
+                .8
+            )
+            .setInteractive({
+                useHandCursor:true
+            });
+
+        const startText =
+            this.add.text(
+                0,0,
+                "▶ MULA",
+                {
+                    fontFamily:"Trebuchet MS",
+                    fontStyle:"bold",
+                    color:"#ffffff",
+                    fontSize:"21px"
+                }
+            ).setOrigin(.5);
+
+
+        overlay.add([
+            shade,
+            card,
+            icon,
+            title,
+            info,
+            startShadow,
+            start,
+            startText
+        ]);
+
+        this.introElements = {
+            overlay,
+            shade,
+            card,
+            icon,
+            title,
+            info,
+            start,
+            startShadow,
+            startText
+        };
+
+
+        const layoutIntro = ()=>{
+
+            if(!overlay.active) return;
+
+            const w =
+                this.scale.gameSize.width;
+
+            const h =
+                this.scale.gameSize.height;
+
+            const mobile =
+                w < 580;
+
+            shade
+                .setSize(w,h)
+                .setPosition(0,0);
+
+            const cw =
+                Math.min(
+                    w-28,
+                    mobile ? 380 : 520
+                );
+
+            const ch =
+                Math.min(
+                    h-38,
+                    mobile ? 465 : 485
+                );
+
+            card
+                .setSize(cw,ch)
+                .setPosition(
+                    w/2,
+                    h/2
+                );
+
+            icon.setPosition(
+                w/2,
+                h/2 -
+                ch*.36
+            );
+
+            title
+                .setFontSize(
+                    mobile ? 23 : 28
+                )
+                .setPosition(
+                    w/2,
+                    h/2 -
+                    ch*.22
+                );
+
+            info
+                .setFontSize(
+                    mobile ? 14 : 16
+                )
+                .setWordWrapWidth(
+                    cw-40
+                )
+                .setPosition(
+                    w/2,
+                    h/2 + 5
+                );
+
+            const by =
+                h/2 +
+                ch*.36;
+
+            start.setPosition(
+                w/2,
+                by
+            );
+
+            startShadow.setPosition(
+                w/2,
+                by+5
+            );
+
+            startText.setPosition(
+                w/2,
+                by
+            );
+        };
+
+        layoutIntro();
+
+        this.scale.on(
+            "resize",
+            layoutIntro
         );
+
+        start.on(
+            "pointerdown",
+            ()=>{
+
+                AUDIO.init();
+
+                this.started = true;
+
+                overlay.destroy(true);
+
+                AUDIO.lock();
+            }
+        );
+    }
+
+
+    /* =====================================================
+       WIN SCREEN
+    ===================================================== */
+
+    showWin(){
+
+        this.started = false;
+        this.resolving = true;
+
+        AUDIO.win();
+
+        const overlay =
+            this.add.container()
+            .setDepth(2000);
+
+        const shade =
+            this.add.rectangle(
+                0,0,
+                this.W,
+                this.H,
+                0x123948,
+                .82
+            )
+            .setOrigin(0);
+
+        const cardW =
+            Math.min(
+                this.W-30,
+                this.mobile ? 370 : 500
+            );
+
+        const cardH =
+            Math.min(
+                this.H-40,
+                430
+            );
+
+        const card =
+            this.add.rectangle(
+                this.W/2,
+                this.H/2,
+                cardW,
+                cardH,
+                0xffffff,
+                1
+            )
+            .setStrokeStyle(
+                5,
+                0x51c2d8,
+                1
+            );
+
+        const trophy =
+            this.add.text(
+                this.W/2,
+                this.H/2-cardH*.32,
+                "🏆",
+                {
+                    fontSize:
+                        this.mobile
+                        ? "64px"
+                        : "76px"
+                }
+            ).setOrigin(.5);
+
+        const title =
+            this.add.text(
+                this.W/2,
+                this.H/2-cardH*.13,
+                "MISI SELESAI!",
+                {
+                    fontFamily:"Trebuchet MS",
+                    fontStyle:"bold",
+                    fontSize:
+                        this.mobile
+                        ? "28px"
+                        : "34px",
+                    color:"#167293"
+                }
+            ).setOrigin(.5);
+
+        const summary =
+            this.add.text(
+                this.W/2,
+                this.H/2+22,
+                "25 / 25 soalan berjaya diselesaikan!\n\n" +
+                "Percubaan salah: " +
+                this.mistakes,
+                {
+                    fontFamily:"Trebuchet MS",
+                    fontStyle:"bold",
+                    fontSize:
+                        this.mobile
+                        ? "16px"
+                        : "19px",
+                    align:"center",
+                    color:"#345a68",
+                    lineSpacing:6
+                }
+            ).setOrigin(.5);
+
+        const restart =
+            this.add.rectangle(
+                this.W/2,
+                this.H/2+cardH*.32,
+                190,
+                55,
+                0x39cc87,
+                1
+            )
+            .setStrokeStyle(
+                3,
+                0xffffff,
+                .8
+            )
+            .setInteractive({
+                useHandCursor:true
+            });
+
+        const restartText =
+            this.add.text(
+                this.W/2,
+                this.H/2+cardH*.32,
+                "↻ MAIN LAGI",
+                {
+                    fontFamily:"Trebuchet MS",
+                    fontStyle:"bold",
+                    fontSize:"19px",
+                    color:"#ffffff"
+                }
+            ).setOrigin(.5);
+
+
+        overlay.add([
+            shade,
+            card,
+            trophy,
+            title,
+            summary,
+            restart,
+            restartText
+        ]);
+
+
+        restart.on(
+            "pointerdown",
+            ()=>{
+
+                overlay.destroy(true);
+
+                this.questionIndex = 0;
+                this.mistakes = 0;
+                this.orbitAngle = 0;
+                this.selectorAngle =
+                    -Math.PI/2;
+
+                this.resolving = false;
+                this.started = true;
+
+                this.loadQuestion();
+
+                AUDIO.lock();
+            }
+        );
+    }
 }
-
-
-function correctSound(){
-
-    tone(
-        523,
-        .1,
-        "triangle",
-        .14
-    );
-
-    tone(
-        659,
-        .12,
-        "triangle",
-        .15,
-        .08
-    );
-
-    tone(
-        784,
-        .2,
-        "triangle",
-        .16,
-        .17
-    );
-}
-
-
-function wrongSound(){
-
-    tone(
-        180,
-        .18,
-        "sawtooth",
-        .1
-    );
-
-    tone(
-        135,
-        .22,
-        "sawtooth",
-        .09,
-        .13
-    );
-}
-
-
-function nextSound(){
-
-    tone(
-        420,
-        .06,
-        "square",
-        .04
-    );
-
-    tone(
-        530,
-        .07,
-        "square",
-        .04,
-        .06
-    );
-}
-
-
-function pullSound(){
-
-    tone(
-        440,
-        .04,
-        "sine",
-        .018
-    );
-}
-
-
-/* =========================================================
-   VARIABLES
-========================================================= */
-
-let sceneRef;
-
-let magnet;
-let ball;
-
-let categoryText;
-let questionText;
-let progressText;
-let scoreText;
-let hintText;
-
-let magnetRange;
-let connection;
-
-let docks=[];
-let zones=[];
-
-let questionIndex=0;
-let score=0;
-
-let gameStarted=false;
-let locked=false;
-let dragging=false;
-
-let cursors;
-let keyW;
-let keyA;
-let keyS;
-let keyD;
-
-let pullCooldown=0;
-
-let obstacles=[];
-
-
-/* =========================================================
-   MAGNET HOLD SYSTEM
-
-   false:
-   bola belum ditangkap.
-
-   true:
-   bola sedang dipegang oleh magnet.
-
-   Ini buat bola tak mudah terus terputus.
-========================================================= */
-
-let magnetHolding=false;
 
 
 /* =========================================================
    PHASER CONFIG
 ========================================================= */
 
-const config={
+const config = {
 
     type:Phaser.AUTO,
 
-    parent:"game-container",
+    parent:"game",
 
-    backgroundColor:"#dceff1",
-
-    physics:{
-
-        default:"arcade",
-
-        arcade:{
-
-            gravity:{
-                y:0
-            },
-
-            debug:false
-        }
-    },
+    backgroundColor:"#8bd4e7",
 
     scale:{
-
-        mode:
-            Phaser.Scale.RESIZE,
-
-        autoCenter:
-            Phaser.Scale.CENTER_BOTH
+        mode:Phaser.Scale.RESIZE,
+        width:"100%",
+        height:"100%"
     },
 
     render:{
-        antialias:true
+        antialias:true,
+        pixelArt:false,
+        roundPixels:true
     },
 
-    scene:{
-        preload,
-        create,
-        update
-    }
+    input:{
+        activePointers:3
+    },
 
+    scene:[
+        MagnetGame
+    ]
 };
 
-
-new Phaser.Game(config);
-
-
-/* =========================================================
-   PRELOAD
-========================================================= */
-
-function preload(){}
+const game =
+    new Phaser.Game(config);
 
 
 /* =========================================================
-   CREATE
-========================================================= */
-
-function create(){
-
-    sceneRef=this;
-
-    createTextures(this);
-
-    this.bg=
-        this.add.graphics();
-
-    this.grid=
-        this.add.graphics();
-
-    createHUD(this);
-
-    createDocks(this);
-
-    createMagnet(this);
-
-    createBall(this);
-
-    createControls(this);
-
-    magnetRange=
-        this.add.graphics()
-        .setDepth(4);
-
-    connection=
-        this.add.graphics()
-        .setDepth(3);
-
-    this.scale.on(
-        "resize",
-        ()=>{
-            layout();
-        }
-    );
-
-    layout();
-
-    loadQuestion();
-}
-
-
-/* =========================================================
-   TEXTURES
-========================================================= */
-
-function createTextures(scene){
-
-    let g=
-        scene.make.graphics({
-            add:false
-        });
-
-
-    /* MAGNET */
-
-    g.fillStyle(
-        0xe65353,
-        1
-    );
-
-    g.fillRoundedRect(
-        5,
-        5,
-        29,
-        58,
-        11
-    );
-
-    g.fillStyle(
-        0x407fce,
-        1
-    );
-
-    g.fillRoundedRect(
-        59,
-        5,
-        29,
-        58,
-        11
-    );
-
-    g.fillStyle(
-        0xe65353,
-        1
-    );
-
-    g.fillCircle(
-        47,
-        52,
-        40
-    );
-
-    g.fillStyle(
-        0xffffff,
-        1
-    );
-
-    g.fillCircle(
-        47,
-        43,
-        21
-    );
-
-    g.fillRect(
-        26,
-        2,
-        42,
-        42
-    );
-
-    g.fillStyle(
-        0xf5f6f6,
-        1
-    );
-
-    g.fillRoundedRect(
-        5,
-        3,
-        29,
-        13,
-        6
-    );
-
-    g.fillRoundedRect(
-        59,
-        3,
-        29,
-        13,
-        6
-    );
-
-    g.lineStyle(
-        3,
-        0x24434b
-    );
-
-    g.strokeRoundedRect(
-        5,
-        5,
-        29,
-        58,
-        11
-    );
-
-    g.strokeRoundedRect(
-        59,
-        5,
-        29,
-        58,
-        11
-    );
-
-    g.generateTexture(
-        "magnet",
-        94,
-        78
-    );
-
-    g.destroy();
-
-
-    /* BALL */
-
-    g=
-        scene.make.graphics({
-            add:false
-        });
-
-    g.fillStyle(
-        0x69787c,
-        1
-    );
-
-    g.fillCircle(
-        25,
-        25,
-        21
-    );
-
-    g.fillStyle(
-        0xaebcc0,
-        1
-    );
-
-    g.fillCircle(
-        23,
-        23,
-        17
-    );
-
-    g.fillStyle(
-        0xe9f0f1,
-        1
-    );
-
-    g.fillCircle(
-        17,
-        16,
-        6
-    );
-
-    g.lineStyle(
-        3,
-        0x46585d
-    );
-
-    g.strokeCircle(
-        25,
-        25,
-        21
-    );
-
-    g.generateTexture(
-        "ball",
-        50,
-        50
-    );
-
-    g.destroy();
-
-
-    /* OBSTACLE */
-
-    g=
-        scene.make.graphics({
-            add:false
-        });
-
-    g.fillStyle(
-        0x6c4a2c,
-        1
-    );
-
-    g.fillRoundedRect(
-        2,
-        2,
-        105,
-        29,
-        8
-    );
-
-    g.fillStyle(
-        0xb98251,
-        1
-    );
-
-    g.fillRoundedRect(
-        5,
-        5,
-        99,
-        21,
-        6
-    );
-
-    g.generateTexture(
-        "block",
-        110,
-        34
-    );
-
-    g.destroy();
-}
-
-
-/* =========================================================
-   HUD
-========================================================= */
-
-function createHUD(scene){
-
-    categoryText=
-        scene.add.text(
-            0,
-            0,
-            "",
-            {
-                fontFamily:
-                    "Trebuchet MS",
-
-                fontSize:
-                    "13px",
-
-                fontStyle:
-                    "bold",
-
-                color:
-                    "#225b67",
-
-                backgroundColor:
-                    "#d5f4e9",
-
-                padding:{
-                    x:8,
-                    y:4
-                }
-            }
-        )
-        .setDepth(30);
-
-
-    progressText=
-        scene.add.text(
-            0,
-            0,
-            "",
-            {
-                fontFamily:
-                    "Trebuchet MS",
-
-                fontSize:
-                    "13px",
-
-                fontStyle:
-                    "bold",
-
-                color:
-                    "#395d66"
-            }
-        )
-        .setDepth(30);
-
-
-    scoreText=
-        scene.add.text(
-            0,
-            0,
-            "",
-            {
-                fontFamily:
-                    "Trebuchet MS",
-
-                fontSize:
-                    "13px",
-
-                fontStyle:
-                    "bold",
-
-                color:
-                    "#9b6b00"
-            }
-        )
-        .setOrigin(
-            1,
-            0
-        )
-        .setDepth(30);
-
-
-    questionText=
-        scene.add.text(
-            0,
-            0,
-            "",
-            {
-                fontFamily:
-                    "Trebuchet MS",
-
-                fontSize:
-                    "18px",
-
-                fontStyle:
-                    "bold",
-
-                color:
-                    "#173b46",
-
-                align:
-                    "center",
-
-                lineSpacing:
-                    3
-            }
-        )
-        .setOrigin(
-            .5,
-            0
-        )
-        .setDepth(30);
-
-
-    hintText=
-        scene.add.text(
-            0,
-            0,
-
-            "🧲 Dekatkan magnet dengan bola",
-
-            {
-                fontFamily:
-                    "Trebuchet MS",
-
-                fontSize:
-                    "11px",
-
-                fontStyle:
-                    "bold",
-
-                color:
-                    "#49676d",
-
-                backgroundColor:
-                    "rgba(255,255,255,.75)",
-
-                padding:{
-                    x:7,
-                    y:3
-                }
-            }
-        )
-        .setOrigin(.5)
-        .setDepth(15);
-}
-
-
-/* =========================================================
-   MAGNET
-========================================================= */
-
-function createMagnet(scene){
-
-    magnet=
-        scene.physics
-        .add.image(
-            0,
-            0,
-            "magnet"
-        );
-
-    magnet.setDepth(12);
-
-    magnet.setDrag(
-        900,
-        900
-    );
-
-    magnet.setMaxVelocity(
-        300,
-        300
-    );
-
-    magnet.setInteractive({
-        draggable:true
-    });
-
-    scene.input.setDraggable(
-        magnet
-    );
-
-    magnet.on(
-        "dragstart",
-        ()=>{
-
-            dragging=true;
-        }
-    );
-
-    magnet.on(
-        "drag",
-        (
-            pointer,
-            x,
-            y
-        )=>{
-
-            if(
-                !gameStarted||
-                locked
-            )return;
-
-            const b=
-                getPlayBounds();
-
-            magnet.x=
-                Phaser.Math.Clamp(
-                    x,
-                    b.left+28,
-                    b.right-28
-                );
-
-            magnet.y=
-                Phaser.Math.Clamp(
-                    y,
-                    b.top+28,
-                    b.bottom-28
-                );
-
-            magnet.body.reset(
-                magnet.x,
-                magnet.y
-            );
-        }
-    );
-
-    magnet.on(
-        "dragend",
-        ()=>{
-
-            dragging=false;
-        }
-    );
-}
-
-
-/* =========================================================
-   BALL
-========================================================= */
-
-function createBall(scene){
-
-    ball=
-        scene.physics
-        .add.image(
-            0,
-            0,
-            "ball"
-        );
-
-    ball.setDepth(11);
-
-    ball.body.setCircle(
-        20,
-        5,
-        5
-    );
-
-    ball.setBounce(.72);
-
-    ball.setDrag(
-        105,
-        105
-    );
-
-    ball.setMaxVelocity(
-        410,
-        410
-    );
-}
-
-
-/* =========================================================
-   DOCKS
-========================================================= */
-
-function createDocks(scene){
-
-    const letters=[
-        "A",
-        "B",
-        "C",
-        "D"
-    ];
-
-    for(
-        let i=0;
-        i<4;
-        i++
-    ){
-
-        const c=
-            scene.add.container(
-                0,
-                0
-            )
-            .setDepth(8);
-
-        const shadow=
-            scene.add.rectangle(
-                3,
-                4,
-                170,
-                80,
-                0x173b46,
-                .15
-            );
-
-        const bg=
-            scene.add.rectangle(
-                0,
-                0,
-                170,
-                80,
-                0xfffbeb
-            )
-            .setStrokeStyle(
-                3,
-                0x476970
-            );
-
-        const letterBg=
-            scene.add.circle(
-                -67,
-                -27,
-                15,
-                0xffd65c
-            )
-            .setStrokeStyle(
-                2,
-                0xa87812
-            );
-
-        const letter=
-            scene.add.text(
-                -67,
-                -27,
-                letters[i],
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontSize:
-                        "17px",
-
-                    fontStyle:
-                        "bold",
-
-                    color:
-                        "#563c00"
-                }
-            )
-            .setOrigin(.5);
-
-        const answer=
-            scene.add.text(
-                0,
-                2,
-                "",
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontSize:
-                        "12px",
-
-                    fontStyle:
-                        "bold",
-
-                    color:
-                        "#274a51",
-
-                    align:
-                        "center",
-
-                    wordWrap:{
-                        width:145
-                    }
-                }
-            )
-            .setOrigin(.5);
-
-        const hole=
-            scene.add.ellipse(
-                0,
-                46,
-                52,
-                14,
-                0x253d42
-            );
-
-        const glow=
-            scene.add.ellipse(
-                0,
-                46,
-                35,
-                8,
-                0x83d8e0,
-                .35
-            );
-
-        c.add([
-            shadow,
-            bg,
-            letterBg,
-            letter,
-            answer,
-            hole,
-            glow
-        ]);
-
-        c.shadow=shadow;
-        c.bg=bg;
-        c.letterBg=letterBg;
-        c.letter=letter;
-        c.answer=answer;
-        c.hole=hole;
-        c.glow=glow;
-
-        docks.push(c);
-
-        const zone=
-            scene.add.zone(
-                0,
-                0,
-                150,
-                70
-            );
-
-        scene.physics
-            .add.existing(
-                zone,
-                true
-            );
-
-        zones.push(zone);
-    }
-}
-
-
-/* =========================================================
-   CONTROLS
-========================================================= */
-
-function createControls(scene){
-
-    cursors=
-        scene.input.keyboard
-        .createCursorKeys();
-
-    keyW=
-        scene.input.keyboard
-        .addKey(
-            Phaser.Input.Keyboard.KeyCodes.W
-        );
-
-    keyA=
-        scene.input.keyboard
-        .addKey(
-            Phaser.Input.Keyboard.KeyCodes.A
-        );
-
-    keyS=
-        scene.input.keyboard
-        .addKey(
-            Phaser.Input.Keyboard.KeyCodes.S
-        );
-
-    keyD=
-        scene.input.keyboard
-        .addKey(
-            Phaser.Input.Keyboard.KeyCodes.D
-        );
-
-
-    scene.input.on(
-        "pointerdown",
-        pointer=>{
-
-            if(
-                !gameStarted||
-                locked
-            )return;
-
-            scene.touchTarget={
-
-                x:pointer.x,
-
-                y:pointer.y
-            };
-        }
-    );
-
-
-    scene.input.on(
-        "pointermove",
-        pointer=>{
-
-            if(
-                !gameStarted||
-                locked||
-                !pointer.isDown
-            )return;
-
-            scene.touchTarget={
-
-                x:pointer.x,
-
-                y:pointer.y
-            };
-        }
-    );
-
-
-    scene.input.on(
-        "pointerup",
-        ()=>{
-
-            scene.touchTarget=null;
-        }
-    );
-}
-
-
-/* =========================================================
-   PHONE
-========================================================= */
-
-function isPortraitPhone(){
-
-    if(!sceneRef)return false;
-
-    const w=
-        sceneRef.scale.width;
-
-    const h=
-        sceneRef.scale.height;
-
-    return(
-
-        w<=640||
-
-        (
-            h>
-            w*1.15
-        )
-    );
-}
-
-
-/* =========================================================
-   MAGNET RANGES
-
-   PHONE:
-   Capture = 82
-   Release = 120
-
-   Maksud:
-   Bola perlu masuk 82 dahulu.
-   Selepas melekat, ia tak terputus
-   sehingga jarak melebihi 120.
-========================================================= */
-
-function getCaptureRange(){
-
-    return isPortraitPhone()
-        ? 82
-        : 165;
-}
-
-
-function getReleaseRange(){
-
-    return isPortraitPhone()
-        ? 120
-        : 205;
-}
-
-
-/* =========================================================
-   PLAY AREA
-========================================================= */
-
-function getPlayBounds(){
-
-    const w=
-        sceneRef.scale.width;
-
-    const h=
-        sceneRef.scale.height;
-
-
-    if(
-        isPortraitPhone()
-    ){
-
-        return{
-
-            left:8,
-
-            right:w-8,
-
-            top:176,
-
-            bottom:h-18
-        };
-    }
-
-
-    return{
-
-        left:20,
-
-        right:w-20,
-
-        top:160,
-
-        bottom:h-28
-    };
-}
-
-
-/* =========================================================
-   LAYOUT
-========================================================= */
-
-function layout(){
-
-    if(!sceneRef)return;
-
-
-    const w=
-        sceneRef.scale.width;
-
-
-    const h=
-        sceneRef.scale.height;
-
-
-    if(
-        w<50||
-        h<50
-    )return;
-
-
-    drawBackground();
-
-
-    /* PHONE */
-
-    if(
-        isPortraitPhone()
-    ){
-
-        categoryText
-            .setPosition(
-                8,
-                8
-            )
-            .setFontSize(10);
-
-
-        progressText
-            .setPosition(
-                9,
-                39
-            )
-            .setFontSize(11);
-
-
-        scoreText
-            .setPosition(
-                w-9,
-                39
-            )
-            .setFontSize(11);
-
-
-        questionText
-            .setPosition(
-                w/2,
-                61
-            )
-            .setFontSize(
-                Math.max(
-                    13,
-                    Math.min(
-                        16,
-                        w/24
-                    )
-                )
-            );
-
-
-        questionText
-            .setWordWrapWidth(
-                w-20
-            );
-
-
-        const sideGap=6;
-
-        const gap=8;
-
-
-        const dockW=
-            Math.min(
-                170,
-                (
-                    w-
-                    sideGap*2-
-                    gap
-                )/2
-            );
-
-
-        const dockH=78;
-
-
-        const leftX=
-            sideGap+
-            dockW/2;
-
-
-        const rightX=
-            w-
-            sideGap-
-            dockW/2;
-
-
-        const topY=
-            228;
-
-
-        const bottomY=
-            h-72;
-
-
-        const positions=[
-
-            {
-                x:leftX,
-                y:topY
-            },
-
-            {
-                x:rightX,
-                y:topY
-            },
-
-            {
-                x:leftX,
-                y:bottomY
-            },
-
-            {
-                x:rightX,
-                y:bottomY
-            }
-
-        ];
-
-
-        docks.forEach(
-            (dock,i)=>{
-
-                resizeDock(
-                    dock,
-                    dockW,
-                    dockH,
-                    true
-                );
-
-
-                dock.setPosition(
-                    positions[i].x,
-                    positions[i].y
-                );
-
-
-                zones[i]
-                    .setPosition(
-                        positions[i].x,
-                        positions[i].y
-                    );
-
-
-                zones[i].setSize(
-
-                    dockW*.90,
-
-                    dockH*.90
-                );
-
-
-                zones[i]
-                    .body
-                    .setSize(
-
-                        dockW*.90,
-
-                        dockH*.90
-                    );
-
-
-                zones[i]
-                    .body
-                    .updateFromGameObject();
-            }
-        );
-
-
-        magnet.setScale(.72);
-
-
-        ball.setScale(.80);
-
-
-        const b=
-            getPlayBounds();
-
-
-        hintText
-            .setPosition(
-                w/2,
-                h*.54
-            )
-            .setFontSize(9);
-
-
-        if(
-
-            magnet.x<
-            b.left||
-
-            magnet.x>
-            b.right||
-
-            magnet.y<
-            b.top||
-
-            magnet.y>
-            b.bottom
-
-        ){
-
-            resetMagnet();
-        }
-
-
-        if(
-
-            ball.x<
-            b.left||
-
-            ball.x>
-            b.right||
-
-            ball.y<
-            b.top||
-
-            ball.y>
-            b.bottom
-
-        ){
-
-            resetBall();
-        }
-
-    }
-
-
-    /* DESKTOP */
-
-    else{
-
-        categoryText
-            .setPosition(
-                16,
-                12
-            )
-            .setFontSize(14);
-
-
-        progressText
-            .setPosition(
-                17,
-                49
-            )
-            .setFontSize(14);
-
-
-        scoreText
-            .setPosition(
-                w-17,
-                49
-            )
-            .setFontSize(14);
-
-
-        questionText
-            .setPosition(
-                w/2,
-                75
-            )
-            .setFontSize(18);
-
-
-        questionText
-            .setWordWrapWidth(
-                w-50
-            );
-
-
-        const dockW=
-            Math.min(
-                195,
-                w*.21
-            );
-
-
-        const dockH=82;
-
-
-        const side=
-            dockW/2+
-            15;
-
-
-        const positions=[
-
-            {
-                x:side,
-                y:215
-            },
-
-            {
-                x:w-side,
-                y:215
-            },
-
-            {
-                x:side,
-                y:h-85
-            },
-
-            {
-                x:w-side,
-                y:h-85
-            }
-
-        ];
-
-
-        docks.forEach(
-            (dock,i)=>{
-
-                resizeDock(
-                    dock,
-                    dockW,
-                    dockH,
-                    false
-                );
-
-
-                dock.setPosition(
-                    positions[i].x,
-                    positions[i].y
-                );
-
-
-                zones[i]
-                    .setPosition(
-                        positions[i].x,
-                        positions[i].y
-                    );
-
-
-                zones[i].setSize(
-
-                    dockW*.85,
-
-                    dockH*.86
-                );
-
-
-                zones[i]
-                    .body
-                    .setSize(
-
-                        dockW*.85,
-
-                        dockH*.86
-                    );
-
-
-                zones[i]
-                    .body
-                    .updateFromGameObject();
-            }
-        );
-
-
-        magnet.setScale(1);
-
-
-        ball.setScale(1);
-
-
-        hintText
-            .setPosition(
-                w/2,
-                h-28
-            )
-            .setFontSize(11);
-    }
-
-
-    layoutObstacles();
-}
-
-
-/* =========================================================
-   RESIZE DOCK
-========================================================= */
-
-function resizeDock(
-dock,
-w,
-h,
-phone
-){
-
-    dock.shadow
-        .setDisplaySize(
-            w,
-            h
-        );
-
-
-    dock.bg
-        .setDisplaySize(
-            w,
-            h
-        );
-
-
-    const lx=
-        -w/2+
-        17;
-
-
-    const ly=
-        -h/2+
-        16;
-
-
-    dock.letterBg
-        .setPosition(
-            lx,
-            ly
-        );
-
-
-    dock.letter
-        .setPosition(
-            lx,
-            ly
-        );
-
-
-    dock.answer
-        .setPosition(
-            0,
-            2
-        );
-
-
-    dock.answer
-        .setWordWrapWidth(
-            w-16
-        );
-
-
-    dock.answer
-        .setFontSize(
-            phone
-            ? 10
-            : 12
-        );
-
-
-    dock.hole
-        .setPosition(
-            0,
-            h/2+6
-        );
-
-
-    dock.glow
-        .setPosition(
-            0,
-            h/2+6
-        );
-}
-
-
-/* =========================================================
-   BACKGROUND
-========================================================= */
-
-function drawBackground(){
-
-    const w=
-        sceneRef.scale.width;
-
-
-    const h=
-        sceneRef.scale.height;
-
-
-    sceneRef.bg.clear();
-
-
-    sceneRef.bg.fillStyle(
-        0xdceff1,
-        1
-    );
-
-
-    sceneRef.bg.fillRect(
-        0,
-        0,
-        w,
-        h
-    );
-
-
-    sceneRef.bg.fillStyle(
-        0xc3e3e7,
-        1
-    );
-
-
-    sceneRef.bg.fillRect(
-        0,
-        0,
-        w,
-        57
-    );
-
-
-    sceneRef.bg.fillStyle(
-        0x78adb7,
-        1
-    );
-
-
-    sceneRef.bg.fillRect(
-        0,
-        55,
-        w,
-        3
-    );
-
-
-    sceneRef.grid.clear();
-
-
-    sceneRef.grid.lineStyle(
-        1,
-        0xa4cbd0,
-        .33
-    );
-
-
-    const startY=
-        170;
-
-
-    for(
-        let x=0;
-        x<w;
-        x+=34
-    ){
-
-        sceneRef.grid
-            .lineBetween(
-                x,
-                startY,
-                x,
-                h
-            );
-    }
-
-
-    for(
-        let y=startY;
-        y<h;
-        y+=34
-    ){
-
-        sceneRef.grid
-            .lineBetween(
-                0,
-                y,
-                w,
-                y
-            );
-    }
-}
-
-
-/* =========================================================
-   QUESTION
-========================================================= */
-
-function loadQuestion(){
-
-    if(
-        questionIndex>=
-        QUESTIONS.length
-    ){
-
-        finishGame();
-
-        return;
-    }
-
-
-    locked=false;
-
-
-    magnetHolding=false;
-
-
-    const data=
-        QUESTIONS[
-            questionIndex
-        ];
-
-
-    categoryText
-        .setText(
-            data.c
-        );
-
-
-    progressText
-        .setText(
-            "SOALAN "+
-            (questionIndex+1)+
-            " / 25"
-        );
-
-
-    scoreText
-        .setText(
-            "BETUL "+
-            score
-        );
-
-
-    questionText
-        .setText(
-            data.q
-        );
-
-
-    const letters=[
-        "A",
-        "B",
-        "C",
-        "D"
-    ];
-
-
-    docks.forEach(
-        (dock,i)=>{
-
-            dock.answer
-                .setText(
-                    data.o[i]
-                );
-
-
-            dock.letter
-                .setText(
-                    letters[i]
-                );
-
-
-            resetDockColour(
-                dock
-            );
-        }
-    );
-
-
-    shuffleDockPositions();
-
-
-    createObstacles();
-
-
-    resetMagnet();
-
-
-    resetBall();
-
-
-    nextSound();
-}
-
-
-/* =========================================================
-   SHUFFLE
-========================================================= */
-
-function shuffleDockPositions(){
-
-    const positions=
-        docks.map(
-            dock=>({
-
-                x:dock.x,
-
-                y:dock.y
-            })
-        );
-
-
-    Phaser.Utils.Array
-        .Shuffle(
-            positions
-        );
-
-
-    docks.forEach(
-        (dock,i)=>{
-
-            dock.setPosition(
-                positions[i].x,
-                positions[i].y
-            );
-
-
-            zones[i]
-                .setPosition(
-                    positions[i].x,
-                    positions[i].y
-                );
-
-
-            zones[i]
-                .body
-                .updateFromGameObject();
-        }
-    );
-}
-
-
-/* =========================================================
-   RESET
-========================================================= */
-
-function resetMagnet(){
-
-    const b=
-        getPlayBounds();
-
-
-    magnet.setVelocity(
-        0,
-        0
-    );
-
-
-    const y=
-        isPortraitPhone()
-
-        ? (
-
-            b.top+
-            (
-                b.bottom-
-                b.top
-            )*.63
-
-        )
-
-        : b.bottom-50;
-
-
-    magnet.setPosition(
-
-        (
-            b.left+
-            b.right
-        )/2,
-
-        y
-    );
-
-
-    magnet.body.reset(
-        magnet.x,
-        magnet.y
-    );
-}
-
-
-function resetBall(){
-
-    magnetHolding=false;
-
-
-    const b=
-        getPlayBounds();
-
-
-    ball.setVelocity(
-        0,
-        0
-    );
-
-
-    ball.setAcceleration(
-        0,
-        0
-    );
-
-
-    ball.setPosition(
-
-        (
-            b.left+
-            b.right
-        )/2,
-
-        b.top+
-        (
-            b.bottom-
-            b.top
-        )*.43
-
-    );
-
-
-    ball.body.reset(
-        ball.x,
-        ball.y
-    );
-}
-
-
-/* =========================================================
-   OBSTACLES
-========================================================= */
-
-function clearObstacles(){
-
-    obstacles.forEach(
-        o=>o.destroy()
-    );
-
-
-    obstacles=[];
-}
-
-
-function createObstacles(){
-
-    clearObstacles();
-
-
-    let total=0;
-
-
-    if(
-        questionIndex>=5
-    ){
-        total=1;
-    }
-
-
-    if(
-        questionIndex>=10
-    ){
-        total=2;
-    }
-
-
-    if(
-        questionIndex>=15
-    ){
-        total=3;
-    }
-
-
-    if(
-        questionIndex>=20
-    ){
-        total=4;
-    }
-
-
-    if(
-        isPortraitPhone()
-    ){
-
-        total=
-            Math.min(
-                total,
-                2
-            );
-    }
-
-
-    for(
-        let i=0;
-        i<total;
-        i++
-    ){
-
-        const obstacle=
-            sceneRef.physics
-            .add.staticImage(
-                0,
-                0,
-                "block"
-            );
-
-
-        obstacle.setDepth(7);
-
-
-        if(
-            isPortraitPhone()
-        ){
-
-            obstacle
-                .setScale(.62);
-
-        }else{
-
-            obstacle
-                .setScale(.85);
-        }
-
-
-        obstacles.push(
-            obstacle
-        );
-
-
-        sceneRef.physics
-            .add.collider(
-
-                ball,
-
-                obstacle,
-
-                ()=>{
-
-                    tone(
-                        150,
-                        .04,
-                        "square",
-                        .025
-                    );
-                }
-            );
-    }
-
-
-    layoutObstacles();
-}
-
-
-function layoutObstacles(){
-
-    if(
-        !sceneRef||
-        obstacles.length===0
-    )return;
-
-
-    const b=
-        getPlayBounds();
-
-
-    const cx=
-        (
-            b.left+
-            b.right
-        )/2;
-
-
-    const cy=
-        (
-            b.top+
-            b.bottom
-        )/2;
-
-
-    let layouts;
-
-
-    if(
-        isPortraitPhone()
-    ){
-
-        layouts=[
-
-            {
-                x:cx-48,
-                y:cy-5,
-                a:25
-            },
-
-            {
-                x:cx+52,
-                y:cy+65,
-                a:-25
-            }
-
-        ];
-
-    }else{
-
-        layouts=[
-
-            {
-                x:cx-55,
-                y:cy,
-                a:25
-            },
-
-            {
-                x:cx+65,
-                y:cy+45,
-                a:-25
-            },
-
-            {
-                x:cx,
-                y:cy-55,
-                a:0
-            },
-
-            {
-                x:cx,
-                y:cy+110,
-                a:0
-            }
-
-        ];
-    }
-
-
-    obstacles.forEach(
-        (o,i)=>{
-
-            const p=
-                layouts[
-                    i%
-                    layouts.length
-                ];
-
-
-            o.setPosition(
-                p.x,
-                p.y
-            );
-
-
-            o.setAngle(
-                p.a
-            );
-
-
-            o.refreshBody();
-        }
-    );
-}
-
-
-/* =========================================================
-   UPDATE
-========================================================= */
-
-function update(time){
-
-    drawMagnetRange();
-
-
-    if(
-        !gameStarted
-    ){
-
-        magnet.setVelocity(
-            0,
-            0
-        );
-
-
-        ball.setVelocity(
-            0,
-            0
-        );
-
-
-        return;
-    }
-
-
-    if(locked)return;
-
-
-    updateMovement();
-
-
-    updateMagneticPull(
-        time
-    );
-
-
-    checkAnswer();
-
-
-    keepInside();
-}
-
-
-/* =========================================================
-   MOVEMENT
-========================================================= */
-
-function updateMovement(){
-
-    if(dragging)return;
-
-
-    let vx=0;
-
-    let vy=0;
-
-
-    const speed=
-        isPortraitPhone()
-        ? 215
-        : 270;
-
-
-    if(
-        cursors.left.isDown||
-        keyA.isDown
-    ){
-        vx-=speed;
-    }
-
-
-    if(
-        cursors.right.isDown||
-        keyD.isDown
-    ){
-        vx+=speed;
-    }
-
-
-    if(
-        cursors.up.isDown||
-        keyW.isDown
-    ){
-        vy-=speed;
-    }
-
-
-    if(
-        cursors.down.isDown||
-        keyS.isDown
-    ){
-        vy+=speed;
-    }
-
-
-    if(
-        vx!==0||
-        vy!==0
-    ){
-
-        sceneRef.touchTarget=null;
-
-
-        if(
-            vx!==0&&
-            vy!==0
-        ){
-
-            vx*=.707;
-
-            vy*=.707;
-        }
-
-
-        magnet.setVelocity(
-            vx,
-            vy
-        );
-
-
-        return;
-    }
-
-
-    if(
-        sceneRef.touchTarget
-    ){
-
-        const tx=
-            sceneRef.touchTarget.x;
-
-
-        const ty=
-            sceneRef.touchTarget.y;
-
-
-        const d=
-            Phaser.Math.Distance.Between(
-
-                magnet.x,
-
-                magnet.y,
-
-                tx,
-
-                ty
-            );
-
-
-        if(d>10){
-
-            const angle=
-                Phaser.Math.Angle.Between(
-
-                    magnet.x,
-
-                    magnet.y,
-
-                    tx,
-
-                    ty
-                );
-
-
-            magnet.setVelocity(
-
-                Math.cos(angle)*
-                speed,
-
-                Math.sin(angle)*
-                speed
-            );
-
-        }else{
-
-            magnet.setVelocity(
-                0,
-                0
-            );
-        }
-
-    }else{
-
-        magnet.setVelocity(
-            0,
-            0
-        );
-    }
-}
-
-
-/* =========================================================
-   MAGNET SYSTEM
-
-   Sistem hysteresis:
-
-   1. Bola perlu masuk CAPTURE RANGE.
-   2. Selepas melekat, ia kekal melekat.
-   3. Ia hanya terlepas selepas melebihi RELEASE RANGE.
-
-   Phone:
-   capture = 82
-   release = 120
-========================================================= */
-
-function updateMagneticPull(
-time
-){
-
-    const dx=
-        magnet.x-
-        ball.x;
-
-
-    const dy=
-        magnet.y-
-        ball.y;
-
-
-    const distance=
-        Math.sqrt(
-            dx*dx+
-            dy*dy
-        );
-
-
-    const captureRange=
-        getCaptureRange();
-
-
-    const releaseRange=
-        getReleaseRange();
-
-
-    /* =========================
-       MULAKAN PEGANGAN
-    ========================= */
-
-    if(
-        !magnetHolding &&
-        distance<
-        captureRange
-    ){
-
-        magnetHolding=true;
-
-
-        pullSound();
-    }
-
-
-    /* =========================
-       LEPASKAN BOLA
-    ========================= */
-
-    if(
-        magnetHolding &&
-        distance>
-        releaseRange
-    ){
-
-        magnetHolding=false;
-
-
-        ball.setAcceleration(
-            0,
-            0
-        );
-
-
-        return;
-    }
-
-
-    /* =========================
-       TARIK BOLA
-    ========================= */
-
-    if(
-        magnetHolding
-    ){
-
-        /*
-        Bila sudah melekat,
-        gunakan releaseRange
-        untuk kira kekuatan.
-        */
-
-        const ratio=
-            Phaser.Math.Clamp(
-                1-
-                distance/
-                releaseRange,
-                0,
-                1
-            );
-
-
-        /*
-        Tarikan lebih stabil.
-        */
-
-        let power;
-
-
-        if(
-            isPortraitPhone()
-        ){
-
-            power=
-                720+
-                ratio*950;
-
-        }else{
-
-            power=
-                620+
-                ratio*900;
-        }
-
-
-        if(
-            distance>3
-        ){
-
-            const nx=
-                dx/
-                distance;
-
-
-            const ny=
-                dy/
-                distance;
-
-
-            ball.setAcceleration(
-
-                nx*power,
-
-                ny*power
-            );
-        }
-
-
-        /*
-        Bola sedikit ikut momentum
-        magnet supaya tak mudah tertinggal.
-        */
-
-        const follow=
-            isPortraitPhone()
-            ? .12
-            : .09;
-
-
-        ball.body.velocity.x=
-            Phaser.Math.Linear(
-
-                ball.body.velocity.x,
-
-                magnet.body.velocity.x,
-
-                follow
-            );
-
-
-        ball.body.velocity.y=
-            Phaser.Math.Linear(
-
-                ball.body.velocity.y,
-
-                magnet.body.velocity.y,
-
-                follow
-            );
-
-
-        if(
-            time>
-            pullCooldown
-        ){
-
-            pullCooldown=
-                time+
-                900;
-
-
-            pullSound();
-        }
-
-    }else{
-
-        ball.setAcceleration(
-            0,
-            0
-        );
-    }
-}
-
-
-/* =========================================================
-   MAGNET RANGE VISUAL
-
-   Hanya tunjuk CAPTURE RANGE,
-   bukan release range.
-
-   Jadi bulatan pada phone
-   masih kecil = 82.
-========================================================= */
-
-function drawMagnetRange(){
-
-    if(
-        !magnetRange||
-        !connection
-    )return;
-
-
-    magnetRange.clear();
-
-
-    connection.clear();
-
-
-    const captureRange=
-        getCaptureRange();
-
-
-    magnetRange.lineStyle(
-
-        isPortraitPhone()
-        ? 1.6
-        : 2,
-
-        magnetHolding
-        ? 0x31b86b
-        : 0x3990c9,
-
-        gameStarted
-        ? .28
-        : .08
-    );
-
-
-    magnetRange.strokeCircle(
-
-        magnet.x,
-
-        magnet.y,
-
-        captureRange
-    );
-
-
-    const d=
-        Phaser.Math.Distance.Between(
-
-            magnet.x,
-
-            magnet.y,
-
-            ball.x,
-
-            ball.y
-        );
-
-
-    /*
-    Bila magnet sedang pegang bola,
-    garisan kekal walaupun bola
-    keluar sedikit daripada bulatan 82.
-    */
-
-    if(
-        gameStarted&&
-        magnetHolding
-    ){
-
-        connection.lineStyle(
-            2,
-            0x65c7e7,
-            .65
-        );
-
-
-        connection.lineBetween(
-
-            magnet.x,
-
-            magnet.y,
-
-            ball.x,
-
-            ball.y
-        );
-
-
-        for(
-            let i=1;
-            i<=4;
-            i++
-        ){
-
-            const t=
-                i/5;
-
-
-            const x=
-                Phaser.Math.Linear(
-
-                    magnet.x,
-
-                    ball.x,
-
-                    t
-                );
-
-
-            const y=
-                Phaser.Math.Linear(
-
-                    magnet.y,
-
-                    ball.y,
-
-                    t
-                );
-
-
-            connection.fillStyle(
-                0xffffff,
-                .85
-            );
-
-
-            connection.fillCircle(
-                x,
-                y,
-                2
-            );
-        }
-    }
-}
-
-
-/* =========================================================
-   KEEP INSIDE
-========================================================= */
-
-function keepInside(){
-
-    const b=
-        getPlayBounds();
-
-
-    magnet.x=
-        Phaser.Math.Clamp(
-            magnet.x,
-            b.left+25,
-            b.right-25
-        );
-
-
-    magnet.y=
-        Phaser.Math.Clamp(
-            magnet.y,
-            b.top+25,
-            b.bottom-25
-        );
-
-
-    if(
-        ball.x<
-        b.left+18
-    ){
-
-        ball.x=
-            b.left+18;
-
-
-        ball.setVelocityX(
-
-            Math.abs(
-                ball.body.velocity.x
-            )*.65
-
-        );
-    }
-
-
-    if(
-        ball.x>
-        b.right-18
-    ){
-
-        ball.x=
-            b.right-18;
-
-
-        ball.setVelocityX(
-
-            -Math.abs(
-                ball.body.velocity.x
-            )*.65
-
-        );
-    }
-
-
-    if(
-        ball.y<
-        b.top+18
-    ){
-
-        ball.y=
-            b.top+18;
-
-
-        ball.setVelocityY(
-
-            Math.abs(
-                ball.body.velocity.y
-            )*.65
-
-        );
-    }
-
-
-    if(
-        ball.y>
-        b.bottom-18
-    ){
-
-        ball.y=
-            b.bottom-18;
-
-
-        ball.setVelocityY(
-
-            -Math.abs(
-                ball.body.velocity.y
-            )*.65
-
-        );
-    }
-}
-
-
-/* =========================================================
-   CHECK ANSWER
-========================================================= */
-
-function checkAnswer(){
-
-    if(locked)return;
-
-
-    for(
-        let i=0;
-        i<zones.length;
-        i++
-    ){
-
-        const z=
-            zones[i];
-
-
-        const dx=
-            Math.abs(
-                ball.x-
-                z.x
-            );
-
-
-        const dy=
-            Math.abs(
-                ball.y-
-                z.y
-            );
-
-
-        if(
-
-            dx<
-            z.width*.45&&
-
-            dy<
-            z.height*.57
-
-        ){
-
-            chooseAnswer(i);
-
-            return;
-        }
-    }
-}
-
-
-/* =========================================================
-   ANSWER
-========================================================= */
-
-function chooseAnswer(
-index
-){
-
-    if(locked)return;
-
-
-    locked=true;
-
-
-    magnetHolding=false;
-
-
-    ball.setVelocity(
-        0,
-        0
-    );
-
-
-    ball.setAcceleration(
-        0,
-        0
-    );
-
-
-    magnet.setVelocity(
-        0,
-        0
-    );
-
-
-    const data=
-        QUESTIONS[
-            questionIndex
-        ];
-
-
-    const dock=
-        docks[index];
-
-
-    if(
-        index===
-        data.a
-    ){
-
-        score++;
-
-
-        scoreText
-            .setText(
-                "BETUL "+
-                score
-            );
-
-
-        dock.bg
-            .setFillStyle(
-                0xb9efc6
-            );
-
-
-        dock.bg
-            .setStrokeStyle(
-                4,
-                0x27984b
-            );
-
-
-        dock.answer
-            .setColor(
-                "#145a2c"
-            );
-
-
-        dock.glow
-            .setFillStyle(
-                0x59ff88,
-                .7
-            );
-
-
-        correctSound();
-
-
-        sceneRef.tweens.add({
-
-            targets:dock,
-
-            scaleX:1.05,
-
-            scaleY:1.05,
-
-            duration:110,
-
-            yoyo:true,
-
-            repeat:1,
-
-            onComplete:()=>{
-
-                questionIndex++;
-
-
-                sceneRef.time
-                    .delayedCall(
-                        350,
-                        ()=>{
-
-                            loadQuestion();
-                        }
-                    );
-            }
-        });
-
-    }else{
-
-        dock.bg
-            .setFillStyle(
-                0xffc5c5
-            );
-
-
-        dock.bg
-            .setStrokeStyle(
-                4,
-                0xc94848
-            );
-
-
-        dock.answer
-            .setColor(
-                "#8d2525"
-            );
-
-
-        dock.glow
-            .setFillStyle(
-                0xff5959,
-                .65
-            );
-
-
-        wrongSound();
-
-
-        sceneRef.cameras.main
-            .shake(
-                170,
-                .006
-            );
-
-
-        sceneRef.tweens.add({
-
-            targets:ball,
-
-            alpha:.2,
-
-            duration:90,
-
-            yoyo:true,
-
-            repeat:2,
-
-            onComplete:()=>{
-
-                resetDockColour(
-                    dock
-                );
-
-
-                ball.setAlpha(1);
-
-
-                resetBall();
-
-
-                locked=false;
-            }
-        });
-    }
-}
-
-
-/* =========================================================
-   RESET DOCK
-========================================================= */
-
-function resetDockColour(
-dock
-){
-
-    dock.bg
-        .setFillStyle(
-            0xfffbeb
-        );
-
-
-    dock.bg
-        .setStrokeStyle(
-            3,
-            0x476970
-        );
-
-
-    dock.answer
-        .setColor(
-            "#274a51"
-        );
-
-
-    dock.glow
-        .setFillStyle(
-            0x83d8e0,
-            .35
-        );
-}
-
-
-/* =========================================================
-   FINISH
-========================================================= */
-
-function finishGame(){
-
-    locked=true;
-
-    magnetHolding=false;
-
-
-    magnet.setVelocity(
-        0,
-        0
-    );
-
-
-    ball.setVelocity(
-        0,
-        0
-    );
-
-
-    ball.setAcceleration(
-        0,
-        0
-    );
-
-
-    questionText
-        .setText(
-            "Semua 25 soalan telah diselesaikan!"
-        );
-
-
-    categoryText
-        .setText(
-            "MISI SELESAI"
-        );
-
-
-    progressText
-        .setText(
-            "25 / 25"
-        );
-
-
-    scoreText
-        .setText(
-            "BETUL "+
-            score
-        );
-
-
-    tone(
-        523,
-        .15,
-        "triangle",
-        .15
-    );
-
-
-    tone(
-        659,
-        .15,
-        "triangle",
-        .15,
-        .13
-    );
-
-
-    tone(
-        784,
-        .16,
-        "triangle",
-        .15,
-        .26
-    );
-
-
-    tone(
-        1046,
-        .38,
-        "triangle",
-        .17,
-        .4
-    );
-
-
-    sceneRef.time
-        .delayedCall(
-            600,
-            ()=>{
-
-                document
-                    .getElementById(
-                        "finishOverlay"
-                    )
-                    .classList
-                    .remove(
-                        "hidden"
-                    );
-            }
-        );
-}
-
-
-/* =========================================================
-   START
+   WEBSITE BUTTONS
 ========================================================= */
 
 document
-.getElementById(
-    "startBtn"
-)
+.getElementById("homeBtn")
 .addEventListener(
     "click",
-    async()=>{
-
-        initAudio();
-
-
-        if(
-            audioCtx.state===
-            "suspended"
-        ){
-
-            await audioCtx.resume();
-        }
-
-
-        startMusic();
-
-
-        gameStarted=true;
-
-
-        document
-            .getElementById(
-                "startOverlay"
-            )
-            .classList
-            .add(
-                "hidden"
-            );
-
-
-        resetMagnet();
-
-
-        resetBall();
-
-
-        tone(
-            390,
-            .1,
-            "triangle",
-            .1
-        );
-
-
-        tone(
-            520,
-            .16,
-            "triangle",
-            .11,
-            .09
-        );
+    ()=>{
+        window.location.href =
+            "index.html";
     }
 );
 
-
-/* =========================================================
-   SOUND
-========================================================= */
 
 document
-.getElementById(
-    "soundBtn"
-)
+.getElementById("soundBtn")
 .addEventListener(
     "click",
-    async()=>{
+    ()=>{
 
-        initAudio();
+        AUDIO.init();
 
-
-        if(
-            audioCtx.state===
-            "suspended"
-        ){
-
-            await audioCtx.resume();
-        }
-
-
-        soundEnabled=
-            !soundEnabled;
-
+        const enabled =
+            AUDIO.toggle();
 
         document
-            .getElementById(
-                "soundBtn"
-            )
-            .textContent=
-                soundEnabled
-                ? "🔊 Bunyi"
-                : "🔇 Senyap";
-
-
-        if(
-            soundEnabled
-        ){
-
-            tone(
-                520,
-                .1,
-                "triangle",
-                .1
-            );
-        }
+        .getElementById("soundBtn")
+        .textContent =
+            enabled
+            ? "🔊"
+            : "🔇";
     }
 );
 
 
-/* =========================================================
-   MOBILE TOUCH
-========================================================= */
-
-const stage=
-    document.getElementById(
-        "game-stage"
-    );
-
-
-stage.addEventListener(
-    "touchmove",
-    e=>{
-
-        if(
-            gameStarted
-        ){
-
-            e.preventDefault();
-        }
-
-    },
-    {
-        passive:false
-    }
-);
-
-
-/* =========================================================
-   RESIZE
-========================================================= */
-
-window.addEventListener(
-    "resize",
-    ()=>{
-
-        setTimeout(
-            ()=>{
-
-                if(
-                    sceneRef
-                ){
-
-                    layout();
-                }
-
-            },
-            100
-        );
-    }
-);
-
-
-window.addEventListener(
-    "orientationchange",
-    ()=>{
-
-        setTimeout(
-            ()=>{
-
-                if(
-                    sceneRef
-                ){
-
-                    layout();
-
-                    resetMagnet();
-
-                    resetBall();
-                }
-
-            },
-            300
-        );
-    }
-);
-
-
-/* =========================================================
-   AUDIO PAUSE
-========================================================= */
-
+/* Elak context menu lama pada phone */
 document.addEventListener(
-    "visibilitychange",
-    ()=>{
-
-        if(
-            !audioCtx
-        )return;
-
-
-        if(
-            document.hidden
-        ){
-
-            if(
-                audioCtx.state===
-                "running"
-            ){
-
-                audioCtx.suspend();
-            }
-
-        }else if(
-
-            gameStarted&&
-            soundEnabled
-
-        ){
-
-            if(
-                audioCtx.state===
-                "suspended"
-            ){
-
-                audioCtx.resume();
-            }
-        }
-    }
+    "contextmenu",
+    e=>e.preventDefault()
 );
-
 </script>
 
 </body>
