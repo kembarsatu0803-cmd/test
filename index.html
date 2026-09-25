@@ -77,6 +77,8 @@ body{
     border-radius:14px;
 
     background:#e3eef4;
+
+    position:relative;
 }
 
 #game canvas{
@@ -117,6 +119,8 @@ body{
     text-align:center;
 
     border-radius:10px;
+
+    font-weight:700;
 }
 
 @media(max-width:700px){
@@ -203,8 +207,8 @@ PORTRAIT
 
 
 /*
-   PANJANG SIKIT SUPAYA
-   SEMUA ELEMEN ADA RUANG
+   GAME DIPANJANGKAN
+   UNTUK BAGI RUANG
 */
 
 const GAME_H =
@@ -214,7 +218,7 @@ PORTRAIT
 
 
 /*
-   SHARP TEXT
+   TEXT SHARP
 */
 
 const TEXT_RESOLUTION =
@@ -694,14 +698,19 @@ endFreq=null
     );
 
 
-    osc.connect(gain);
+    osc.connect(
+        gain
+    );
+
 
     gain.connect(
         this.master
     );
 
 
-    osc.start(now);
+    osc.start(
+        now
+    );
 
 
     osc.stop(
@@ -893,7 +902,7 @@ new AudioSystem();
 
 
 /* =========================================================
-   GAME SCENE
+   SCENE
 ========================================================= */
 
 class MazeScene
@@ -1109,10 +1118,7 @@ createHeader(){
         17,
         "DRAW MAZE",
         {
-            fontSize:
-            PORTRAIT
-            ? "20px"
-            : "20px",
+            fontSize:"20px",
 
             fontStyle:"bold",
 
@@ -1170,11 +1176,6 @@ createQuestionPanel(){
     68;
 
 
-    /*
-       RUANG CUKUP,
-       FONT TAK TERLALU BESAR
-    */
-
     this.panelH =
     PORTRAIT
     ? 365
@@ -1225,8 +1226,6 @@ createQuestionPanel(){
     );
 
 
-    /* SECTION */
-
     this.sectionText =
     this.sharpText(
         28,
@@ -1241,8 +1240,6 @@ createQuestionPanel(){
         }
     );
 
-
-    /* QUESTION */
 
     this.questionText =
     this.sharpText(
@@ -1293,10 +1290,6 @@ createOptionCards(){
         0x3fa86a
     ];
 
-
-    /* =====================================================
-       PORTRAIT
-    ===================================================== */
 
     if(PORTRAIT){
 
@@ -1416,11 +1409,6 @@ createOptionCards(){
             });
         }
     }
-
-
-    /* =====================================================
-       LAPTOP / LANDSCAPE
-    ===================================================== */
 
     else{
 
@@ -1640,13 +1628,12 @@ createMazeArea(){
     );
 
 
-    /* TITLE MAZE */
-
     this.add.rectangle(
 
         GAME_W/2,
 
-        this.mazeArea.y+19,
+        this.mazeArea.y+
+        19,
 
         PORTRAIT
         ? 390
@@ -1664,15 +1651,13 @@ createMazeArea(){
 
         GAME_W/2,
 
-        this.mazeArea.y+19,
+        this.mazeArea.y+
+        19,
 
         "START → DRAG • TARIK BALIK UNTUK UNDO",
 
         {
-            fontSize:
-            PORTRAIT
-            ? "11px"
-            : "11px",
+            fontSize:"11px",
 
             fontStyle:"bold",
 
@@ -1826,6 +1811,7 @@ y
             bottom:true,
             left:true
         }
+
     };
 }
 
@@ -2123,7 +2109,7 @@ generateMaze(){
 
 
 /* =========================================================
-   MAZE SIGNATURE
+   SIGNATURE
 ========================================================= */
 
 mazeSignature(
@@ -2196,7 +2182,7 @@ y
 
 
 /* =========================================================
-   POINT -> CELL
+   POINT TO CELL
 ========================================================= */
 
 pointToCell(
@@ -2407,8 +2393,6 @@ buildNewMaze(){
 
 drawMaze(){
 
-    /* FLOOR */
-
     for(
         let y=0;
         y<this.rows;
@@ -2479,8 +2463,6 @@ drawMaze(){
         }
     }
 
-
-    /* WALL */
 
     this.wallGraphics =
     this.add.graphics()
@@ -2704,7 +2686,7 @@ createStartMarker(){
 
 
 /* =========================================================
-   OPEN COUNT
+   OPENING COUNT
 ========================================================= */
 
 openingCount(
@@ -2715,22 +2697,30 @@ cell
     0;
 
 
-    if(!cell.walls.top){
+    if(
+        !cell.walls.top
+    ){
         count++;
     }
 
 
-    if(!cell.walls.right){
+    if(
+        !cell.walls.right
+    ){
         count++;
     }
 
 
-    if(!cell.walls.bottom){
+    if(
+        !cell.walls.bottom
+    ){
         count++;
     }
 
 
-    if(!cell.walls.left){
+    if(
+        !cell.walls.left
+    ){
         count++;
     }
 
@@ -2740,7 +2730,7 @@ cell
 
 
 /* =========================================================
-   DISTANCES
+   DISTANCE MAP
 ========================================================= */
 
 getDistances(){
@@ -2791,7 +2781,9 @@ getDistances(){
     ){
 
         const current =
-        queue[index++];
+        queue[
+            index++
+        ];
 
 
         const cell =
@@ -2869,9 +2861,11 @@ getDistances(){
 
                 next.y<0 ||
 
-                next.x>=this.cols ||
+                next.x>=
+                this.cols ||
 
-                next.y>=this.rows
+                next.y>=
+                this.rows
 
             ){
 
@@ -3035,7 +3029,9 @@ findAnswerCells(){
         }
 
 
-        if(!close){
+        if(
+            !close
+        ){
 
             selected.push(
                 candidate
@@ -3069,7 +3065,9 @@ findAnswerCells(){
             );
 
 
-            if(!exists){
+            if(
+                !exists
+            ){
 
                 selected.push(
                     candidate
@@ -3104,7 +3102,9 @@ findAnswerCells(){
             );
 
 
-            if(!exists){
+            if(
+                !exists
+            ){
 
                 selected.push(
                     candidate
@@ -3276,6 +3276,12 @@ createAnswers(){
         ]);
 
 
+        /*
+           INI BAHAGIAN YANG
+           SALAH DALAM CODE SEBELUM NI.
+           SEKARANG DAH BETUL.
+        */
+
         this.answerZones.push({
 
             container:
@@ -3293,7 +3299,7 @@ createAnswers(){
 
             y:p.y
 
-        ]);
+        });
 
 
         this.tweens.add({
@@ -3465,7 +3471,9 @@ color=0x159fd8
         points.length>=2
     ){
 
-        /* WHITE OUTLINE */
+        /*
+           WHITE OUTLINE
+        */
 
         this.pathGraphics
         .lineStyle(
@@ -3510,7 +3518,9 @@ color=0x159fd8
         .strokePath();
 
 
-        /* MAIN LINE */
+        /*
+           MAIN BLUE LINE
+        */
 
         this.pathGraphics
         .lineStyle(
@@ -3569,9 +3579,11 @@ color=0x159fd8
 
             this.pathGraphics
             .fillCircle(
+
                 point.x,
                 point.y,
                 4
+
             );
         }
     }
@@ -3601,7 +3613,7 @@ color=0x159fd8
 
 
 /* =========================================================
-   CAN MOVE
+   CAN MOVE?
 ========================================================= */
 
 canMoveBetween(
@@ -3743,7 +3755,8 @@ pointer
 
 
     /*
-       FIRST DRAW
+       BELUM ADA GARISAN
+       MESTI BERMULA DI START
     */
 
     if(
@@ -3801,7 +3814,7 @@ pointer
 
 
     /*
-       CONTINUE DRAW
+       SAMBUNG DARI HUJUNG
     */
 
     const lastCell =
@@ -3843,6 +3856,12 @@ pointer
 
 /* =========================================================
    PROCESS CELL
+
+   UNDO SEBENAR:
+   A → B → C → D
+
+   TARIK D KE C:
+   D TERUS DIPADAM
 ========================================================= */
 
 processCell(
@@ -3895,17 +3914,9 @@ nextCell
 
 
     /*
-       =========================================
-       UNDO BETUL-BETUL
-       =========================================
-
-       A → B → C → D
-
-       tarik D ke C
-
-       D di-pop.
-
-       Jadi garisan D terus hilang.
+       ============================
+       BACKTRACK / UNDO SATU PETAK
+       ============================
     */
 
     if(
@@ -3941,7 +3952,11 @@ nextCell
 
 
     /*
-       WALL
+       DINDING:
+       TAK RESET.
+       TAK PADAM.
+       TAK MATI.
+       TAK ADA NYAWA.
     */
 
     if(
@@ -3978,8 +3993,8 @@ nextCell
 
 
     /*
-       RETURN TO OLDER CELL =
-       UNDO ALL AFTER THAT CELL
+       JIKA MASUK KE CELL LAMA,
+       UNDO SEMUA CELL SELEPASNYA
     */
 
     const oldIndex =
@@ -4015,7 +4030,7 @@ nextCell
 
 
     /*
-       NORMAL FORWARD
+       GERAK KE HADAPAN
     */
 
     this.pathCells.push({
@@ -4101,7 +4116,8 @@ pointer
 
 
     /*
-       SAMPLE FAST SWIPE
+       SAMPLE SUPAYA DRAG LAJU
+       TAK LOMPAT PETAK
     */
 
     const sampleDistance =
@@ -4232,7 +4248,7 @@ zone
 
 
 /* =========================================================
-   CORRECT
+   BETUL
 ========================================================= */
 
     if(
@@ -4283,7 +4299,7 @@ zone
 
 
 /* =========================================================
-   WRONG
+   SALAH
 ========================================================= */
 
     else{
@@ -4321,6 +4337,12 @@ zone
         );
 
 
+        /*
+           MAZE KEKAL.
+           CUMA GARISAN RESET
+           LEPAS SALAH JAWAPAN.
+        */
+
         this.time.delayedCall(
             750,
             ()=>{
@@ -4336,7 +4358,7 @@ zone
 
 
 /* =========================================================
-   ANSWER PULSE
+   ANSWER EFFECT
 ========================================================= */
 
 answerPulse(
@@ -4476,8 +4498,6 @@ createBottomBar(){
     }
 
 
-    /* RESET */
-
     this.resetButton =
     this.createButton(
 
@@ -4497,10 +4517,9 @@ createBottomBar(){
 
             this.clearPath();
         }
+
     );
 
-
-    /* HOME */
 
     this.homeButton =
     this.createButton(
@@ -4525,10 +4544,9 @@ createBottomBar(){
             window.location.href =
             "index.html";
         }
+
     );
 
-
-    /* MUSIC */
 
     this.musicButton =
     this.createButton(
@@ -4564,6 +4582,7 @@ createBottomBar(){
 
             );
         }
+
     );
 
 
@@ -4863,7 +4882,8 @@ showStartWindow(){
 
         GAME_W/2,
 
-        GAME_H/2+8,
+        GAME_H/2+
+        8,
 
         "1. Tekan START dan drag melalui maze.\n\n"+
         "2. Garisan hanya boleh melalui lorong yang terbuka.\n\n"+
@@ -5207,7 +5227,8 @@ showWin(){
         (
             Date.now()-
             this.startTime
-        )/1000
+        )/
+        1000
 
     );
 
@@ -5228,7 +5249,6 @@ showWin(){
     );
 
 
-    const shade =
     this.add.rectangle(
 
         GAME_W/2,
@@ -5259,7 +5279,6 @@ showWin(){
     : 300;
 
 
-    const card =
     this.add.rectangle(
 
         GAME_W/2,
@@ -5310,7 +5329,8 @@ showWin(){
 
         GAME_W/2,
 
-        GAME_H/2-5,
+        GAME_H/2-
+        5,
 
         `25 / 25 soalan selesai\n\nSkor: ${this.score}\nMasa: ${minutes}:${seconds}`,
 
@@ -5387,7 +5407,7 @@ showWin(){
 
 
 /* =========================================================
-   PHASER CONFIG
+   CONFIG
 ========================================================= */
 
 const config = {
@@ -5403,9 +5423,6 @@ const config = {
 
     height:
     GAME_H,
-
-    resolution:
-    TEXT_RESOLUTION,
 
     backgroundColor:
     "#e4eff4",
