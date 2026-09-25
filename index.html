@@ -28,8 +28,8 @@ html,body{
     background:
         linear-gradient(
             180deg,
-            #e7f9ff,
-            #a8ddec
+            #e6f9ff,
+            #acdfea
         );
 }
 
@@ -43,23 +43,25 @@ body{
         max(18px,env(safe-area-inset-bottom));
 }
 
-.wrapper{
+.game-wrapper{
     width:min(980px,100%);
 }
 
 .topbar{
     display:flex;
-    justify-content:space-between;
     align-items:center;
+    justify-content:space-between;
+
     gap:8px;
 
     margin-bottom:8px;
 }
 
-.title{
-    font-weight:900;
+.game-title{
     font-size:clamp(16px,3vw,23px);
-    color:#123e58;
+    font-weight:900;
+
+    color:#143f59;
 }
 
 .top-actions{
@@ -67,30 +69,41 @@ body{
     gap:6px;
 }
 
-.web-btn{
+.web-button{
     border:0;
-    border-radius:12px;
 
     min-height:36px;
+
     padding:7px 11px;
+
+    border-radius:12px;
 
     background:#fff;
     color:#174159;
 
     font-weight:900;
 
+    cursor:pointer;
+
     box-shadow:
-        0 5px 0 #74b9cc,
+        0 5px 0 #78bbcd,
         0 7px 13px rgba(0,0,0,.12);
 }
 
-.web-btn:active{
+.web-button:active{
     transform:translateY(3px);
-    box-shadow:0 2px 0 #74b9cc;
+
+    box-shadow:
+        0 2px 0 #78bbcd;
 }
 
-/* GAME TAK FULL WEBSITE */
-.game-box{
+
+/* ===============================
+   GAME CONTAINER
+   BUKAN FULL WEBSITE
+================================ */
+
+.game-frame{
     position:relative;
 
     width:100%;
@@ -102,16 +115,20 @@ body{
 
     border-radius:24px;
 
-    border:5px solid rgba(255,255,255,.9);
+    border:
+        5px solid
+        rgba(255,255,255,.9);
 
-    background:#5fc5e9;
+    background:#63c7ea;
 
     box-shadow:
-        0 16px 40px rgba(23,77,101,.26);
+        0 16px 40px
+        rgba(23,77,101,.26);
 }
 
 #game{
     position:absolute;
+
     inset:0;
 
     width:100%;
@@ -122,8 +139,37 @@ body{
     display:block;
 }
 
-.instructions{
-    margin-top:8px;
+
+/* error fallback */
+#errorBox{
+    display:none;
+
+    position:absolute;
+
+    z-index:999999;
+
+    top:10px;
+    left:10px;
+    right:10px;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    background:#b90000;
+    color:#fff;
+
+    font-family:monospace;
+    font-size:12px;
+
+    white-space:pre-wrap;
+}
+
+
+.help{
+    margin:8px auto 0;
+
+    max-width:800px;
 
     padding:0 8px;
 
@@ -136,35 +182,15 @@ body{
     line-height:1.4;
 }
 
-/* Kalau JavaScript error,
-   mesej merah akan keluar */
-#errorBox{
-    display:none;
-
-    position:absolute;
-
-    z-index:99999;
-
-    left:10px;
-    right:10px;
-    top:10px;
-
-    padding:12px;
-
-    border-radius:10px;
-
-    background:#b90000;
-    color:white;
-
-    font-size:12px;
-    font-family:monospace;
-
-    white-space:pre-wrap;
-}
 
 @media(max-width:600px){
 
-    .game-box{
+    body{
+        padding-left:5px;
+        padding-right:5px;
+    }
+
+    .game-frame{
         height:min(79svh,700px);
         min-height:555px;
 
@@ -172,17 +198,19 @@ body{
         border-radius:17px;
     }
 
-    .title{
+    .game-title{
         font-size:16px;
     }
 
-    .web-btn{
+    .web-button{
         min-height:34px;
+
         padding:6px 9px;
+
         font-size:11px;
     }
 
-    .instructions{
+    .help{
         font-size:10.5px;
     }
 }
@@ -191,25 +219,25 @@ body{
 
 <body>
 
-<div class="wrapper">
+<div class="game-wrapper">
 
     <div class="topbar">
 
-        <div class="title">
+        <div class="game-title">
             ✈️ Magnet Air Battle
         </div>
 
         <div class="top-actions">
 
             <button
-                class="web-btn"
+                class="web-button"
                 id="soundBtn"
             >
                 🔊
             </button>
 
             <button
-                class="web-btn"
+                class="web-button"
                 id="homeBtn"
             >
                 🏠 Home
@@ -219,7 +247,8 @@ body{
 
     </div>
 
-    <div class="game-box">
+
+    <div class="game-frame">
 
         <div id="errorBox"></div>
 
@@ -227,8 +256,9 @@ body{
 
     </div>
 
-    <div class="instructions">
-        Gerakkan kapal menggunakan ◀ ▶.
+
+    <div class="help">
+        Gerakkan kapal dengan ◀ ▶.
         Tekan atau tahan <b>TEMBAK</b>.
         Musnahkan kapal enemy yang membawa jawapan betul.
         Elakkan peluru merah.
@@ -239,12 +269,9 @@ body{
 
 <script>
 
-/* =========================================================
-   ERROR DISPLAY
-
-   Kalau ada error JavaScript,
-   dia akan keluar atas game.
-========================================================= */
+/* ===============================
+   PAPAR ERROR KALAU ADA
+================================ */
 
 window.onerror=function(
     message,
@@ -287,14 +314,14 @@ if(
 ){
 
     throw new Error(
-        "Phaser gagal dimuatkan. Semak internet / CDN."
+        "Phaser 3 gagal dimuatkan."
     );
 }
 
 
 
 /* =========================================================
-   SOALAN
+   25 SOALAN
 ========================================================= */
 
 const QUESTIONS=[
@@ -607,32 +634,39 @@ a:3
    AUDIO
 ========================================================= */
 
-let audioCtx=null;
-let soundEnabled=true;
-let musicTimer=null;
-let musicStep=0;
+class AudioEngine{
 
-const melody=[
-    261.63,
-    329.63,
-    392,
-    440,
-    392,
-    349.23,
-    329.63,
-    293.66
-];
+constructor(){
+
+    this.ctx=null;
+
+    this.enabled=true;
+
+    this.timer=null;
+
+    this.index=0;
+
+    this.notes=[
+        261.63,
+        329.63,
+        392,
+        440,
+        392,
+        349.23,
+        329.63,
+        293.66
+    ];
+}
 
 
-function initAudio(){
+init(){
 
-    if(audioCtx){
+    if(this.ctx){
 
         if(
-            audioCtx.state===
-            "suspended"
+            this.ctx.state==="suspended"
         ){
-            audioCtx.resume();
+            this.ctx.resume();
         }
 
         return;
@@ -647,153 +681,146 @@ function initAudio(){
     if(!AC)return;
 
 
-    audioCtx=
+    this.ctx=
         new AC();
 
 
-    startMusic();
+    this.startMusic();
 }
 
 
-function tone(
-    freq,
-    duration,
-    type,
-    volume,
-    delay
+tone(
+    frequency,
+    duration=.1,
+    type="sine",
+    volume=.02,
+    delay=0
 ){
 
     if(
-        !audioCtx ||
-        !soundEnabled
+        !this.ctx ||
+        !this.enabled
     )return;
 
 
-    duration=
-        duration || .1;
-
-    type=
-        type || "sine";
-
-    volume=
-        volume || .02;
-
-    delay=
-        delay || 0;
-
-
-    const start=
-        audioCtx.currentTime+
+    const time=
+        this.ctx.currentTime+
         delay;
 
 
-    const osc=
-        audioCtx.createOscillator();
+    const oscillator=
+        this.ctx.createOscillator();
 
 
     const gain=
-        audioCtx.createGain();
+        this.ctx.createGain();
 
 
-    osc.type=
+    oscillator.type=
         type;
 
 
-    osc.frequency
+    oscillator.frequency
         .setValueAtTime(
-            freq,
-            start
+            frequency,
+            time
         );
 
 
     gain.gain
         .setValueAtTime(
             .0001,
-            start
+            time
         );
 
 
     gain.gain
         .exponentialRampToValueAtTime(
-            volume,
-            start+.01
+            Math.max(
+                .0002,
+                volume
+            ),
+            time+.01
         );
 
 
     gain.gain
         .exponentialRampToValueAtTime(
             .0001,
-            start+duration
+            time+duration
         );
 
 
-    osc.connect(gain);
+    oscillator.connect(
+        gain
+    );
+
 
     gain.connect(
-        audioCtx.destination
+        this.ctx.destination
     );
 
 
-    osc.start(start);
+    oscillator.start(
+        time
+    );
 
-    osc.stop(
-        start+
+
+    oscillator.stop(
+        time+
         duration+
-        .02
+        .03
     );
 }
 
 
-function startMusic(){
+startMusic(){
 
-    if(musicTimer)return;
-
-
-    musicTimer=
-        setInterval(
-            function(){
-
-                if(
-                    !audioCtx ||
-                    !soundEnabled
-                )return;
+    if(this.timer)return;
 
 
-                const n=
-                    melody[
-                        musicStep%
-                        melody.length
-                    ];
+    this.timer=
+        setInterval(()=>{
+
+            if(
+                !this.ctx ||
+                !this.enabled
+            )return;
 
 
-                tone(
-                    n,
-                    .18,
-                    "triangle",
-                    .007
-                );
+            const note=
+                this.notes[
+                    this.index %
+                    this.notes.length
+                ];
 
 
-                tone(
-                    n/2,
-                    .2,
-                    "sine",
-                    .003
-                );
+            this.tone(
+                note,
+                .16,
+                "triangle",
+                .006
+            );
 
 
-                musicStep++;
+            this.tone(
+                note/2,
+                .20,
+                "sine",
+                .003
+            );
 
-            },
-            470
-        );
+
+            this.index++;
+
+        },470);
 }
 
 
-function sfxShoot(){
+shoot(){
 
-    tone(
-        700,
+    this.tone(
+        720,
         .05,
         "square",
         .025
@@ -801,32 +828,32 @@ function sfxShoot(){
 }
 
 
-function sfxEnemy(){
+enemy(){
 
-    tone(
-        170,
-        .07,
+    this.tone(
+        175,
+        .06,
         "square",
         .012
     );
 }
 
 
-function sfxHit(){
+hit(){
 
-    tone(
+    this.tone(
         310,
-        .06,
+        .055,
         "square",
-        .022
+        .020
     );
 }
 
 
-function sfxWrong(){
+wrong(){
 
-    tone(
-        170,
+    this.tone(
+        165,
         .14,
         "sawtooth",
         .032
@@ -834,24 +861,37 @@ function sfxWrong(){
 }
 
 
-function sfxCorrect(){
+damage(){
 
-    tone(
+    this.tone(
+        110,
+        .15,
+        "sawtooth",
+        .040
+    );
+}
+
+
+correct(){
+
+    this.tone(
         523,
-        .1,
+        .10,
         "triangle",
-        .04
+        .040
     );
 
-    tone(
+
+    this.tone(
         659,
         .12,
         "triangle",
-        .04,
+        .040,
         .08
     );
 
-    tone(
+
+    this.tone(
         784,
         .18,
         "triangle",
@@ -861,30 +901,74 @@ function sfxCorrect(){
 }
 
 
-function sfxDamage(){
+win(){
 
-    tone(
-        110,
-        .15,
-        "sawtooth",
-        .04
+    [
+        523,
+        659,
+        784,
+        1046
+    ].forEach(
+        (note,index)=>{
+
+            this.tone(
+                note,
+                .25,
+                "triangle",
+                .05,
+                index*.12
+            );
+        }
+    );
+}
+
+
+toggle(){
+
+    this.enabled=
+        !this.enabled;
+
+
+    if(
+        this.enabled &&
+        this.ctx
+    ){
+        this.ctx.resume();
+    }
+
+
+    return this.enabled;
+}
+
+}
+
+
+const AUDIO=
+    new AudioEngine();
+
+
+
+/* =========================================================
+   AIR BATTLE SCENE
+========================================================= */
+
+class AirBattleScene
+extends Phaser.Scene{
+
+constructor(){
+
+    super(
+        "AirBattleScene"
     );
 }
 
 
 
 /* =========================================================
-   GAME SCENE
+   CREATE
 ========================================================= */
 
-const MainScene={
-
-
-create:function(){
-
-    /* -------------------------
-       STATE
-    ------------------------- */
+create(){
 
     this.questionIndex=0;
 
@@ -892,20 +976,21 @@ create:function(){
 
     this.wrongKills=0;
 
-    this.started=false;
 
-    this.pausedForLife=false;
+    this.started=false;
 
     this.resolving=false;
 
     this.invulnerable=false;
 
+    this.repairing=false;
 
-    this.leftPressed=false;
 
-    this.rightPressed=false;
+    this.leftHeld=false;
 
-    this.firePressed=false;
+    this.rightHeld=false;
+
+    this.fireHeld=false;
 
 
     this.lastPlayerShot=0;
@@ -920,25 +1005,85 @@ create:function(){
     this.enemyBullets=[];
 
 
-    /* -------------------------
-       GRAPHICS
-    ------------------------- */
+    /* graphics */
 
-    this.background=
-        this.add.graphics();
-
-
-    this.decor=
-        this.add.graphics();
+    this.backgroundGraphics=
+        this.add.graphics()
+        .setDepth(0);
 
 
-    this.panel=
-        this.add.graphics();
+    this.decorGraphics=
+        this.add.graphics()
+        .setDepth(1);
 
 
-    /* -------------------------
-       TEXT
-    ------------------------- */
+    this.playerGraphics=
+        this.add.graphics()
+        .setDepth(100);
+
+
+    /* player */
+
+    this.playerX=0;
+
+    this.playerY=0;
+
+    this.playerHidden=false;
+
+
+    /*
+       SEMUA FUNGSI INI WUJUD
+       DALAM CLASS INI
+    */
+
+    this.createUI();
+
+    this.createControls();
+
+    this.bindKeyboard();
+
+
+    /*
+       reset hold bila jari dilepas
+       di mana-mana bahagian skrin
+    */
+
+    this.input.on(
+        "pointerup",
+        ()=>{
+
+            this.leftHeld=false;
+
+            this.rightHeld=false;
+
+            this.fireHeld=false;
+        }
+    );
+
+
+    this.scale.on(
+        "resize",
+        ()=>{
+
+            this.layout();
+        }
+    );
+
+
+    this.layout();
+
+    this.loadQuestion();
+
+    this.showIntro();
+}
+
+
+
+/* =========================================================
+   UI
+========================================================= */
+
+createUI(){
 
     this.progressText=
         this.add.text(
@@ -946,16 +1091,12 @@ create:function(){
             0,
             "",
             {
-                fontFamily:
-                    "Arial",
-
-                fontStyle:
-                    "bold",
-
-                color:
-                    "#173e56"
+                fontFamily:"Arial",
+                fontStyle:"bold",
+                color:"#173e56"
             }
-        );
+        )
+        .setDepth(300);
 
 
     this.lifeText=
@@ -964,20 +1105,16 @@ create:function(){
             0,
             "",
             {
-                fontFamily:
-                    "Arial",
-
-                fontStyle:
-                    "bold",
-
-                color:
-                    "#d62e42"
+                fontFamily:"Arial",
+                fontStyle:"bold",
+                color:"#d62e42"
             }
         )
         .setOrigin(
             1,
             0
-        );
+        )
+        .setDepth(300);
 
 
     this.categoryText=
@@ -986,23 +1123,17 @@ create:function(){
             0,
             "",
             {
-                fontFamily:
-                    "Arial",
-
-                fontStyle:
-                    "bold",
-
-                color:
-                    "#087695",
-
-                align:
-                    "center"
+                fontFamily:"Arial",
+                fontStyle:"bold",
+                color:"#087695",
+                align:"center"
             }
         )
         .setOrigin(
             .5,
             0
-        );
+        )
+        .setDepth(300);
 
 
     this.questionText=
@@ -1011,222 +1142,38 @@ create:function(){
             0,
             "",
             {
-                fontFamily:
-                    "Arial",
-
-                fontStyle:
-                    "bold",
-
-                color:
-                    "#16394a",
-
-                align:
-                    "center"
+                fontFamily:"Arial",
+                fontStyle:"bold",
+                color:"#16394a",
+                align:"center",
+                lineSpacing:3
             }
         )
         .setOrigin(
             .5,
             0
-        );
+        )
+        .setDepth(300);
 
 
-    this.message=
+    this.messageText=
         this.add.text(
             0,
             0,
             "",
             {
-                fontFamily:
-                    "Arial",
-
-                fontStyle:
-                    "bold",
-
-                color:
-                    "#ffffff",
-
-                align:
-                    "center",
-
-                stroke:
-                    "#143c52",
-
-                strokeThickness:
-                    5
+                fontFamily:"Arial",
+                fontStyle:"bold",
+                color:"#ffffff",
+                align:"center",
+                stroke:"#143c52",
+                strokeThickness:5
             }
         )
         .setOrigin(.5)
         .setDepth(1000)
         .setVisible(false);
-
-
-    /* -------------------------
-       PLAYER
-    ------------------------- */
-
-    this.player={
-        x:0,
-        y:0,
-        size:1,
-        visible:true
-    };
-
-
-    this.playerGraphics=
-        this.add.graphics()
-        .setDepth(100);
-
-
-    /* -------------------------
-       CONTROLS
-    ------------------------- */
-
-    this.createControls();
-
-
-    /* -------------------------
-       KEYBOARD
-    ------------------------- */
-
-    this.input.keyboard.on(
-        "keydown-LEFT",
-        function(){
-
-            this.leftPressed=true;
-
-        },
-        this
-    );
-
-
-    this.input.keyboard.on(
-        "keyup-LEFT",
-        function(){
-
-            this.leftPressed=false;
-
-        },
-        this
-    );
-
-
-    this.input.keyboard.on(
-        "keydown-A",
-        function(){
-
-            this.leftPressed=true;
-
-        },
-        this
-    );
-
-
-    this.input.keyboard.on(
-        "keyup-A",
-        function(){
-
-            this.leftPressed=false;
-
-        },
-        this
-    );
-
-
-    this.input.keyboard.on(
-        "keydown-RIGHT",
-        function(){
-
-            this.rightPressed=true;
-
-        },
-        this
-    );
-
-
-    this.input.keyboard.on(
-        "keyup-RIGHT",
-        function(){
-
-            this.rightPressed=false;
-
-        },
-        this
-    );
-
-
-    this.input.keyboard.on(
-        "keydown-D",
-        function(){
-
-            this.rightPressed=true;
-
-        },
-        this
-    );
-
-
-    this.input.keyboard.on(
-        "keyup-D",
-        function(){
-
-            this.rightPressed=false;
-
-        },
-        this
-    );
-
-
-    this.input.keyboard.on(
-        "keydown-SPACE",
-        function(){
-
-            if(!this.started)return;
-
-            this.firePressed=true;
-
-            this.shootPlayer();
-
-        },
-        this
-    );
-
-
-    this.input.keyboard.on(
-        "keyup-SPACE",
-        function(){
-
-            this.firePressed=false;
-
-        },
-        this
-    );
-
-
-    /* -------------------------
-       RESIZE
-    ------------------------- */
-
-    this.scale.on(
-        "resize",
-        function(){
-
-            this.resizeGame();
-
-        },
-        this
-    );
-
-
-    /* -------------------------
-       START
-    ------------------------- */
-
-    this.resizeGame();
-
-    this.loadQuestion();
-
-    this.showIntro();
-},
+}
 
 
 
@@ -1234,142 +1181,136 @@ create:function(){
    CONTROLS
 ========================================================= */
 
-createControls:function(){
+createControls(){
 
-    this.leftBtn=
-        this.createButton(
+    this.leftButton=
+        this.makeButton(
             "◀",
             0x167dab,
             "#ffffff"
         );
 
 
-    this.fireBtn=
-        this.createButton(
+    this.fireButton=
+        this.makeButton(
             "TEMBAK",
             0xf1bb31,
             "#49320b"
         );
 
 
-    this.rightBtn=
-        this.createButton(
+    this.rightButton=
+        this.makeButton(
             "▶",
             0x167dab,
             "#ffffff"
         );
 
 
-    this.leftBtn.hit.on(
+    /* LEFT */
+
+    this.leftButton.hit.on(
         "pointerdown",
-        function(){
+        ()=>{
 
             if(!this.started)return;
 
-            this.leftPressed=true;
-
-        },
-        this
+            this.leftHeld=true;
+        }
     );
 
 
-    this.leftBtn.hit.on(
+    this.leftButton.hit.on(
         "pointerup",
-        function(){
+        ()=>{
 
-            this.leftPressed=false;
-
-        },
-        this
+            this.leftHeld=false;
+        }
     );
 
 
-    this.leftBtn.hit.on(
+    this.leftButton.hit.on(
         "pointerout",
-        function(){
+        ()=>{
 
-            this.leftPressed=false;
-
-        },
-        this
+            this.leftHeld=false;
+        }
     );
 
 
-    this.rightBtn.hit.on(
+    /* RIGHT */
+
+    this.rightButton.hit.on(
         "pointerdown",
-        function(){
+        ()=>{
 
             if(!this.started)return;
 
-            this.rightPressed=true;
-
-        },
-        this
+            this.rightHeld=true;
+        }
     );
 
 
-    this.rightBtn.hit.on(
+    this.rightButton.hit.on(
         "pointerup",
-        function(){
+        ()=>{
 
-            this.rightPressed=false;
-
-        },
-        this
+            this.rightHeld=false;
+        }
     );
 
 
-    this.rightBtn.hit.on(
+    this.rightButton.hit.on(
         "pointerout",
-        function(){
+        ()=>{
 
-            this.rightPressed=false;
-
-        },
-        this
+            this.rightHeld=false;
+        }
     );
 
 
-    this.fireBtn.hit.on(
+    /* FIRE */
+
+    this.fireButton.hit.on(
         "pointerdown",
-        function(){
+        ()=>{
 
             if(!this.started)return;
 
-            this.firePressed=true;
+
+            this.fireHeld=true;
+
 
             this.shootPlayer();
-
-        },
-        this
+        }
     );
 
 
-    this.fireBtn.hit.on(
+    this.fireButton.hit.on(
         "pointerup",
-        function(){
+        ()=>{
 
-            this.firePressed=false;
-
-        },
-        this
+            this.fireHeld=false;
+        }
     );
 
 
-    this.fireBtn.hit.on(
+    this.fireButton.hit.on(
         "pointerout",
-        function(){
+        ()=>{
 
-            this.firePressed=false;
-
-        },
-        this
+            this.fireHeld=false;
+        }
     );
-},
+}
 
 
 
-createButton:function(
+/* =========================================================
+   CREATE BUTTON
+========================================================= */
+
+makeButton(
     label,
     color,
     textColor
@@ -1402,7 +1343,9 @@ createButton:function(
             .75
         )
         .setDepth(501)
-        .setInteractive();
+        .setInteractive({
+            useHandCursor:true
+        });
 
 
     const text=
@@ -1411,17 +1354,10 @@ createButton:function(
             0,
             label,
             {
-                fontFamily:
-                    "Arial",
-
-                fontStyle:
-                    "bold",
-
-                fontSize:
-                    "18px",
-
-                color:
-                    textColor
+                fontFamily:"Arial",
+                fontStyle:"bold",
+                fontSize:"18px",
+                color:textColor
             }
         )
         .setOrigin(.5)
@@ -1429,20 +1365,22 @@ createButton:function(
 
 
     return{
-        shadow:
-            shadow,
 
-        hit:
-            hit,
+        shadow:shadow,
 
-        text:
-            text
+        hit:hit,
+
+        text:text
     };
-},
+}
 
 
 
-setButton:function(
+/* =========================================================
+   BUTTON SIZE
+========================================================= */
+
+setButton(
     button,
     x,
     y,
@@ -1481,22 +1419,140 @@ setButton:function(
         .setFontSize(
             fontSize
         );
-},
+}
 
 
 
 /* =========================================================
-   RESIZE
+   KEYBOARD
 ========================================================= */
 
-resizeGame:function(){
+bindKeyboard(){
+
+    const keyboard=
+        this.input.keyboard;
+
+
+    keyboard.on(
+        "keydown-LEFT",
+        ()=>{
+
+            this.leftHeld=true;
+        }
+    );
+
+
+    keyboard.on(
+        "keyup-LEFT",
+        ()=>{
+
+            this.leftHeld=false;
+        }
+    );
+
+
+    keyboard.on(
+        "keydown-A",
+        ()=>{
+
+            this.leftHeld=true;
+        }
+    );
+
+
+    keyboard.on(
+        "keyup-A",
+        ()=>{
+
+            this.leftHeld=false;
+        }
+    );
+
+
+    keyboard.on(
+        "keydown-RIGHT",
+        ()=>{
+
+            this.rightHeld=true;
+        }
+    );
+
+
+    keyboard.on(
+        "keyup-RIGHT",
+        ()=>{
+
+            this.rightHeld=false;
+        }
+    );
+
+
+    keyboard.on(
+        "keydown-D",
+        ()=>{
+
+            this.rightHeld=true;
+        }
+    );
+
+
+    keyboard.on(
+        "keyup-D",
+        ()=>{
+
+            this.rightHeld=false;
+        }
+    );
+
+
+    keyboard.on(
+        "keydown-SPACE",
+        ()=>{
+
+            if(!this.started)return;
+
+
+            this.fireHeld=true;
+
+
+            this.shootPlayer();
+        }
+    );
+
+
+    keyboard.on(
+        "keyup-SPACE",
+        ()=>{
+
+            this.fireHeld=false;
+        }
+    );
+}
+
+
+
+/* =========================================================
+   RESPONSIVE LAYOUT
+========================================================= */
+
+layout(){
+
+    const gameSize=
+        this.scale.gameSize;
+
 
     this.W=
-        this.scale.width;
+        Math.max(
+            320,
+            gameSize.width
+        );
 
 
     this.H=
-        this.scale.height;
+        Math.max(
+            520,
+            gameSize.height
+        );
 
 
     this.mobile=
@@ -1534,28 +1590,30 @@ resizeGame:function(){
 
 
     if(
-        !this.player.x
+        !Number.isFinite(
+            this.playerX
+        )
+        ||
+        this.playerX===0
     ){
 
-        this.player.x=
+        this.playerX=
             this.W/2;
     }
 
 
-    this.player.x=
+    this.playerX=
         Phaser.Math.Clamp(
-            this.player.x,
+            this.playerX,
             30,
             this.W-30
         );
 
 
-    this.player.y=
-        this.playerY;
-
-
     this.drawBackground();
 
+
+    /* UI */
 
     this.progressText
         .setFontSize(
@@ -1620,7 +1678,7 @@ resizeGame:function(){
         );
 
 
-    this.message
+    this.messageText
         .setFontSize(
             this.mobile
             ? 20
@@ -1636,6 +1694,8 @@ resizeGame:function(){
         );
 
 
+    /* CONTROLS */
+
     const controlY=
         this.H-
         this.controlHeight/2;
@@ -1643,79 +1703,80 @@ resizeGame:function(){
 
     if(this.mobile){
 
-        const sideW=
+        const sideWidth=
             Math.min(
                 65,
                 this.W*.18
             );
 
 
-        const fireW=
+        const fireWidth=
             Math.min(
                 145,
                 this.W*.40
             );
 
 
-        const gap=7;
+        const gap=
+            7;
 
 
         const total=
-            sideW+
-            fireW+
-            sideW+
+            sideWidth*2+
+            fireWidth+
             gap*2;
 
 
         const start=
             (
-                this.W-total
+                this.W-
+                total
             )/2;
 
 
         this.setButton(
-            this.leftBtn,
+            this.leftButton,
 
             start+
-            sideW/2,
+            sideWidth/2,
 
             controlY,
 
-            sideW,
+            sideWidth,
             47,
             21
         );
 
 
         this.setButton(
-            this.fireBtn,
+            this.fireButton,
 
             start+
-            sideW+
+            sideWidth+
             gap+
-            fireW/2,
+            fireWidth/2,
 
             controlY,
 
-            fireW,
+            fireWidth,
             47,
             14
         );
 
 
         this.setButton(
-            this.rightBtn,
+            this.rightButton,
 
             start+
-            sideW+
+            sideWidth+
             gap+
-            fireW+
+            fireWidth+
             gap+
-            sideW/2,
+            sideWidth/2,
 
             controlY,
 
-            sideW,
+            sideWidth,
             47,
             21
         );
@@ -1723,7 +1784,7 @@ resizeGame:function(){
     }else{
 
         this.setButton(
-            this.leftBtn,
+            this.leftButton,
             this.W/2-155,
             controlY,
             88,
@@ -1733,7 +1794,7 @@ resizeGame:function(){
 
 
         this.setButton(
-            this.fireBtn,
+            this.fireButton,
             this.W/2,
             controlY,
             180,
@@ -1743,7 +1804,7 @@ resizeGame:function(){
 
 
         this.setButton(
-            this.rightBtn,
+            this.rightButton,
             this.W/2+155,
             controlY,
             88,
@@ -1755,8 +1816,9 @@ resizeGame:function(){
 
     this.layoutEnemies();
 
+
     this.drawPlayer();
-},
+}
 
 
 
@@ -1764,74 +1826,72 @@ resizeGame:function(){
    BACKGROUND
 ========================================================= */
 
-drawBackground:function(){
+drawBackground(){
 
-    this.background.clear();
+    this.backgroundGraphics.clear();
 
-    this.decor.clear();
-
-    this.panel.clear();
+    this.decorGraphics.clear();
 
 
-    this.background.fillStyle(
-        0x63c7ea,
-        1
-    );
+    /* SKY */
+
+    this.backgroundGraphics
+        .fillStyle(
+            0x63c7ea,
+            1
+        )
+        .fillRect(
+            0,
+            0,
+            this.W,
+            this.H
+        );
 
 
-    this.background.fillRect(
-        0,
-        0,
-        this.W,
-        this.H
-    );
+    /* TOP SKY */
 
-
-    this.background.fillStyle(
-        0x8edcf4,
-        .45
-    );
-
-
-    this.background.fillRect(
-        0,
-        this.arenaTop,
-        this.W,
-        95
-    );
+    this.backgroundGraphics
+        .fillStyle(
+            0x8edcf4,
+            .45
+        )
+        .fillRect(
+            0,
+            this.arenaTop,
+            this.W,
+            95
+        );
 
 
     /* QUESTION PANEL */
 
-    this.panel.fillStyle(
-        0xffffff,
-        .97
-    );
+    this.decorGraphics
+        .fillStyle(
+            0xffffff,
+            .97
+        )
+        .fillRoundedRect(
+            7,
+            6,
+            this.W-14,
+            this.questionHeight-12,
+            16
+        );
 
 
-    this.panel.fillRoundedRect(
-        7,
-        6,
-        this.W-14,
-        this.questionHeight-12,
-        16
-    );
-
-
-    this.panel.lineStyle(
-        2,
-        0x4aa8c5,
-        .65
-    );
-
-
-    this.panel.strokeRoundedRect(
-        7,
-        6,
-        this.W-14,
-        this.questionHeight-12,
-        16
-    );
+    this.decorGraphics
+        .lineStyle(
+            2,
+            0x4aa8c5,
+            .65
+        )
+        .strokeRoundedRect(
+            7,
+            6,
+            this.W-14,
+            this.questionHeight-12,
+            16
+        );
 
 
     /* CLOUDS */
@@ -1866,13 +1926,14 @@ drawBackground:function(){
 
     /* MOUNTAINS */
 
-    this.decor.fillStyle(
-        0x388db5,
-        .18
-    );
+    this.decorGraphics
+        .fillStyle(
+            0x388db5,
+            .18
+        );
 
 
-    this.decor.fillTriangle(
+    this.decorGraphics.fillTriangle(
         0,
         this.arenaBottom,
 
@@ -1884,7 +1945,7 @@ drawBackground:function(){
     );
 
 
-    this.decor.fillTriangle(
+    this.decorGraphics.fillTriangle(
         this.W*.25,
         this.arenaBottom,
 
@@ -1896,7 +1957,7 @@ drawBackground:function(){
     );
 
 
-    this.decor.fillTriangle(
+    this.decorGraphics.fillTriangle(
         this.W*.68,
         this.arenaBottom,
 
@@ -1906,86 +1967,93 @@ drawBackground:function(){
         this.W,
         this.arenaBottom
     );
-},
+}
 
 
 
-drawCloud:function(
+/* =========================================================
+   CLOUD
+========================================================= */
+
+drawCloud(
     x,
     y,
     scale
 ){
 
     if(this.mobile){
+
         scale*=.72;
     }
 
 
-    this.decor.fillStyle(
-        0xffffff,
-        .38
-    );
+    this.decorGraphics
+        .fillStyle(
+            0xffffff,
+            .38
+        );
 
 
-    this.decor.fillCircle(
+    this.decorGraphics.fillCircle(
         x,
         y,
         25*scale
     );
 
 
-    this.decor.fillCircle(
+    this.decorGraphics.fillCircle(
         x+24*scale,
         y+5*scale,
         18*scale
     );
 
 
-    this.decor.fillCircle(
+    this.decorGraphics.fillCircle(
         x-24*scale,
         y+7*scale,
         17*scale
     );
 
 
-    this.decor.fillRoundedRect(
+    this.decorGraphics.fillRoundedRect(
         x-38*scale,
         y+5*scale,
         78*scale,
         24*scale,
         12*scale
     );
-},
+}
 
 
 
 /* =========================================================
-   PLAYER GRAPHIC
+   PLAYER
 ========================================================= */
 
-drawPlayer:function(){
+drawPlayer(){
 
-    const g=
+    const graphics=
         this.playerGraphics;
 
 
-    g.clear();
+    graphics.clear();
 
 
-    if(
-        !this.player.visible
-    )return;
+    if(this.playerHidden){
+
+        return;
+    }
 
 
     const x=
-        this.player.x;
+        this.playerX;
 
 
     const y=
-        this.player.y;
+        this.playerY;
 
 
-    const s=
+    const scale=
         this.mobile
         ? .76
         : .95;
@@ -1993,103 +2061,100 @@ drawPlayer:function(){
 
     /* SHADOW */
 
-    g.fillStyle(
-        0x1d6d91,
-        .25
-    );
+    graphics
+        .fillStyle(
+            0x1d6d91,
+            .25
+        )
+        .fillEllipse(
+            x,
+            y+25*scale,
+            46*scale,
+            12*scale
+        );
 
 
-    g.fillEllipse(
-        x,
-        y+25*s,
-        46*s,
-        12*s
-    );
+    /* LEFT WING */
+
+    graphics
+        .fillStyle(
+            0x167eaf,
+            1
+        )
+        .fillTriangle(
+            x,
+            y,
+
+            x-36*scale,
+            y+18*scale,
+
+            x-5*scale,
+            y+14*scale
+        );
 
 
-    /* WINGS */
+    /* RIGHT WING */
 
-    g.fillStyle(
-        0x167eaf,
-        1
-    );
-
-
-    g.fillTriangle(
+    graphics.fillTriangle(
         x,
         y,
 
-        x-36*s,
-        y+18*s,
+        x+36*scale,
+        y+18*scale,
 
-        x-5*s,
-        y+14*s
-    );
-
-
-    g.fillTriangle(
-        x,
-        y,
-
-        x+36*s,
-        y+18*s,
-
-        x+5*s,
-        y+14*s
+        x+5*scale,
+        y+14*scale
     );
 
 
     /* BODY */
 
-    g.fillStyle(
-        0x40d8ef,
-        1
-    );
+    graphics
+        .fillStyle(
+            0x40d8ef,
+            1
+        )
+        .fillTriangle(
+            x,
+            y-34*scale,
+
+            x-14*scale,
+            y+27*scale,
+
+            x+14*scale,
+            y+27*scale
+        );
 
 
-    g.fillTriangle(
-        x,
-        y-34*s,
+    /* BODY STRIPE */
 
-        x-14*s,
-        y+27*s,
-
-        x+14*s,
-        y+27*s
-    );
-
-
-    /* CENTRAL STRIPE */
-
-    g.fillStyle(
-        0x126fa4,
-        1
-    );
-
-
-    g.fillEllipse(
-        x,
-        y+1*s,
-        12*s,
-        35*s
-    );
+    graphics
+        .fillStyle(
+            0x126fa4,
+            1
+        )
+        .fillEllipse(
+            x,
+            y+scale,
+            12*scale,
+            35*scale
+        );
 
 
     /* COCKPIT */
 
-    g.fillStyle(
-        0xeaffff,
-        1
-    );
-
-
-    g.fillEllipse(
-        x,
-        y-10*s,
-        8*s,
-        15*s
-    );
-},
+    graphics
+        .fillStyle(
+            0xeaffff,
+            1
+        )
+        .fillEllipse(
+            x,
+            y-10*scale,
+            8*scale,
+            15*scale
+        );
+}
 
 
 
@@ -2097,17 +2162,18 @@ drawPlayer:function(){
    LOAD QUESTION
 ========================================================= */
 
-loadQuestion:function(){
+loadQuestion(){
 
     this.resolving=false;
 
 
     this.clearBullets();
 
+
     this.destroyEnemies();
 
 
-    const q=
+    const data=
         QUESTIONS[
             this.questionIndex
         ];
@@ -2130,21 +2196,21 @@ loadQuestion:function(){
 
 
     this.categoryText.setText(
-        q.cat
+        data.cat
     );
 
 
     this.questionText.setText(
-        q.q
+        data.q
     );
 
 
-    this.message
+    this.messageText
         .setVisible(false);
 
 
     this.createEnemies(
-        q
+        data
     );
 
 
@@ -2154,7 +2220,7 @@ loadQuestion:function(){
     this.lastEnemyShot=
         this.time.now+
         900;
-},
+}
 
 
 
@@ -2162,7 +2228,9 @@ loadQuestion:function(){
    CREATE ENEMIES
 ========================================================= */
 
-createEnemies:function(q){
+createEnemies(
+    data
+){
 
     const letters=[
         "A",
@@ -2173,12 +2241,15 @@ createEnemies:function(q){
 
 
     /*
-        Random susunan answer,
-        tapi masih 4 lane.
+        SUSUNAN JAWAPAN DIACAK
+        tetapi masih 4 lane.
     */
 
     const order=[
-        0,1,2,3
+        0,
+        1,
+        2,
+        3
     ];
 
 
@@ -2207,7 +2278,7 @@ createEnemies:function(q){
 
             correct:
                 answerIndex===
-                q.a,
+                data.a,
 
             alive:
                 true,
@@ -2215,13 +2286,22 @@ createEnemies:function(q){
             respawning:
                 false,
 
-            x:0,
+            hp:
+                3,
 
-            y:0,
+            maxHp:
+                3,
 
-            targetX:0,
+            x:
+                0,
 
-            nextDirection:
+            y:
+                0,
+
+            targetX:
+                0,
+
+            nextMove:
                 0,
 
             graphics:
@@ -2237,25 +2317,20 @@ createEnemies:function(q){
                         answerIndex
                     ]+
                     ". "+
-                    q.o[
+                    data.o[
                         answerIndex
                     ],
 
                     {
-                        fontFamily:
-                            "Arial",
+                        fontFamily:"Arial",
+                        fontStyle:"bold",
 
-                        fontStyle:
-                            "bold",
-
-                        color:
-                            "#18394a",
+                        color:"#18394a",
 
                         backgroundColor:
                             "#ffffff",
 
-                        align:
-                            "center",
+                        align:"center",
 
                         padding:{
                             x:3,
@@ -2275,24 +2350,25 @@ createEnemies:function(q){
             enemy
         );
     }
-},
+}
 
 
 
 /* =========================================================
    ENEMY LAYOUT
-   SATU BARIS - TAK BERTINDIH
+
+   SEMUA JAWAPAN SATU BARIS.
+   SETIAP ENEMY ADA LANE SENDIRI.
 ========================================================= */
 
-layoutEnemies:function(){
+layoutEnemies(){
 
     if(
-        !this.enemies ||
         !this.enemies.length
     )return;
 
 
-    const laneW=
+    const laneWidth=
         this.W/4;
 
 
@@ -2305,151 +2381,161 @@ layoutEnemies:function(){
         );
 
 
-    for(
-        let i=0;
-        i<this.enemies.length;
-        i++
-    ){
+    this.enemies.forEach(
+        (
+            enemy,
+            index
+        )=>{
 
-        const e=
-            this.enemies[i];
-
-
-        const laneLeft=
-            laneW*i;
+            const laneLeft=
+                laneWidth*
+                index;
 
 
-        const laneRight=
-            laneW*(i+1);
+            const laneRight=
+                laneWidth*
+                (
+                    index+1
+                );
 
 
-        const center=
-            (
+            const laneCenter=
+                (
+                    laneLeft+
+                    laneRight
+                )/2;
+
+
+            /*
+                KAPAL TAK BOLEH KELUAR
+                LANE SENDIRI.
+            */
+
+            enemy.minX=
                 laneLeft+
-                laneRight
-            )/2;
+                laneWidth*.28;
 
 
-        /*
-            Enemy cuma boleh bergerak
-            dalam lane sendiri.
-        */
-
-        e.minX=
-            laneLeft+
-            laneW*.27;
+            enemy.maxX=
+                laneRight-
+                laneWidth*.28;
 
 
-        e.maxX=
-            laneRight-
-            laneW*.27;
-
-
-        if(
-            !e.x ||
-            !isFinite(e.x)
-        ){
-
-            e.x=
-                center;
-        }
-
-
-        e.x=
-            Phaser.Math.Clamp(
-                e.x,
-                e.minX,
-                e.maxX
-            );
-
-
-        e.y=
-            this.enemyY;
-
-
-        e.targetX=
-            Phaser.Math.Between(
-                Math.round(
-                    e.minX
-                ),
-                Math.round(
-                    e.maxX
+            if(
+                !Number.isFinite(
+                    enemy.x
                 )
+                ||
+                enemy.x===0
+            ){
+
+                enemy.x=
+                    laneCenter;
+            }
+
+
+            enemy.x=
+                Phaser.Math.Clamp(
+                    enemy.x,
+                    enemy.minX,
+                    enemy.maxX
+                );
+
+
+            enemy.y=
+                this.enemyY;
+
+
+            enemy.targetX=
+                Phaser.Math.Between(
+                    Math.round(
+                        enemy.minX
+                    ),
+                    Math.round(
+                        enemy.maxX
+                    )
+                );
+
+
+            /*
+                LABEL JAWAPAN
+                TAK BOLEH MASUK LANE LAIN
+            */
+
+            const labelWidth=
+                Math.max(
+                    55,
+                    laneWidth-8
+                );
+
+
+            enemy.label
+                .setFontSize(
+                    this.mobile
+                    ? 8.2
+                    : 11
+                )
+                .setFixedSize(
+                    labelWidth,
+                    this.mobile
+                    ? 49
+                    : 55
+                )
+                .setWordWrapWidth(
+                    labelWidth-7
+                );
+
+
+            this.drawEnemy(
+                enemy
             );
-
-
-        const labelWidth=
-            Math.max(
-                55,
-                laneW-7
-            );
-
-
-        e.label
-            .setFontSize(
-                this.mobile
-                ? 8.2
-                : 11
-            )
-            .setFixedSize(
-                labelWidth,
-                this.mobile
-                ? 49
-                : 55
-            )
-            .setWordWrapWidth(
-                labelWidth-7
-            );
-
-
-        this.drawEnemy(
-            e
-        );
-    }
-},
+        }
+    );
+}
 
 
 
 /* =========================================================
-   DRAW ENEMY PLANE
+   DRAW ENEMY
 ========================================================= */
 
-drawEnemy:function(e){
+drawEnemy(
+    enemy
+){
 
-    const g=
-        e.graphics;
+    const graphics=
+        enemy.graphics;
 
 
-    g.clear();
+    graphics.clear();
 
 
     if(
-        !e.alive ||
-        e.respawning
+        !enemy.alive ||
+        enemy.respawning
     ){
 
-        e.label.setVisible(
-            false
-        );
+        enemy.label
+            .setVisible(false);
+
 
         return;
     }
 
 
-    e.label.setVisible(
-        true
-    );
+    enemy.label
+        .setVisible(true);
 
 
     const x=
-        e.x;
+        enemy.x;
 
 
     const y=
-        e.y;
+        enemy.y;
 
 
-    const s=
+    const scale=
         this.mobile
         ? .53
         : .68;
@@ -2457,132 +2543,183 @@ drawEnemy:function(e){
 
     /* SHADOW */
 
-    g.fillStyle(
-        0x6f2430,
-        .18
-    );
+    graphics
+        .fillStyle(
+            0x6f2430,
+            .18
+        )
+        .fillEllipse(
+            x,
+            y+21*scale,
+            44*scale,
+            10*scale
+        );
 
 
-    g.fillEllipse(
-        x,
-        y+21*s,
-        44*s,
-        10*s
-    );
+    /* LEFT WING */
+
+    graphics
+        .fillStyle(
+            0xa82135,
+            1
+        )
+        .fillTriangle(
+            x,
+            y,
+
+            x-35*scale,
+            y-17*scale,
+
+            x-5*scale,
+            y-13*scale
+        );
 
 
-    /* WINGS */
+    /* RIGHT WING */
 
-    g.fillStyle(
-        0xa82135,
-        1
-    );
-
-
-    g.fillTriangle(
-        x,
-        y,
-
-        x-35*s,
-        y-17*s,
-
-        x-5*s,
-        y-13*s
-    );
-
-
-    g.fillTriangle(
-        x,
-        y,
-
-        x+35*s,
-        y-17*s,
-
-        x+5*s,
-        y-13*s
-    );
-
-
-    /* BODY - enemy menghadap bawah */
-
-    g.fillStyle(
-        0xed5963,
-        1
-    );
-
-
-    g.fillTriangle(
-        x,
-        y+32*s,
-
-        x-14*s,
-        y-25*s,
-
-        x+14*s,
-        y-25*s
-    );
-
-
-    g.fillStyle(
-        0x961c2e,
-        1
-    );
-
-
-    g.fillEllipse(
+    graphics.fillTriangle(
         x,
         y,
-        12*s,
-        34*s
-    );
 
+        x+35*scale,
+        y-17*scale,
 
-    /* COCKPIT */
-
-    g.fillStyle(
-        0xffd65e,
-        1
-    );
-
-
-    g.fillEllipse(
-        x,
-        y+8*s,
-        8*s,
-        14*s
-    );
-
-
-    /* GUNS */
-
-    g.fillStyle(
-        0x65131f,
-        1
-    );
-
-
-    g.fillRect(
-        x-20*s,
-        y+5*s,
-        4*s,
-        13*s
-    );
-
-
-    g.fillRect(
-        x+16*s,
-        y+5*s,
-        4*s,
-        13*s
+        x+5*scale,
+        y-13*scale
     );
 
 
     /*
-        Label tetap satu baris,
-        kedudukan bawah plane.
+       ENEMY MENGHADAP BAWAH
     */
 
-    e.label.setPosition(
+    graphics
+        .fillStyle(
+            0xed5963,
+            1
+        )
+        .fillTriangle(
+            x,
+            y+32*scale,
+
+            x-14*scale,
+            y-25*scale,
+
+            x+14*scale,
+            y-25*scale
+        );
+
+
+    /* BODY */
+
+    graphics
+        .fillStyle(
+            0x961c2e,
+            1
+        )
+        .fillEllipse(
+            x,
+            y,
+            12*scale,
+            34*scale
+        );
+
+
+    /* COCKPIT */
+
+    graphics
+        .fillStyle(
+            0xffd65e,
+            1
+        )
+        .fillEllipse(
+            x,
+            y+8*scale,
+            8*scale,
+            14*scale
+        );
+
+
+    /* GUN LEFT */
+
+    graphics
+        .fillStyle(
+            0x65131f,
+            1
+        )
+        .fillRect(
+            x-20*scale,
+            y+5*scale,
+            4*scale,
+            13*scale
+        );
+
+
+    /* GUN RIGHT */
+
+    graphics.fillRect(
+        x+16*scale,
+        y+5*scale,
+        4*scale,
+        13*scale
+    );
+
+
+    /* =========================
+       HEALTH BAR
+    ========================== */
+
+    const barWidth=
+        34*scale;
+
+
+    const health=
+        enemy.hp/
+        enemy.maxHp;
+
+
+    graphics
+        .fillStyle(
+            0x7f2431,
+            .65
+        )
+        .fillRoundedRect(
+            x-
+            barWidth/2,
+
+            y-
+            31*scale,
+
+            barWidth,
+
+            5*scale,
+
+            2*scale
+        );
+
+
+    graphics
+        .fillStyle(
+            0x68e28d,
+            1
+        )
+        .fillRoundedRect(
+            x-
+            barWidth/2,
+
+            y-
+            31*scale,
+
+            barWidth*
+            health,
+
+            5*scale,
+
+            2*scale
+        );
+
+
+    enemy.label.setPosition(
         x,
         y+
         (
@@ -2591,21 +2728,21 @@ drawEnemy:function(e){
             : 28
         )
     );
-},
+}
 
 
 
 /* =========================================================
-   MOVE ENEMIES
+   RANDOM ENEMY MOVEMENT
+
+   HANYA KIRI KANAN DALAM
+   LANE MASING-MASING.
 ========================================================= */
 
-moveEnemies:function(
+moveEnemies(
     time,
     delta
 ){
-
-    if(!this.enemies)return;
-
 
     const speed=
         this.mobile
@@ -2613,85 +2750,83 @@ moveEnemies:function(
         : 47;
 
 
-    for(
-        let i=0;
-        i<this.enemies.length;
-        i++
-    ){
+    this.enemies.forEach(
+        enemy=>{
 
-        const e=
-            this.enemies[i];
-
-
-        if(
-            !e.alive ||
-            e.respawning
-        )continue;
+            if(
+                !enemy.alive ||
+                enemy.respawning
+            )return;
 
 
-        if(
-            time>=
-            e.nextDirection
-        ){
+            if(
+                time>=
+                enemy.nextMove
+            ){
 
-            e.nextDirection=
-                time+
-                Phaser.Math.Between(
-                    450,
-                    1050
+                enemy.nextMove=
+                    time+
+                    Phaser.Math.Between(
+                        450,
+                        1050
+                    );
+
+
+                enemy.targetX=
+                    Phaser.Math.Between(
+                        Math.round(
+                            enemy.minX
+                        ),
+                        Math.round(
+                            enemy.maxX
+                        )
+                    );
+            }
+
+
+            const difference=
+                enemy.targetX-
+                enemy.x;
+
+
+            if(
+                Math.abs(
+                    difference
+                )>1
+            ){
+
+                enemy.x+=
+                    Math.sign(
+                        difference
+                    )*
+                    speed*
+                    delta/1000;
+            }
+
+
+            enemy.x=
+                Phaser.Math.Clamp(
+                    enemy.x,
+                    enemy.minX,
+                    enemy.maxX
                 );
 
 
-            e.targetX=
-                Phaser.Math.Between(
-                    Math.round(
-                        e.minX
-                    ),
-                    Math.round(
-                        e.maxX
-                    )
-                );
-        }
+            /*
+               Y KEKAL SAMA.
+               SEMUA JAWAPAN SATU BARIS.
+            */
+
+            enemy.y=
+                this.enemyY;
 
 
-        const dx=
-            e.targetX-
-            e.x;
-
-
-        if(
-            Math.abs(dx)>1
-        ){
-
-            e.x+=
-                Math.sign(dx)*
-                speed*
-                delta/1000;
-        }
-
-
-        e.x=
-            Phaser.Math.Clamp(
-                e.x,
-                e.minX,
-                e.maxX
+            this.drawEnemy(
+                enemy
             );
-
-
-        /*
-            SAME ROW.
-            Y tak berubah.
-        */
-
-        e.y=
-            this.enemyY;
-
-
-        this.drawEnemy(
-            e
-        );
-    }
-},
+        }
+    );
+}
 
 
 
@@ -2699,39 +2834,39 @@ moveEnemies:function(
    PLAYER SHOOT
 ========================================================= */
 
-shootPlayer:function(){
+shootPlayer(){
 
     if(
         !this.started ||
         this.resolving ||
-        this.pausedForLife
+        this.repairing
     )return;
 
 
-    const now=
+    const currentTime=
         this.time.now;
 
 
     if(
-        now-
+        currentTime-
         this.lastPlayerShot<
         175
     )return;
 
 
     this.lastPlayerShot=
-        now;
+        currentTime;
 
 
     const bullet={
 
         x:
-            this.player.x,
+            this.playerX,
 
         y:
-            this.player.y-29,
+            this.playerY-29,
 
-        vy:
+        velocityY:
             this.mobile
             ? -520
             : -650,
@@ -2752,75 +2887,63 @@ shootPlayer:function(){
     );
 
 
-    sfxShoot();
-},
+    AUDIO.shoot();
+}
 
 
 
-drawPlayerBullet:function(b){
+/* =========================================================
+   PLAYER BULLET GRAPHIC
+========================================================= */
 
-    b.graphics.clear();
+drawPlayerBullet(
+    bullet
+){
+
+    bullet.graphics.clear();
 
 
-    b.graphics.fillStyle(
-        0xfff155,
-        1
-    );
+    bullet.graphics
+        .fillStyle(
+            0xfff155,
+            1
+        )
+        .fillRoundedRect(
+            bullet.x-3,
+            bullet.y-9,
 
-
-    b.graphics.fillRoundedRect(
-        b.x-3,
-        b.y-9,
-        6,
-        18,
-        3
-    );
-},
+            6,
+            18,
+            3
+        );
+}
 
 
 
 /* =========================================================
    ENEMY SHOOT
-
-   PELURU MERAH BULAT
 ========================================================= */
 
-shootEnemy:function(){
+shootEnemy(){
 
     if(
         !this.started ||
         this.resolving ||
-        this.pausedForLife
+        this.repairing
     )return;
 
 
     const available=
-        [];
+        this.enemies.filter(
+            enemy=>
+                enemy.alive &&
+                !enemy.respawning
+        );
 
 
-    for(
-        let i=0;
-        i<this.enemies.length;
-        i++
-    ){
-
-        const e=
-            this.enemies[i];
-
-
-        if(
-            e.alive &&
-            !e.respawning
-        ){
-
-            available.push(
-                e
-            );
-        }
-    }
-
-
-    if(!available.length)return;
+    if(
+        !available.length
+    )return;
 
 
     const enemy=
@@ -2834,10 +2957,11 @@ shootEnemy:function(){
 
     const angle=
         Math.atan2(
-            this.player.y-
+
+            this.playerY-
             enemy.y,
 
-            this.player.x-
+            this.playerX-
             enemy.x
         );
 
@@ -2856,12 +2980,16 @@ shootEnemy:function(){
         y:
             enemy.y+18,
 
-        vx:
-            Math.cos(angle)*
+        velocityX:
+            Math.cos(
+                angle
+            )*
             speed,
 
-        vy:
-            Math.sin(angle)*
+        velocityY:
+            Math.sin(
+                angle
+            )*
             speed,
 
         graphics:
@@ -2880,161 +3008,160 @@ shootEnemy:function(){
     );
 
 
-    sfxEnemy();
-},
-
-
-
-drawEnemyBullet:function(b){
-
-    b.graphics.clear();
-
-
-    /*
-        GLOW MERAH
-    */
-
-    b.graphics.fillStyle(
-        0xff5757,
-        .24
-    );
-
-
-    b.graphics.fillCircle(
-        b.x,
-        b.y,
-        this.mobile
-        ? 8
-        : 9
-    );
-
-
-    /*
-        BULLET MERAH BULAT
-    */
-
-    b.graphics.fillStyle(
-        0xff1717,
-        1
-    );
-
-
-    b.graphics.fillCircle(
-        b.x,
-        b.y,
-        this.mobile
-        ? 5
-        : 6
-    );
-
-
-    /*
-        Highlight
-    */
-
-    b.graphics.fillStyle(
-        0xffbbbb,
-        1
-    );
-
-
-    b.graphics.fillCircle(
-        b.x-2,
-        b.y-2,
-        1.5
-    );
-},
+    AUDIO.enemy();
+}
 
 
 
 /* =========================================================
-   PLAYER BULLET UPDATE
+   ENEMY BULLET
+   BULAT MERAH
 ========================================================= */
 
-updatePlayerBullets:function(
+drawEnemyBullet(
+    bullet
+){
+
+    const radius=
+        this.mobile
+        ? 5
+        : 6;
+
+
+    bullet.graphics.clear();
+
+
+    /* RED GLOW */
+
+    bullet.graphics
+        .fillStyle(
+            0xff5757,
+            .24
+        )
+        .fillCircle(
+            bullet.x,
+            bullet.y,
+            radius+3
+        );
+
+
+    /* RED BULLET */
+
+    bullet.graphics
+        .fillStyle(
+            0xff1717,
+            1
+        )
+        .fillCircle(
+            bullet.x,
+            bullet.y,
+            radius
+        );
+
+
+    /* LIGHT REFLECTION */
+
+    bullet.graphics
+        .fillStyle(
+            0xffbbbb,
+            1
+        )
+        .fillCircle(
+            bullet.x-2,
+            bullet.y-2,
+            1.5
+        );
+}
+
+
+
+/* =========================================================
+   UPDATE PLAYER BULLETS
+========================================================= */
+
+updatePlayerBullets(
     delta
 ){
 
     for(
-        let i=
+        let index=
             this.playerBullets.length-1;
 
-        i>=0;
+        index>=0;
 
-        i--
+        index--
     ){
 
-        const b=
-            this.playerBullets[i];
+        const bullet=
+            this.playerBullets[
+                index
+            ];
 
 
-        b.y+=
-            b.vy*
+        bullet.y+=
+            bullet.velocityY*
             delta/1000;
 
 
         this.drawPlayerBullet(
-            b
+            bullet
         );
 
 
-        let hit=false;
+        let hit=
+            false;
 
+
+        /*
+           COLLISION BULLET VS ENEMY
+        */
 
         for(
-            let eIndex=0;
-            eIndex<this.enemies.length;
-            eIndex++
+            const enemy
+            of this.enemies
         ){
 
-            const e=
-                this.enemies[
-                    eIndex
-                ];
-
-
             if(
-                !e.alive ||
-                e.respawning
+                !enemy.alive ||
+                enemy.respawning
             )continue;
 
 
-            const dx=
+            const distanceX=
                 Math.abs(
-                    b.x-
-                    e.x
+                    bullet.x-
+                    enemy.x
                 );
 
 
-            const dy=
+            const distanceY=
                 Math.abs(
-                    b.y-
-                    e.y
+                    bullet.y-
+                    enemy.y
                 );
-
-
-            const hitX=
-                this.mobile
-                ? 22
-                : 28;
-
-
-            const hitY=
-                this.mobile
-                ? 20
-                : 25;
 
 
             if(
-                dx<hitX &&
-                dy<hitY
+                distanceX<
+                (
+                    this.mobile
+                    ? 22
+                    : 28
+                )
+                &&
+                distanceY<
+                (
+                    this.mobile
+                    ? 20
+                    : 25
+                )
             ){
 
                 hit=true;
 
 
-                this.killEnemy(
-                    e
+                this.damageEnemy(
+                    enemy
                 );
 
 
@@ -3045,246 +3172,334 @@ updatePlayerBullets:function(
 
         if(
             hit ||
-            b.y<
+            bullet.y<
             this.arenaTop-25
         ){
 
-            b.graphics.destroy();
+            bullet.graphics
+                .destroy();
 
 
-            this.playerBullets.splice(
-                i,
-                1
-            );
+            this.playerBullets
+                .splice(
+                    index,
+                    1
+                );
         }
     }
-},
+}
 
 
 
 /* =========================================================
-   KILL ENEMY
+   DAMAGE ENEMY
 ========================================================= */
 
-killEnemy:function(e){
+damageEnemy(
+    enemy
+){
 
     if(
-        !e.alive ||
-        e.respawning ||
+        !enemy.alive ||
+        enemy.respawning ||
         this.resolving
     )return;
 
 
-    e.alive=false;
+    enemy.hp--;
 
 
-    sfxHit();
+    AUDIO.hit();
 
 
     this.explosion(
-        e.x,
-        e.y,
-        e.correct
-        ? 0xffe45a
-        : 0xff5555,
-        20
+        enemy.x,
+        enemy.y,
+        0xffde55,
+        7
     );
 
 
-    e.graphics.clear();
-
-    e.label.setVisible(
-        false
+    this.drawEnemy(
+        enemy
     );
 
 
-    if(e.correct){
+    if(
+        enemy.hp<=0
+    ){
 
-        this.resolving=true;
+        if(
+            enemy.correct
+        ){
 
-
-        sfxCorrect();
-
-
-        this.message
-            .setText(
-                "✓ JAWAPAN BETUL!"
-            )
-            .setColor(
-                "#e2ffe6"
-            )
-            .setVisible(
-                true
+            this.killCorrectEnemy(
+                enemy
             );
 
+        }else{
 
-        this.clearBullets();
-
-
-        this.time.delayedCall(
-            800,
-            function(){
-
-                if(
-                    this.questionIndex>=
-                    QUESTIONS.length-1
-                ){
-
-                    this.showWin();
-
-                    return;
-                }
-
-
-                this.questionIndex++;
-
-
-                this.loadQuestion();
-
-            },
-            null,
-            this
-        );
-
-    }else{
-
-        this.wrongKills++;
-
-
-        sfxWrong();
-
-
-        this.message
-            .setText(
-                "✕ JAWAPAN SALAH!"
-            )
-            .setColor(
-                "#ffe0e0"
-            )
-            .setVisible(
-                true
+            this.killWrongEnemy(
+                enemy
             );
-
-
-        e.respawning=true;
-
-
-        /*
-            ENEMY SALAH MUNCUL BALIK
-        */
-
-        this.time.delayedCall(
-            650,
-            function(){
-
-                if(
-                    this.resolving
-                )return;
-
-
-                e.x=
-                    Phaser.Math.Between(
-                        Math.round(
-                            e.minX
-                        ),
-                        Math.round(
-                            e.maxX
-                        )
-                    );
-
-
-                e.targetX=
-                    Phaser.Math.Between(
-                        Math.round(
-                            e.minX
-                        ),
-                        Math.round(
-                            e.maxX
-                        )
-                    );
-
-
-                e.alive=true;
-
-                e.respawning=false;
-
-
-                this.drawEnemy(
-                    e
-                );
-
-
-                this.message
-                    .setVisible(
-                        false
-                    );
-
-            },
-            null,
-            this
-        );
+        }
     }
-},
+}
 
 
 
 /* =========================================================
-   ENEMY BULLET UPDATE
+   WRONG ANSWER DESTROYED
 ========================================================= */
 
-updateEnemyBullets:function(
+killWrongEnemy(
+    enemy
+){
+
+    enemy.alive=
+        false;
+
+
+    enemy.respawning=
+        true;
+
+
+    this.wrongKills++;
+
+
+    AUDIO.wrong();
+
+
+    this.explosion(
+        enemy.x,
+        enemy.y,
+        0xff5555,
+        20
+    );
+
+
+    enemy.graphics.clear();
+
+
+    enemy.label
+        .setVisible(false);
+
+
+    this.messageText
+        .setText(
+            "✕ JAWAPAN SALAH!"
+        )
+        .setColor(
+            "#ffe0e0"
+        )
+        .setVisible(true);
+
+
+    /*
+       JAWAPAN SALAH AKAN
+       MUNCUL SEMULA
+    */
+
+    this.time.delayedCall(
+        650,
+        ()=>{
+
+            if(
+                this.resolving
+            )return;
+
+
+            enemy.hp=
+                enemy.maxHp;
+
+
+            enemy.alive=
+                true;
+
+
+            enemy.respawning=
+                false;
+
+
+            enemy.x=
+                Phaser.Math.Between(
+                    Math.round(
+                        enemy.minX
+                    ),
+                    Math.round(
+                        enemy.maxX
+                    )
+                );
+
+
+            enemy.targetX=
+                Phaser.Math.Between(
+                    Math.round(
+                        enemy.minX
+                    ),
+                    Math.round(
+                        enemy.maxX
+                    )
+                );
+
+
+            this.drawEnemy(
+                enemy
+            );
+
+
+            this.messageText
+                .setVisible(false);
+        }
+    );
+}
+
+
+
+/* =========================================================
+   CORRECT ANSWER DESTROYED
+========================================================= */
+
+killCorrectEnemy(
+    enemy
+){
+
+    if(
+        this.resolving
+    )return;
+
+
+    this.resolving=
+        true;
+
+
+    enemy.alive=
+        false;
+
+
+    AUDIO.correct();
+
+
+    this.explosion(
+        enemy.x,
+        enemy.y,
+        0xffe45a,
+        30
+    );
+
+
+    this.explosion(
+        enemy.x,
+        enemy.y,
+        0xff5b4f,
+        16
+    );
+
+
+    enemy.graphics.clear();
+
+
+    enemy.label
+        .setVisible(false);
+
+
+    this.messageText
+        .setText(
+            "✓ JAWAPAN BETUL!"
+        )
+        .setColor(
+            "#e2ffe6"
+        )
+        .setVisible(true);
+
+
+    this.clearBullets();
+
+
+    this.time.delayedCall(
+        850,
+        ()=>{
+
+            if(
+                this.questionIndex>=
+                QUESTIONS.length-1
+            ){
+
+                this.showWin();
+
+                return;
+            }
+
+
+            this.questionIndex++;
+
+
+            this.loadQuestion();
+        }
+    );
+}
+
+
+
+/* =========================================================
+   UPDATE ENEMY BULLETS
+========================================================= */
+
+updateEnemyBullets(
     delta
 ){
 
     for(
-        let i=
+        let index=
             this.enemyBullets.length-1;
 
-        i>=0;
+        index>=0;
 
-        i--
+        index--
     ){
 
-        const b=
-            this.enemyBullets[i];
+        const bullet=
+            this.enemyBullets[
+                index
+            ];
 
 
-        b.x+=
-            b.vx*
+        bullet.x+=
+            bullet.velocityX*
             delta/1000;
 
 
-        b.y+=
-            b.vy*
+        bullet.y+=
+            bullet.velocityY*
             delta/1000;
 
 
         this.drawEnemyBullet(
-            b
+            bullet
         );
 
 
         /*
-            COLLISION PLAYER
+           COLLISION BULLET VS PLAYER
         */
 
         if(
             !this.invulnerable &&
             this.started &&
-            !this.pausedForLife
+            !this.repairing
         ){
 
             const dx=
                 Math.abs(
-                    b.x-
-                    this.player.x
+                    bullet.x-
+                    this.playerX
                 );
 
 
             const dy=
                 Math.abs(
-                    b.y-
-                    this.player.y
+                    bullet.y-
+                    this.playerY
                 );
 
 
@@ -3304,16 +3519,18 @@ updateEnemyBullets:function(
                 )
             ){
 
-                b.graphics.destroy();
+                bullet.graphics
+                    .destroy();
 
 
-                this.enemyBullets.splice(
-                    i,
-                    1
-                );
+                this.enemyBullets
+                    .splice(
+                        index,
+                        1
+                    );
 
 
-                this.playerHit();
+                this.hitPlayer();
 
 
                 continue;
@@ -3321,25 +3538,37 @@ updateEnemyBullets:function(
         }
 
 
+        /*
+           REMOVE OUTSIDE GAME
+        */
+
         if(
-            b.y>
+            bullet.y>
             this.arenaBottom+30
+
             ||
-            b.x<-30
+
+            bullet.x<
+            -30
+
             ||
-            b.x>this.W+30
+
+            bullet.x>
+            this.W+30
         ){
 
-            b.graphics.destroy();
+            bullet.graphics
+                .destroy();
 
 
-            this.enemyBullets.splice(
-                i,
-                1
-            );
+            this.enemyBullets
+                .splice(
+                    index,
+                    1
+                );
         }
     }
-},
+}
 
 
 
@@ -3347,11 +3576,11 @@ updateEnemyBullets:function(
    PLAYER HIT
 ========================================================= */
 
-playerHit:function(){
+hitPlayer(){
 
     if(
         this.invulnerable ||
-        this.pausedForLife
+        this.repairing
     )return;
 
 
@@ -3369,41 +3598,41 @@ playerHit:function(){
     );
 
 
-    sfxDamage();
+    AUDIO.damage();
 
 
     this.explosion(
-        this.player.x,
-        this.player.y,
+        this.playerX,
+        this.playerY,
         0xff4545,
         15
     );
 
 
-    this.invulnerable=true;
+    this.invulnerable=
+        true;
 
 
-    /*
-        Blink
-    */
-
-    let blinkCount=0;
+    let blinkCount=
+        0;
 
 
-    const blink=
-        this.time.addEvent({
+    this.time.addEvent({
 
-            delay:90,
+        delay:
+            90,
 
-            repeat:7,
+        repeat:
+            7,
 
-            callback:function(){
+        callback:
+            ()=>{
 
                 blinkCount++;
 
 
-                this.player.visible=
-                    !this.player.visible;
+                this.playerHidden=
+                    !this.playerHidden;
 
 
                 this.drawPlayer();
@@ -3413,18 +3642,18 @@ playerHit:function(){
                     blinkCount>=8
                 ){
 
-                    this.player.visible=true;
+                    this.playerHidden=
+                        false;
+
 
                     this.drawPlayer();
 
-                    this.invulnerable=false;
+
+                    this.invulnerable=
+                        false;
                 }
-
-            },
-
-            callbackScope:
-                this
-        });
+            }
+    });
 
 
     if(
@@ -3433,7 +3662,7 @@ playerHit:function(){
 
         this.repairPlayer();
     }
-},
+}
 
 
 
@@ -3441,20 +3670,24 @@ playerHit:function(){
    REPAIR PLAYER
 ========================================================= */
 
-repairPlayer:function(){
+repairPlayer(){
 
-    this.pausedForLife=true;
+    this.repairing=
+        true;
 
-    this.started=false;
+
+    this.started=
+        false;
 
 
     this.clearBullets();
 
 
-    let number=3;
+    let number=
+        3;
 
 
-    this.message
+    this.messageText
         .setText(
             "KAPAL ROSAK!\n"+
             number
@@ -3462,37 +3695,36 @@ repairPlayer:function(){
         .setColor(
             "#ffffff"
         )
-        .setVisible(
-            true
-        );
+        .setVisible(true);
 
 
-    const next=
-        function(){
+    const countdown=
+        ()=>{
 
             this.time.delayedCall(
                 1000,
-                function(){
+                ()=>{
 
                     number--;
 
 
-                    if(number>0){
+                    if(
+                        number>0
+                    ){
 
-                        this.message
+                        this.messageText
                             .setText(
                                 "KAPAL ROSAK!\n"+
                                 number
                             );
 
 
-                        next.call(
-                            this
-                        );
+                        countdown();
 
                     }else{
 
-                        this.lives=3;
+                        this.lives=
+                            3;
 
 
                         this.lifeText
@@ -3501,21 +3733,18 @@ repairPlayer:function(){
                             );
 
 
-                        this.player.x=
+                        this.playerX=
                             this.W/2;
 
 
-                        this.player.y=
-                            this.playerY;
-
-
-                        this.player.visible=true;
+                        this.playerHidden=
+                            false;
 
 
                         this.drawPlayer();
 
 
-                        this.message
+                        this.messageText
                             .setText(
                                 "SAMBUNG!"
                             );
@@ -3523,38 +3752,34 @@ repairPlayer:function(){
 
                         this.time.delayedCall(
                             450,
-                            function(){
+                            ()=>{
 
-                                this.message
+                                this.messageText
                                     .setVisible(
                                         false
                                     );
 
 
-                                this.pausedForLife=false;
+                                this.repairing=
+                                    false;
 
-                                this.invulnerable=false;
 
-                                this.started=true;
+                                this.invulnerable=
+                                    false;
 
-                            },
-                            null,
-                            this
+
+                                this.started=
+                                    true;
+                            }
                         );
                     }
-
-                },
-                null,
-                this
+                }
             );
-
         };
 
 
-    next.call(
-        this
-    );
-},
+    countdown();
+}
 
 
 
@@ -3562,17 +3787,17 @@ repairPlayer:function(){
    EXPLOSION
 ========================================================= */
 
-explosion:function(
+explosion(
     x,
     y,
     color,
-    amount
+    count
 ){
 
     for(
-        let i=0;
-        i<amount;
-        i++
+        let index=0;
+        index<count;
+        index++
     ){
 
         const particle=
@@ -3610,12 +3835,16 @@ explosion:function(
 
             x:
                 x+
-                Math.cos(angle)*
+                Math.cos(
+                    angle
+                )*
                 distance,
 
             y:
                 y+
-                Math.sin(angle)*
+                Math.sin(
+                    angle
+                )*
                 distance,
 
             alpha:
@@ -3631,13 +3860,13 @@ explosion:function(
                 ),
 
             onComplete:
-                function(){
+                ()=>{
 
                     particle.destroy();
                 }
         });
     }
-},
+}
 
 
 
@@ -3645,49 +3874,41 @@ explosion:function(
    CLEAR BULLETS
 ========================================================= */
 
-clearBullets:function(){
+clearBullets(){
 
-    for(
-        let i=0;
-        i<this.playerBullets.length;
-        i++
-    ){
+    this.playerBullets.forEach(
+        bullet=>{
 
-        if(
-            this.playerBullets[i]
-            .graphics
-        ){
+            if(
+                bullet.graphics
+            ){
 
-            this.playerBullets[i]
-                .graphics
-                .destroy();
+                bullet.graphics
+                    .destroy();
+            }
         }
-    }
+    );
 
 
     this.playerBullets=[];
 
 
-    for(
-        let i=0;
-        i<this.enemyBullets.length;
-        i++
-    ){
+    this.enemyBullets.forEach(
+        bullet=>{
 
-        if(
-            this.enemyBullets[i]
-            .graphics
-        ){
+            if(
+                bullet.graphics
+            ){
 
-            this.enemyBullets[i]
-                .graphics
-                .destroy();
+                bullet.graphics
+                    .destroy();
+            }
         }
-    }
+    );
 
 
     this.enemyBullets=[];
-},
+}
 
 
 
@@ -3695,31 +3916,33 @@ clearBullets:function(){
    DESTROY ENEMIES
 ========================================================= */
 
-destroyEnemies:function(){
+destroyEnemies(){
 
-    for(
-        let i=0;
-        i<this.enemies.length;
-        i++
-    ){
+    this.enemies.forEach(
+        enemy=>{
 
-        const e=
-            this.enemies[i];
+            if(
+                enemy.graphics
+            ){
+
+                enemy.graphics
+                    .destroy();
+            }
 
 
-        if(e.graphics){
-            e.graphics.destroy();
+            if(
+                enemy.label
+            ){
+
+                enemy.label
+                    .destroy();
+            }
         }
-
-
-        if(e.label){
-            e.label.destroy();
-        }
-    }
+    );
 
 
     this.enemies=[];
-},
+}
 
 
 
@@ -3727,7 +3950,7 @@ destroyEnemies:function(){
    INTRO
 ========================================================= */
 
-showIntro:function(){
+showIntro(){
 
     const shade=
         this.add.rectangle(
@@ -3780,9 +4003,12 @@ showIntro:function(){
     const icon=
         this.add.text(
             this.W/2,
+
             this.H/2-
             cardHeight*.35,
+
             "✈️",
+
             {
                 fontSize:
                     this.mobile
@@ -3797,23 +4023,22 @@ showIntro:function(){
     const title=
         this.add.text(
             this.W/2,
+
             this.H/2-
             cardHeight*.20,
-            "MAGNET AIR BATTLE",
-            {
-                fontFamily:
-                    "Arial",
 
-                fontStyle:
-                    "bold",
+            "MAGNET AIR BATTLE",
+
+            {
+                fontFamily:"Arial",
+                fontStyle:"bold",
 
                 fontSize:
                     this.mobile
                     ? "21px"
                     : "28px",
 
-                color:
-                    "#15516c"
+                color:"#15516c"
             }
         )
         .setOrigin(.5)
@@ -3823,33 +4048,32 @@ showIntro:function(){
     const info=
         this.add.text(
             this.W/2,
+
             this.H/2+4,
 
             "Empat jawapan ialah kapal terbang enemy.\n\n"+
-            "• Baca soalan.\n"+
-            "• Cari kapal dengan jawapan betul.\n"+
-            "• Bergerak menggunakan ◀ ▶.\n"+
+
+            "• Semua jawapan dalam SATU BARIS.\n"+
+            "• Setiap enemy bergerak dalam lane sendiri.\n"+
+            "• Gerakkan kapal dengan ◀ ▶.\n"+
             "• Tekan atau tahan TEMBAK.\n"+
-            "• Musnahkan jawapan betul untuk ke soalan berikutnya.\n\n"+
-            "Enemy menembak peluru MERAH.",
+            "• Musnahkan jawapan betul untuk ke soalan seterusnya.\n\n"+
+
+            "Peluru enemy berwarna MERAH.",
 
             {
-                fontFamily:
-                    "Arial",
+                fontFamily:"Arial",
 
-                fontStyle:
-                    "bold",
+                fontStyle:"bold",
 
                 fontSize:
                     this.mobile
                     ? "13px"
                     : "16px",
 
-                color:
-                    "#31596a",
+                color:"#31596a",
 
-                align:
-                    "center",
+                align:"center",
 
                 wordWrap:{
                     width:
@@ -3864,10 +4088,13 @@ showIntro:function(){
     const button=
         this.add.rectangle(
             this.W/2,
+
             this.H/2+
             cardHeight*.38,
+
             190,
             52,
+
             0x38d091,
             1
         )
@@ -3877,27 +4104,25 @@ showIntro:function(){
             .8
         )
         .setDepth(3002)
-        .setInteractive();
+        .setInteractive({
+            useHandCursor:true
+        });
 
 
     const buttonText=
         this.add.text(
             this.W/2,
+
             this.H/2+
             cardHeight*.38,
+
             "▶ MULA MISI",
+
             {
-                fontFamily:
-                    "Arial",
-
-                fontStyle:
-                    "bold",
-
-                fontSize:
-                    "17px",
-
-                color:
-                    "#ffffff"
+                fontFamily:"Arial",
+                fontStyle:"bold",
+                fontSize:"17px",
+                color:"#ffffff"
             }
         )
         .setOrigin(.5)
@@ -3906,45 +4131,45 @@ showIntro:function(){
 
     button.on(
         "pointerdown",
-        function(){
+        ()=>{
 
-            initAudio();
-
-
-            shade.destroy();
-
-            card.destroy();
-
-            icon.destroy();
-
-            title.destroy();
-
-            info.destroy();
-
-            button.destroy();
-
-            buttonText.destroy();
+            AUDIO.init();
 
 
-            this.started=true;
+            [
+                shade,
+                card,
+                icon,
+                title,
+                info,
+                button,
+                buttonText
+            ].forEach(
+                object=>{
+
+                    object.destroy();
+                }
+            );
+
+
+            this.started=
+                true;
 
 
             this.lastEnemyShot=
                 this.time.now+
                 900;
-
-        },
-        this
+        }
     );
-},
+}
 
 
 
 /* =========================================================
-   WIN
+   WIN SCREEN
 ========================================================= */
 
-showWin:function(){
+showWin(){
 
     this.started=false;
 
@@ -3952,6 +4177,9 @@ showWin:function(){
 
 
     this.clearBullets();
+
+
+    AUDIO.win();
 
 
     const shade=
@@ -3995,7 +4223,7 @@ showWin:function(){
         .setDepth(5001);
 
 
-    const trophy=
+    const icon=
         this.add.text(
             this.W/2,
             this.H/2-120,
@@ -4017,19 +4245,15 @@ showWin:function(){
             this.H/2-35,
             "MISI SELESAI!",
             {
-                fontFamily:
-                    "Arial",
-
-                fontStyle:
-                    "bold",
+                fontFamily:"Arial",
+                fontStyle:"bold",
 
                 fontSize:
                     this.mobile
                     ? "27px"
                     : "34px",
 
-                color:
-                    "#156a87"
+                color:"#156a87"
             }
         )
         .setOrigin(.5)
@@ -4046,22 +4270,18 @@ showWin:function(){
             this.wrongKills,
 
             {
-                fontFamily:
-                    "Arial",
+                fontFamily:"Arial",
 
-                fontStyle:
-                    "bold",
+                fontStyle:"bold",
 
                 fontSize:
                     this.mobile
                     ? "15px"
                     : "18px",
 
-                color:
-                    "#365d6b",
+                color:"#365d6b",
 
-                align:
-                    "center"
+                align:"center"
             }
         )
         .setOrigin(.5)
@@ -4082,7 +4302,9 @@ showWin:function(){
             0xffffff,
             .8
         )
-        .setInteractive()
+        .setInteractive({
+            useHandCursor:true
+        })
         .setDepth(5002);
 
 
@@ -4092,17 +4314,10 @@ showWin:function(){
             this.H/2+135,
             "↻ MAIN LAGI",
             {
-                fontFamily:
-                    "Arial",
-
-                fontStyle:
-                    "bold",
-
-                fontSize:
-                    "17px",
-
-                color:
-                    "#ffffff"
+                fontFamily:"Arial",
+                fontStyle:"bold",
+                fontSize:"17px",
+                color:"#ffffff"
             }
         )
         .setOrigin(.5)
@@ -4111,52 +4326,64 @@ showWin:function(){
 
     restart.on(
         "pointerdown",
-        function(){
+        ()=>{
 
-            shade.destroy();
+            [
+                shade,
+                card,
+                icon,
+                title,
+                result,
+                restart,
+                restartText
+            ].forEach(
+                object=>{
 
-            card.destroy();
-
-            trophy.destroy();
-
-            title.destroy();
-
-            result.destroy();
-
-            restart.destroy();
-
-            restartText.destroy();
-
-
-            this.questionIndex=0;
-
-            this.lives=3;
-
-            this.wrongKills=0;
-
-            this.resolving=false;
-
-            this.invulnerable=false;
-
-            this.pausedForLife=false;
+                    object.destroy();
+                }
+            );
 
 
-            this.player.x=
+            this.questionIndex=
+                0;
+
+
+            this.lives=
+                3;
+
+
+            this.wrongKills=
+                0;
+
+
+            this.resolving=
+                false;
+
+
+            this.invulnerable=
+                false;
+
+
+            this.repairing=
+                false;
+
+
+            this.playerX=
                 this.W/2;
 
 
-            this.player.visible=true;
+            this.playerHidden=
+                false;
 
 
             this.loadQuestion();
 
 
-            this.started=true;
-
-        },
-        this
+            this.started=
+                true;
+        }
     );
-},
+}
 
 
 
@@ -4164,31 +4391,25 @@ showWin:function(){
    UPDATE
 ========================================================= */
 
-update:function(
+update(
     time,
     delta
 ){
 
-    /*
-        Enemy masih bergerak
-        semasa game berjalan.
-    */
-
     if(
-        this.enemies &&
-        this.enemies.length
-    ){
-
-        this.moveEnemies(
-            time,
-            delta
-        );
-    }
+        !this.W
+    )return;
 
 
-    /*
-        Bullets
-    */
+    /* enemy bergerak */
+
+    this.moveEnemies(
+        time,
+        delta
+    );
+
+
+    /* update bullet */
 
     this.updatePlayerBullets(
         delta
@@ -4203,7 +4424,7 @@ update:function(
     if(
         !this.started ||
         this.resolving ||
-        this.pausedForLife
+        this.repairing
     ){
 
         this.drawPlayer();
@@ -4212,28 +4433,32 @@ update:function(
     }
 
 
-    /*
-        PLAYER MOVE
-    */
+    /* ===============================
+       PLAYER MOVEMENT
+    =============================== */
 
-    const speed=
+    const playerSpeed=
         this.mobile
         ? 230
         : 300;
 
 
-    if(this.leftPressed){
+    if(
+        this.leftHeld
+    ){
 
-        this.player.x-=
-            speed*
+        this.playerX-=
+            playerSpeed*
             delta/1000;
     }
 
 
-    if(this.rightPressed){
+    if(
+        this.rightHeld
+    ){
 
-        this.player.x+=
-            speed*
+        this.playerX+=
+            playerSpeed*
             delta/1000;
     }
 
@@ -4244,27 +4469,26 @@ update:function(
         : 31;
 
 
-    this.player.x=
+    this.playerX=
         Phaser.Math.Clamp(
-            this.player.x,
+            this.playerX,
             margin,
             this.W-margin
         );
 
 
-    this.player.y=
-        this.playerY;
-
-
     this.drawPlayer();
 
 
-    /*
-        HOLD TEMBAK
-    */
+    /* ===============================
+       HOLD TEMBAK
+    =============================== */
 
     if(
-        this.firePressed &&
+        this.fireHeld
+
+        &&
+
         time-
         this.lastPlayerShot>
         175
@@ -4274,9 +4498,9 @@ update:function(
     }
 
 
-    /*
-        ENEMY FIRE
-    */
+    /* ===============================
+       ENEMY FIRE RATE
+    =============================== */
 
     let enemyInterval;
 
@@ -4326,7 +4550,7 @@ update:function(
     }
 }
 
-};
+}
 
 
 
@@ -4366,14 +4590,15 @@ const config={
             4
     },
 
-    scene:
-        MainScene
+    scene:[
+        AirBattleScene
+    ]
 };
 
 
 
 /* =========================================================
-   START GAME
+   START
 ========================================================= */
 
 const game=
@@ -4391,36 +4616,42 @@ document
 .getElementById(
     "homeBtn"
 )
-.onclick=function(){
+.addEventListener(
+    "click",
+    ()=>{
 
-    window.location.href=
-        "index.html";
-};
+        window.location.href=
+            "index.html";
+    }
+);
 
 
 document
 .getElementById(
     "soundBtn"
 )
-.onclick=function(){
+.addEventListener(
+    "click",
+    function(){
 
-    initAudio();
-
-
-    soundEnabled=
-        !soundEnabled;
+        AUDIO.init();
 
 
-    this.textContent=
-        soundEnabled
-        ? "🔊"
-        : "🔇";
-};
+        const enabled=
+            AUDIO.toggle();
+
+
+        this.textContent=
+            enabled
+            ? "🔊"
+            : "🔇";
+    }
+);
 
 
 document.addEventListener(
     "contextmenu",
-    function(event){
+    event=>{
 
         event.preventDefault();
     }
