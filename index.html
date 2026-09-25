@@ -3,12 +3,14 @@
 <head>
 <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width,
-initial-scale=1,
-maximum-scale=1,
-user-scalable=no,
-viewport-fit=cover">
+<meta
+    name="viewport"
+    content="width=device-width,
+    initial-scale=1,
+    maximum-scale=1,
+    user-scalable=no,
+    viewport-fit=cover"
+>
 
 <title>Magnet Air Battle</title>
 
@@ -26,15 +28,14 @@ html,body{
     background:
         linear-gradient(
             180deg,
-            #e7faff,
-            #b7e6f2
+            #e7f9ff,
+            #a8ddec
         );
 }
 
 body{
     display:flex;
     justify-content:center;
-    align-items:flex-start;
 
     padding:
         max(10px,env(safe-area-inset-top))
@@ -42,23 +43,23 @@ body{
         max(18px,env(safe-area-inset-bottom));
 }
 
-.game-shell{
-    width:min(950px,100%);
+.wrapper{
+    width:min(980px,100%);
 }
 
 .topbar{
     display:flex;
-    align-items:center;
     justify-content:space-between;
+    align-items:center;
     gap:8px;
 
     margin-bottom:8px;
 }
 
-.game-title{
-    font-size:clamp(16px,3vw,23px);
+.title{
     font-weight:900;
-    color:#163e58;
+    font-size:clamp(16px,3vw,23px);
+    color:#123e58;
 }
 
 .top-actions{
@@ -66,53 +67,47 @@ body{
     gap:6px;
 }
 
-.top-btn{
+.web-btn{
     border:0;
+    border-radius:12px;
 
     min-height:36px;
     padding:7px 11px;
-
-    border-radius:12px;
 
     background:#fff;
     color:#174159;
 
     font-weight:900;
 
-    cursor:pointer;
-
     box-shadow:
-        0 5px 0 #79bacc,
-        0 7px 12px rgba(0,0,0,.12);
+        0 5px 0 #74b9cc,
+        0 7px 13px rgba(0,0,0,.12);
 }
 
-.top-btn:active{
+.web-btn:active{
     transform:translateY(3px);
-
-    box-shadow:
-        0 2px 0 #79bacc;
+    box-shadow:0 2px 0 #74b9cc;
 }
 
-/* BUKAN FULL WEBSITE */
-.game-frame{
+/* GAME TAK FULL WEBSITE */
+.game-box{
     position:relative;
 
     width:100%;
 
-    height:min(80vh,740px);
-    min-height:590px;
-    max-height:740px;
+    height:min(80vh,720px);
+    min-height:580px;
 
     overflow:hidden;
 
     border-radius:24px;
 
-    border:5px solid rgba(255,255,255,.88);
+    border:5px solid rgba(255,255,255,.9);
 
-    background:#62c7ec;
+    background:#5fc5e9;
 
     box-shadow:
-        0 16px 42px rgba(32,83,105,.25);
+        0 16px 40px rgba(23,77,101,.26);
 }
 
 #game{
@@ -127,57 +122,68 @@ body{
     display:block;
 }
 
-.help{
-    max-width:780px;
-
-    margin:8px auto 0;
+.instructions{
+    margin-top:8px;
 
     padding:0 8px;
 
     text-align:center;
 
-    color:#29596a;
+    color:#27586a;
 
     font-size:12px;
     font-weight:700;
-    line-height:1.45;
+    line-height:1.4;
+}
+
+/* Kalau JavaScript error,
+   mesej merah akan keluar */
+#errorBox{
+    display:none;
+
+    position:absolute;
+
+    z-index:99999;
+
+    left:10px;
+    right:10px;
+    top:10px;
+
+    padding:12px;
+
+    border-radius:10px;
+
+    background:#b90000;
+    color:white;
+
+    font-size:12px;
+    font-family:monospace;
+
+    white-space:pre-wrap;
 }
 
 @media(max-width:600px){
 
-    body{
-        padding-left:5px;
-        padding-right:5px;
-    }
-
-    .game-frame{
+    .game-box{
         height:min(79svh,700px);
-        min-height:565px;
+        min-height:555px;
 
         border-width:3px;
-        border-radius:18px;
+        border-radius:17px;
     }
 
-    .game-title{
+    .title{
         font-size:16px;
     }
 
-    .top-btn{
+    .web-btn{
         min-height:34px;
         padding:6px 9px;
         font-size:11px;
     }
 
-    .help{
+    .instructions{
         font-size:10.5px;
-        margin-top:6px;
-    }
-}
-
-@media(max-width:380px){
-
-    .game-frame{
-        min-height:545px;
     }
 }
 </style>
@@ -185,25 +191,27 @@ body{
 
 <body>
 
-<div class="game-shell">
+<div class="wrapper">
 
     <div class="topbar">
 
-        <div class="game-title">
+        <div class="title">
             ✈️ Magnet Air Battle
         </div>
 
         <div class="top-actions">
 
             <button
-                class="top-btn"
-                id="soundBtn">
+                class="web-btn"
+                id="soundBtn"
+            >
                 🔊
             </button>
 
             <button
-                class="top-btn"
-                id="homeBtn">
+                class="web-btn"
+                id="homeBtn"
+            >
                 🏠 Home
             </button>
 
@@ -211,25 +219,79 @@ body{
 
     </div>
 
+    <div class="game-box">
 
-    <div class="game-frame">
+        <div id="errorBox"></div>
+
         <div id="game"></div>
+
     </div>
 
-
-    <div class="help">
-        Gerakkan kapal dengan ◀ ▶.
+    <div class="instructions">
+        Gerakkan kapal menggunakan ◀ ▶.
         Tekan atau tahan <b>TEMBAK</b>.
-        Musnahkan enemy yang membawa jawapan betul.
+        Musnahkan kapal enemy yang membawa jawapan betul.
         Elakkan peluru merah.
     </div>
 
 </div>
 
 
+<script>
+
+/* =========================================================
+   ERROR DISPLAY
+
+   Kalau ada error JavaScript,
+   dia akan keluar atas game.
+========================================================= */
+
+window.onerror=function(
+    message,
+    source,
+    line,
+    column
+){
+
+    const box=
+        document.getElementById(
+            "errorBox"
+        );
+
+    box.style.display=
+        "block";
+
+    box.textContent=
+        "ERROR:\n"+
+        message+
+        "\nLine: "+
+        line+
+        ":"+
+        column;
+};
+
+</script>
+
+
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
+
 <script>
+
+/* =========================================================
+   CHECK PHASER
+========================================================= */
+
+if(
+    typeof Phaser==="undefined"
+){
+
+    throw new Error(
+        "Phaser gagal dimuatkan. Semak internet / CDN."
+    );
+}
+
+
 
 /* =========================================================
    SOALAN
@@ -238,345 +300,339 @@ body{
 const QUESTIONS=[
 
 {
-category:"Apakah Gunanya Magnet?",
-question:"Pintu peti sejuk tidak mahu tertutup rapat. Bahagian yang berkaitan dengan fungsi ini ialah ____.",
-options:[
+cat:"Apakah Gunanya Magnet?",
+q:"Pintu peti sejuk tidak mahu tertutup rapat. Bahagian yang berkaitan dengan fungsi ini ialah ____.",
+o:[
 "Pemadam di atas meja",
 "Magnet pada pintu",
 "Pembaris di dapur",
 "Guli di dalam peti"
 ],
-answer:1
+a:1
 },
 
 {
-category:"Apakah Gunanya Magnet?",
-question:"Antara berikut, yang manakah turut menggunakan magnet menurut buku?",
-options:[
+cat:"Apakah Gunanya Magnet?",
+q:"Antara berikut, yang manakah turut menggunakan magnet menurut buku?",
+o:[
 "Permainan dart",
 "Buku cerita",
 "Bakul sampah",
 "Pensel warna"
 ],
-answer:0
+a:0
 },
 
 {
-category:"Apakah Gunanya Magnet?",
-question:"Mengapakah pemutar skru bermagnet berguna?",
-options:[
+cat:"Apakah Gunanya Magnet?",
+q:"Mengapakah pemutar skru bermagnet berguna?",
+o:[
 "Skru menjadi plastik",
 "Skru menjadi lebih panjang",
 "Skru bertukar warna",
 "Skru boleh dipegang oleh magnet"
 ],
-answer:3
+a:3
 },
 
 {
-category:"Apakah Gunanya Magnet?",
-question:"Kotak pensel boleh ditutup rapat apabila penutupnya mempunyai ____.",
-options:[
+cat:"Apakah Gunanya Magnet?",
+q:"Kotak pensel boleh ditutup rapat apabila penutupnya mempunyai ____.",
+o:[
 "Kertas",
 "Magnet",
 "Guli",
 "Pemadam"
 ],
-answer:1
+a:1
 },
 
 {
-category:"Apakah Gunanya Magnet?",
-question:"Jika tanda nama mempunyai magnet, tanda nama itu boleh ____.",
-options:[
+cat:"Apakah Gunanya Magnet?",
+q:"Jika tanda nama mempunyai magnet, tanda nama itu boleh ____.",
+o:[
 "Mengukur panjang",
 "Memotong kertas",
 "Melekat tanpa menggunakan pin",
 "Memadam tulisan"
 ],
-answer:2
+a:2
 },
 
 {
-category:"Bentuk Magnet",
-question:"Seorang murid melihat magnet berbentuk gelang. Nama yang sesuai ialah ____.",
-options:[
+cat:"Bentuk Magnet",
+q:"Seorang murid melihat magnet berbentuk gelang. Nama yang sesuai ialah ____.",
+o:[
 "Magnet bar",
 "Magnet cincin",
 "Magnet butang",
 "Magnet silinder"
 ],
-answer:1
+a:1
 },
 
 {
-category:"Bentuk Magnet",
-question:"Apakah nama magnet yang berbentuk seperti huruf U?",
-options:[
+cat:"Bentuk Magnet",
+q:"Apakah nama magnet yang berbentuk seperti huruf U?",
+o:[
 "Magnet bar",
 "Magnet cincin",
 "Magnet silinder",
 "Magnet bentuk U"
 ],
-answer:3
+a:3
 },
 
 {
-category:"Bentuk Magnet",
-question:"Jika magnet jelas berbentuk huruf U, magnet itu dinamakan ____.",
-options:[
+cat:"Bentuk Magnet",
+q:"Jika magnet jelas berbentuk huruf U, magnet itu dinamakan ____.",
+o:[
 "Magnet bentuk U",
 "Magnet silinder",
 "Magnet butang",
 "Magnet bar"
 ],
-answer:0
+a:0
 },
 
 {
-category:"Bentuk Magnet",
-question:"Apakah nama magnet bulat dan padat seperti butang?",
-options:[
+cat:"Bentuk Magnet",
+q:"Apakah nama magnet bulat dan padat seperti butang?",
+o:[
 "Magnet bar",
 "Magnet ladam",
 "Magnet butang",
 "Magnet cincin"
 ],
-answer:2
+a:2
 },
 
 {
-category:"Bentuk Magnet",
-question:"Apakah nama magnet yang berbentuk seperti silinder?",
-options:[
+cat:"Bentuk Magnet",
+q:"Apakah nama magnet yang berbentuk seperti silinder?",
+o:[
 "Magnet cincin",
 "Magnet silinder",
 "Magnet bar",
 "Magnet butang"
 ],
-answer:1
+a:1
 },
 
 {
-category:"Hebatnya Magnet",
-question:"Sebelum mencatat keputusan aktiviti, apakah yang perlu dilakukan kepada magnet dan objek?",
-options:[
+cat:"Hebatnya Magnet",
+q:"Sebelum mencatat keputusan aktiviti, apakah yang perlu dilakukan kepada magnet dan objek?",
+o:[
 "Jauhkan magnet sepanjang masa",
 "Tutup objek dengan kain",
 "Dekatkan magnet kepada objek",
 "Rendam objek dalam air"
 ],
-answer:2
+a:2
 },
 
 {
-category:"Hebatnya Magnet",
-question:"Paku dalam contoh buku menunjukkan bahawa magnet boleh ____ objek tertentu.",
-options:[
+cat:"Hebatnya Magnet",
+q:"Paku dalam contoh buku menunjukkan bahawa magnet boleh ____ objek tertentu.",
+o:[
 "Menarik",
 "Mewarnakan",
 "Mencairkan",
 "Memotong"
 ],
-answer:0
+a:0
 },
 
 {
-category:"Hebatnya Magnet",
-question:"Klip kertas bercampur dengan bedak. Apakah cara mudah untuk mengasingkan klip kertas?",
-options:[
+cat:"Hebatnya Magnet",
+q:"Klip kertas bercampur dengan bedak. Apakah cara mudah untuk mengasingkan klip kertas?",
+o:[
 "Gunakan pembaris plastik",
 "Gunakan pemadam",
 "Tambah air",
 "Gunakan magnet untuk menarik klip kertas"
 ],
-answer:3
+a:3
 },
 
 {
-category:"Hebatnya Magnet",
-question:"Dalam aktiviti 'Hebatnya Magnet', objek manakah yang dapat ditarik magnet?",
-options:[
+cat:"Hebatnya Magnet",
+q:"Dalam aktiviti 'Hebatnya Magnet', objek manakah yang dapat ditarik magnet?",
+o:[
 "Pemadam",
 "Skru",
 "Guli",
 "Pembaris plastik"
 ],
-answer:1
+a:1
 },
 
 {
-category:"Hebatnya Magnet",
-question:"Apakah cara paling sesuai untuk menentukan sama ada sesuatu objek boleh ditarik magnet?",
-options:[
+cat:"Hebatnya Magnet",
+q:"Apakah cara paling sesuai untuk menentukan sama ada sesuatu objek boleh ditarik magnet?",
+o:[
 "Goncang objek tanpa magnet",
 "Lihat warna objek sahaja",
 "Dekatkan magnet dan perhatikan tindakannya",
 "Hidu objek"
 ],
-answer:2
+a:2
 },
 
 {
-category:"Tarikan dan Tolakan Magnet",
-question:"Dua magnet saling menolak apabila didekatkan. Kutub yang saling berhadapan ialah kutub yang ____.",
-options:[
+cat:"Tarikan dan Tolakan Magnet",
+q:"Dua magnet saling menolak apabila didekatkan. Kutub yang saling berhadapan ialah kutub yang ____.",
+o:[
 "Sama",
 "Tiada",
 "Berlainan",
 "Hilang"
 ],
-answer:0
+a:0
 },
 
 {
-category:"Tarikan dan Tolakan Magnet",
-question:"Kutub magnet yang berlainan apabila didekatkan akan ____.",
-options:[
+cat:"Tarikan dan Tolakan Magnet",
+q:"Kutub magnet yang berlainan apabila didekatkan akan ____.",
+o:[
 "Mencair",
 "Hilang",
 "Menolak",
 "Menarik"
 ],
-answer:3
+a:3
 },
 
 {
-category:"Tarikan dan Tolakan Magnet",
-question:"Aina menukar satu magnet supaya kutub yang berlainan saling berhadapan. Apakah yang sepatutnya diperhatikan?",
-options:[
+cat:"Tarikan dan Tolakan Magnet",
+q:"Aina menukar satu magnet supaya kutub yang berlainan saling berhadapan. Apakah yang sepatutnya diperhatikan?",
+o:[
 "Magnet hilang warna",
 "Magnet menjadi bulat",
 "Magnet saling menarik",
 "Magnet saling menolak"
 ],
-answer:2
+a:2
 },
 
 {
-category:"Tarikan dan Tolakan Magnet",
-question:"Setiap magnet mempunyai dua kutub, iaitu kutub Utara dan kutub ____.",
-options:[
+cat:"Tarikan dan Tolakan Magnet",
+q:"Setiap magnet mempunyai dua kutub, iaitu kutub Utara dan kutub ____.",
+o:[
 "Selatan",
 "Barat",
 "Tengah",
 "Timur"
 ],
-answer:0
+a:0
 },
 
 {
-category:"Tarikan dan Tolakan Magnet",
-question:"Apakah dua jenis tindakan apabila dua magnet didekatkan?",
-options:[
+cat:"Tarikan dan Tolakan Magnet",
+q:"Apakah dua jenis tindakan apabila dua magnet didekatkan?",
+o:[
 "Panas dan sejuk",
 "Kasar dan licin",
 "Manis dan masam",
 "Tarikan dan tolakan"
 ],
-answer:3
+a:3
 },
 
 {
-category:"Kekuatan Magnet",
-question:"Jika dua magnet menarik bilangan klip yang berbeza, perkara yang sedang dibandingkan ialah ____.",
-options:[
+cat:"Kekuatan Magnet",
+q:"Jika dua magnet menarik bilangan klip yang berbeza, perkara yang sedang dibandingkan ialah ____.",
+o:[
 "Bentuk klip",
 "Kekuatan magnet",
 "Warna magnet",
 "Bau magnet"
 ],
-answer:1
+a:1
 },
 
 {
-category:"Kekuatan Magnet",
-question:"Adakah setiap magnet mempunyai kekuatan yang sama?",
-options:[
+cat:"Kekuatan Magnet",
+q:"Adakah setiap magnet mempunyai kekuatan yang sama?",
+o:[
 "Semua tiada kekuatan",
 "Ya",
 "Tidak",
 "Hanya magnet cincin kuat"
 ],
-answer:2
+a:2
 },
 
 {
-category:"Kekuatan Magnet",
-question:"Setiap magnet mempunyai kekuatan yang ____.",
-options:[
+cat:"Kekuatan Magnet",
+q:"Setiap magnet mempunyai kekuatan yang ____.",
+o:[
 "Berbeza",
 "Sama sahaja",
 "Tiada",
 "Sentiasa sifar"
 ],
-answer:0
+a:0
 },
 
 {
-category:"Kekuatan Magnet",
-question:"Dalam penyiasatan, magnet digerakkan mendekati klip dan dihentikan apabila klip mula tertarik. Apakah yang diperhatikan?",
-options:[
+cat:"Kekuatan Magnet",
+q:"Dalam penyiasatan, magnet digerakkan mendekati klip dan dihentikan apabila klip mula tertarik. Apakah yang diperhatikan?",
+o:[
 "Warna magnet",
 "Jarak tarikan magnet",
 "Bau magnet",
 "Rasa magnet"
 ],
-answer:1
+a:1
 },
 
 {
-category:"Kekuatan Magnet",
-question:"Magnet A menarik klip apabila masih jauh. Magnet B perlu didekatkan lagi sebelum klip tertarik. Yang manakah lebih kuat?",
-options:[
+cat:"Kekuatan Magnet",
+q:"Magnet A menarik klip apabila masih jauh. Magnet B perlu didekatkan lagi sebelum klip tertarik. Yang manakah lebih kuat?",
+o:[
 "Kedua-duanya sama",
 "Kedua-duanya bukan magnet",
 "Magnet B",
 "Magnet A"
 ],
-answer:3
+a:3
 }
 
 ];
+
 
 
 /* =========================================================
    AUDIO
 ========================================================= */
 
-class AudioSystem{
+let audioCtx=null;
+let soundEnabled=true;
+let musicTimer=null;
+let musicStep=0;
 
-constructor(){
-
-    this.ctx=null;
-
-    this.enabled=true;
-
-    this.musicTimer=null;
-
-    this.note=0;
-
-    this.melody=[
-        261.63,
-        329.63,
-        392,
-        440,
-        392,
-        329.63,
-        293.66,
-        349.23
-    ];
-}
+const melody=[
+    261.63,
+    329.63,
+    392,
+    440,
+    392,
+    349.23,
+    329.63,
+    293.66
+];
 
 
-init(){
+function initAudio(){
 
-    if(this.ctx){
+    if(audioCtx){
 
         if(
-            this.ctx.state==="suspended"
+            audioCtx.state===
+            "suspended"
         ){
-            this.ctx.resume();
+            audioCtx.resume();
         }
 
         return;
@@ -591,232 +647,223 @@ init(){
     if(!AC)return;
 
 
-    this.ctx=
+    audioCtx=
         new AC();
 
 
-    this.startMusic();
+    startMusic();
 }
 
 
-tone(
+function tone(
     freq,
-    duration=.1,
-    type="sine",
-    volume=.03,
-    delay=0
+    duration,
+    type,
+    volume,
+    delay
 ){
 
     if(
-        !this.ctx ||
-        !this.enabled
+        !audioCtx ||
+        !soundEnabled
     )return;
 
 
-    const now=
-        this.ctx.currentTime+
+    duration=
+        duration || .1;
+
+    type=
+        type || "sine";
+
+    volume=
+        volume || .02;
+
+    delay=
+        delay || 0;
+
+
+    const start=
+        audioCtx.currentTime+
         delay;
 
 
-    const oscillator=
-        this.ctx.createOscillator();
+    const osc=
+        audioCtx.createOscillator();
 
 
     const gain=
-        this.ctx.createGain();
+        audioCtx.createGain();
 
 
-    oscillator.type=
+    osc.type=
         type;
 
 
-    oscillator.frequency
+    osc.frequency
         .setValueAtTime(
             freq,
-            now
+            start
         );
 
 
     gain.gain
         .setValueAtTime(
             .0001,
-            now
+            start
         );
 
 
     gain.gain
         .exponentialRampToValueAtTime(
-            Math.max(
-                .0002,
-                volume
-            ),
-            now+.015
+            volume,
+            start+.01
         );
 
 
     gain.gain
         .exponentialRampToValueAtTime(
             .0001,
-            now+duration
+            start+duration
         );
 
 
-    oscillator.connect(
-        gain
-    );
-
+    osc.connect(gain);
 
     gain.connect(
-        this.ctx.destination
+        audioCtx.destination
     );
 
 
-    oscillator.start(
-        now
-    );
+    osc.start(start);
 
-
-    oscillator.stop(
-        now+
+    osc.stop(
+        start+
         duration+
-        .04
-    );
-}
-
-
-startMusic(){
-
-    if(this.musicTimer)return;
-
-
-    this.musicTimer=
-        setInterval(()=>{
-
-            if(
-                !this.ctx ||
-                !this.enabled
-            )return;
-
-
-            const n=
-                this.melody[
-                    this.note %
-                    this.melody.length
-                ];
-
-
-            this.tone(
-                n,
-                .17,
-                "triangle",
-                .008
-            );
-
-
-            this.tone(
-                n/2,
-                .22,
-                "sine",
-                .004
-            );
-
-
-            this.note++;
-
-        },470);
-}
-
-
-playerShoot(){
-
-    this.tone(
-        760,
-        .05,
-        "square",
-        .025
-    );
-
-    this.tone(
-        430,
-        .06,
-        "sawtooth",
-        .012,
         .02
     );
 }
 
 
-enemyShoot(){
+function startMusic(){
 
-    this.tone(
-        185,
-        .06,
+    if(musicTimer)return;
+
+
+    musicTimer=
+        setInterval(
+            function(){
+
+                if(
+                    !audioCtx ||
+                    !soundEnabled
+                )return;
+
+
+                const n=
+                    melody[
+                        musicStep%
+                        melody.length
+                    ];
+
+
+                tone(
+                    n,
+                    .18,
+                    "triangle",
+                    .007
+                );
+
+
+                tone(
+                    n/2,
+                    .2,
+                    "sine",
+                    .003
+                );
+
+
+                musicStep++;
+
+            },
+            470
+        );
+}
+
+
+function sfxShoot(){
+
+    tone(
+        700,
+        .05,
+        "square",
+        .025
+    );
+}
+
+
+function sfxEnemy(){
+
+    tone(
+        170,
+        .07,
         "square",
         .012
     );
 }
 
 
-hit(){
+function sfxHit(){
 
-    this.tone(
-        330,
-        .05,
+    tone(
+        310,
+        .06,
         "square",
         .022
     );
 }
 
 
-wrong(){
+function sfxWrong(){
 
-    this.tone(
+    tone(
         170,
-        .13,
+        .14,
         "sawtooth",
         .032
-    );
-
-    this.tone(
-        130,
-        .18,
-        "square",
-        .023,
-        .08
     );
 }
 
 
-correct(){
+function sfxCorrect(){
 
-    this.tone(
+    tone(
         523,
-        .12,
+        .1,
         "triangle",
         .04
     );
 
-    this.tone(
+    tone(
         659,
         .12,
         "triangle",
         .04,
-        .09
+        .08
     );
 
-    this.tone(
+    tone(
         784,
-        .2,
+        .18,
         "triangle",
         .045,
-        .18
+        .17
     );
 }
 
 
-damage(){
+function sfxDamage(){
 
-    this.tone(
+    tone(
         110,
         .15,
         "sawtooth",
@@ -825,88 +872,40 @@ damage(){
 }
 
 
-win(){
-
-    [
-        523,
-        659,
-        784,
-        1046
-    ].forEach(
-        (n,i)=>{
-
-            this.tone(
-                n,
-                .27,
-                "triangle",
-                .05,
-                i*.12
-            );
-        }
-    );
-}
-
-
-toggle(){
-
-    this.enabled=
-        !this.enabled;
-
-
-    if(
-        this.enabled &&
-        this.ctx
-    ){
-        this.ctx.resume();
-    }
-
-
-    return this.enabled;
-}
-
-}
-
-
-const AUDIO=
-    new AudioSystem();
-
-
 
 /* =========================================================
-   MAIN GAME
+   GAME SCENE
 ========================================================= */
 
-class AirBattleScene
-extends Phaser.Scene{
-
-constructor(){
-
-    super({
-        key:"AirBattleScene"
-    });
-}
+const MainScene={
 
 
-create(){
+create:function(){
+
+    /* -------------------------
+       STATE
+    ------------------------- */
 
     this.questionIndex=0;
 
-    this.wrongDestroyed=0;
-
     this.lives=3;
 
+    this.wrongKills=0;
+
     this.started=false;
+
+    this.pausedForLife=false;
 
     this.resolving=false;
 
     this.invulnerable=false;
 
 
-    this.leftHeld=false;
+    this.leftPressed=false;
 
-    this.rightHeld=false;
+    this.rightPressed=false;
 
-    this.shootHeld=false;
+    this.firePressed=false;
 
 
     this.lastPlayerShot=0;
@@ -920,55 +919,26 @@ create(){
 
     this.enemyBullets=[];
 
-    this.particles=[];
+
+    /* -------------------------
+       GRAPHICS
+    ------------------------- */
+
+    this.background=
+        this.add.graphics();
 
 
-    this.bgG=
-        this.add.graphics()
-        .setDepth(0);
+    this.decor=
+        this.add.graphics();
 
 
-    this.decorG=
-        this.add.graphics()
-        .setDepth(1);
+    this.panel=
+        this.add.graphics();
 
 
-    this.uiG=
-        this.add.graphics()
-        .setDepth(200);
-
-
-    this.createTexts();
-
-    this.createPlayer();
-
-    this.createButtons();
-
-    this.bindKeyboard();
-
-
-    this.scale.on(
-        "resize",
-        ()=>{
-            this.layout();
-        }
-    );
-
-
-    this.layout();
-
-    this.loadQuestion();
-
-    this.showIntro();
-}
-
-
-
-/* =========================================================
-   UI TEXT
-========================================================= */
-
-createTexts(){
+    /* -------------------------
+       TEXT
+    ------------------------- */
 
     this.progressText=
         this.add.text(
@@ -977,16 +947,15 @@ createTexts(){
             "",
             {
                 fontFamily:
-                    "Trebuchet MS",
+                    "Arial",
 
                 fontStyle:
                     "bold",
 
                 color:
-                    "#1b485f"
+                    "#173e56"
             }
-        )
-        .setDepth(250);
+        );
 
 
     this.lifeText=
@@ -996,20 +965,19 @@ createTexts(){
             "",
             {
                 fontFamily:
-                    "Trebuchet MS",
+                    "Arial",
 
                 fontStyle:
                     "bold",
 
                 color:
-                    "#db3645"
+                    "#d62e42"
             }
         )
         .setOrigin(
             1,
             0
-        )
-        .setDepth(250);
+        );
 
 
     this.categoryText=
@@ -1019,13 +987,13 @@ createTexts(){
             "",
             {
                 fontFamily:
-                    "Trebuchet MS",
+                    "Arial",
 
                 fontStyle:
                     "bold",
 
                 color:
-                    "#087c9b",
+                    "#087695",
 
                 align:
                     "center"
@@ -1034,8 +1002,7 @@ createTexts(){
         .setOrigin(
             .5,
             0
-        )
-        .setDepth(250);
+        );
 
 
     this.questionText=
@@ -1045,36 +1012,32 @@ createTexts(){
             "",
             {
                 fontFamily:
-                    "Trebuchet MS",
+                    "Arial",
 
                 fontStyle:
                     "bold",
 
                 color:
-                    "#183b4c",
+                    "#16394a",
 
                 align:
-                    "center",
-
-                lineSpacing:
-                    3
+                    "center"
             }
         )
         .setOrigin(
             .5,
             0
-        )
-        .setDepth(250);
+        );
 
 
-    this.messageText=
+    this.message=
         this.add.text(
             0,
             0,
             "",
             {
                 fontFamily:
-                    "Trebuchet MS",
+                    "Arial",
 
                 fontStyle:
                     "bold",
@@ -1086,7 +1049,7 @@ createTexts(){
                     "center",
 
                 stroke:
-                    "#133e52",
+                    "#143c52",
 
                 strokeThickness:
                     5
@@ -1094,272 +1057,334 @@ createTexts(){
         )
         .setOrigin(.5)
         .setDepth(1000)
-        .setAlpha(0);
-}
+        .setVisible(false);
+
+
+    /* -------------------------
+       PLAYER
+    ------------------------- */
+
+    this.player={
+        x:0,
+        y:0,
+        size:1,
+        visible:true
+    };
+
+
+    this.playerGraphics=
+        this.add.graphics()
+        .setDepth(100);
+
+
+    /* -------------------------
+       CONTROLS
+    ------------------------- */
+
+    this.createControls();
+
+
+    /* -------------------------
+       KEYBOARD
+    ------------------------- */
+
+    this.input.keyboard.on(
+        "keydown-LEFT",
+        function(){
+
+            this.leftPressed=true;
+
+        },
+        this
+    );
+
+
+    this.input.keyboard.on(
+        "keyup-LEFT",
+        function(){
+
+            this.leftPressed=false;
+
+        },
+        this
+    );
+
+
+    this.input.keyboard.on(
+        "keydown-A",
+        function(){
+
+            this.leftPressed=true;
+
+        },
+        this
+    );
+
+
+    this.input.keyboard.on(
+        "keyup-A",
+        function(){
+
+            this.leftPressed=false;
+
+        },
+        this
+    );
+
+
+    this.input.keyboard.on(
+        "keydown-RIGHT",
+        function(){
+
+            this.rightPressed=true;
+
+        },
+        this
+    );
+
+
+    this.input.keyboard.on(
+        "keyup-RIGHT",
+        function(){
+
+            this.rightPressed=false;
+
+        },
+        this
+    );
+
+
+    this.input.keyboard.on(
+        "keydown-D",
+        function(){
+
+            this.rightPressed=true;
+
+        },
+        this
+    );
+
+
+    this.input.keyboard.on(
+        "keyup-D",
+        function(){
+
+            this.rightPressed=false;
+
+        },
+        this
+    );
+
+
+    this.input.keyboard.on(
+        "keydown-SPACE",
+        function(){
+
+            if(!this.started)return;
+
+            this.firePressed=true;
+
+            this.shootPlayer();
+
+        },
+        this
+    );
+
+
+    this.input.keyboard.on(
+        "keyup-SPACE",
+        function(){
+
+            this.firePressed=false;
+
+        },
+        this
+    );
+
+
+    /* -------------------------
+       RESIZE
+    ------------------------- */
+
+    this.scale.on(
+        "resize",
+        function(){
+
+            this.resizeGame();
+
+        },
+        this
+    );
+
+
+    /* -------------------------
+       START
+    ------------------------- */
+
+    this.resizeGame();
+
+    this.loadQuestion();
+
+    this.showIntro();
+},
 
 
 
 /* =========================================================
-   CREATE PLAYER
+   CONTROLS
 ========================================================= */
 
-createPlayer(){
+createControls:function(){
 
-    this.player=
-        this.add.container(
-            0,
-            0
-        )
-        .setDepth(120);
-
-
-    const shadow=
-        this.add.ellipse(
-            0,
-            19,
-            38,
-            10,
-            0x225d7b,
-            .25
-        );
-
-
-    const wingLeft=
-        this.add.triangle(
-            0,
-            7,
-
-            0,0,
-            -34,22,
-            -6,17,
-
-            0x168cc3
-        );
-
-
-    const wingRight=
-        this.add.triangle(
-            0,
-            7,
-
-            0,0,
-            34,22,
-            6,17,
-
-            0x168cc3
-        );
-
-
-    const body=
-        this.add.triangle(
-            0,
-            0,
-
-            0,-34,
-            -14,25,
-            14,25,
-
-            0x42d8ef
-        );
-
-
-    const center=
-        this.add.ellipse(
-            0,
-            2,
-            13,
-            30,
-            0x176ca2
-        );
-
-
-    const cockpit=
-        this.add.ellipse(
-            0,
-            -8,
-            9,
-            16,
-            0xe9fcff
-        );
-
-
-    const tailLeft=
-        this.add.triangle(
-            -7,
-            20,
-
-            0,0,
-            -11,12,
-            2,8,
-
-            0x116f9e
-        );
-
-
-    const tailRight=
-        this.add.triangle(
-            7,
-            20,
-
-            0,0,
-            11,12,
-            -2,8,
-
-            0x116f9e
-        );
-
-
-    this.player.add([
-        shadow,
-        wingLeft,
-        wingRight,
-        body,
-        center,
-        cockpit,
-        tailLeft,
-        tailRight
-    ]);
-}
-
-
-
-/* =========================================================
-   BUTTONS
-========================================================= */
-
-createButtons(){
-
-    this.leftButton=
-        this.makeButton(
+    this.leftBtn=
+        this.createButton(
             "◀",
-            0x177eae,
+            0x167dab,
             "#ffffff"
         );
 
 
-    this.shootButton=
-        this.makeButton(
-            "🔥 TEMBAK",
-            0xf2b92e,
-            "#50380d"
+    this.fireBtn=
+        this.createButton(
+            "TEMBAK",
+            0xf1bb31,
+            "#49320b"
         );
 
 
-    this.rightButton=
-        this.makeButton(
+    this.rightBtn=
+        this.createButton(
             "▶",
-            0x177eae,
+            0x167dab,
             "#ffffff"
         );
 
 
-    this.leftButton.hit.on(
+    this.leftBtn.hit.on(
         "pointerdown",
-        ()=>{
+        function(){
 
             if(!this.started)return;
 
-            this.leftHeld=true;
-        }
+            this.leftPressed=true;
+
+        },
+        this
     );
 
 
-    this.leftButton.hit.on(
+    this.leftBtn.hit.on(
         "pointerup",
-        ()=>{
-            this.leftHeld=false;
-        }
+        function(){
+
+            this.leftPressed=false;
+
+        },
+        this
     );
 
 
-    this.leftButton.hit.on(
+    this.leftBtn.hit.on(
         "pointerout",
-        ()=>{
-            this.leftHeld=false;
-        }
+        function(){
+
+            this.leftPressed=false;
+
+        },
+        this
     );
 
 
-    this.rightButton.hit.on(
+    this.rightBtn.hit.on(
         "pointerdown",
-        ()=>{
+        function(){
 
             if(!this.started)return;
 
-            this.rightHeld=true;
-        }
+            this.rightPressed=true;
+
+        },
+        this
     );
 
 
-    this.rightButton.hit.on(
+    this.rightBtn.hit.on(
         "pointerup",
-        ()=>{
-            this.rightHeld=false;
-        }
+        function(){
+
+            this.rightPressed=false;
+
+        },
+        this
     );
 
 
-    this.rightButton.hit.on(
+    this.rightBtn.hit.on(
         "pointerout",
-        ()=>{
-            this.rightHeld=false;
-        }
+        function(){
+
+            this.rightPressed=false;
+
+        },
+        this
     );
 
 
-    this.shootButton.hit.on(
+    this.fireBtn.hit.on(
         "pointerdown",
-        ()=>{
+        function(){
 
             if(!this.started)return;
 
-            this.shootHeld=true;
+            this.firePressed=true;
 
-            this.firePlayerBullet();
-        }
+            this.shootPlayer();
+
+        },
+        this
     );
 
 
-    this.shootButton.hit.on(
+    this.fireBtn.hit.on(
         "pointerup",
-        ()=>{
-            this.shootHeld=false;
-        }
+        function(){
+
+            this.firePressed=false;
+
+        },
+        this
     );
 
 
-    this.shootButton.hit.on(
+    this.fireBtn.hit.on(
         "pointerout",
-        ()=>{
-            this.shootHeld=false;
-        }
+        function(){
+
+            this.firePressed=false;
+
+        },
+        this
     );
-}
+},
 
 
-makeButton(
+
+createButton:function(
     label,
     color,
     textColor
 ){
 
-    const container=
-        this.add.container(
-            0,
-            0
-        )
-        .setDepth(500);
-
-
     const shadow=
         this.add.rectangle(
             0,
-            5,
+            0,
             100,
             50,
-            0x174257,
-            .65
-        );
+            0x164359,
+            .55
+        )
+        .setDepth(500);
 
 
     const hit=
@@ -1376,9 +1401,8 @@ makeButton(
             0xffffff,
             .75
         )
-        .setInteractive({
-            useHandCursor:true
-        });
+        .setDepth(501)
+        .setInteractive();
 
 
     const text=
@@ -1388,193 +1412,106 @@ makeButton(
             label,
             {
                 fontFamily:
-                    "Trebuchet MS",
+                    "Arial",
 
                 fontStyle:
                     "bold",
 
-                color:
-                    textColor,
-
                 fontSize:
-                    "19px"
+                    "18px",
+
+                color:
+                    textColor
             }
         )
-        .setOrigin(.5);
-
-
-    container.add([
-        shadow,
-        hit,
-        text
-    ]);
+        .setOrigin(.5)
+        .setDepth(502);
 
 
     return{
-        container,
-        shadow,
-        hit,
-        text
+        shadow:
+            shadow,
+
+        hit:
+            hit,
+
+        text:
+            text
     };
-}
+},
 
 
-resizeButton(
+
+setButton:function(
     button,
+    x,
+    y,
     width,
     height,
     fontSize
 ){
 
-    button.hit.setSize(
-        width,
-        height
-    );
+    button.shadow
+        .setPosition(
+            x,
+            y+5
+        )
+        .setSize(
+            width,
+            height
+        );
 
 
-    button.shadow.setSize(
-        width,
-        height
-    );
+    button.hit
+        .setPosition(
+            x,
+            y
+        )
+        .setSize(
+            width,
+            height
+        );
 
 
-    button.text.setFontSize(
-        fontSize
-    );
-}
-
-
-
-/* =========================================================
-   KEYBOARD
-========================================================= */
-
-bindKeyboard(){
-
-    this.input.keyboard.on(
-        "keydown-LEFT",
-        ()=>{
-            this.leftHeld=true;
-        }
-    );
-
-
-    this.input.keyboard.on(
-        "keyup-LEFT",
-        ()=>{
-            this.leftHeld=false;
-        }
-    );
-
-
-    this.input.keyboard.on(
-        "keydown-A",
-        ()=>{
-            this.leftHeld=true;
-        }
-    );
-
-
-    this.input.keyboard.on(
-        "keyup-A",
-        ()=>{
-            this.leftHeld=false;
-        }
-    );
-
-
-    this.input.keyboard.on(
-        "keydown-RIGHT",
-        ()=>{
-            this.rightHeld=true;
-        }
-    );
-
-
-    this.input.keyboard.on(
-        "keyup-RIGHT",
-        ()=>{
-            this.rightHeld=false;
-        }
-    );
-
-
-    this.input.keyboard.on(
-        "keydown-D",
-        ()=>{
-            this.rightHeld=true;
-        }
-    );
-
-
-    this.input.keyboard.on(
-        "keyup-D",
-        ()=>{
-            this.rightHeld=false;
-        }
-    );
-
-
-    this.input.keyboard.on(
-        "keydown-SPACE",
-        ()=>{
-
-            if(!this.started)return;
-
-            this.shootHeld=true;
-
-            this.firePlayerBullet();
-        }
-    );
-
-
-    this.input.keyboard.on(
-        "keyup-SPACE",
-        ()=>{
-            this.shootHeld=false;
-        }
-    );
-}
+    button.text
+        .setPosition(
+            x,
+            y
+        )
+        .setFontSize(
+            fontSize
+        );
+},
 
 
 
 /* =========================================================
-   RESPONSIVE LAYOUT
+   RESIZE
 ========================================================= */
 
-layout(){
-
-    const size=
-        this.scale.gameSize;
-
+resizeGame:function(){
 
     this.W=
-        Math.max(
-            300,
-            size.width
-        );
+        this.scale.width;
 
 
     this.H=
-        Math.max(
-            520,
-            size.height
-        );
+        this.scale.height;
 
 
     this.mobile=
-        this.W<580;
+        this.W<600;
 
 
     this.questionHeight=
         this.mobile
-        ? 174
+        ? 170
         : 145;
 
 
     this.controlHeight=
         this.mobile
-        ? 78
+        ? 76
         : 84;
 
 
@@ -1591,15 +1528,34 @@ layout(){
         this.arenaBottom-
         (
             this.mobile
-            ? 57
-            : 64
+            ? 55
+            : 62
         );
+
+
+    if(
+        !this.player.x
+    ){
+
+        this.player.x=
+            this.W/2;
+    }
+
+
+    this.player.x=
+        Phaser.Math.Clamp(
+            this.player.x,
+            30,
+            this.W-30
+        );
+
+
+    this.player.y=
+        this.playerY;
 
 
     this.drawBackground();
 
-
-    /* PROGRESS */
 
     this.progressText
         .setFontSize(
@@ -1608,12 +1564,10 @@ layout(){
             : 14
         )
         .setPosition(
-            12,
-            10
+            13,
+            11
         );
 
-
-    /* NYAWA */
 
     this.lifeText
         .setFontSize(
@@ -1622,12 +1576,10 @@ layout(){
             : 14
         )
         .setPosition(
-            this.W-12,
-            10
+            this.W-13,
+            11
         );
 
-
-    /* CATEGORY */
 
     this.categoryText
         .setFontSize(
@@ -1635,18 +1587,16 @@ layout(){
             ? 11
             : 14
         )
-        .setWordWrapWidth(
-            this.W-30
-        )
         .setPosition(
             this.W/2,
             this.mobile
-            ? 34
-            : 33
+            ? 35
+            : 34
+        )
+        .setWordWrapWidth(
+            this.W-30
         );
 
-
-    /* QUESTION */
 
     this.questionText
         .setFontSize(
@@ -1654,26 +1604,26 @@ layout(){
             ? 14
             : 18
         )
+        .setPosition(
+            this.W/2,
+            this.mobile
+            ? 56
+            : 57
+        )
         .setWordWrapWidth(
             this.W-
             (
                 this.mobile
-                ? 26
-                : 60
+                ? 28
+                : 70
             )
-        )
-        .setPosition(
-            this.W/2,
-            this.mobile
-            ? 55
-            : 55
         );
 
 
-    this.messageText
+    this.message
         .setFontSize(
             this.mobile
-            ? 21
+            ? 20
             : 28
         )
         .setPosition(
@@ -1686,50 +1636,21 @@ layout(){
         );
 
 
-    /* PLAYER */
-
-    if(
-        !Number.isFinite(
-            this.player.x
-        ) ||
-        this.player.x<=0 ||
-        this.player.x>=this.W
-    ){
-
-        this.player.x=
-            this.W/2;
-    }
-
-
-    this.player.y=
-        this.playerY;
-
-
-    this.player.setScale(
-        this.mobile
-        ? .78
-        : .95
-    );
-
-
-    /* CONTROL */
-
     const controlY=
         this.H-
-        this.controlHeight/2+
-        1;
+        this.controlHeight/2;
 
 
     if(this.mobile){
 
-        const sideWidth=
+        const sideW=
             Math.min(
-                67,
+                65,
                 this.W*.18
             );
 
 
-        const shootWidth=
+        const fireW=
             Math.min(
                 145,
                 this.W*.40
@@ -1740,121 +1661,102 @@ layout(){
 
 
         const total=
-            sideWidth*2+
-            shootWidth+
+            sideW+
+            fireW+
+            sideW+
             gap*2;
 
 
         const start=
             (
-                this.W-
-                total
+                this.W-total
             )/2;
 
 
-        this.resizeButton(
-            this.leftButton,
-            sideWidth,
-            48,
-            22
+        this.setButton(
+            this.leftBtn,
+
+            start+
+            sideW/2,
+
+            controlY,
+
+            sideW,
+            47,
+            21
         );
 
 
-        this.resizeButton(
-            this.rightButton,
-            sideWidth,
-            48,
-            22
-        );
+        this.setButton(
+            this.fireBtn,
 
+            start+
+            sideW+
+            gap+
+            fireW/2,
 
-        this.resizeButton(
-            this.shootButton,
-            shootWidth,
-            48,
+            controlY,
+
+            fireW,
+            47,
             14
         );
 
 
-        this.leftButton.container
-            .setPosition(
-                start+
-                sideWidth/2,
-                controlY
-            );
+        this.setButton(
+            this.rightBtn,
 
+            start+
+            sideW+
+            gap+
+            fireW+
+            gap+
+            sideW/2,
 
-        this.shootButton.container
-            .setPosition(
-                start+
-                sideWidth+
-                gap+
-                shootWidth/2,
-                controlY
-            );
+            controlY,
 
-
-        this.rightButton.container
-            .setPosition(
-                start+
-                sideWidth+
-                gap+
-                shootWidth+
-                gap+
-                sideWidth/2,
-                controlY
-            );
+            sideW,
+            47,
+            21
+        );
 
     }else{
 
-        this.resizeButton(
-            this.leftButton,
+        this.setButton(
+            this.leftBtn,
+            this.W/2-155,
+            controlY,
             88,
-            53,
+            52,
             24
         );
 
 
-        this.resizeButton(
-            this.rightButton,
-            88,
-            53,
-            24
-        );
-
-
-        this.resizeButton(
-            this.shootButton,
+        this.setButton(
+            this.fireBtn,
+            this.W/2,
+            controlY,
             180,
-            53,
+            52,
             17
         );
 
 
-        this.leftButton.container
-            .setPosition(
-                this.W/2-155,
-                controlY
-            );
-
-
-        this.shootButton.container
-            .setPosition(
-                this.W/2,
-                controlY
-            );
-
-
-        this.rightButton.container
-            .setPosition(
-                this.W/2+155,
-                controlY
-            );
+        this.setButton(
+            this.rightBtn,
+            this.W/2+155,
+            controlY,
+            88,
+            52,
+            24
+        );
     }
 
 
     this.layoutEnemies();
-}
+
+    this.drawPlayer();
+},
 
 
 
@@ -1862,24 +1764,22 @@ layout(){
    BACKGROUND
 ========================================================= */
 
-drawBackground(){
+drawBackground:function(){
 
-    this.bgG.clear();
+    this.background.clear();
 
-    this.decorG.clear();
+    this.decor.clear();
 
-    this.uiG.clear();
+    this.panel.clear();
 
 
-    /* SKY */
-
-    this.bgG.fillStyle(
-        0x66c8eb,
+    this.background.fillStyle(
+        0x63c7ea,
         1
     );
 
 
-    this.bgG.fillRect(
+    this.background.fillRect(
         0,
         0,
         this.W,
@@ -1887,141 +1787,117 @@ drawBackground(){
     );
 
 
-    /* SKY LAYERS */
-
-    this.bgG.fillStyle(
-        0x84daf4,
+    this.background.fillStyle(
+        0x8edcf4,
         .45
     );
 
 
-    this.bgG.fillRect(
+    this.background.fillRect(
         0,
         this.arenaTop,
         this.W,
-        90
-    );
-
-
-    this.bgG.fillStyle(
-        0x55badf,
-        .24
-    );
-
-
-    this.bgG.fillRect(
-        0,
-        this.arenaTop+90,
-        this.W,
-        90
+        95
     );
 
 
     /* QUESTION PANEL */
 
-    this.uiG.fillStyle(
+    this.panel.fillStyle(
         0xffffff,
-        .96
+        .97
     );
 
 
-    this.uiG.fillRoundedRect(
+    this.panel.fillRoundedRect(
         7,
         6,
         this.W-14,
         this.questionHeight-12,
-        17
+        16
     );
 
 
-    this.uiG.lineStyle(
+    this.panel.lineStyle(
         2,
-        0x4cabc8,
-        .7
+        0x4aa8c5,
+        .65
     );
 
 
-    this.uiG.strokeRoundedRect(
+    this.panel.strokeRoundedRect(
         7,
         6,
         this.W-14,
         this.questionHeight-12,
-        17
+        16
     );
 
 
     /* CLOUDS */
 
     this.drawCloud(
-        this.W*.12,
-        this.arenaTop+170,
-        this.mobile
-        ? .6
-        : .85
+        this.W*.13,
+        this.arenaTop+180,
+        .8
     );
 
 
     this.drawCloud(
         this.W*.84,
         this.arenaTop+230,
-        this.mobile
-        ? .55
-        : .8
+        .7
     );
 
 
     this.drawCloud(
-        this.W*.27,
-        this.arenaBottom-130,
-        this.mobile
-        ? .48
-        : .7
+        this.W*.30,
+        this.arenaBottom-125,
+        .58
     );
 
 
     this.drawCloud(
-        this.W*.74,
-        this.arenaBottom-85,
-        this.mobile
-        ? .42
-        : .62
+        this.W*.72,
+        this.arenaBottom-90,
+        .48
     );
 
 
-    /* HORIZON */
+    /* MOUNTAINS */
 
-    this.decorG.fillStyle(
-        0x3392c1,
-        .22
+    this.decor.fillStyle(
+        0x388db5,
+        .18
     );
 
 
-    this.decorG.fillTriangle(
+    this.decor.fillTriangle(
         0,
         this.arenaBottom,
 
-        this.W*.24,
+        this.W*.23,
         this.arenaBottom-70,
 
-        this.W*.46,
+        this.W*.43,
         this.arenaBottom
     );
 
 
-    this.decorG.fillTriangle(
-        this.W*.30,
+    this.decor.fillTriangle(
+        this.W*.25,
         this.arenaBottom,
 
-        this.W*.61,
-        this.arenaBottom-90,
+        this.W*.55,
+        this.arenaBottom-95,
 
-        this.W*.88,
+        this.W*.82,
         this.arenaBottom
     );
 
 
-    this.decorG.fillTriangle(
-        this.W*.70,
+    this.decor.fillTriangle(
+        this.W*.68,
         this.arenaBottom,
 
         this.W*.88,
@@ -2030,50 +1906,190 @@ drawBackground(){
         this.W,
         this.arenaBottom
     );
-}
+},
 
 
-drawCloud(
+
+drawCloud:function(
     x,
     y,
     scale
 ){
 
-    this.decorG.fillStyle(
+    if(this.mobile){
+        scale*=.72;
+    }
+
+
+    this.decor.fillStyle(
         0xffffff,
-        .35
+        .38
     );
 
 
-    this.decorG.fillCircle(
+    this.decor.fillCircle(
         x,
         y,
         25*scale
     );
 
 
-    this.decorG.fillCircle(
-        x+23*scale,
-        y+6*scale,
-        19*scale
+    this.decor.fillCircle(
+        x+24*scale,
+        y+5*scale,
+        18*scale
     );
 
 
-    this.decorG.fillCircle(
-        x-23*scale,
+    this.decor.fillCircle(
+        x-24*scale,
         y+7*scale,
         17*scale
     );
 
 
-    this.decorG.fillRoundedRect(
+    this.decor.fillRoundedRect(
         x-38*scale,
         y+5*scale,
         78*scale,
         24*scale,
         12*scale
     );
-}
+},
+
+
+
+/* =========================================================
+   PLAYER GRAPHIC
+========================================================= */
+
+drawPlayer:function(){
+
+    const g=
+        this.playerGraphics;
+
+
+    g.clear();
+
+
+    if(
+        !this.player.visible
+    )return;
+
+
+    const x=
+        this.player.x;
+
+
+    const y=
+        this.player.y;
+
+
+    const s=
+        this.mobile
+        ? .76
+        : .95;
+
+
+    /* SHADOW */
+
+    g.fillStyle(
+        0x1d6d91,
+        .25
+    );
+
+
+    g.fillEllipse(
+        x,
+        y+25*s,
+        46*s,
+        12*s
+    );
+
+
+    /* WINGS */
+
+    g.fillStyle(
+        0x167eaf,
+        1
+    );
+
+
+    g.fillTriangle(
+        x,
+        y,
+
+        x-36*s,
+        y+18*s,
+
+        x-5*s,
+        y+14*s
+    );
+
+
+    g.fillTriangle(
+        x,
+        y,
+
+        x+36*s,
+        y+18*s,
+
+        x+5*s,
+        y+14*s
+    );
+
+
+    /* BODY */
+
+    g.fillStyle(
+        0x40d8ef,
+        1
+    );
+
+
+    g.fillTriangle(
+        x,
+        y-34*s,
+
+        x-14*s,
+        y+27*s,
+
+        x+14*s,
+        y+27*s
+    );
+
+
+    /* CENTRAL STRIPE */
+
+    g.fillStyle(
+        0x126fa4,
+        1
+    );
+
+
+    g.fillEllipse(
+        x,
+        y+1*s,
+        12*s,
+        35*s
+    );
+
+
+    /* COCKPIT */
+
+    g.fillStyle(
+        0xeaffff,
+        1
+    );
+
+
+    g.fillEllipse(
+        x,
+        y-10*s,
+        8*s,
+        15*s
+    );
+},
 
 
 
@@ -2081,17 +2097,17 @@ drawCloud(
    LOAD QUESTION
 ========================================================= */
 
-loadQuestion(){
+loadQuestion:function(){
 
     this.resolving=false;
 
 
-    this.removeAllBullets();
+    this.clearBullets();
 
     this.destroyEnemies();
 
 
-    const data=
+    const q=
         QUESTIONS[
             this.questionIndex
         ];
@@ -2100,30 +2116,35 @@ loadQuestion(){
     this.progressText.setText(
         "SOALAN "+
         (this.questionIndex+1)+
-        " / 25"
+        " / "+
+        QUESTIONS.length
+    );
+
+
+    this.lifeText.setText(
+        "NYAWA "+
+        "❤".repeat(
+            this.lives
+        )
     );
 
 
     this.categoryText.setText(
-        data.category
+        q.cat
     );
 
 
     this.questionText.setText(
-        data.question
+        q.q
     );
 
 
-    this.updateLives();
-
-
-    this.messageText
-        .setText("")
-        .setAlpha(0);
+    this.message
+        .setVisible(false);
 
 
     this.createEnemies(
-        data
+        q
     );
 
 
@@ -2132,16 +2153,16 @@ loadQuestion(){
 
     this.lastEnemyShot=
         this.time.now+
-        1000;
-}
+        900;
+},
 
 
 
 /* =========================================================
-   ENEMY CREATION
+   CREATE ENEMIES
 ========================================================= */
 
-createEnemies(data){
+createEnemies:function(q){
 
     const letters=[
         "A",
@@ -2152,9 +2173,8 @@ createEnemies(data){
 
 
     /*
-        Jawapan diacak antara
-        lane 1-4 tetapi SEMUA
-        tetap satu baris.
+        Random susunan answer,
+        tapi masih 4 lane.
     */
 
     const order=[
@@ -2177,32 +2197,216 @@ createEnemies(data){
             order[lane];
 
 
-        const enemy=
-            this.createEnemyPlane(
+        const enemy={
+
+            answerIndex:
                 answerIndex,
+
+            lane:
                 lane,
-                letters[answerIndex],
-                data.options[
-                    answerIndex
-                ]
-            );
 
+            correct:
+                answerIndex===
+                q.a,
 
-        enemy.correct=
-            answerIndex===
-            data.answer;
+            alive:
+                true,
 
+            respawning:
+                false,
 
-        enemy.hp=3;
+            x:0,
 
-        enemy.maxHp=3;
+            y:0,
+
+            targetX:0,
+
+            nextDirection:
+                0,
+
+            graphics:
+                this.add.graphics()
+                .setDepth(80),
+
+            label:
+                this.add.text(
+                    0,
+                    0,
+
+                    letters[
+                        answerIndex
+                    ]+
+                    ". "+
+                    q.o[
+                        answerIndex
+                    ],
+
+                    {
+                        fontFamily:
+                            "Arial",
+
+                        fontStyle:
+                            "bold",
+
+                        color:
+                            "#18394a",
+
+                        backgroundColor:
+                            "#ffffff",
+
+                        align:
+                            "center",
+
+                        padding:{
+                            x:3,
+                            y:4
+                        }
+                    }
+                )
+                .setOrigin(
+                    .5,
+                    0
+                )
+                .setDepth(85)
+        };
 
 
         this.enemies.push(
             enemy
         );
     }
-}
+},
+
+
+
+/* =========================================================
+   ENEMY LAYOUT
+   SATU BARIS - TAK BERTINDIH
+========================================================= */
+
+layoutEnemies:function(){
+
+    if(
+        !this.enemies ||
+        !this.enemies.length
+    )return;
+
+
+    const laneW=
+        this.W/4;
+
+
+    this.enemyY=
+        this.arenaTop+
+        (
+            this.mobile
+            ? 67
+            : 76
+        );
+
+
+    for(
+        let i=0;
+        i<this.enemies.length;
+        i++
+    ){
+
+        const e=
+            this.enemies[i];
+
+
+        const laneLeft=
+            laneW*i;
+
+
+        const laneRight=
+            laneW*(i+1);
+
+
+        const center=
+            (
+                laneLeft+
+                laneRight
+            )/2;
+
+
+        /*
+            Enemy cuma boleh bergerak
+            dalam lane sendiri.
+        */
+
+        e.minX=
+            laneLeft+
+            laneW*.27;
+
+
+        e.maxX=
+            laneRight-
+            laneW*.27;
+
+
+        if(
+            !e.x ||
+            !isFinite(e.x)
+        ){
+
+            e.x=
+                center;
+        }
+
+
+        e.x=
+            Phaser.Math.Clamp(
+                e.x,
+                e.minX,
+                e.maxX
+            );
+
+
+        e.y=
+            this.enemyY;
+
+
+        e.targetX=
+            Phaser.Math.Between(
+                Math.round(
+                    e.minX
+                ),
+                Math.round(
+                    e.maxX
+                )
+            );
+
+
+        const labelWidth=
+            Math.max(
+                55,
+                laneW-7
+            );
+
+
+        e.label
+            .setFontSize(
+                this.mobile
+                ? 8.2
+                : 11
+            )
+            .setFixedSize(
+                labelWidth,
+                this.mobile
+                ? 49
+                : 55
+            )
+            .setWordWrapWidth(
+                labelWidth-7
+            );
+
+
+        this.drawEnemy(
+            e
+        );
+    }
+},
 
 
 
@@ -2210,553 +2414,297 @@ createEnemies(data){
    DRAW ENEMY PLANE
 ========================================================= */
 
-createEnemyPlane(
-    answerIndex,
-    lane,
-    letter,
-    answer
-){
+drawEnemy:function(e){
 
-    const plane=
-        this.add.container(
-            0,
-            0
-        )
-        .setDepth(100);
+    const g=
+        e.graphics;
 
 
-    const wingLeft=
-        this.add.triangle(
-            0,
-            -4,
+    g.clear();
 
-            0,0,
-            -32,-20,
-            -6,-15,
-
-            0xbc2338
-        );
-
-
-    const wingRight=
-        this.add.triangle(
-            0,
-            -4,
-
-            0,0,
-            32,-20,
-            6,-15,
-
-            0xbc2338
-        );
-
-
-    /*
-        Enemy menghadap ke bawah
-    */
-
-    const body=
-        this.add.triangle(
-            0,
-            0,
-
-            0,34,
-            -14,-25,
-            14,-25,
-
-            0xef5963
-        );
-
-
-    const middle=
-        this.add.ellipse(
-            0,
-            -1,
-            13,
-            30,
-            0x9c2132
-        );
-
-
-    const cockpit=
-        this.add.ellipse(
-            0,
-            7,
-            9,
-            15,
-            0xffd05b
-        );
-
-
-    const leftTail=
-        this.add.triangle(
-            -7,
-            -20,
-
-            0,0,
-            -11,-10,
-            2,-7,
-
-            0x8f1c2d
-        );
-
-
-    const rightTail=
-        this.add.triangle(
-            7,
-            -20,
-
-            0,0,
-            11,-10,
-            -2,-7,
-
-            0x8f1c2d
-        );
-
-
-    plane.add([
-        wingLeft,
-        wingRight,
-        body,
-        middle,
-        cockpit,
-        leftTail,
-        rightTail
-    ]);
-
-
-    /*
-        LABEL JAWAPAN
-
-        Fixed width mengikut lane.
-        Ini memastikan label TAK
-        BERTINDIH.
-    */
-
-    const label=
-        this.add.text(
-            0,
-            0,
-
-            letter+
-            ". "+
-            answer,
-
-            {
-                fontFamily:
-                    "Trebuchet MS",
-
-                fontStyle:
-                    "bold",
-
-                color:
-                    "#14374a",
-
-                backgroundColor:
-                    "#ffffff",
-
-                align:
-                    "center",
-
-                padding:{
-                    x:3,
-                    y:4
-                }
-            }
-        )
-        .setOrigin(
-            .5,
-            0
-        )
-        .setDepth(105);
-
-
-    const hpBarBG=
-        this.add.rectangle(
-            0,
-            0,
-            42,
-            6,
-            0x782332,
-            .55
-        )
-        .setDepth(106);
-
-
-    const hpBar=
-        this.add.rectangle(
-            0,
-            0,
-            40,
-            4,
-            0x6ef09a,
-            1
-        )
-        .setOrigin(
-            0,
-            .5
-        )
-        .setDepth(107);
-
-
-    return{
-
-        plane,
-
-        label,
-
-        hpBarBG,
-
-        hpBar,
-
-        answerIndex,
-
-        lane,
-
-        correct:false,
-
-        hp:3,
-
-        maxHp:3,
-
-        x:0,
-
-        y:0,
-
-        targetX:0,
-
-        nextMove:0,
-
-        laneMin:0,
-
-        laneMax:0,
-
-        alive:true,
-
-        respawning:false
-    };
-}
-
-
-
-/* =========================================================
-   ENEMY LAYOUT
-   SATU BARIS + LANE SENDIRI
-========================================================= */
-
-layoutEnemies(){
 
     if(
-        !this.enemies.length
-    )return;
+        !e.alive ||
+        e.respawning
+    ){
+
+        e.label.setVisible(
+            false
+        );
+
+        return;
+    }
 
 
-    const laneWidth=
-        this.W/4;
+    e.label.setVisible(
+        true
+    );
+
+
+    const x=
+        e.x;
+
+
+    const y=
+        e.y;
+
+
+    const s=
+        this.mobile
+        ? .53
+        : .68;
+
+
+    /* SHADOW */
+
+    g.fillStyle(
+        0x6f2430,
+        .18
+    );
+
+
+    g.fillEllipse(
+        x,
+        y+21*s,
+        44*s,
+        10*s
+    );
+
+
+    /* WINGS */
+
+    g.fillStyle(
+        0xa82135,
+        1
+    );
+
+
+    g.fillTriangle(
+        x,
+        y,
+
+        x-35*s,
+        y-17*s,
+
+        x-5*s,
+        y-13*s
+    );
+
+
+    g.fillTriangle(
+        x,
+        y,
+
+        x+35*s,
+        y-17*s,
+
+        x+5*s,
+        y-13*s
+    );
+
+
+    /* BODY - enemy menghadap bawah */
+
+    g.fillStyle(
+        0xed5963,
+        1
+    );
+
+
+    g.fillTriangle(
+        x,
+        y+32*s,
+
+        x-14*s,
+        y-25*s,
+
+        x+14*s,
+        y-25*s
+    );
+
+
+    g.fillStyle(
+        0x961c2e,
+        1
+    );
+
+
+    g.fillEllipse(
+        x,
+        y,
+        12*s,
+        34*s
+    );
+
+
+    /* COCKPIT */
+
+    g.fillStyle(
+        0xffd65e,
+        1
+    );
+
+
+    g.fillEllipse(
+        x,
+        y+8*s,
+        8*s,
+        14*s
+    );
+
+
+    /* GUNS */
+
+    g.fillStyle(
+        0x65131f,
+        1
+    );
+
+
+    g.fillRect(
+        x-20*s,
+        y+5*s,
+        4*s,
+        13*s
+    );
+
+
+    g.fillRect(
+        x+16*s,
+        y+5*s,
+        4*s,
+        13*s
+    );
 
 
     /*
-        SATU BARIS YANG SAMA
+        Label tetap satu baris,
+        kedudukan bawah plane.
     */
 
-    this.enemyRowY=
-        this.arenaTop+
+    e.label.setPosition(
+        x,
+        y+
         (
             this.mobile
-            ? 76
-            : 86
-        );
-
-
-    this.enemies.forEach(
-        (enemy,index)=>{
-
-            const laneStart=
-                laneWidth*
-                index;
-
-
-            const laneEnd=
-                laneWidth*
-                (index+1);
-
-
-            const center=
-                (
-                    laneStart+
-                    laneEnd
-                )/2;
-
-
-            /*
-                Enemy tak boleh keluar
-                lane sendiri.
-            */
-
-            enemy.laneMin=
-                laneStart+
-                laneWidth*.28;
-
-
-            enemy.laneMax=
-                laneEnd-
-                laneWidth*.28;
-
-
-            enemy.y=
-                this.enemyRowY;
-
-
-            if(
-                !Number.isFinite(
-                    enemy.x
-                ) ||
-                enemy.x===0
-            ){
-
-                enemy.x=
-                    center;
-            }
-
-
-            enemy.x=
-                Phaser.Math.Clamp(
-                    enemy.x,
-                    enemy.laneMin,
-                    enemy.laneMax
-                );
-
-
-            enemy.targetX=
-                Phaser.Math.Between(
-                    Math.round(
-                        enemy.laneMin
-                    ),
-                    Math.round(
-                        enemy.laneMax
-                    )
-                );
-
-
-            /*
-                Plane size
-            */
-
-            enemy.plane.setScale(
-                this.mobile
-                ? .58
-                : .72
-            );
-
-
-            /*
-                LABEL WIDTH TAK BOLEH
-                KELUAR LANE
-            */
-
-            const labelWidth=
-                Math.max(
-                    60,
-                    laneWidth-8
-                );
-
-
-            enemy.label
-                .setFontSize(
-                    this.mobile
-                    ? 8.4
-                    : 11
-                )
-                .setWordWrapWidth(
-                    labelWidth-7
-                )
-                .setFixedSize(
-                    labelWidth,
-                    this.mobile
-                    ? 48
-                    : 54
-                );
-
-
-            this.positionEnemyParts(
-                enemy
-            );
-        }
+            ? 22
+            : 28
+        )
     );
-}
+},
 
 
 
 /* =========================================================
-   POSITION ENEMY
+   MOVE ENEMIES
 ========================================================= */
 
-positionEnemyParts(
-    enemy
-){
-
-    enemy.plane.setPosition(
-        enemy.x,
-        enemy.y
-    );
-
-
-    const planeOffset=
-        this.mobile
-        ? 23
-        : 29;
-
-
-    enemy.label.setPosition(
-        enemy.x,
-        enemy.y+
-        planeOffset
-    );
-
-
-    enemy.hpBarBG.setPosition(
-        enemy.x,
-        enemy.y-
-        (
-            this.mobile
-            ? 24
-            : 30
-        )
-    );
-
-
-    const hpWidth=
-        40*
-        (
-            enemy.hp/
-            enemy.maxHp
-        );
-
-
-    enemy.hpBar
-        .setSize(
-            Math.max(
-                0,
-                hpWidth
-            ),
-            4
-        )
-        .setPosition(
-            enemy.x-20,
-            enemy.y-
-            (
-                this.mobile
-                ? 24
-                : 30
-            )
-        );
-}
-
-
-
-/* =========================================================
-   RANDOM ENEMY MOVEMENT
-
-   Semua bergerak rambang,
-   TETAPI hanya dalam lane sendiri.
-========================================================= */
-
-updateEnemies(
+moveEnemies:function(
     time,
     delta
 ){
 
+    if(!this.enemies)return;
+
+
     const speed=
         this.mobile
-        ? 36
-        : 48;
+        ? 35
+        : 47;
 
 
-    this.enemies.forEach(
-        enemy=>{
+    for(
+        let i=0;
+        i<this.enemies.length;
+        i++
+    ){
 
-            if(
-                !enemy.alive ||
-                enemy.respawning
-            )return;
-
-
-            if(
-                time>=
-                enemy.nextMove
-            ){
-
-                enemy.nextMove=
-                    time+
-                    Phaser.Math.Between(
-                        450,
-                        1000
-                    );
+        const e=
+            this.enemies[i];
 
 
-                enemy.targetX=
-                    Phaser.Math.Between(
-                        Math.round(
-                            enemy.laneMin
-                        ),
-                        Math.round(
-                            enemy.laneMax
-                        )
-                    );
-            }
+        if(
+            !e.alive ||
+            e.respawning
+        )continue;
 
 
-            const difference=
-                enemy.targetX-
-                enemy.x;
+        if(
+            time>=
+            e.nextDirection
+        ){
+
+            e.nextDirection=
+                time+
+                Phaser.Math.Between(
+                    450,
+                    1050
+                );
 
 
-            if(
-                Math.abs(
-                    difference
-                )>1
-            ){
-
-                const direction=
-                    Math.sign(
-                        difference
-                    );
-
-
-                enemy.x+=
-                    direction*
-                    speed*
-                    delta/1000;
-            }
-
-
-            /*
-                Y DIKUNCI.
-                Semua kekal satu baris.
-            */
-
-            enemy.y=
-                this.enemyRowY;
-
-
-            this.positionEnemyParts(
-                enemy
-            );
+            e.targetX=
+                Phaser.Math.Between(
+                    Math.round(
+                        e.minX
+                    ),
+                    Math.round(
+                        e.maxX
+                    )
+                );
         }
-    );
-}
+
+
+        const dx=
+            e.targetX-
+            e.x;
+
+
+        if(
+            Math.abs(dx)>1
+        ){
+
+            e.x+=
+                Math.sign(dx)*
+                speed*
+                delta/1000;
+        }
+
+
+        e.x=
+            Phaser.Math.Clamp(
+                e.x,
+                e.minX,
+                e.maxX
+            );
+
+
+        /*
+            SAME ROW.
+            Y tak berubah.
+        */
+
+        e.y=
+            this.enemyY;
+
+
+        this.drawEnemy(
+            e
+        );
+    }
+},
 
 
 
 /* =========================================================
-   PLAYER BULLET
+   PLAYER SHOOT
 ========================================================= */
 
-firePlayerBullet(){
+shootPlayer:function(){
 
     if(
         !this.started ||
-        this.resolving
+        this.resolving ||
+        this.pausedForLife
     )return;
 
 
@@ -2767,7 +2715,7 @@ firePlayerBullet(){
     if(
         now-
         this.lastPlayerShot<
-        180
+        175
     )return;
 
 
@@ -2775,29 +2723,23 @@ firePlayerBullet(){
         now;
 
 
-    const bullet=
-        this.add.rectangle(
+    const bullet={
+
+        x:
             this.player.x,
-            this.player.y-31,
+
+        y:
+            this.player.y-29,
+
+        vy:
             this.mobile
-            ? 4
-            : 5,
-            this.mobile
-            ? 15
-            : 18,
-            0xffed4f,
-            1
-        )
-        .setDepth(150);
+            ? -520
+            : -650,
 
-
-    bullet.vy=
-        this.mobile
-        ? -520
-        : -650;
-
-
-    bullet.dead=false;
+        graphics:
+            this.add.graphics()
+            .setDepth(120)
+    };
 
 
     this.playerBullets.push(
@@ -2805,8 +2747,35 @@ firePlayerBullet(){
     );
 
 
-    AUDIO.playerShoot();
-}
+    this.drawPlayerBullet(
+        bullet
+    );
+
+
+    sfxShoot();
+},
+
+
+
+drawPlayerBullet:function(b){
+
+    b.graphics.clear();
+
+
+    b.graphics.fillStyle(
+        0xfff155,
+        1
+    );
+
+
+    b.graphics.fillRoundedRect(
+        b.x-3,
+        b.y-9,
+        6,
+        18,
+        3
+    );
+},
 
 
 
@@ -2816,73 +2785,60 @@ firePlayerBullet(){
    PELURU MERAH BULAT
 ========================================================= */
 
-fireEnemyBullet(){
+shootEnemy:function(){
 
     if(
         !this.started ||
-        this.resolving
+        this.resolving ||
+        this.pausedForLife
     )return;
 
 
     const available=
-        this.enemies.filter(
-            e=>
+        [];
+
+
+    for(
+        let i=0;
+        i<this.enemies.length;
+        i++
+    ){
+
+        const e=
+            this.enemies[i];
+
+
+        if(
             e.alive &&
             !e.respawning
-        );
+        ){
+
+            available.push(
+                e
+            );
+        }
+    }
 
 
-    if(!available.length)
-        return;
+    if(!available.length)return;
 
 
     const enemy=
-        Phaser.Utils.Array.GetRandom(
-            available
-        );
-
-
-    /*
-        Bulat merah
-    */
-
-    const glow=
-        this.add.circle(
-            enemy.x,
-            enemy.y+19,
-            this.mobile
-            ? 8
-            : 9,
-            0xff6666,
-            .23
-        )
-        .setDepth(139);
-
-
-    const bullet=
-        this.add.circle(
-            enemy.x,
-            enemy.y+19,
-            this.mobile
-            ? 5
-            : 6,
-            0xff1e1e,
-            1
-        )
-        .setStrokeStyle(
-            2,
-            0xffaaaa,
-            .9
-        )
-        .setDepth(140);
+        available[
+            Phaser.Math.Between(
+                0,
+                available.length-1
+            )
+        ];
 
 
     const angle=
-        Phaser.Math.Angle.Between(
-            enemy.x,
+        Math.atan2(
+            this.player.y-
             enemy.y,
-            this.player.x,
-            this.player.y
+
+            this.player.x-
+            enemy.x
         );
 
 
@@ -2892,25 +2848,26 @@ fireEnemyBullet(){
         : 220;
 
 
-    bullet.vx=
-        Math.cos(
-            angle
-        )*
-        speed;
+    const bullet={
 
+        x:
+            enemy.x,
 
-    bullet.vy=
-        Math.sin(
-            angle
-        )*
-        speed;
+        y:
+            enemy.y+18,
 
+        vx:
+            Math.cos(angle)*
+            speed,
 
-    bullet.glow=
-        glow;
+        vy:
+            Math.sin(angle)*
+            speed,
 
-
-    bullet.dead=false;
+        graphics:
+            this.add.graphics()
+            .setDepth(125)
+    };
 
 
     this.enemyBullets.push(
@@ -2918,16 +2875,83 @@ fireEnemyBullet(){
     );
 
 
-    AUDIO.enemyShoot();
-}
+    this.drawEnemyBullet(
+        bullet
+    );
+
+
+    sfxEnemy();
+},
+
+
+
+drawEnemyBullet:function(b){
+
+    b.graphics.clear();
+
+
+    /*
+        GLOW MERAH
+    */
+
+    b.graphics.fillStyle(
+        0xff5757,
+        .24
+    );
+
+
+    b.graphics.fillCircle(
+        b.x,
+        b.y,
+        this.mobile
+        ? 8
+        : 9
+    );
+
+
+    /*
+        BULLET MERAH BULAT
+    */
+
+    b.graphics.fillStyle(
+        0xff1717,
+        1
+    );
+
+
+    b.graphics.fillCircle(
+        b.x,
+        b.y,
+        this.mobile
+        ? 5
+        : 6
+    );
+
+
+    /*
+        Highlight
+    */
+
+    b.graphics.fillStyle(
+        0xffbbbb,
+        1
+    );
+
+
+    b.graphics.fillCircle(
+        b.x-2,
+        b.y-2,
+        1.5
+    );
+},
 
 
 
 /* =========================================================
-   UPDATE PLAYER BULLETS
+   PLAYER BULLET UPDATE
 ========================================================= */
 
-updatePlayerBullets(
+updatePlayerBullets:function(
     delta
 ){
 
@@ -2940,82 +2964,77 @@ updatePlayerBullets(
         i--
     ){
 
-        const bullet=
+        const b=
             this.playerBullets[i];
 
 
-        if(
-            !bullet ||
-            !bullet.active
-        ){
-
-            this.playerBullets.splice(
-                i,
-                1
-            );
-
-            continue;
-        }
-
-
-        bullet.y+=
-            bullet.vy*
+        b.y+=
+            b.vy*
             delta/1000;
 
 
-        /*
-            BULLET VS ENEMY
-        */
+        this.drawPlayerBullet(
+            b
+        );
+
 
         let hit=false;
 
 
         for(
-            const enemy
-            of this.enemies
+            let eIndex=0;
+            eIndex<this.enemies.length;
+            eIndex++
         ){
 
+            const e=
+                this.enemies[
+                    eIndex
+                ];
+
+
             if(
-                !enemy.alive ||
-                enemy.respawning
+                !e.alive ||
+                e.respawning
             )continue;
 
 
             const dx=
-                bullet.x-
-                enemy.x;
+                Math.abs(
+                    b.x-
+                    e.x
+                );
 
 
             const dy=
-                bullet.y-
-                enemy.y;
+                Math.abs(
+                    b.y-
+                    e.y
+                );
 
 
-            /*
-                Plane hitbox
-            */
+            const hitX=
+                this.mobile
+                ? 22
+                : 28;
+
+
+            const hitY=
+                this.mobile
+                ? 20
+                : 25;
+
 
             if(
-                Math.abs(dx)<
-                (
-                    this.mobile
-                    ? 24
-                    : 31
-                )
-                &&
-                Math.abs(dy)<
-                (
-                    this.mobile
-                    ? 22
-                    : 28
-                )
+                dx<hitX &&
+                dy<hitY
             ){
 
                 hit=true;
 
 
-                this.damageEnemy(
-                    enemy
+                this.killEnemy(
+                    e
                 );
 
 
@@ -3026,11 +3045,11 @@ updatePlayerBullets(
 
         if(
             hit ||
-            bullet.y<
+            b.y<
             this.arenaTop-25
         ){
 
-            bullet.destroy();
+            b.graphics.destroy();
 
 
             this.playerBullets.splice(
@@ -3039,302 +3058,181 @@ updatePlayerBullets(
             );
         }
     }
-}
+},
 
 
 
 /* =========================================================
-   DAMAGE ENEMY
+   KILL ENEMY
 ========================================================= */
 
-damageEnemy(
-    enemy
-){
+killEnemy:function(e){
 
     if(
-        !enemy.alive ||
-        enemy.respawning ||
+        !e.alive ||
+        e.respawning ||
         this.resolving
     )return;
 
 
-    enemy.hp--;
+    e.alive=false;
 
 
-    AUDIO.hit();
+    sfxHit();
 
 
-    this.makeExplosion(
-        enemy.x,
-        enemy.y,
-        0xffde55,
-        7
-    );
-
-
-    this.tweens.add({
-
-        targets:
-            enemy.plane,
-
-        alpha:.3,
-
-        duration:60,
-
-        yoyo:true
-    });
-
-
-    this.positionEnemyParts(
-        enemy
-    );
-
-
-    if(
-        enemy.hp<=0
-    ){
-
-        if(enemy.correct){
-
-            this.destroyCorrectEnemy(
-                enemy
-            );
-
-        }else{
-
-            this.destroyWrongEnemy(
-                enemy
-            );
-        }
-    }
-}
-
-
-
-/* =========================================================
-   WRONG ENEMY DESTROYED
-========================================================= */
-
-destroyWrongEnemy(
-    enemy
-){
-
-    enemy.alive=false;
-
-    enemy.respawning=true;
-
-
-    AUDIO.wrong();
-
-
-    this.wrongDestroyed++;
-
-
-    this.makeExplosion(
-        enemy.x,
-        enemy.y,
-        0xff4d52,
-        24
-    );
-
-
-    enemy.plane
-        .setVisible(false);
-
-
-    enemy.label
-        .setVisible(false);
-
-
-    enemy.hpBar
-        .setVisible(false);
-
-
-    enemy.hpBarBG
-        .setVisible(false);
-
-
-    this.messageText
-        .setText(
-            "✕ JAWAPAN SALAH!"
-        )
-        .setColor(
-            "#ffe0df"
-        )
-        .setAlpha(1);
-
-
-    /*
-        Jawapan salah hidup semula.
-        Soalan tak berubah.
-    */
-
-    this.time.delayedCall(
-        700,
-        ()=>{
-
-            if(
-                this.resolving
-            )return;
-
-
-            enemy.hp=
-                enemy.maxHp;
-
-
-            enemy.alive=true;
-
-            enemy.respawning=false;
-
-
-            enemy.x=
-                Phaser.Math.Between(
-                    Math.round(
-                        enemy.laneMin
-                    ),
-                    Math.round(
-                        enemy.laneMax
-                    )
-                );
-
-
-            enemy.targetX=
-                Phaser.Math.Between(
-                    Math.round(
-                        enemy.laneMin
-                    ),
-                    Math.round(
-                        enemy.laneMax
-                    )
-                );
-
-
-            enemy.plane
-                .setVisible(true)
-                .setAlpha(1);
-
-
-            enemy.label
-                .setVisible(true);
-
-
-            enemy.hpBar
-                .setVisible(true);
-
-
-            enemy.hpBarBG
-                .setVisible(true);
-
-
-            this.positionEnemyParts(
-                enemy
-            );
-
-
-            this.messageText
-                .setAlpha(0);
-        }
-    );
-}
-
-
-
-/* =========================================================
-   CORRECT ENEMY DESTROYED
-========================================================= */
-
-destroyCorrectEnemy(
-    enemy
-){
-
-    if(this.resolving)
-        return;
-
-
-    this.resolving=true;
-
-
-    enemy.alive=false;
-
-
-    AUDIO.correct();
-
-
-    this.makeExplosion(
-        enemy.x,
-        enemy.y,
-        0xffe866,
-        35
-    );
-
-
-    this.makeExplosion(
-        enemy.x,
-        enemy.y,
-        0xff5c4e,
+    this.explosion(
+        e.x,
+        e.y,
+        e.correct
+        ? 0xffe45a
+        : 0xff5555,
         20
     );
 
 
-    enemy.plane
-        .setVisible(false);
+    e.graphics.clear();
 
-
-    enemy.label
-        .setVisible(false);
-
-
-    enemy.hpBar
-        .setVisible(false);
-
-
-    enemy.hpBarBG
-        .setVisible(false);
-
-
-    this.messageText
-        .setText(
-            "✓ JAWAPAN BETUL!"
-        )
-        .setColor(
-            "#e1ffe6"
-        )
-        .setAlpha(1);
-
-
-    this.removeAllBullets();
-
-
-    this.time.delayedCall(
-        850,
-        ()=>{
-
-            if(
-                this.questionIndex>=
-                QUESTIONS.length-1
-            ){
-
-                this.showWin();
-
-                return;
-            }
-
-
-            this.questionIndex++;
-
-
-            this.loadQuestion();
-        }
+    e.label.setVisible(
+        false
     );
-}
+
+
+    if(e.correct){
+
+        this.resolving=true;
+
+
+        sfxCorrect();
+
+
+        this.message
+            .setText(
+                "✓ JAWAPAN BETUL!"
+            )
+            .setColor(
+                "#e2ffe6"
+            )
+            .setVisible(
+                true
+            );
+
+
+        this.clearBullets();
+
+
+        this.time.delayedCall(
+            800,
+            function(){
+
+                if(
+                    this.questionIndex>=
+                    QUESTIONS.length-1
+                ){
+
+                    this.showWin();
+
+                    return;
+                }
+
+
+                this.questionIndex++;
+
+
+                this.loadQuestion();
+
+            },
+            null,
+            this
+        );
+
+    }else{
+
+        this.wrongKills++;
+
+
+        sfxWrong();
+
+
+        this.message
+            .setText(
+                "✕ JAWAPAN SALAH!"
+            )
+            .setColor(
+                "#ffe0e0"
+            )
+            .setVisible(
+                true
+            );
+
+
+        e.respawning=true;
+
+
+        /*
+            ENEMY SALAH MUNCUL BALIK
+        */
+
+        this.time.delayedCall(
+            650,
+            function(){
+
+                if(
+                    this.resolving
+                )return;
+
+
+                e.x=
+                    Phaser.Math.Between(
+                        Math.round(
+                            e.minX
+                        ),
+                        Math.round(
+                            e.maxX
+                        )
+                    );
+
+
+                e.targetX=
+                    Phaser.Math.Between(
+                        Math.round(
+                            e.minX
+                        ),
+                        Math.round(
+                            e.maxX
+                        )
+                    );
+
+
+                e.alive=true;
+
+                e.respawning=false;
+
+
+                this.drawEnemy(
+                    e
+                );
+
+
+                this.message
+                    .setVisible(
+                        false
+                    );
+
+            },
+            null,
+            this
+        );
+    }
+},
 
 
 
 /* =========================================================
-   UPDATE ENEMY BULLETS
+   ENEMY BULLET UPDATE
 ========================================================= */
 
-updateEnemyBullets(
+updateEnemyBullets:function(
     delta
 ){
 
@@ -3347,87 +3245,75 @@ updateEnemyBullets(
         i--
     ){
 
-        const bullet=
+        const b=
             this.enemyBullets[i];
 
 
-        if(
-            !bullet ||
-            !bullet.active
-        ){
-
-            this.enemyBullets.splice(
-                i,
-                1
-            );
-
-            continue;
-        }
-
-
-        bullet.x+=
-            bullet.vx*
+        b.x+=
+            b.vx*
             delta/1000;
 
 
-        bullet.y+=
-            bullet.vy*
+        b.y+=
+            b.vy*
             delta/1000;
 
 
-        if(
-            bullet.glow &&
-            bullet.glow.active
-        ){
-
-            bullet.glow.setPosition(
-                bullet.x,
-                bullet.y
-            );
-        }
+        this.drawEnemyBullet(
+            b
+        );
 
 
         /*
-            BULLET VS PLAYER
+            COLLISION PLAYER
         */
 
         if(
             !this.invulnerable &&
-            this.started
+            this.started &&
+            !this.pausedForLife
         ){
 
             const dx=
-                bullet.x-
-                this.player.x;
-
-
-            const dy=
-                bullet.y-
-                this.player.y;
-
-
-            if(
-                Math.abs(dx)<
-                (
-                    this.mobile
-                    ? 22
-                    : 27
-                )
-                &&
-                Math.abs(dy)<
-                (
-                    this.mobile
-                    ? 25
-                    : 31
-                )
-            ){
-
-                this.removeEnemyBullet(
-                    i
+                Math.abs(
+                    b.x-
+                    this.player.x
                 );
 
 
-                this.hitPlayer();
+            const dy=
+                Math.abs(
+                    b.y-
+                    this.player.y
+                );
+
+
+            if(
+                dx<
+                (
+                    this.mobile
+                    ? 21
+                    : 26
+                )
+                &&
+                dy<
+                (
+                    this.mobile
+                    ? 24
+                    : 29
+                )
+            ){
+
+                b.graphics.destroy();
+
+
+                this.enemyBullets.splice(
+                    i,
+                    1
+                );
+
+
+                this.playerHit();
 
 
                 continue;
@@ -3436,228 +3322,41 @@ updateEnemyBullets(
 
 
         if(
-            bullet.y>
+            b.y>
             this.arenaBottom+30
             ||
-            bullet.x<
-            -30
+            b.x<-30
             ||
-            bullet.x>
-            this.W+30
+            b.x>this.W+30
         ){
 
-            this.removeEnemyBullet(
-                i
+            b.graphics.destroy();
+
+
+            this.enemyBullets.splice(
+                i,
+                1
             );
         }
     }
-}
-
-
-removeEnemyBullet(
-    index
-){
-
-    const bullet=
-        this.enemyBullets[
-            index
-        ];
-
-
-    if(!bullet)return;
-
-
-    if(
-        bullet.glow &&
-        bullet.glow.active
-    ){
-        bullet.glow.destroy();
-    }
-
-
-    if(bullet.active){
-        bullet.destroy();
-    }
-
-
-    this.enemyBullets.splice(
-        index,
-        1
-    );
-}
+},
 
 
 
 /* =========================================================
-   PLAYER DAMAGE
+   PLAYER HIT
 ========================================================= */
 
-hitPlayer(){
+playerHit:function(){
 
     if(
         this.invulnerable ||
-        !this.started ||
-        this.resolving
+        this.pausedForLife
     )return;
 
 
     this.lives--;
 
-
-    this.updateLives();
-
-
-    AUDIO.damage();
-
-
-    this.makeExplosion(
-        this.player.x,
-        this.player.y,
-        0xff4d4d,
-        17
-    );
-
-
-    this.cameras.main.shake(
-        140,
-        .006
-    );
-
-
-    this.invulnerable=true;
-
-
-    this.tweens.add({
-
-        targets:
-            this.player,
-
-        alpha:.2,
-
-        duration:100,
-
-        yoyo:true,
-
-        repeat:5,
-
-        onComplete:()=>{
-
-            this.player
-                .setAlpha(1);
-
-
-            this.invulnerable=false;
-        }
-    });
-
-
-    if(
-        this.lives<=0
-    ){
-
-        this.playerDown();
-    }
-}
-
-
-
-/* =========================================================
-   PLAYER DOWN
-========================================================= */
-
-playerDown(){
-
-    this.started=false;
-
-
-    this.removeAllBullets();
-
-
-    let count=3;
-
-
-    this.messageText
-        .setText(
-            "KAPAL ROSAK!\n"+count
-        )
-        .setColor(
-            "#ffffff"
-        )
-        .setAlpha(1);
-
-
-    const countdown=()=>{
-
-        this.time.delayedCall(
-            1000,
-            ()=>{
-
-                count--;
-
-
-                if(count>0){
-
-                    this.messageText
-                        .setText(
-                            "KAPAL ROSAK!\n"+
-                            count
-                        );
-
-
-                    countdown();
-
-                }else{
-
-                    this.lives=3;
-
-
-                    this.updateLives();
-
-
-                    this.player.x=
-                        this.W/2;
-
-
-                    this.player.y=
-                        this.playerY;
-
-
-                    this.messageText
-                        .setText(
-                            "SAMBUNG!"
-                        );
-
-
-                    this.time.delayedCall(
-                        450,
-                        ()=>{
-
-                            this.messageText
-                                .setAlpha(0);
-
-
-                            this.started=true;
-
-
-                            this.invulnerable=false;
-                        }
-                    );
-                }
-            }
-        );
-    };
-
-
-    countdown();
-}
-
-
-
-/* =========================================================
-   LIFE UI
-========================================================= */
-
-updateLives(){
 
     this.lifeText.setText(
         "NYAWA "+
@@ -3668,7 +3367,194 @@ updateLives(){
             )
         )
     );
-}
+
+
+    sfxDamage();
+
+
+    this.explosion(
+        this.player.x,
+        this.player.y,
+        0xff4545,
+        15
+    );
+
+
+    this.invulnerable=true;
+
+
+    /*
+        Blink
+    */
+
+    let blinkCount=0;
+
+
+    const blink=
+        this.time.addEvent({
+
+            delay:90,
+
+            repeat:7,
+
+            callback:function(){
+
+                blinkCount++;
+
+
+                this.player.visible=
+                    !this.player.visible;
+
+
+                this.drawPlayer();
+
+
+                if(
+                    blinkCount>=8
+                ){
+
+                    this.player.visible=true;
+
+                    this.drawPlayer();
+
+                    this.invulnerable=false;
+                }
+
+            },
+
+            callbackScope:
+                this
+        });
+
+
+    if(
+        this.lives<=0
+    ){
+
+        this.repairPlayer();
+    }
+},
+
+
+
+/* =========================================================
+   REPAIR PLAYER
+========================================================= */
+
+repairPlayer:function(){
+
+    this.pausedForLife=true;
+
+    this.started=false;
+
+
+    this.clearBullets();
+
+
+    let number=3;
+
+
+    this.message
+        .setText(
+            "KAPAL ROSAK!\n"+
+            number
+        )
+        .setColor(
+            "#ffffff"
+        )
+        .setVisible(
+            true
+        );
+
+
+    const next=
+        function(){
+
+            this.time.delayedCall(
+                1000,
+                function(){
+
+                    number--;
+
+
+                    if(number>0){
+
+                        this.message
+                            .setText(
+                                "KAPAL ROSAK!\n"+
+                                number
+                            );
+
+
+                        next.call(
+                            this
+                        );
+
+                    }else{
+
+                        this.lives=3;
+
+
+                        this.lifeText
+                            .setText(
+                                "NYAWA ❤❤❤"
+                            );
+
+
+                        this.player.x=
+                            this.W/2;
+
+
+                        this.player.y=
+                            this.playerY;
+
+
+                        this.player.visible=true;
+
+
+                        this.drawPlayer();
+
+
+                        this.message
+                            .setText(
+                                "SAMBUNG!"
+                            );
+
+
+                        this.time.delayedCall(
+                            450,
+                            function(){
+
+                                this.message
+                                    .setVisible(
+                                        false
+                                    );
+
+
+                                this.pausedForLife=false;
+
+                                this.invulnerable=false;
+
+                                this.started=true;
+
+                            },
+                            null,
+                            this
+                        );
+                    }
+
+                },
+                null,
+                this
+            );
+
+        };
+
+
+    next.call(
+        this
+    );
+},
 
 
 
@@ -3676,7 +3562,7 @@ updateLives(){
    EXPLOSION
 ========================================================= */
 
-makeExplosion(
+explosion:function(
     x,
     y,
     color,
@@ -3689,18 +3575,18 @@ makeExplosion(
         i++
     ){
 
-        const p=
+        const particle=
             this.add.circle(
                 x,
                 y,
                 Phaser.Math.Between(
                     2,
-                    6
+                    5
                 ),
                 color,
                 1
             )
-            .setDepth(900);
+            .setDepth(800);
 
 
         const angle=
@@ -3712,14 +3598,15 @@ makeExplosion(
 
         const distance=
             Phaser.Math.Between(
-                25,
-                95
+                20,
+                80
             );
 
 
         this.tweens.add({
 
-            targets:p,
+            targets:
+                particle,
 
             x:
                 x+
@@ -3731,124 +3618,108 @@ makeExplosion(
                 Math.sin(angle)*
                 distance,
 
-            alpha:0,
+            alpha:
+                0,
 
-            scale:.15,
+            scale:
+                .1,
 
             duration:
                 Phaser.Math.Between(
-                    300,
-                    650
+                    280,
+                    600
                 ),
 
-            ease:
-                "Quad.easeOut",
+            onComplete:
+                function(){
 
-            onComplete:()=>{
-
-                p.destroy();
-            }
+                    particle.destroy();
+                }
         });
     }
-}
+},
 
 
 
 /* =========================================================
-   DELETE ENEMIES
+   CLEAR BULLETS
 ========================================================= */
 
-destroyEnemies(){
+clearBullets:function(){
 
-    this.enemies.forEach(
-        enemy=>{
+    for(
+        let i=0;
+        i<this.playerBullets.length;
+        i++
+    ){
 
-            if(
-                enemy.plane &&
-                enemy.plane.active
-            ){
-                enemy.plane.destroy(
-                    true
-                );
-            }
+        if(
+            this.playerBullets[i]
+            .graphics
+        ){
 
-
-            if(
-                enemy.label &&
-                enemy.label.active
-            ){
-                enemy.label.destroy();
-            }
-
-
-            if(
-                enemy.hpBar &&
-                enemy.hpBar.active
-            ){
-                enemy.hpBar.destroy();
-            }
-
-
-            if(
-                enemy.hpBarBG &&
-                enemy.hpBarBG.active
-            ){
-                enemy.hpBarBG.destroy();
-            }
+            this.playerBullets[i]
+                .graphics
+                .destroy();
         }
-    );
-
-
-    this.enemies=[];
-}
-
-
-
-/* =========================================================
-   REMOVE BULLETS
-========================================================= */
-
-removeAllBullets(){
-
-    this.playerBullets.forEach(
-        bullet=>{
-
-            if(
-                bullet &&
-                bullet.active
-            ){
-                bullet.destroy();
-            }
-        }
-    );
+    }
 
 
     this.playerBullets=[];
 
 
-    this.enemyBullets.forEach(
-        bullet=>{
+    for(
+        let i=0;
+        i<this.enemyBullets.length;
+        i++
+    ){
 
-            if(
-                bullet.glow &&
-                bullet.glow.active
-            ){
-                bullet.glow.destroy();
-            }
+        if(
+            this.enemyBullets[i]
+            .graphics
+        ){
 
-
-            if(
-                bullet &&
-                bullet.active
-            ){
-                bullet.destroy();
-            }
+            this.enemyBullets[i]
+                .graphics
+                .destroy();
         }
-    );
+    }
 
 
     this.enemyBullets=[];
-}
+},
+
+
+
+/* =========================================================
+   DESTROY ENEMIES
+========================================================= */
+
+destroyEnemies:function(){
+
+    for(
+        let i=0;
+        i<this.enemies.length;
+        i++
+    ){
+
+        const e=
+            this.enemies[i];
+
+
+        if(e.graphics){
+            e.graphics.destroy();
+        }
+
+
+        if(e.label){
+            e.label.destroy();
+        }
+    }
+
+
+    this.enemies=[];
+},
 
 
 
@@ -3856,15 +3727,7 @@ removeAllBullets(){
    INTRO
 ========================================================= */
 
-showIntro(){
-
-    const overlay=
-        this.add.container(
-            0,
-            0
-        )
-        .setDepth(5000);
-
+showIntro:function(){
 
     const shade=
         this.add.rectangle(
@@ -3872,360 +3735,28 @@ showIntro(){
             0,
             this.W,
             this.H,
-            0x123f59,
-            .83
+            0x123e58,
+            .86
         )
-        .setOrigin(0);
-
-
-    const card=
-        this.add.rectangle(
-            this.W/2,
-            this.H/2,
-            100,
-            100,
-            0xffffff,
-            1
-        )
-        .setStrokeStyle(
-            4,
-            0x4bbbd9,
-            1
-        );
-
-
-    const icon=
-        this.add.text(
-            this.W/2,
-            0,
-            "✈️",
-            {
-                fontSize:"60px"
-            }
-        )
-        .setOrigin(.5);
-
-
-    const title=
-        this.add.text(
-            this.W/2,
-            0,
-            "MAGNET AIR BATTLE",
-            {
-                fontFamily:
-                    "Trebuchet MS",
-
-                fontStyle:
-                    "bold",
-
-                color:
-                    "#15526d",
-
-                align:
-                    "center"
-            }
-        )
-        .setOrigin(.5);
-
-
-    const info=
-        this.add.text(
-            this.W/2,
-            0,
-
-            "Empat jawapan ialah enemy kapal terbang.\n\n"+
-
-            "① Baca soalan.\n"+
-            "② Cari enemy dengan jawapan betul.\n"+
-            "③ Gerakkan kapal menggunakan ◀ ▶.\n"+
-            "④ Tekan atau tahan TEMBAK.\n"+
-            "⑤ Musnahkan jawapan betul untuk teruskan.\n\n"+
-
-            "Jawapan salah akan muncul semula.\n"+
-            "Elakkan peluru MERAH daripada enemy!",
-
-            {
-                fontFamily:
-                    "Trebuchet MS",
-
-                fontStyle:
-                    "bold",
-
-                color:
-                    "#315b6d",
-
-                align:
-                    "center",
-
-                lineSpacing:
-                    3
-            }
-        )
-        .setOrigin(.5);
-
-
-    const buttonShadow=
-        this.add.rectangle(
-            this.W/2,
-            0,
-            195,
-            53,
-            0x16805f,
-            1
-        );
-
-
-    const button=
-        this.add.rectangle(
-            this.W/2,
-            0,
-            195,
-            53,
-            0x39d292,
-            1
-        )
-        .setStrokeStyle(
-            3,
-            0xffffff,
-            .8
-        )
-        .setInteractive({
-            useHandCursor:true
-        });
-
-
-    const buttonText=
-        this.add.text(
-            this.W/2,
-            0,
-            "▶ MULA MISI",
-            {
-                fontFamily:
-                    "Trebuchet MS",
-
-                fontStyle:
-                    "bold",
-
-                color:
-                    "#ffffff",
-
-                fontSize:
-                    "18px"
-            }
-        )
-        .setOrigin(.5);
-
-
-    overlay.add([
-        shade,
-        card,
-        icon,
-        title,
-        info,
-        buttonShadow,
-        button,
-        buttonText
-    ]);
-
-
-    const arrange=()=>{
-
-        if(!overlay.active)
-            return;
-
-
-        const W=
-            this.scale.gameSize.width;
-
-
-        const H=
-            this.scale.gameSize.height;
-
-
-        const mobile=
-            W<580;
-
-
-        shade.setSize(
-            W,
-            H
-        );
-
-
-        const cardW=
-            Math.min(
-                W-28,
-                mobile
-                ? 390
-                : 530
-            );
-
-
-        const cardH=
-            Math.min(
-                H-35,
-                mobile
-                ? 470
-                : 490
-            );
-
-
-        card
-            .setSize(
-                cardW,
-                cardH
-            )
-            .setPosition(
-                W/2,
-                H/2
-            );
-
-
-        icon
-            .setFontSize(
-                mobile
-                ? 50
-                : 62
-            )
-            .setPosition(
-                W/2,
-                H/2-
-                cardH*.36
-            );
-
-
-        title
-            .setFontSize(
-                mobile
-                ? 22
-                : 29
-            )
-            .setPosition(
-                W/2,
-                H/2-
-                cardH*.21
-            );
-
-
-        info
-            .setFontSize(
-                mobile
-                ? 13
-                : 16
-            )
-            .setWordWrapWidth(
-                cardW-36
-            )
-            .setPosition(
-                W/2,
-                H/2+5
-            );
-
-
-        const buttonY=
-            H/2+
-            cardH*.38;
-
-
-        button.setPosition(
-            W/2,
-            buttonY
-        );
-
-
-        buttonShadow.setPosition(
-            W/2,
-            buttonY+5
-        );
-
-
-        buttonText.setPosition(
-            W/2,
-            buttonY
-        );
-    };
-
-
-    arrange();
-
-
-    this.scale.on(
-        "resize",
-        arrange
-    );
-
-
-    button.on(
-        "pointerdown",
-        ()=>{
-
-            AUDIO.init();
-
-
-            overlay.destroy(
-                true
-            );
-
-
-            this.started=true;
-
-
-            this.lastEnemyShot=
-                this.time.now+
-                900;
-        }
-    );
-}
-
-
-
-/* =========================================================
-   WIN SCREEN
-========================================================= */
-
-showWin(){
-
-    this.started=false;
-
-    this.resolving=true;
-
-
-    this.removeAllBullets();
-
-
-    AUDIO.win();
-
-
-    const overlay=
-        this.add.container()
-        .setDepth(6000);
-
-
-    const shade=
-        this.add.rectangle(
-            0,
-            0,
-            this.W,
-            this.H,
-            0x103f58,
-            .88
-        )
-        .setOrigin(0);
+        .setOrigin(0)
+        .setDepth(3000);
 
 
     const cardWidth=
         Math.min(
             this.W-28,
             this.mobile
-            ? 370
-            : 500
+            ? 380
+            : 520
         );
 
 
     const cardHeight=
         Math.min(
             this.H-35,
-            420
+            this.mobile
+            ? 465
+            : 480
         );
 
 
@@ -4239,95 +3770,105 @@ showWin(){
             1
         )
         .setStrokeStyle(
-            5,
-            0x55d6ec,
+            4,
+            0x4ab8d7,
             1
-        );
+        )
+        .setDepth(3001);
 
 
     const icon=
         this.add.text(
             this.W/2,
             this.H/2-
-            cardHeight*.31,
-            "🏆✈️",
+            cardHeight*.35,
+            "✈️",
             {
                 fontSize:
                     this.mobile
-                    ? "56px"
-                    : "70px"
+                    ? "48px"
+                    : "60px"
             }
         )
-        .setOrigin(.5);
+        .setOrigin(.5)
+        .setDepth(3002);
 
 
     const title=
         this.add.text(
             this.W/2,
             this.H/2-
-            cardHeight*.09,
-            "MISI SELESAI!",
+            cardHeight*.20,
+            "MAGNET AIR BATTLE",
             {
                 fontFamily:
-                    "Trebuchet MS",
+                    "Arial",
 
                 fontStyle:
                     "bold",
-
-                color:
-                    "#156886",
 
                 fontSize:
                     this.mobile
-                    ? "27px"
-                    : "34px"
+                    ? "21px"
+                    : "28px",
+
+                color:
+                    "#15516c"
             }
         )
-        .setOrigin(.5);
+        .setOrigin(.5)
+        .setDepth(3002);
 
 
-    const result=
+    const info=
         this.add.text(
             this.W/2,
-            this.H/2+35,
+            this.H/2+4,
 
-            "25 / 25 soalan selesai!\n\n"+
-            "Enemy jawapan salah dimusnahkan: "+
-            this.wrongDestroyed,
+            "Empat jawapan ialah kapal terbang enemy.\n\n"+
+            "• Baca soalan.\n"+
+            "• Cari kapal dengan jawapan betul.\n"+
+            "• Bergerak menggunakan ◀ ▶.\n"+
+            "• Tekan atau tahan TEMBAK.\n"+
+            "• Musnahkan jawapan betul untuk ke soalan berikutnya.\n\n"+
+            "Enemy menembak peluru MERAH.",
 
             {
                 fontFamily:
-                    "Trebuchet MS",
+                    "Arial",
 
                 fontStyle:
                     "bold",
 
+                fontSize:
+                    this.mobile
+                    ? "13px"
+                    : "16px",
+
                 color:
-                    "#365d6b",
+                    "#31596a",
 
                 align:
                     "center",
 
-                lineSpacing:
-                    5,
-
-                fontSize:
-                    this.mobile
-                    ? "15px"
-                    : "18px"
+                wordWrap:{
+                    width:
+                        cardWidth-35
+                }
             }
         )
-        .setOrigin(.5);
+        .setOrigin(.5)
+        .setDepth(3002);
 
 
     const button=
         this.add.rectangle(
             this.W/2,
             this.H/2+
-            cardHeight*.34,
+            cardHeight*.38,
             190,
-            54,
-            0x39cf8d,
+            52,
+            0x38d091,
             1
         )
         .setStrokeStyle(
@@ -4335,103 +3876,319 @@ showWin(){
             0xffffff,
             .8
         )
-        .setInteractive({
-            useHandCursor:true
-        );
+        .setDepth(3002)
+        .setInteractive();
 
 
     const buttonText=
         this.add.text(
             this.W/2,
             this.H/2+
-            cardHeight*.34,
-            "↻ MAIN LAGI",
+            cardHeight*.38,
+            "▶ MULA MISI",
             {
                 fontFamily:
-                    "Trebuchet MS",
+                    "Arial",
 
                 fontStyle:
                     "bold",
 
-                color:
-                    "#ffffff",
-
                 fontSize:
-                    "18px"
+                    "17px",
+
+                color:
+                    "#ffffff"
             }
         )
-        .setOrigin(.5);
-
-
-    overlay.add([
-        shade,
-        card,
-        icon,
-        title,
-        result,
-        button,
-        buttonText
-    ]);
+        .setOrigin(.5)
+        .setDepth(3003);
 
 
     button.on(
         "pointerdown",
-        ()=>{
+        function(){
 
-            overlay.destroy(
-                true
-            );
+            initAudio();
+
+
+            shade.destroy();
+
+            card.destroy();
+
+            icon.destroy();
+
+            title.destroy();
+
+            info.destroy();
+
+            button.destroy();
+
+            buttonText.destroy();
+
+
+            this.started=true;
+
+
+            this.lastEnemyShot=
+                this.time.now+
+                900;
+
+        },
+        this
+    );
+},
+
+
+
+/* =========================================================
+   WIN
+========================================================= */
+
+showWin:function(){
+
+    this.started=false;
+
+    this.resolving=true;
+
+
+    this.clearBullets();
+
+
+    const shade=
+        this.add.rectangle(
+            0,
+            0,
+            this.W,
+            this.H,
+            0x123d55,
+            .88
+        )
+        .setOrigin(0)
+        .setDepth(5000);
+
+
+    const cardWidth=
+        Math.min(
+            this.W-28,
+            480
+        );
+
+
+    const cardHeight=
+        390;
+
+
+    const card=
+        this.add.rectangle(
+            this.W/2,
+            this.H/2,
+            cardWidth,
+            cardHeight,
+            0xffffff,
+            1
+        )
+        .setStrokeStyle(
+            5,
+            0x4dd1e8,
+            1
+        )
+        .setDepth(5001);
+
+
+    const trophy=
+        this.add.text(
+            this.W/2,
+            this.H/2-120,
+            "🏆✈️",
+            {
+                fontSize:
+                    this.mobile
+                    ? "55px"
+                    : "68px"
+            }
+        )
+        .setOrigin(.5)
+        .setDepth(5002);
+
+
+    const title=
+        this.add.text(
+            this.W/2,
+            this.H/2-35,
+            "MISI SELESAI!",
+            {
+                fontFamily:
+                    "Arial",
+
+                fontStyle:
+                    "bold",
+
+                fontSize:
+                    this.mobile
+                    ? "27px"
+                    : "34px",
+
+                color:
+                    "#156a87"
+            }
+        )
+        .setOrigin(.5)
+        .setDepth(5002);
+
+
+    const result=
+        this.add.text(
+            this.W/2,
+            this.H/2+40,
+
+            "25 / 25 soalan selesai!\n\n"+
+            "Jawapan salah dimusnahkan: "+
+            this.wrongKills,
+
+            {
+                fontFamily:
+                    "Arial",
+
+                fontStyle:
+                    "bold",
+
+                fontSize:
+                    this.mobile
+                    ? "15px"
+                    : "18px",
+
+                color:
+                    "#365d6b",
+
+                align:
+                    "center"
+            }
+        )
+        .setOrigin(.5)
+        .setDepth(5002);
+
+
+    const restart=
+        this.add.rectangle(
+            this.W/2,
+            this.H/2+135,
+            185,
+            52,
+            0x39ce8c,
+            1
+        )
+        .setStrokeStyle(
+            3,
+            0xffffff,
+            .8
+        )
+        .setInteractive()
+        .setDepth(5002);
+
+
+    const restartText=
+        this.add.text(
+            this.W/2,
+            this.H/2+135,
+            "↻ MAIN LAGI",
+            {
+                fontFamily:
+                    "Arial",
+
+                fontStyle:
+                    "bold",
+
+                fontSize:
+                    "17px",
+
+                color:
+                    "#ffffff"
+            }
+        )
+        .setOrigin(.5)
+        .setDepth(5003);
+
+
+    restart.on(
+        "pointerdown",
+        function(){
+
+            shade.destroy();
+
+            card.destroy();
+
+            trophy.destroy();
+
+            title.destroy();
+
+            result.destroy();
+
+            restart.destroy();
+
+            restartText.destroy();
 
 
             this.questionIndex=0;
 
-            this.wrongDestroyed=0;
-
             this.lives=3;
+
+            this.wrongKills=0;
+
+            this.resolving=false;
 
             this.invulnerable=false;
 
-            this.resolving=false;
+            this.pausedForLife=false;
 
 
             this.player.x=
                 this.W/2;
 
 
-            this.player.y=
-                this.playerY;
+            this.player.visible=true;
 
 
             this.loadQuestion();
 
 
             this.started=true;
-        }
+
+        },
+        this
     );
-}
+},
 
 
 
 /* =========================================================
-   UPDATE LOOP
+   UPDATE
 ========================================================= */
 
-update(
+update:function(
     time,
     delta
 ){
 
+    /*
+        Enemy masih bergerak
+        semasa game berjalan.
+    */
+
     if(
-        !this.W ||
-        !this.player
-    )return;
+        this.enemies &&
+        this.enemies.length
+    ){
+
+        this.moveEnemies(
+            time,
+            delta
+        );
+    }
 
 
-    this.updateEnemies(
-        time,
-        delta
-    );
-
+    /*
+        Bullets
+    */
 
     this.updatePlayerBullets(
         delta
@@ -4445,38 +4202,46 @@ update(
 
     if(
         !this.started ||
-        this.resolving
-    )return;
+        this.resolving ||
+        this.pausedForLife
+    ){
+
+        this.drawPlayer();
+
+        return;
+    }
 
 
-    /* PLAYER MOVEMENT */
+    /*
+        PLAYER MOVE
+    */
 
-    const moveSpeed=
+    const speed=
         this.mobile
         ? 230
         : 300;
 
 
-    if(this.leftHeld){
+    if(this.leftPressed){
 
         this.player.x-=
-            moveSpeed*
+            speed*
             delta/1000;
     }
 
 
-    if(this.rightHeld){
+    if(this.rightPressed){
 
         this.player.x+=
-            moveSpeed*
+            speed*
             delta/1000;
     }
 
 
     const margin=
         this.mobile
-        ? 25
-        : 32;
+        ? 24
+        : 31;
 
 
     this.player.x=
@@ -4491,45 +4256,52 @@ update(
         this.playerY;
 
 
-    /* AUTO FIRE WHILE HOLD */
+    this.drawPlayer();
+
+
+    /*
+        HOLD TEMBAK
+    */
 
     if(
-        this.shootHeld &&
+        this.firePressed &&
         time-
         this.lastPlayerShot>
-        180
+        175
     ){
 
-        this.firePlayerBullet();
+        this.shootPlayer();
     }
 
 
-    /* ENEMY FIRE */
+    /*
+        ENEMY FIRE
+    */
 
-    let interval;
+    let enemyInterval;
 
 
     if(
         this.questionIndex>=15
     ){
 
-        interval=
+        enemyInterval=
             this.mobile
-            ? 760
+            ? 780
             : 650;
 
     }else if(
         this.questionIndex>=8
     ){
 
-        interval=
+        enemyInterval=
             this.mobile
             ? 900
             : 760;
 
     }else{
 
-        interval=
+        enemyInterval=
             this.mobile
             ? 1050
             : 900;
@@ -4543,22 +4315,23 @@ update(
 
         this.lastEnemyShot=
             time+
-            interval+
+            enemyInterval+
             Phaser.Math.Between(
                 -100,
-                180
+                160
             );
 
 
-        this.fireEnemyBullet();
+        this.shootEnemy();
     }
 }
 
-}
+};
+
 
 
 /* =========================================================
-   PHASER
+   PHASER CONFIG
 ========================================================= */
 
 const config={
@@ -4570,27 +4343,18 @@ const config={
         "game",
 
     backgroundColor:
-        "#66c8eb",
+        "#63c7ea",
 
     scale:{
 
         mode:
-            Phaser.Scale.RESIZE,
-
-        width:
-            "100%",
-
-        height:
-            "100%"
+            Phaser.Scale.RESIZE
     },
 
     render:{
 
         antialias:
             true,
-
-        pixelArt:
-            false,
 
         roundPixels:
             true
@@ -4602,11 +4366,15 @@ const config={
             4
     },
 
-    scene:[
-        AirBattleScene
-    ]
+    scene:
+        MainScene
 };
 
+
+
+/* =========================================================
+   START GAME
+========================================================= */
 
 const game=
     new Phaser.Game(
@@ -4616,53 +4384,43 @@ const game=
 
 
 /* =========================================================
-   HTML BUTTONS
+   WEBSITE BUTTONS
 ========================================================= */
 
 document
 .getElementById(
     "homeBtn"
 )
-.addEventListener(
-    "click",
-    ()=>{
+.onclick=function(){
 
-        window.location.href=
-            "index.html";
-    }
-);
+    window.location.href=
+        "index.html";
+};
 
 
 document
 .getElementById(
     "soundBtn"
 )
-.addEventListener(
-    "click",
-    ()=>{
+.onclick=function(){
 
-        AUDIO.init();
+    initAudio();
 
 
-        const enabled=
-            AUDIO.toggle();
+    soundEnabled=
+        !soundEnabled;
 
 
-        document
-        .getElementById(
-            "soundBtn"
-        )
-        .textContent=
-            enabled
-            ? "🔊"
-            : "🔇";
-    }
-);
+    this.textContent=
+        soundEnabled
+        ? "🔊"
+        : "🔇";
+};
 
 
 document.addEventListener(
     "contextmenu",
-    event=>{
+    function(event){
 
         event.preventDefault();
     }
