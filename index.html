@@ -5,13 +5,17 @@
 
 <meta
 name="viewport"
-content="width=device-width,
+content="
+width=device-width,
 initial-scale=1,
 maximum-scale=1,
 user-scalable=no,
-viewport-fit=cover">
+viewport-fit=cover
+">
 
-<title>Letter Keycap Challenge — Set 5</title>
+<title>Magnet Colour Trail — Set 6</title>
+
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <style>
 *{
@@ -19,13 +23,17 @@ viewport-fit=cover">
     -webkit-tap-highlight-color:transparent;
 }
 
-html,
-body{
+html,body{
     margin:0;
     padding:0;
-    width:100%;
     min-height:100%;
-
+    background:
+        linear-gradient(
+            135deg,
+            #d8f4ff 0%,
+            #eefcff 50%,
+            #dbeaff 100%
+        );
     font-family:
         "Trebuchet MS",
         Arial,
@@ -33,3066 +41,3898 @@ body{
 }
 
 body{
-    padding:12px;
-
-    color:#18374d;
-
-    background:
-        radial-gradient(
-            circle at 10% 10%,
-            rgba(255,255,255,.85),
-            transparent 25%
-        ),
-        radial-gradient(
-            circle at 90% 20%,
-            rgba(208,231,255,.8),
-            transparent 28%
-        ),
-        linear-gradient(
-            145deg,
-            #dff4ff,
-            #f2eaff 55%,
-            #fff3d7
-        );
-}
-
-
-/* =========================================================
-   GAME
-========================================================= */
-
-#game{
-    width:min(980px,100%);
-
-    margin:auto;
-
-    overflow:hidden;
-
-    background:#fff;
-
-    border:4px solid #173d59;
-
-    border-radius:24px;
-
-    box-shadow:
-        0 18px 45px
-        rgba(18,55,80,.2);
-}
-
-
-/* =========================================================
-   HEADER
-========================================================= */
-
-.header{
-    min-height:64px;
+    min-height:100vh;
+    min-height:100svh;
 
     display:flex;
-    align-items:center;
-
-    gap:10px;
-
-    padding:9px 12px;
-
-    color:white;
-
-    background:
-        linear-gradient(
-            180deg,
-            #214f6d,
-            #14374f
-        );
-}
-
-.iconBtn{
-    width:44px;
-    min-width:44px;
-    height:42px;
-
-    border:none;
-
-    border-radius:11px;
-
-    background:white;
-
-    color:#153b55;
-
-    font-size:19px;
-    font-weight:900;
-
-    cursor:pointer;
-
-    box-shadow:
-        0 4px 0
-        rgba(0,0,0,.18);
-}
-
-.iconBtn:active{
-    transform:translateY(2px);
-
-    box-shadow:
-        0 2px 0
-        rgba(0,0,0,.18);
-}
-
-.headerText{
-    flex:1;
-    min-width:0;
-}
-
-.title{
-    font-size:
-        clamp(
-            16px,
-            3vw,
-            23px
-        );
-
-    font-weight:950;
-}
-
-.progress{
-    margin-top:2px;
-
-    font-size:12px;
-    font-weight:800;
-
-    opacity:.82;
-}
-
-
-/* =========================================================
-   QUESTION
-========================================================= */
-
-.questionSection{
-    padding:14px 16px;
-
-    border-bottom:
-        2px solid #d8e8ef;
-
-    background:
-        linear-gradient(
-            180deg,
-            #edf9ff,
-            #fff
-        );
-}
-
-.category{
-    display:inline-flex;
-
-    padding:5px 10px;
-
-    margin-bottom:8px;
-
-    border-radius:999px;
-
-    background:#dcefff;
-
-    color:#18537d;
-
-    font-size:12px;
-    font-weight:950;
-}
-
-.question{
-    margin:0 0 11px;
-
-    color:#18374d;
-
-    font-size:
-        clamp(
-            15px,
-            2.3vw,
-            19px
-        );
-
-    line-height:1.4;
-
-    font-weight:950;
-}
-
-.options{
-    display:grid;
-
-    grid-template-columns:
-        repeat(
-            2,
-            minmax(0,1fr)
-        );
-
-    gap:7px;
-}
-
-.option{
-    min-height:43px;
-
-    display:flex;
+    justify-content:center;
     align-items:flex-start;
 
-    gap:8px;
-
-    padding:8px 10px;
-
-    border:
-        2px solid #d8e7ee;
-
-    border-radius:11px;
-
-    background:#fff;
-
-    color:#315468;
-
-    font-size:13px;
-    font-weight:750;
-
-    line-height:1.3;
+    padding:
+        max(12px, env(safe-area-inset-top))
+        8px
+        max(12px, env(safe-area-inset-bottom));
 }
 
-.optionBadge{
-    width:24px;
-    min-width:24px;
-    height:24px;
+/* Bukan full website.
+   Game duduk dalam satu container sahaja. */
+#game-shell{
+    width:min(
+        96vw,
+        820px,
+        calc(91vh * 0.833333)
+    );
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    width:min(
+        96vw,
+        820px,
+        calc(91svh * 0.833333)
+    );
 
-    border-radius:7px;
+    aspect-ratio:5 / 6;
 
-    background:#214d69;
-
-    color:#fff;
-
-    font-size:12px;
-    font-weight:950;
-}
-
-
-/* =========================================================
-   ANSWER
-========================================================= */
-
-.answerSection{
-    padding:11px 14px 12px;
-
-    background:
-        linear-gradient(
-            180deg,
-            #fff6d2,
-            #fffaf0
-        );
-
-    border-bottom:
-        2px solid #eadca8;
-}
-
-.answerHead{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-
-    gap:10px;
-
-    margin-bottom:7px;
-}
-
-.answerTitle{
-    color:#745a26;
-
-    font-size:12px;
-    font-weight:950;
-}
-
-.feedback{
-    min-height:18px;
-
-    text-align:right;
-
-    font-size:12px;
-    font-weight:950;
-}
-
-.feedback.correct{
-    color:#139354;
-}
-
-.feedback.wrong{
-    color:#cf3d3d;
-}
-
-.answerDisplay{
-    min-height:58px;
-
-    width:100%;
-
-    display:flex;
-    align-items:center;
-    flex-wrap:wrap;
-
-    gap:4px;
-
-    padding:8px 9px;
-
+    border-radius:26px;
     overflow:hidden;
 
-    border:
-        3px solid #d0ad4b;
-
-    border-radius:13px;
-
-    background:
-        linear-gradient(
-            180deg,
-            #fff,
-            #fffdf6
-        );
+    background:#dff5ff;
 
     box-shadow:
-        inset 0 2px 6px
-        rgba(95,75,23,.08);
+        0 12px 40px rgba(21,61,92,.20),
+        0 3px 8px rgba(21,61,92,.12);
 
-    transition:.2s;
+    border:4px solid rgba(255,255,255,.95);
+
+    position:relative;
 }
 
-.answerDisplay.isCorrect{
-    border-color:#25b46c;
-
-    box-shadow:
-        0 0 0 4px
-        rgba(37,180,108,.13);
-}
-
-.answerDisplay.isWrong{
-    border-color:#dd4c4c;
-
-    animation:
-        shake .28s linear;
-}
-
-.answerPlaceholder{
+#game{
     width:100%;
-
-    color:#a0977e;
-
-    font-size:13px;
-    font-weight:800;
+    height:100%;
 }
 
-.answerLetter{
-    width:30px;
-    height:35px;
+#game canvas{
+    display:block;
+    width:100% !important;
+    height:100% !important;
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border:
-        2px solid #83b7d2;
-
-    border-radius:7px;
-
-    color:#173f59;
-
-    background:
-        linear-gradient(
-            180deg,
-            #fff,
-            #eef9ff 65%,
-            #dcebf3
-        );
-
-    font-size:17px;
-    font-weight:950;
-
-    box-shadow:
-        0 3px 0 #b4cfdd;
+    touch-action:none;
+    user-select:none;
+    -webkit-user-select:none;
 }
 
-
-/* SPACE DALAM JAWAPAN */
-
-.answerSpace{
-    width:16px;
-    height:35px;
-
-    position:relative;
-}
-
-.answerSpace::after{
-    content:"";
-
-    position:absolute;
-
-    left:3px;
-    right:3px;
-    bottom:3px;
-
-    height:2px;
-
-    border-radius:2px;
-
-    background:
-        rgba(
-            49,
-            90,
-            112,
-            .22
-        );
-}
-
-
-/* =========================================================
-   KEYBOARD
-========================================================= */
-
-.keyboardSection{
-    position:relative;
-
-    padding:18px 14px 20px;
-
-    background:
-        linear-gradient(
-            180deg,
-            #dce8ee,
-            #c8d6de
-        );
-}
-
-.keyboardFrame{
-    position:relative;
-
-    width:100%;
-
-    padding:
-        14px
-        12px
-        17px;
-
-    border:
-        3px solid
-        #77909e;
-
-    border-radius:20px;
-
-    background:
-        linear-gradient(
-            180deg,
-            #aebfc8,
-            #8da4b0
-        );
-
-    box-shadow:
-        inset 0 3px 0
-        rgba(255,255,255,.45),
-
-        inset 0 -5px 0
-        rgba(50,73,85,.18),
-
-        0 8px 0
-        #69808c,
-
-        0 12px 18px
-        rgba(36,58,69,.18);
-}
-
-.keyboardLabel{
-    margin-bottom:12px;
-
-    text-align:center;
-
-    color:#345566;
-
-    font-size:12px;
-    font-weight:950;
-
-    letter-spacing:.5px;
-}
-
-
-/* =========================================================
-   KEY ROW
-========================================================= */
-
-.keyRow{
-    display:flex;
-
-    justify-content:center;
-
-    gap:
-        clamp(
-            4px,
-            1vw,
-            8px
-        );
-
-    margin-bottom:
-        clamp(
-            6px,
-            1vw,
-            9px
-        );
-}
-
-
-/* =========================================================
-   NORMAL KEYCAP
-========================================================= */
-
-.key{
-    position:relative;
-
-    width:
-        clamp(
-            34px,
-            7.1vw,
-            60px
-        );
-
-    height:
-        clamp(
-            40px,
-            7.5vw,
-            56px
-        );
-
-    padding:0;
-
-    border:
-        2px solid
-        #718995;
-
-    border-radius:
-        clamp(
-            7px,
-            1vw,
-            11px
-        );
-
-    outline:none;
-
-    cursor:pointer;
-
-    color:#17384c;
-
-    background:
-        linear-gradient(
-            180deg,
-            #fff 0%,
-            #f7fbfc 48%,
-            #d7e2e7 100%
-        );
-
-    font-family:
-        Arial,
-        sans-serif;
-
-    font-size:
-        clamp(
-            14px,
-            3vw,
-            21px
-        );
-
-    font-weight:950;
-
-    box-shadow:
-        inset 0 2px 0
-        rgba(255,255,255,.95),
-
-        inset 0 -2px 0
-        rgba(89,111,122,.18),
-
-        0 5px 0
-        #5d7683,
-
-        0 7px 5px
-        rgba(37,59,69,.18);
-
-    transition:
-        transform .06s,
-        box-shadow .06s,
-        background .1s;
-}
-
-.key::after{
-    content:"";
-
-    position:absolute;
-
-    left:5px;
-    right:5px;
-    top:5px;
-    bottom:7px;
-
-    pointer-events:none;
-
-    border:
-        1px solid
-        rgba(74,104,119,.13);
-
-    border-radius:7px;
-}
-
-.key:hover{
-    background:
-        linear-gradient(
-            180deg,
-            #fff,
-            #edf8fd
-        );
-}
-
-.key:active,
-.key.pressed{
-    transform:
-        translateY(4px);
-
-    box-shadow:
-        inset 0 2px 3px
-        rgba(72,95,107,.16),
-
-        0 1px 0
-        #5d7683;
-}
-
-
-/* =========================================================
-   SPACE BAR
-========================================================= */
-
-.spaceRow{
-    display:flex;
-
-    justify-content:center;
-
-    margin-top:4px;
-}
-
-.spaceKey{
-    position:relative;
-
-    width:min(
-        48%,
-        400px
-    );
-
-    min-width:210px;
-
-    height:
-        clamp(
-            42px,
-            7vw,
-            52px
-        );
-
-    border:
-        2px solid
-        #718995;
-
-    border-radius:10px;
-
-    cursor:pointer;
-
-    color:#355363;
-
-    background:
-        linear-gradient(
-            180deg,
-            #fff,
-            #f6fafc 48%,
-            #d3dfe5
-        );
-
-    font-family:inherit;
-
-    font-size:
-        clamp(
-            11px,
-            2vw,
-            13px
-        );
-
-    font-weight:950;
-
-    letter-spacing:1px;
-
-    box-shadow:
-        inset 0 2px 0
-        rgba(255,255,255,.95),
-
-        inset 0 -2px 0
-        rgba(89,111,122,.18),
-
-        0 5px 0
-        #5d7683,
-
-        0 7px 5px
-        rgba(37,59,69,.18);
-
-    transition:.07s;
-}
-
-.spaceKey::after{
-    content:"";
-
-    position:absolute;
-
-    left:9px;
-    right:9px;
-    top:6px;
-    bottom:8px;
-
-    border:
-        1px solid
-        rgba(74,104,119,.12);
-
-    border-radius:7px;
-
-    pointer-events:none;
-}
-
-.spaceKey:active,
-.spaceKey.pressed{
-    transform:
-        translateY(4px);
-
-    box-shadow:
-        0 1px 0
-        #5d7683;
-}
-
-
-/* =========================================================
-   FUNCTION KEYS
-========================================================= */
-
-.functionRow{
-    display:grid;
-
-    grid-template-columns:
-        1fr 1fr 1.35fr;
-
-    gap:8px;
-
-    margin-top:15px;
-}
-
-.functionKey{
-    min-height:45px;
-
-    border:
-        2px solid
-        #687d88;
-
-    border-radius:10px;
-
-    cursor:pointer;
-
-    font-family:inherit;
-
-    font-size:
-        clamp(
-            11px,
-            2vw,
-            13px
-        );
-
-    font-weight:950;
-
-    box-shadow:
-        0 5px 0
-        #566d78;
-
-    transition:.07s;
-}
-
-.functionKey:active{
-    transform:
-        translateY(4px);
-
-    box-shadow:
-        0 1px 0
-        #566d78;
-}
-
-.backspaceKey{
-    color:#24516c;
-
-    background:
-        linear-gradient(
-            180deg,
-            #eaf7ff,
-            #badff2
-        );
-}
-
-.clearKey{
-    color:#933737;
-
-    background:
-        linear-gradient(
-            180deg,
-            #ffefef,
-            #ffcaca
-        );
-}
-
-.checkKey{
-    color:white;
-
-    border-color:#147744;
-
-    background:
-        linear-gradient(
-            180deg,
-            #35c77c,
-            #15975a
-        );
-
-    box-shadow:
-        0 5px 0
-        #0e7542;
-}
-
-.checkKey:active{
-    box-shadow:
-        0 1px 0
-        #0e7542;
-}
-
-
-/* =========================================================
-   SCREW
-========================================================= */
-
-.screw{
-    position:absolute;
-
-    width:8px;
-    height:8px;
-
-    border-radius:50%;
-
-    background:#708591;
-
-    box-shadow:
-        inset 0 1px 2px
-        rgba(0,0,0,.4),
-
-        0 1px 0
-        rgba(255,255,255,.5);
-}
-
-.s1{
-    top:8px;
-    left:8px;
-}
-
-.s2{
-    top:8px;
-    right:8px;
-}
-
-.s3{
-    bottom:8px;
-    left:8px;
-}
-
-.s4{
-    bottom:8px;
-    right:8px;
-}
-
-
-/* =========================================================
-   HINT
-========================================================= */
-
-.hint{
-    padding:
-        9px
-        12px;
-
-    text-align:center;
-
-    color:#496979;
-
-    background:#eaf5f9;
-
-    border-top:
-        2px solid #d0e2e9;
-
-    font-size:11.5px;
-    line-height:1.4;
-
-    font-weight:800;
-}
-
-
-/* =========================================================
-   FINISH
-========================================================= */
-
-.finishOverlay{
-    display:none;
-
-    position:fixed;
-
-    inset:0;
-
-    z-index:1000;
-
-    align-items:center;
-    justify-content:center;
-
-    padding:18px;
-
-    background:
-        rgba(
-            14,
-            35,
-            49,
-            .67
-        );
-
-    backdrop-filter:
-        blur(6px);
-}
-
-.finishOverlay.show{
-    display:flex;
-}
-
-.finishBox{
-    width:min(
-        420px,
-        100%
-    );
-
-    padding:
-        26px 20px;
-
-    text-align:center;
-
-    border:
-        4px solid
-        #225777;
-
-    border-radius:22px;
-
-    background:#fff;
-
-    box-shadow:
-        0 20px 55px
-        rgba(0,0,0,.28);
-}
-
-.finishEmoji{
-    font-size:59px;
-}
-
-.finishTitle{
-    margin:3px 0 5px;
-
-    color:#183b54;
-
-    font-size:27px;
-    font-weight:950;
-}
-
-.finishText{
-    margin:0 0 18px;
-
-    color:#5a7484;
-
-    font-size:14px;
-    font-weight:800;
-}
-
-.finishButtons{
-    display:grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
-    gap:8px;
-}
-
-.finishButtons button{
-    min-height:45px;
-
-    border:none;
-
-    border-radius:11px;
-
-    font-size:13px;
-    font-weight:950;
-
-    cursor:pointer;
-}
-
-.restartBtn{
-    color:white;
-
-    background:#21a865;
-}
-
-.homeFinish{
-    color:#19445f;
-
-    background:#dceffc;
-}
-
-
-/* =========================================================
-   ANIMATIONS
-========================================================= */
-
-@keyframes shake{
-
-    0%{
-        transform:translateX(0);
-    }
-
-    25%{
-        transform:translateX(-5px);
-    }
-
-    50%{
-        transform:translateX(5px);
-    }
-
-    75%{
-        transform:translateX(-4px);
-    }
-
-    100%{
-        transform:translateX(0);
-    }
-}
-
-
-/* =========================================================
-   PHONE
-========================================================= */
-
-@media(max-width:600px){
-
+@media(max-width:540px){
     body{
-        padding:5px;
-    }
-
-    #game{
-        border-width:3px;
-
-        border-radius:17px;
-    }
-
-    .header{
-        min-height:54px;
-
         padding:
-            7px
-            8px;
-
-        gap:7px;
+            max(5px, env(safe-area-inset-top))
+            3px
+            max(5px, env(safe-area-inset-bottom));
     }
 
-    .iconBtn{
-        width:39px;
-        min-width:39px;
-        height:38px;
-
-        font-size:17px;
-    }
-
-    .title{
-        font-size:15px;
-    }
-
-    .progress{
-        font-size:10.5px;
-    }
-
-    .questionSection{
-        padding:10px;
-    }
-
-    .category{
-        padding:4px 8px;
-
-        margin-bottom:6px;
-
-        font-size:10.5px;
-    }
-
-    .question{
-        margin-bottom:8px;
-
-        font-size:14px;
-    }
-
-    .options{
-        grid-template-columns:1fr;
-
-        gap:5px;
-    }
-
-    .option{
-        min-height:34px;
-
-        padding:
-            6px
-            7px;
-
-        font-size:11.5px;
-    }
-
-    .optionBadge{
-        width:21px;
-        min-width:21px;
-        height:21px;
-
-        font-size:10px;
-    }
-
-    .answerSection{
-        padding:8px;
-    }
-
-    .answerDisplay{
-        min-height:50px;
-
-        padding:6px;
-
-        gap:3px;
-    }
-
-    .answerLetter{
-        width:25px;
-        height:30px;
-
-        font-size:14px;
-    }
-
-    .answerSpace{
-        width:13px;
-        height:30px;
-    }
-
-    .answerPlaceholder{
-        font-size:11px;
-    }
-
-    .keyboardSection{
-        padding:
-            12px
-            6px
-            15px;
-    }
-
-    .keyboardFrame{
-        padding:
-            12px
-            5px
-            14px;
-
+    #game-shell{
+        width:98vw;
+        border-radius:18px;
         border-width:2px;
-
-        border-radius:14px;
-
-        box-shadow:
-            inset 0 3px 0
-            rgba(255,255,255,.45),
-
-            inset 0 -4px 0
-            rgba(50,73,85,.18),
-
-            0 6px 0
-            #69808c;
     }
-
-    .keyboardLabel{
-        margin-bottom:9px;
-
-        font-size:10px;
-    }
-
-    .keyRow{
-        gap:3px;
-
-        margin-bottom:6px;
-    }
-
-    .key{
-        width:
-            min(
-                8.4vw,
-                36px
-            );
-
-        height:
-            min(
-                10vw,
-                42px
-            );
-
-        min-width:0;
-
-        border-width:1.5px;
-
-        border-radius:6px;
-
-        font-size:
-            clamp(
-                12px,
-                4vw,
-                16px
-            );
-
-        box-shadow:
-            inset 0 1px 0
-            rgba(255,255,255,.95),
-
-            0 4px 0
-            #5d7683;
-    }
-
-    .key:active,
-    .key.pressed{
-        transform:
-            translateY(3px);
-
-        box-shadow:
-            0 1px 0
-            #5d7683;
-    }
-
-    .spaceKey{
-        width:58%;
-        min-width:165px;
-
-        height:39px;
-
-        font-size:10px;
-
-        box-shadow:
-            0 4px 0
-            #5d7683;
-    }
-
-    .spaceKey:active,
-    .spaceKey.pressed{
-        transform:
-            translateY(3px);
-
-        box-shadow:
-            0 1px 0
-            #5d7683;
-    }
-
-    .functionRow{
-        gap:5px;
-
-        margin-top:11px;
-    }
-
-    .functionKey{
-        min-height:39px;
-
-        padding:4px 2px;
-
-        font-size:10px;
-
-        box-shadow:
-            0 4px 0
-            #566d78;
-    }
-
-    .checkKey{
-        box-shadow:
-            0 4px 0
-            #0e7542;
-    }
-
-    .hint{
-        padding:
-            7px
-            8px;
-
-        font-size:10px;
-    }
-
 }
 
-
-/* SMALL PHONE */
-
-@media(max-width:370px){
-
-    .key{
-        width:
-            min(
-                8vw,
-                32px
-            );
-
-        height:36px;
-
-        font-size:13px;
-    }
-
-    .keyboardFrame{
-        padding-left:3px;
-        padding-right:3px;
-    }
-
-    .keyRow{
-        gap:2px;
-    }
-
-    .spaceKey{
-        width:62%;
-        min-width:150px;
-    }
-
-}
 </style>
 </head>
 
-
 <body>
 
-<div id="game">
-
-    <!-- HEADER -->
-
-    <div class="header">
-
-        <button
-        class="iconBtn"
-        id="homeBtn">
-            ⌂
-        </button>
-
-        <div class="headerText">
-
-            <div class="title">
-                Letter Keycap Challenge
-            </div>
-
-            <div
-            class="progress"
-            id="progress">
-                Soalan 1 / 25
-            </div>
-
-        </div>
-
-        <button
-        class="iconBtn"
-        id="soundBtn">
-            ♫
-        </button>
-
-    </div>
-
-
-    <!-- QUESTION -->
-
-    <section class="questionSection">
-
-        <div
-        class="category"
-        id="category">
-        </div>
-
-        <div
-        class="question"
-        id="question">
-        </div>
-
-        <div
-        class="options"
-        id="options">
-        </div>
-
-    </section>
-
-
-    <!-- ANSWER -->
-
-    <section class="answerSection">
-
-        <div class="answerHead">
-
-            <div class="answerTitle">
-                JAWAPAN ANDA
-            </div>
-
-            <div
-            class="feedback"
-            id="feedback">
-            </div>
-
-        </div>
-
-        <div
-        class="answerDisplay"
-        id="answerDisplay">
-        </div>
-
-    </section>
-
-
-    <!-- KEYBOARD -->
-
-    <section class="keyboardSection">
-
-        <div class="keyboardFrame">
-
-            <div class="screw s1"></div>
-            <div class="screw s2"></div>
-            <div class="screw s3"></div>
-            <div class="screw s4"></div>
-
-            <div class="keyboardLabel">
-                LETTER KEYBOARD
-            </div>
-
-            <div
-            class="keyRow"
-            id="row1">
-            </div>
-
-            <div
-            class="keyRow"
-            id="row2">
-            </div>
-
-            <div
-            class="keyRow"
-            id="row3">
-            </div>
-
-
-            <!-- SPACE BAR -->
-
-            <div class="spaceRow">
-
-                <button
-                class="spaceKey"
-                id="spaceBtn">
-                    SPACE
-                </button>
-
-            </div>
-
-
-            <!-- FUNCTION BUTTONS -->
-
-            <div class="functionRow">
-
-                <button
-                class="functionKey backspaceKey"
-                id="backspaceBtn">
-                    ⌫ UNDUR
-                </button>
-
-                <button
-                class="functionKey clearKey"
-                id="clearBtn">
-                    ✕ PADAM
-                </button>
-
-                <button
-                class="functionKey checkKey"
-                id="checkBtn">
-                    ✓ SEMAK
-                </button>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <div class="hint">
-        Tekan huruf dan SPACE untuk membina jawapan.
-        Laptop boleh guna keyboard sebenar.
-    </div>
-
+<div id="game-shell">
+    <div id="game"></div>
 </div>
-
-
-<!-- FINISH -->
-
-<div
-class="finishOverlay"
-id="finishOverlay">
-
-    <div class="finishBox">
-
-        <div class="finishEmoji">
-            🏆
-        </div>
-
-        <div class="finishTitle">
-            Tahniah!
-        </div>
-
-        <div class="finishText">
-            Anda telah menyelesaikan semua 25 soalan.
-        </div>
-
-        <div class="finishButtons">
-
-            <button
-            class="restartBtn"
-            id="restartBtn">
-                MAIN SEMULA
-            </button>
-
-            <button
-            class="homeFinish"
-            id="finishHomeBtn">
-                HOME
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
 
 <script>
+/* =========================================================
+   MAGNET COLOUR TRAIL — SET 6
+
+   Phaser 3
+   HTML + CSS + JavaScript
+   Semua dalam satu fail HTML.
+
+   Konsep:
+   - Gerakkan magnet dalam grid.
+   - Setiap petak perlu diisi.
+   - Tidak boleh melintasi laluan sendiri.
+   - Boleh undur ke petak sebelumnya untuk undo.
+   - Portal hanya boleh dimasuki sebagai petak terakhir.
+   - Selepas puzzle, jawab satu soalan.
+   - 25 puzzle = 25 soalan.
+   ========================================================= */
+
+const GAME_W = 900;
+const GAME_H = 1080;
+
 
 /* =========================================================
-   QUESTIONS
-========================================================= */
+   SOALAN SET 6
+   ========================================================= */
 
-const questions = [
+const QUESTIONS = [
 
 {
-category:"Apakah Gunanya Magnet?",
-question:"1. [TP1] Pelekat nota bermagnet menggunakan ____.",
-options:[
-"Magnet",
+topic:"Apakah Gunanya Magnet?",
+q:"Seorang murid mahu menghasilkan pin bermagnet seperti aktiviti dalam buku. Magnet apakah yang digunakan?",
+a:[
+"Dua magnet bar",
+"Dua magnet butang",
+"Dua magnet ladam",
+"Dua magnet silinder"
+],
+correct:1
+},
+
+{
+topic:"Apakah Gunanya Magnet?",
+q:"Antara situasi berikut, yang manakah menunjukkan kegunaan magnet dalam kehidupan seharian?",
+a:[
+"Mengukur panjang meja",
+"Mewarnakan gambar",
+"Memadam tulisan pensel",
+"Menutup pintu peti sejuk dengan rapat"
+],
+correct:3
+},
+
+{
+topic:"Apakah Gunanya Magnet?",
+q:"Apakah alat yang boleh memegang skru supaya tidak mudah jatuh?",
+a:[
+"Pembaris plastik",
+"Pemutar skru bermagnet",
+"Pemadam",
+"Guli"
+],
+correct:1
+},
+
+{
+topic:"Apakah Gunanya Magnet?",
+q:"Tanda nama cikgu boleh melekat tanpa pin kerana mengandungi ____.",
+a:[
 "Kayu",
-"Air",
-"Pasir"
+"Kertas",
+"Magnet",
+"Plastik"
 ],
-answer:0
+correct:2
 },
 
 {
-category:"Apakah Gunanya Magnet?",
-question:"2. [TP1] Antara berikut, yang manakah permainan yang dinyatakan menggunakan magnet?",
-options:[
-"Bola sepak",
-"Congkak kayu",
-"Lompat tali",
-"Permainan catur"
+topic:"Apakah Gunanya Magnet?",
+q:"Siti mahu kotak penselnya boleh ditutup rapat seperti contoh dalam buku. Penutup itu perlu mempunyai ____.",
+a:[
+"Magnet",
+"Pemadam",
+"Guli",
+"Kayu aiskrim"
 ],
-answer:3
+correct:0
 },
 
 {
-category:"Apakah Gunanya Magnet?",
-question:"3. [TP2] Mengapakah magnet dikatakan berguna dalam kehidupan seharian?",
-options:[
-"Magnet digunakan pada pelbagai barang dan permainan",
-"Magnet hanya digunakan pada tumbuhan",
-"Magnet hanya digunakan di makmal",
-"Magnet hanya digunakan di dalam air"
-],
-answer:0
-},
-
-{
-category:"Apakah Gunanya Magnet?",
-question:"4. [TP2] Dalam permainan memancing ikan bermagnet, apakah fungsi magnet?",
-options:[
-"Mewarnakan ikan",
-"Membesarkan ikan",
-"Membantu menarik ikan permainan",
-"Memanaskan ikan"
-],
-answer:2
-},
-
-{
-category:"Apakah Gunanya Magnet?",
-question:"5. [TP1] Pin bermagnet dalam aktiviti Rekreasi Sains menggunakan magnet berbentuk ____.",
-options:[
-"Bar",
-"Butang",
-"Ladam",
-"Silinder"
-],
-answer:1
-},
-
-{
-category:"Bentuk Magnet",
-question:"6. [TP1] Apakah nama magnet bulat yang mempunyai lubang di tengah?",
-options:[
-"Magnet silinder",
+topic:"Bentuk Magnet",
+q:"Yang manakah nama magnet yang berbentuk seperti butang?",
+a:[
+"Magnet buku",
+"Magnet pemadam",
 "Magnet butang",
-"Magnet cincin",
-"Magnet bar"
+"Magnet pensel"
 ],
-answer:2
+correct:2
 },
 
 {
-category:"Bentuk Magnet",
-question:"7. [TP2] Magnet yang kelihatan seperti batang segi empat memanjang dinamakan ____.",
-options:[
-"Magnet bar",
-"Magnet butang",
-"Magnet cincin",
-"Magnet ladam"
-],
-answer:0
-},
-
-{
-category:"Bentuk Magnet",
-question:"8. [TP2] Sebuah magnet berbentuk bulat dengan lubang di tengah. Apakah namanya?",
-options:[
-"Magnet butang",
+topic:"Bentuk Magnet",
+q:"Apakah nama magnet yang berbentuk seperti ladam kuda?",
+a:[
 "Magnet cincin",
 "Magnet ladam",
+"Magnet butang",
 "Magnet bar"
 ],
-answer:1
+correct:1
 },
 
 {
-category:"Bentuk Magnet",
-question:"9. [TP2] Sebuah magnet berbentuk bulat tanpa lubang seperti butang. Apakah namanya?",
-options:[
-"Magnet silinder",
-"Magnet bentuk U",
-"Magnet cincin",
-"Magnet butang"
+topic:"Bentuk Magnet",
+q:"Pasangan manakah terdiri daripada magnet ladam dan satu lagi bentuk magnet yang betul?",
+a:[
+"Magnet bunga dan magnet akar",
+"Magnet kertas dan magnet kayu",
+"Magnet air dan magnet pasir",
+"Magnet ladam dan magnet bentuk U"
 ],
-answer:3
+correct:3
 },
 
 {
-category:"Bentuk Magnet",
-question:"10. [TP1] Yang manakah nama magnet yang berbentuk huruf U?",
-options:[
-"Magnet bentuk U",
-"Magnet bentuk akar",
-"Magnet bentuk daun",
-"Magnet bentuk bunga"
+topic:"Bentuk Magnet",
+q:"Apakah perbezaan yang dinyatakan antara magnet ladam dengan magnet bentuk U?",
+a:[
+"Kutub magnet ladam lebih rapat",
+"Magnet U tidak mempunyai kutub",
+"Magnet U diperbuat daripada kayu",
+"Magnet ladam tidak mempunyai kutub"
 ],
-answer:0
+correct:0
 },
 
 {
-category:"Hebatnya Magnet",
-question:"11. [TP1] Magnet dapat menarik objek, tetapi ____ objek dapat ditarik magnet.",
-options:[
-"Hanya satu",
-"Tiada",
-"Bukan semua",
-"Semua"
+topic:"Bentuk Magnet",
+q:"Yang manakah nama magnet yang berbentuk silinder?",
+a:[
+"Magnet akar",
+"Magnet segitiga daun",
+"Magnet bunga",
+"Magnet silinder"
 ],
-answer:2
+correct:3
 },
 
 {
-category:"Hebatnya Magnet",
-question:"12. [TP1] Objek yang digunakan bersama bedak dalam contoh pengasingan ialah ____.",
-options:[
+topic:"Hebatnya Magnet",
+q:"Jika objek bergerak ke arah magnet apabila magnet didekatkan, tindakan itu disebut ____.",
+a:[
+"Memadam",
+"Mengukur",
+"Menarik",
+"Menolak"
+],
+correct:2
+},
+
+{
+topic:"Hebatnya Magnet",
+q:"Objek plastik berbentuk pembaris manakah yang tidak dapat ditarik magnet?",
+a:[
+"Pembaris plastik",
+"Klip kertas",
+"Paku",
+"Skru"
+],
+correct:0
+},
+
+{
+topic:"Hebatnya Magnet",
+q:"Yang manakah pasangan objek yang kedua-duanya tidak dapat ditarik magnet?",
+a:[
+"Pin baju dan skru",
+"Guli dan pemadam",
+"Klip kertas dan paku",
+"Skru dan paku"
+],
+correct:1
+},
+
+{
+topic:"Hebatnya Magnet",
+q:"Yang manakah pasangan objek yang menunjukkan satu boleh ditarik dan satu tidak boleh ditarik?",
+a:[
+"Skru dan guli",
+"Guli dan pemadam",
+"Paku dan skru",
+"Pin baju dan klip kertas"
+],
+correct:0
+},
+
+{
+topic:"Hebatnya Magnet",
+q:"Objek yang digunakan untuk memadam tulisan manakah yang tidak dapat ditarik magnet?",
+a:[
+"Skru",
+"Klip kertas",
+"Paku",
+"Pemadam"
+],
+correct:3
+},
+
+{
+topic:"Tarikan dan Tolakan Magnet",
+q:"Jika U berhadapan dengan U, tindakan yang betul ialah ____.",
+a:[
+"Tarikan",
+"Tolakan",
+"Tiada tindakan",
+"Pemanasan"
+],
+correct:1
+},
+
+{
+topic:"Tarikan dan Tolakan Magnet",
+q:"Apabila magnet saling menjauh kerana kutub yang sama, tindakan itu ialah ____.",
+a:[
+"Pengukuran",
+"Pemadaman",
+"Tolakan",
+"Tarikan"
+],
+correct:2
+},
+
+{
+topic:"Tarikan dan Tolakan Magnet",
+q:"Kutub Utara didekatkan dengan kutub Utara. Apakah yang berlaku?",
+a:[
+"Melekat pada plastik",
+"Menolak",
+"Mencair",
+"Menarik"
+],
+correct:1
+},
+
+{
+topic:"Tarikan dan Tolakan Magnet",
+q:"Jika S berhadapan dengan U, tindakan yang betul ialah ____.",
+a:[
+"Tolakan",
+"Tiada tindakan",
+"Pemanasan",
+"Tarikan"
+],
+correct:3
+},
+
+{
+topic:"Tarikan dan Tolakan Magnet",
+q:"Dua magnet bar digunakan dalam aktiviti untuk mengkaji ____.",
+a:[
+"Tarikan dan tolakan",
+"Bau magnet",
+"Warna magnet",
+"Rasa magnet"
+],
+correct:0
+},
+
+{
+topic:"Kekuatan Magnet",
+q:"Magnet digerakkan mendekati klip kertas sehingga klip kertas ____.",
+a:[
+"Hilang",
+"Mencair",
+"Ditarik",
+"Bertukar warna"
+],
+correct:2
+},
+
+{
+topic:"Kekuatan Magnet",
+q:"Dua magnet diuji dengan jenis klip kertas yang sama. Magnet R menarik lebih banyak klip. Apakah kesimpulan paling sesuai?",
+a:[
+"Klip kertas bukan objek tarikan",
+"Magnet R lebih lemah",
+"Kedua-duanya sama",
+"Magnet R lebih kuat"
+],
+correct:3
+},
+
+{
+topic:"Kekuatan Magnet",
+q:"Dalam aktiviti kekuatan magnet, klip kertas disusun di sisi ____.",
+a:[
+"Tingkap",
+"Pembaris",
+"Buku",
+"Pintu"
+],
+correct:1
+},
+
+{
+topic:"Kekuatan Magnet",
+q:"Untuk membandingkan kekuatan magnet dengan adil, klip kertas perlu disusun dan jarak diperhatikan menggunakan ____.",
+a:[
+"Pembaris",
 "Guli",
 "Pemadam",
-"Pembaris plastik",
-"Klip kertas"
+"Kayu aiskrim"
 ],
-answer:3
+correct:0
 },
 
 {
-category:"Hebatnya Magnet",
-question:"13. [TP2] Mengapakah magnet sesuai digunakan untuk mengambil klip kertas daripada bedak?",
-options:[
-"Klip kertas larut dalam bedak",
-"Klip kertas dapat ditarik magnet",
-"Bedak menjadi magnet",
-"Magnet menukar bedak menjadi air"
+topic:"Kekuatan Magnet",
+q:"Kekuatan magnet boleh dibandingkan dengan melihat bilangan klip kertas yang ____.",
+a:[
+"Dipotong",
+"Diwarnakan",
+"Ditarik",
+"Dipadam"
 ],
-answer:1
-},
-
-{
-category:"Hebatnya Magnet",
-question:"14. [TP2] Sebuah magnet didekatkan kepada pensel tetapi pensel tidak bergerak ke arahnya. Apakah kesimpulan yang sesuai?",
-options:[
-"Pensel tidak dapat ditarik magnet",
-"Pensel menolak semua magnet",
-"Pensel ialah magnet",
-"Pensel mempunyai dua kutub"
-],
-answer:0
-},
-
-{
-category:"Hebatnya Magnet",
-question:"15. [TP1] Dalam aktiviti buku, tindakan magnet terhadap objek ditanda sebagai menarik atau ____.",
-options:[
-"Berbunyi",
-"Berputar",
-"Bercahaya",
-"Tidak menarik"
-],
-answer:3
-},
-
-{
-category:"Tarikan dan Tolakan Magnet",
-question:"16. [TP1] Huruf U pada magnet mewakili kutub ____.",
-options:[
-"Timur",
-"Utara",
-"Barat",
-"Selatan"
-],
-answer:1
-},
-
-{
-category:"Tarikan dan Tolakan Magnet",
-question:"17. [TP1] Apakah nama kutub yang berlainan daripada kutub Utara?",
-options:[
-"Kutub Tengah",
-"Kutub Barat",
-"Kutub Selatan",
-"Kutub Timur"
-],
-answer:2
-},
-
-{
-category:"Tarikan dan Tolakan Magnet",
-question:"18. [TP2] Magnet A menunjukkan kutub Utara menghadap kutub Utara magnet B. Apakah yang akan berlaku?",
-options:[
-"Kedua-dua magnet menarik",
-"Kedua-dua magnet menolak",
-"Kedua-dua magnet mencair",
-"Tiada kutub pada magnet"
-],
-answer:1
-},
-
-{
-category:"Tarikan dan Tolakan Magnet",
-question:"19. [TP2] Jika S berhadapan dengan S, tindakan yang betul ialah ____.",
-options:[
-"Tarikan",
-"Pemanasan",
-"Tiada tindakan",
-"Tolakan"
-],
-answer:3
-},
-
-{
-category:"Tarikan dan Tolakan Magnet",
-question:"20. [TP2] Jika U berhadapan dengan S, tindakan yang betul ialah ____.",
-options:[
-"Tarikan",
-"Pemanasan",
-"Tiada tindakan",
-"Tolakan"
-],
-answer:0
-},
-
-{
-category:"Kekuatan Magnet",
-question:"21. [TP1] Magnet yang lebih kuat dapat menarik klip kertas dari kedudukan yang lebih ____.",
-options:[
-"Dekat sahaja",
-"Gelap",
-"Jauh",
-"Rendah sahaja"
-],
-answer:2
-},
-
-{
-category:"Kekuatan Magnet",
-question:"22. [TP1] Magnet yang lebih kuat dapat menarik ____ klip kertas.",
-options:[
-"Tiada",
-"Lebih banyak",
-"Satu sahaja",
-"Lebih sedikit"
-],
-answer:1
-},
-
-{
-category:"Kekuatan Magnet",
-question:"23. [TP2] Magnet A menarik 2 klip dan magnet B menarik 7 klip. Apakah kesimpulan yang betul?",
-options:[
-"Kedua-duanya lemah",
-"Kedua-duanya sama kuat",
-"Magnet A lebih kuat",
-"Magnet B lebih kuat"
-],
-answer:3
-},
-
-{
-category:"Kekuatan Magnet",
-question:"24. [TP2] Mengapakah magnet yang menarik klip dari lebih jauh dianggap lebih kuat?",
-options:[
-"Tarikannya bertindak dari jarak yang lebih jauh",
-"Saiznya mesti lebih besar",
-"Warnanya lebih terang",
-"Bentuknya mesti bulat"
-],
-answer:0
-},
-
-{
-category:"Kekuatan Magnet",
-question:"25. [TP2] Jika satu magnet menarik lebih banyak klip kertas daripada magnet lain, apakah kesimpulannya?",
-options:[
-"Magnet itu tiada kutub",
-"Kedua-duanya pasti sama",
-"Magnet itu lebih kuat",
-"Magnet itu lebih lemah"
-],
-answer:2
+correct:2
 }
 
 ];
 
 
 /* =========================================================
-   STATE
-========================================================= */
+   WARNA
+   ========================================================= */
 
-let currentQuestion = 0;
-
-let currentAnswer = "";
-
-let locked = false;
-
-let soundEnabled = true;
-
-
-/* =========================================================
-   ELEMENTS
-========================================================= */
-
-const categoryEl =
-document.getElementById("category");
-
-const questionEl =
-document.getElementById("question");
-
-const optionsEl =
-document.getElementById("options");
-
-const progressEl =
-document.getElementById("progress");
-
-const answerDisplay =
-document.getElementById("answerDisplay");
-
-const feedbackEl =
-document.getElementById("feedback");
-
-const finishOverlay =
-document.getElementById("finishOverlay");
-
-const spaceBtn =
-document.getElementById("spaceBtn");
-
-
-/* =========================================================
-   KEYBOARD ROWS
-========================================================= */
-
-const keyboardRows = [
-
-[
-"Q","W","E","R","T",
-"Y","U","I","O","P"
-],
-
-[
-"A","S","D","F","G",
-"H","J","K","L"
-],
-
-[
-"Z","X","C","V",
-"B","N","M"
-]
-
+const PALETTES = [
+    {
+        bg:0xdff4ff,
+        panel:0xffffff,
+        board:0xbfe2f2,
+        tile:0xdaf1f8,
+        painted:0xffd166,
+        trail:0xf5aa28
+    },
+    {
+        bg:0xe4f6f1,
+        panel:0xffffff,
+        board:0xb9e1da,
+        tile:0xd8f1ec,
+        painted:0xffcf78,
+        trail:0xef9d35
+    },
+    {
+        bg:0xf0ecff,
+        panel:0xffffff,
+        board:0xd7ccf5,
+        tile:0xeee9ff,
+        painted:0xffcf70,
+        trail:0xf1a637
+    },
+    {
+        bg:0xfff1df,
+        panel:0xffffff,
+        board:0xf0d4aa,
+        tile:0xffeed5,
+        painted:0x8ed7e8,
+        trail:0x48abc3
+    },
+    {
+        bg:0xe7f4df,
+        panel:0xffffff,
+        board:0xc7e2b8,
+        tile:0xe1f1d8,
+        painted:0xffcf69,
+        trail:0xf0a82e
+    }
 ];
 
 
 /* =========================================================
-   BUILD KEYBOARD
-========================================================= */
+   AUDIO — TIDAK GUNA FAIL LUAR
+   ========================================================= */
 
-function buildKeyboard(){
-
-    const rows = [
-
-        document.getElementById("row1"),
-
-        document.getElementById("row2"),
-
-        document.getElementById("row3")
-
-    ];
-
-    rows.forEach(
-        row=>{
-            row.innerHTML = "";
-        }
-    );
-
-    keyboardRows.forEach(
-        (letters,rowIndex)=>{
-
-            letters.forEach(
-                letter=>{
-
-                    const button =
-                    document.createElement(
-                        "button"
-                    );
-
-                    button.className =
-                        "key";
-
-                    button.textContent =
-                        letter;
-
-                    button.dataset.letter =
-                        letter;
-
-                    button.addEventListener(
-                        "pointerdown",
-                        ()=>{
-
-                            addLetter(
-                                letter,
-                                button
-                            );
-
-                        }
-                    );
-
-                    rows[
-                        rowIndex
-                    ]
-                    .appendChild(
-                        button
-                    );
-
-                }
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   NORMALIZE ANSWER
-
-   Sekarang SPACE diambil kira.
-   Multiple spaces akan jadi satu space sahaja.
-========================================================= */
-
-function normalizeAnswer(text){
-
-    return text
-
-    .toUpperCase()
-
-    .normalize("NFD")
-
-    .replace(
-        /[\u0300-\u036f]/g,
-        ""
-    )
-
-    .replace(
-        /[^A-Z ]/g,
-        ""
-    )
-
-    .replace(
-        /\s+/g,
-        " "
-    )
-
-    .trim();
-
-}
-
-
-/* =========================================================
-   ADD LETTER
-========================================================= */
-
-function addLetter(
-    letter,
-    button=null
-){
-
-    if(locked)
-        return;
-
-    audio.unlock();
-
-    currentAnswer +=
-        letter;
-
-    renderAnswer();
-
-    clearFeedback();
-
-    audio.key();
-
-    animateKey(
-        button
-    );
-
-}
-
-
-/* =========================================================
-   ADD SPACE
-========================================================= */
-
-function addSpace(){
-
-    if(locked)
-        return;
-
-    if(
-        currentAnswer.length === 0
-    ){
-        return;
-    }
-
-    /*
-       Tak benarkan space berganda.
-    */
-
-    if(
-        currentAnswer.endsWith(" ")
-    ){
-        return;
-    }
-
-    currentAnswer += " ";
-
-    renderAnswer();
-
-    clearFeedback();
-
-    audio.space();
-
-    animateKey(
-        spaceBtn
-    );
-
-}
-
-
-/* =========================================================
-   ANIMATE KEY
-========================================================= */
-
-function animateKey(button){
-
-    if(!button)
-        return;
-
-    button.classList.add(
-        "pressed"
-    );
-
-    setTimeout(()=>{
-
-        button.classList.remove(
-            "pressed"
-        );
-
-    },90);
-
-}
-
-
-/* =========================================================
-   RENDER ANSWER
-========================================================= */
-
-function renderAnswer(){
-
-    answerDisplay.innerHTML = "";
-
-    answerDisplay
-    .classList
-    .remove(
-        "isCorrect",
-        "isWrong"
-    );
-
-    if(
-        currentAnswer.length === 0
-    ){
-
-        const placeholder =
-        document.createElement(
-            "div"
-        );
-
-        placeholder.className =
-            "answerPlaceholder";
-
-        placeholder.textContent =
-            "Tekan keycap untuk bina jawapan...";
-
-        answerDisplay.appendChild(
-            placeholder
-        );
-
-        return;
-
-    }
-
-    for(
-        const character
-        of currentAnswer
-    ){
-
-        if(
-            character === " "
-        ){
-
-            const space =
-            document.createElement(
-                "div"
-            );
-
-            space.className =
-                "answerSpace";
-
-            answerDisplay.appendChild(
-                space
-            );
-
-        }
-        else{
-
-            const letter =
-            document.createElement(
-                "div"
-            );
-
-            letter.className =
-                "answerLetter";
-
-            letter.textContent =
-                character;
-
-            answerDisplay.appendChild(
-                letter
-            );
-
-        }
-
-    }
-
-}
-
-
-/* =========================================================
-   SHOW QUESTION
-========================================================= */
-
-function showQuestion(){
-
-    locked = false;
-
-    currentAnswer = "";
-
-    const data =
-        questions[
-            currentQuestion
-        ];
-
-    categoryEl.textContent =
-        data.category;
-
-    questionEl.textContent =
-        data.question;
-
-    progressEl.textContent =
-        `Soalan ${currentQuestion + 1} / ${questions.length}`;
-
-    optionsEl.innerHTML = "";
-
-    const labels =
-        [
-            "A",
-            "B",
-            "C",
-            "D"
-        ];
-
-    data.options.forEach(
-        (option,index)=>{
-
-            const box =
-            document.createElement(
-                "div"
-            );
-
-            box.className =
-                "option";
-
-            const badge =
-            document.createElement(
-                "div"
-            );
-
-            badge.className =
-                "optionBadge";
-
-            badge.textContent =
-                labels[index];
-
-            const text =
-            document.createElement(
-                "div"
-            );
-
-            text.textContent =
-                option;
-
-            box.appendChild(
-                badge
-            );
-
-            box.appendChild(
-                text
-            );
-
-            optionsEl.appendChild(
-                box
-            );
-
-        }
-    );
-
-    clearFeedback();
-
-    renderAnswer();
-
-}
-
-
-/* =========================================================
-   BACKSPACE
-========================================================= */
-
-function backspace(){
-
-    if(locked)
-        return;
-
-    if(
-        currentAnswer.length === 0
-    ){
-        return;
-    }
-
-    currentAnswer =
-        currentAnswer.slice(
-            0,
-            -1
-        );
-
-    renderAnswer();
-
-    clearFeedback();
-
-    audio.back();
-
-}
-
-
-/* =========================================================
-   CLEAR
-========================================================= */
-
-function clearAnswer(){
-
-    if(locked)
-        return;
-
-    if(
-        currentAnswer.length === 0
-    ){
-        return;
-    }
-
-    currentAnswer = "";
-
-    renderAnswer();
-
-    clearFeedback();
-
-    audio.back();
-
-}
-
-
-/* =========================================================
-   FEEDBACK
-========================================================= */
-
-function clearFeedback(){
-
-    feedbackEl.textContent = "";
-
-    feedbackEl.className =
-        "feedback";
-
-}
-
-
-/* =========================================================
-   CHECK ANSWER
-========================================================= */
-
-function checkAnswer(){
-
-    if(locked)
-        return;
-
-    const userAnswer =
-        normalizeAnswer(
-            currentAnswer
-        );
-
-    if(
-        userAnswer.length === 0
-    ){
-
-        feedbackEl.textContent =
-            "Masukkan jawapan dahulu.";
-
-        feedbackEl.className =
-            "feedback wrong";
-
-        audio.wrong();
-
-        return;
-
-    }
-
-    const data =
-        questions[
-            currentQuestion
-        ];
-
-    const correctAnswer =
-        normalizeAnswer(
-            data.options[
-                data.answer
-            ]
-        );
-
-    if(
-        userAnswer ===
-        correctAnswer
-    ){
-
-        locked = true;
-
-        feedbackEl.textContent =
-            "Betul!";
-
-        feedbackEl.className =
-            "feedback correct";
-
-        answerDisplay
-        .classList
-        .add(
-            "isCorrect"
-        );
-
-        audio.correct();
-
-        setTimeout(()=>{
-
-            currentQuestion++;
-
-            if(
-                currentQuestion >=
-                questions.length
-            ){
-
-                finishGame();
-
-            }
-            else{
-
-                showQuestion();
-
-            }
-
-        },950);
-
-    }
-    else{
-
-        feedbackEl.textContent =
-            "Belum tepat. Cuba lagi.";
-
-        feedbackEl.className =
-            "feedback wrong";
-
-        answerDisplay
-        .classList
-        .add(
-            "isWrong"
-        );
-
-        audio.wrong();
-
-        setTimeout(()=>{
-
-            answerDisplay
-            .classList
-            .remove(
-                "isWrong"
-            );
-
-        },400);
-
-    }
-
-}
-
-
-/* =========================================================
-   FINISH
-========================================================= */
-
-function finishGame(){
-
-    locked = true;
-
-    audio.win();
-
-    finishOverlay
-    .classList
-    .add(
-        "show"
-    );
-
-}
-
-
-/* =========================================================
-   BUTTON EVENTS
-========================================================= */
-
-spaceBtn.addEventListener(
-    "pointerdown",
-    addSpace
-);
-
-document
-.getElementById("backspaceBtn")
-.addEventListener(
-    "click",
-    backspace
-);
-
-document
-.getElementById("clearBtn")
-.addEventListener(
-    "click",
-    clearAnswer
-);
-
-document
-.getElementById("checkBtn")
-.addEventListener(
-    "click",
-    checkAnswer
-);
-
-document
-.getElementById("homeBtn")
-.addEventListener(
-    "click",
-    ()=>{
-
-        window.location.href =
-            "index.html";
-
-    }
-);
-
-document
-.getElementById("finishHomeBtn")
-.addEventListener(
-    "click",
-    ()=>{
-
-        window.location.href =
-            "index.html";
-
-    }
-);
-
-document
-.getElementById("restartBtn")
-.addEventListener(
-    "click",
-    ()=>{
-
-        currentQuestion = 0;
-
-        currentAnswer = "";
-
-        locked = false;
-
-        finishOverlay
-        .classList
-        .remove(
-            "show"
-        );
-
-        showQuestion();
-
-    }
-);
-
-
-/* =========================================================
-   PHYSICAL KEYBOARD
-========================================================= */
-
-document.addEventListener(
-    "keydown",
-    event=>{
-
-        if(locked)
-            return;
-
-        const key =
-            event.key;
-
-        /*
-           A-Z
-        */
-
-        if(
-            /^[a-zA-Z]$/
-            .test(key)
-        ){
-
-            const letter =
-                key.toUpperCase();
-
-            const button =
-                document.querySelector(
-                    `.key[data-letter="${letter}"]`
-                );
-
-            addLetter(
-                letter,
-                button
-            );
-
-            return;
-
-        }
-
-        /*
-           SPACE
-        */
-
-        if(
-            event.code ===
-            "Space"
-        ){
-
-            event.preventDefault();
-
-            addSpace();
-
-            return;
-
-        }
-
-        /*
-           BACKSPACE
-        */
-
-        if(
-            event.key ===
-            "Backspace"
-        ){
-
-            event.preventDefault();
-
-            backspace();
-
-            return;
-
-        }
-
-        /*
-           ENTER
-        */
-
-        if(
-            event.key ===
-            "Enter"
-        ){
-
-            event.preventDefault();
-
-            checkAnswer();
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   AUDIO
-========================================================= */
-
-class SoundEngine{
+class GameAudio{
 
     constructor(){
-
         this.ctx = null;
+        this.master = null;
 
+        this.enabled = true;
         this.started = false;
 
         this.musicTimer = null;
-
         this.musicIndex = 0;
-
-        this.notes = [
-
-            261.63,
-            329.63,
-            392,
-            329.63,
-
-            293.66,
-            349.23,
-            440,
-            349.23
-
-        ];
-
     }
-
 
     unlock(){
 
-        if(
-            !soundEnabled
-        ){
-            return;
-        }
+        if(!this.enabled) return;
 
-        if(
-            !this.ctx
-        ){
+        if(!this.ctx){
 
             const AC =
                 window.AudioContext ||
                 window.webkitAudioContext;
 
-            if(!AC)
-                return;
+            if(!AC) return;
 
-            this.ctx =
-                new AC();
+            this.ctx = new AC();
 
+            this.master =
+                this.ctx.createGain();
+
+            this.master.gain.value = 0.16;
+
+            this.master.connect(
+                this.ctx.destination
+            );
         }
 
-        if(
-            this.ctx.state ===
-            "suspended"
-        ){
-
+        if(this.ctx.state === "suspended"){
             this.ctx.resume();
-
         }
 
-        if(
-            !this.started
-        ){
-
+        if(!this.started){
             this.started = true;
-
             this.startMusic();
-
         }
-
     }
-
 
     tone(
-        frequency,
-        duration=.08,
-        volume=.04,
-        type="sine"
+        frequency = 440,
+        duration = .08,
+        type = "sine",
+        volume = .12
     ){
 
-        if(
-            !soundEnabled ||
-            !this.ctx
-        ){
-            return;
-        }
+        if(!this.enabled) return;
+        if(!this.ctx) return;
+
+        const now =
+            this.ctx.currentTime;
 
         const osc =
-            this.ctx
-            .createOscillator();
+            this.ctx.createOscillator();
 
         const gain =
-            this.ctx
-            .createGain();
+            this.ctx.createGain();
 
-        osc.type =
-            type;
+        osc.type = type;
+        osc.frequency.value = frequency;
 
-        osc.frequency.value =
-            frequency;
+        gain.gain.setValueAtTime(
+            0.0001,
+            now
+        );
 
-        gain.gain
-        .setValueAtTime(
+        gain.gain.exponentialRampToValueAtTime(
             volume,
-            this.ctx.currentTime
+            now + .015
         );
 
-        gain.gain
-        .exponentialRampToValueAtTime(
-            .001,
-            this.ctx.currentTime +
-            duration
+        gain.gain.exponentialRampToValueAtTime(
+            0.0001,
+            now + duration
         );
 
-        osc.connect(
-            gain
-        );
+        osc.connect(gain);
+        gain.connect(this.master);
 
-        gain.connect(
-            this.ctx.destination
-        );
-
-        osc.start();
-
-        osc.stop(
-            this.ctx.currentTime +
-            duration
-        );
-
+        osc.start(now);
+        osc.stop(now + duration + .03);
     }
 
-
-    startMusic(){
-
-        if(
-            this.musicTimer
-        ){
-            return;
-        }
-
-        this.musicTimer =
-        setInterval(()=>{
-
-            if(
-                !soundEnabled ||
-                !this.ctx
-            ){
-                return;
-            }
-
-            const note =
-                this.notes[
-                    this.musicIndex %
-                    this.notes.length
-                ];
-
-            this.tone(
-                note,
-                .22,
-                .009,
-                "sine"
-            );
-
-            if(
-                this.musicIndex %
-                4 === 0
-            ){
-
-                this.tone(
-                    note / 2,
-                    .25,
-                    .006,
-                    "triangle"
-                );
-
-            }
-
-            this.musicIndex++;
-
-        },420);
-
-    }
-
-
-    key(){
-
-        this.unlock();
-
-        this.tone(
-            500,
-            .04,
-            .025,
-            "square"
-        );
-
-        setTimeout(()=>{
-
-            this.tone(
-                660,
-                .035,
-                .018,
-                "square"
-            );
-
-        },30);
-
-    }
-
-
-    space(){
-
-        this.unlock();
-
-        this.tone(
-            390,
-            .055,
-            .027,
-            "triangle"
-        );
-
-        setTimeout(()=>{
-
-            this.tone(
-                450,
-                .045,
-                .018,
-                "triangle"
-            );
-
-        },35);
-
-    }
-
-
-    back(){
-
-        this.unlock();
-
+    move(){
         this.tone(
             290,
-            .07,
-            .03,
-            "triangle"
+            .045,
+            "triangle",
+            .055
         );
-
     }
 
+    back(){
+        this.tone(
+            210,
+            .06,
+            "triangle",
+            .065
+        );
+    }
+
+    blocked(){
+
+        this.tone(
+            125,
+            .1,
+            "square",
+            .055
+        );
+    }
+
+    complete(){
+
+        this.tone(523,.10,"sine",.12);
+
+        setTimeout(()=>{
+            this.tone(659,.12,"sine",.12);
+        },90);
+
+        setTimeout(()=>{
+            this.tone(784,.18,"sine",.12);
+        },180);
+    }
 
     correct(){
 
-        this.unlock();
-
-        [
-            523,
-            659,
-            784,
-            1046
-        ]
-        .forEach(
-            (note,index)=>{
-
-                setTimeout(()=>{
-
-                    this.tone(
-                        note,
-                        .15,
-                        .045,
-                        "triangle"
-                    );
-
-                },index*85);
-
-            }
-        );
-
-    }
-
-
-    wrong(){
-
-        this.unlock();
-
         this.tone(
-            170,
-            .13,
-            .045,
-            "sawtooth"
+            660,
+            .10,
+            "triangle",
+            .13
         );
 
         setTimeout(()=>{
-
             this.tone(
-                135,
+                880,
                 .16,
-                .035,
-                "sawtooth"
+                "triangle",
+                .13
             );
+        },100);
+    }
 
-        },90);
+    wrong(){
 
+        this.tone(
+            180,
+            .16,
+            "sawtooth",
+            .08
+        );
+    }
+
+    hint(){
+
+        this.tone(
+            720,
+            .06,
+            "sine",
+            .08
+        );
+
+        setTimeout(()=>{
+            this.tone(
+                920,
+                .09,
+                "sine",
+                .08
+            );
+        },65);
+    }
+
+    startMusic(){
+
+        if(this.musicTimer) return;
+
+        const melody = [
+            261.63,
+            329.63,
+            392.00,
+            329.63,
+            293.66,
+            349.23,
+            440.00,
+            349.23,
+            261.63,
+            329.63,
+            392.00,
+            493.88,
+            440.00,
+            392.00,
+            329.63,
+            293.66
+        ];
+
+        this.musicTimer =
+            setInterval(()=>{
+
+                if(
+                    !this.enabled ||
+                    !this.ctx
+                ) return;
+
+                const f =
+                    melody[
+                        this.musicIndex %
+                        melody.length
+                    ];
+
+                this.musicIndex++;
+
+                this.tone(
+                    f,
+                    .20,
+                    "sine",
+                    .026
+                );
+
+            },420);
+    }
+
+    toggle(){
+
+        this.enabled = !this.enabled;
+
+        if(this.enabled){
+            this.unlock();
+        }
+
+        return this.enabled;
+    }
+
+}
+
+const AUDIO = new GameAudio();
+
+
+/* =========================================================
+   MAIN SCENE
+   ========================================================= */
+
+class MagnetGame extends Phaser.Scene{
+
+    constructor(){
+        super("MagnetGame");
     }
 
 
-    win(){
+    create(){
 
-        this.unlock();
+        this.stageIndex = 0;
 
-        [
-            523,
-            659,
-            784,
-            1046,
-            1318
-        ]
-        .forEach(
-            (note,index)=>{
+        this.firstTryCorrect = 0;
+        this.questionHadMistake = false;
 
-                setTimeout(()=>{
+        this.locked = false;
+        this.questionOpen = false;
 
-                    this.tone(
-                        note,
-                        .23,
-                        .05,
-                        "triangle"
-                    );
+        this.swipeStart = null;
 
-                },index*110);
+        this.createBackground();
+        this.createHeader();
+        this.createBoardGraphics();
+        this.createControls();
+        this.createMagnet();
 
+        this.setupKeyboard();
+        this.setupSwipe();
+
+        this.input.on(
+            "pointerdown",
+            ()=>{
+                AUDIO.unlock();
             }
         );
 
+        this.startStage(0);
+    }
+
+
+/* =========================================================
+   BACKGROUND
+   ========================================================= */
+
+    createBackground(){
+
+        this.bg =
+            this.add.graphics();
+
+        this.decor =
+            this.add.graphics();
+
+        this.drawBackground();
+
+        for(let i=0;i<18;i++){
+
+            const x =
+                Phaser.Math.Between(
+                    20,
+                    GAME_W - 20
+                );
+
+            const y =
+                Phaser.Math.Between(
+                    180,
+                    GAME_H - 100
+                );
+
+            const circle =
+                this.add.circle(
+                    x,
+                    y,
+                    Phaser.Math.Between(
+                        3,
+                        8
+                    ),
+                    0xffffff,
+                    Phaser.Math.FloatBetween(
+                        .12,
+                        .35
+                    )
+                );
+
+            this.tweens.add({
+                targets:circle,
+                alpha:{
+                    from:.08,
+                    to:.4
+                },
+                duration:
+                    Phaser.Math.Between(
+                        1300,
+                        2600
+                    ),
+                yoyo:true,
+                repeat:-1,
+                delay:
+                    Phaser.Math.Between(
+                        0,
+                        1000
+                    )
+            });
+        }
+    }
+
+
+    drawBackground(){
+
+        this.bg.clear();
+
+        const p =
+            PALETTES[
+                this.stageIndex %
+                PALETTES.length
+            ];
+
+        this.bg.fillStyle(
+            p.bg,
+            1
+        );
+
+        this.bg.fillRect(
+            0,
+            0,
+            GAME_W,
+            GAME_H
+        );
+
+        this.bg.fillStyle(
+            0xffffff,
+            .18
+        );
+
+        for(
+            let y=-100;
+            y<GAME_H+100;
+            y+=125
+        ){
+
+            for(
+                let x=-100;
+                x<GAME_W+100;
+                x+=150
+            ){
+
+                this.bg.fillRoundedRect(
+                    x + ((y/125)%2)*45,
+                    y,
+                    95,
+                    52,
+                    24
+                );
+            }
+        }
+    }
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+    createHeader(){
+
+        this.headerShadow =
+            this.add.rectangle(
+                450,
+                102,
+                820,
+                148,
+                0x17465f,
+                .10
+            )
+            .setOrigin(.5);
+
+        this.headerShadow
+            .setStrokeStyle(
+                0,
+                0,
+                0
+            );
+
+        this.headerPanel =
+            this.add.rectangle(
+                450,
+                94,
+                820,
+                148,
+                0xffffff,
+                .97
+            )
+            .setOrigin(.5);
+
+        this.headerPanel
+            .setStrokeStyle(
+                3,
+                0xffffff,
+                1
+            );
+
+
+        this.titleText =
+            this.add.text(
+                88,
+                42,
+                "MAGNET COLOUR TRAIL",
+                {
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+                    fontSize:"29px",
+                    fontStyle:"bold",
+                    color:"#173c50"
+                }
+            )
+            .setOrigin(0,.5);
+
+
+        this.stageText =
+            this.add.text(
+                88,
+                85,
+                "STAGE 1 / 25",
+                {
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+                    fontSize:"23px",
+                    fontStyle:"bold",
+                    color:"#e25353"
+                }
+            )
+            .setOrigin(0,.5);
+
+
+        this.statusText =
+            this.add.text(
+                88,
+                121,
+                "Isi semua petak sebelum masuk portal.",
+                {
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+                    fontSize:"21px",
+                    color:"#506876"
+                }
+            )
+            .setOrigin(0,.5);
+
+
+        this.progressBack =
+            this.add.rectangle(
+                89,
+                146,
+                505,
+                12,
+                0xd8e5eb,
+                1
+            )
+            .setOrigin(0,.5);
+
+
+        this.progressFill =
+            this.add.rectangle(
+                89,
+                146,
+                1,
+                12,
+                0xffbb3f,
+                1
+            )
+            .setOrigin(0,.5);
+
+
+        this.percentText =
+            this.add.text(
+                613,
+                146,
+                "0%",
+                {
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+                    fontSize:"18px",
+                    fontStyle:"bold",
+                    color:"#526976"
+                }
+            )
+            .setOrigin(0,.5);
+
+
+        this.makeTopButton(
+            695,
+            91,
+            "💡",
+            ()=>{
+                this.showHint();
+            }
+        );
+
+
+        this.soundButton =
+            this.makeTopButton(
+                774,
+                91,
+                "🔊",
+                ()=>{
+
+                    const active =
+                        AUDIO.toggle();
+
+                    this.soundButton.label
+                        .setText(
+                            active
+                            ? "🔊"
+                            : "🔇"
+                        );
+                }
+            );
+    }
+
+
+    makeTopButton(
+        x,
+        y,
+        label,
+        callback
+    ){
+
+        const shadow =
+            this.add.rectangle(
+                x,
+                y+5,
+                64,
+                64,
+                0x20495c,
+                .15
+            )
+            .setOrigin(.5);
+
+
+        const box =
+            this.add.rectangle(
+                x,
+                y,
+                64,
+                64,
+                0xf8fcff,
+                1
+            )
+            .setOrigin(.5)
+            .setStrokeStyle(
+                2,
+                0xc8d9e1
+            )
+            .setInteractive({
+                useHandCursor:true
+            });
+
+
+        const txt =
+            this.add.text(
+                x,
+                y,
+                label,
+                {
+                    fontSize:"29px"
+                }
+            )
+            .setOrigin(.5);
+
+
+        box.on(
+            "pointerdown",
+            ()=>{
+
+                AUDIO.unlock();
+
+                this.tweens.add({
+                    targets:[
+                        box,
+                        txt
+                    ],
+                    scaleX:.91,
+                    scaleY:.91,
+                    duration:55,
+                    yoyo:true
+                });
+
+                callback();
+            }
+        );
+
+
+        return {
+            box:box,
+            label:txt,
+            shadow:shadow
+        };
+    }
+
+
+/* =========================================================
+   BOARD GRAPHICS
+   ========================================================= */
+
+    createBoardGraphics(){
+
+        this.boardShadow =
+            this.add.graphics();
+
+        this.boardBase =
+            this.add.graphics();
+
+        this.tilesGfx =
+            this.add.graphics();
+
+        this.trailGfx =
+            this.add.graphics();
+
+        this.overlayGfx =
+            this.add.graphics();
+
+        this.hintGfx =
+            this.add.graphics();
+
+
+        this.portalContainer =
+            this.add.container(
+                0,
+                0
+            );
+
+
+        this.portalOuter =
+            this.add.circle(
+                0,
+                0,
+                28,
+                0x111827,
+                1
+            )
+            .setStrokeStyle(
+                5,
+                0x334155
+            );
+
+
+        this.portalMiddle =
+            this.add.circle(
+                0,
+                0,
+                19,
+                0x05070b,
+                1
+            )
+            .setStrokeStyle(
+                3,
+                0x718096
+            );
+
+
+        this.portalCore =
+            this.add.circle(
+                0,
+                0,
+                8,
+                0x000000,
+                1
+            )
+            .setStrokeStyle(
+                2,
+                0xe5edf4
+            );
+
+
+        this.portalLock =
+            this.add.text(
+                0,
+                0,
+                "🔒",
+                {
+                    fontSize:"20px"
+                }
+            )
+            .setOrigin(.5);
+
+
+        this.portalContainer.add([
+            this.portalOuter,
+            this.portalMiddle,
+            this.portalCore,
+            this.portalLock
+        ]);
+
+
+        this.tweens.add({
+            targets:
+                this.portalMiddle,
+            scaleX:{
+                from:.82,
+                to:1.12
+            },
+            scaleY:{
+                from:.82,
+                to:1.12
+            },
+            alpha:{
+                from:.5,
+                to:1
+            },
+            yoyo:true,
+            repeat:-1,
+            duration:650
+        });
+    }
+
+
+/* =========================================================
+   MAGNET CHARACTER
+   ========================================================= */
+
+    createMagnet(){
+
+        this.magnet =
+            this.add.container(
+                0,
+                0
+            );
+
+        const shadow =
+            this.add.ellipse(
+                3,
+                25,
+                61,
+                19,
+                0x17303a,
+                .18
+            );
+
+
+        const g =
+            this.add.graphics();
+
+
+        // LEFT RED POLE
+        g.fillStyle(
+            0xf05252,
+            1
+        );
+
+        g.fillRoundedRect(
+            -28,
+            -29,
+            22,
+            50,
+            8
+        );
+
+
+        // RIGHT BLUE POLE
+        g.fillStyle(
+            0x4285d4,
+            1
+        );
+
+        g.fillRoundedRect(
+            6,
+            -29,
+            22,
+            50,
+            8
+        );
+
+
+        // LOWER CONNECTOR
+        g.fillStyle(
+            0xf05252,
+            1
+        );
+
+        g.fillRoundedRect(
+            -28,
+            4,
+            28,
+            23,
+            8
+        );
+
+
+        g.fillStyle(
+            0x4285d4,
+            1
+        );
+
+        g.fillRoundedRect(
+            0,
+            4,
+            28,
+            23,
+            8
+        );
+
+
+        // WHITE MAGNET POLES
+        g.fillStyle(
+            0xfafcff,
+            1
+        );
+
+        g.fillRoundedRect(
+            -28,
+            -32,
+            22,
+            13,
+            5
+        );
+
+        g.fillRoundedRect(
+            6,
+            -32,
+            22,
+            13,
+            5
+        );
+
+
+        // OUTLINE
+        g.lineStyle(
+            3,
+            0x263a47,
+            .7
+        );
+
+        g.strokeRoundedRect(
+            -28,
+            -29,
+            22,
+            50,
+            8
+        );
+
+        g.strokeRoundedRect(
+            6,
+            -29,
+            22,
+            50,
+            8
+        );
+
+
+        const sparkle =
+            this.add.text(
+                0,
+                13,
+                "✦",
+                {
+                    fontFamily:"Arial",
+                    fontSize:"16px",
+                    fontStyle:"bold",
+                    color:"#ffffff"
+                }
+            )
+            .setOrigin(.5);
+
+
+        this.magnet.add([
+            shadow,
+            g,
+            sparkle
+        ]);
+
+        this.magnet.setDepth(50);
+    }
+
+
+/* =========================================================
+   STAGE GENERATION
+   ========================================================= */
+
+    getStageSize(index){
+
+        if(index < 3){
+            return {
+                rows:4,
+                cols:4
+            };
+        }
+
+        if(index < 6){
+            return {
+                rows:4,
+                cols:5
+            };
+        }
+
+        if(index < 10){
+            return {
+                rows:5,
+                cols:5
+            };
+        }
+
+        if(index < 15){
+            return {
+                rows:5,
+                cols:6
+            };
+        }
+
+        if(index < 20){
+            return {
+                rows:6,
+                cols:5
+            };
+        }
+
+        return {
+            rows:6,
+            cols:6
+        };
+    }
+
+
+    makeSolutionPath(
+        rows,
+        cols,
+        mode
+    ){
+
+        let path = [];
+
+
+        if(mode % 2 === 0){
+
+            // Horizontal snake
+            for(
+                let r=0;
+                r<rows;
+                r++
+            ){
+
+                if(r % 2 === 0){
+
+                    for(
+                        let c=0;
+                        c<cols;
+                        c++
+                    ){
+                        path.push({
+                            r:r,
+                            c:c
+                        });
+                    }
+
+                }else{
+
+                    for(
+                        let c=cols-1;
+                        c>=0;
+                        c--
+                    ){
+                        path.push({
+                            r:r,
+                            c:c
+                        });
+                    }
+                }
+            }
+
+        }else{
+
+            // Vertical snake
+            for(
+                let c=0;
+                c<cols;
+                c++
+            ){
+
+                if(c % 2 === 0){
+
+                    for(
+                        let r=0;
+                        r<rows;
+                        r++
+                    ){
+                        path.push({
+                            r:r,
+                            c:c
+                        });
+                    }
+
+                }else{
+
+                    for(
+                        let r=rows-1;
+                        r>=0;
+                        r--
+                    ){
+                        path.push({
+                            r:r,
+                            c:c
+                        });
+                    }
+                }
+            }
+        }
+
+
+        // Transform supaya stage tak semua bermula
+        // di sudut yang sama.
+
+        const transform =
+            mode % 8;
+
+
+        path = path.map(
+            p=>{
+
+                let r=p.r;
+                let c=p.c;
+
+                if(transform===2 ||
+                   transform===3){
+
+                    c =
+                        cols-1-c;
+                }
+
+                if(transform===4 ||
+                   transform===5){
+
+                    r =
+                        rows-1-r;
+                }
+
+                if(transform===6 ||
+                   transform===7){
+
+                    r =
+                        rows-1-r;
+
+                    c =
+                        cols-1-c;
+                }
+
+                return {
+                    r:r,
+                    c:c
+                };
+            }
+        );
+
+
+        if(
+            mode===3 ||
+            mode===5 ||
+            mode===7
+        ){
+            path.reverse();
+        }
+
+
+        return path;
+    }
+
+
+    startStage(index){
+
+        this.stageIndex =
+            index;
+
+        this.locked =
+            false;
+
+        this.questionOpen =
+            false;
+
+        this.questionHadMistake =
+            false;
+
+        this.drawBackground();
+
+
+        const size =
+            this.getStageSize(index);
+
+        this.rows =
+            size.rows;
+
+        this.cols =
+            size.cols;
+
+
+        this.solution =
+            this.makeSolutionPath(
+                this.rows,
+                this.cols,
+                index
+            );
+
+
+        this.startCell =
+            this.solution[0];
+
+        this.portalCell =
+            this.solution[
+                this.solution.length-1
+            ];
+
+
+        this.path = [
+            {
+                r:this.startCell.r,
+                c:this.startCell.c
+            }
+        ];
+
+
+        this.totalTiles =
+            this.rows *
+            this.cols;
+
+
+        this.calculateBoard();
+
+
+        this.stageText.setText(
+            "STAGE " +
+            (index+1) +
+            " / 25"
+        );
+
+
+        this.statusText.setText(
+            "Isi semua petak. Portal aktif pada petak terakhir."
+        );
+
+
+        this.clearHint();
+
+
+        this.drawBoard();
+
+
+        const startPos =
+            this.cellCenter(
+                this.startCell.r,
+                this.startCell.c
+            );
+
+
+        this.magnet.setPosition(
+            startPos.x,
+            startPos.y
+        );
+
+        this.magnet.setScale(
+            Math.min(
+                1,
+                this.cellSize / 72
+            )
+        );
+
+
+        this.updateProgress();
+    }
+
+
+    calculateBoard(){
+
+        const maxW =
+            710;
+
+        const maxH =
+            610;
+
+
+        this.cellSize =
+            Math.floor(
+                Math.min(
+                    maxW /
+                    this.cols,
+
+                    maxH /
+                    this.rows,
+
+                    105
+                )
+            );
+
+
+        this.boardW =
+            this.cols *
+            this.cellSize;
+
+        this.boardH =
+            this.rows *
+            this.cellSize;
+
+
+        this.boardX =
+            (GAME_W -
+            this.boardW) / 2;
+
+
+        this.boardY =
+            205 +
+            Math.max(
+                0,
+                (
+                    615 -
+                    this.boardH
+                ) / 2
+            );
+    }
+
+
+/* =========================================================
+   DRAW BOARD
+   ========================================================= */
+
+    drawBoard(){
+
+        const palette =
+            PALETTES[
+                this.stageIndex %
+                PALETTES.length
+            ];
+
+
+        const pad =
+            22;
+
+
+        this.boardShadow.clear();
+
+        this.boardShadow.fillStyle(
+            0x143c4c,
+            .14
+        );
+
+        this.boardShadow.fillRoundedRect(
+            this.boardX-pad+8,
+            this.boardY-pad+11,
+            this.boardW+pad*2,
+            this.boardH+pad*2,
+            32
+        );
+
+
+        this.boardBase.clear();
+
+        this.boardBase.fillStyle(
+            0xffffff,
+            1
+        );
+
+        this.boardBase.fillRoundedRect(
+            this.boardX-pad,
+            this.boardY-pad,
+            this.boardW+pad*2,
+            this.boardH+pad*2,
+            32
+        );
+
+
+        this.boardBase.lineStyle(
+            5,
+            0xb8ced9,
+            1
+        );
+
+        this.boardBase.strokeRoundedRect(
+            this.boardX-pad,
+            this.boardY-pad,
+            this.boardW+pad*2,
+            this.boardH+pad*2,
+            32
+        );
+
+
+        this.tilesGfx.clear();
+
+
+        for(
+            let r=0;
+            r<this.rows;
+            r++
+        ){
+
+            for(
+                let c=0;
+                c<this.cols;
+                c++
+            ){
+
+                const x =
+                    this.boardX +
+                    c*this.cellSize;
+
+                const y =
+                    this.boardY +
+                    r*this.cellSize;
+
+
+                const visited =
+                    this.path.some(
+                        p=>
+                            p.r===r &&
+                            p.c===c
+                    );
+
+
+                this.tilesGfx.fillStyle(
+                    visited
+                    ? palette.painted
+                    : palette.tile,
+                    1
+                );
+
+
+                this.tilesGfx.fillRoundedRect(
+                    x+4,
+                    y+4,
+                    this.cellSize-8,
+                    this.cellSize-8,
+                    Math.min(
+                        17,
+                        this.cellSize*.18
+                    )
+                );
+
+
+                this.tilesGfx.lineStyle(
+                    2,
+                    visited
+                    ? 0xf0ab37
+                    : 0x91b7c7,
+                    visited
+                    ? .65
+                    : .55
+                );
+
+
+                this.tilesGfx.strokeRoundedRect(
+                    x+4,
+                    y+4,
+                    this.cellSize-8,
+                    this.cellSize-8,
+                    Math.min(
+                        17,
+                        this.cellSize*.18
+                    )
+                );
+
+
+                // small metal dot
+                if(!visited){
+
+                    this.tilesGfx.fillStyle(
+                        0xffffff,
+                        .35
+                    );
+
+                    this.tilesGfx.fillCircle(
+                        x+this.cellSize*.28,
+                        y+this.cellSize*.27,
+                        Math.max(
+                            2,
+                            this.cellSize*.035
+                        )
+                    );
+                }
+            }
+        }
+
+
+        this.drawTrail();
+
+
+        const portal =
+            this.cellCenter(
+                this.portalCell.r,
+                this.portalCell.c
+            );
+
+
+        this.portalContainer
+            .setPosition(
+                portal.x,
+                portal.y
+            );
+
+
+        const remaining =
+            this.totalTiles -
+            this.path.length;
+
+
+        const portalReady =
+            remaining === 1;
+
+
+        this.portalLock
+            .setVisible(
+                !portalReady
+            );
+
+
+        this.portalOuter
+            .setFillStyle(
+                portalReady
+                ? 0x111827
+                : 0x263b45,
+                portalReady
+                ? 1
+                : .80
+            );
+
+
+        this.portalContainer
+            .setScale(
+                Math.min(
+                    1,
+                    this.cellSize/78
+                )
+            );
+
+
+        this.portalContainer
+            .setDepth(35);
+    }
+
+
+    drawTrail(){
+
+        this.trailGfx.clear();
+
+        if(this.path.length<2){
+            return;
+        }
+
+
+        const palette =
+            PALETTES[
+                this.stageIndex %
+                PALETTES.length
+            ];
+
+
+        this.trailGfx.lineStyle(
+            Math.max(
+                7,
+                this.cellSize*.10
+            ),
+            palette.trail,
+            .85
+        );
+
+
+        this.trailGfx.beginPath();
+
+
+        this.path.forEach(
+            (p,index)=>{
+
+                const pos =
+                    this.cellCenter(
+                        p.r,
+                        p.c
+                    );
+
+
+                if(index===0){
+                    this.trailGfx
+                        .moveTo(
+                            pos.x,
+                            pos.y
+                        );
+                }else{
+                    this.trailGfx
+                        .lineTo(
+                            pos.x,
+                            pos.y
+                        );
+                }
+            }
+        );
+
+
+        this.trailGfx.strokePath();
+
+
+        for(const p of this.path){
+
+            const pos =
+                this.cellCenter(
+                    p.r,
+                    p.c
+                );
+
+            this.trailGfx.fillStyle(
+                0xffffff,
+                .55
+            );
+
+            this.trailGfx.fillCircle(
+                pos.x,
+                pos.y,
+                Math.max(
+                    3,
+                    this.cellSize*.045
+                )
+            );
+        }
+    }
+
+
+    cellCenter(r,c){
+
+        return {
+            x:
+                this.boardX +
+                c*this.cellSize +
+                this.cellSize/2,
+
+            y:
+                this.boardY +
+                r*this.cellSize +
+                this.cellSize/2
+        };
+    }
+
+
+/* =========================================================
+   MOVEMENT
+   ========================================================= */
+
+    move(dr,dc){
+
+        if(this.locked) return;
+        if(this.questionOpen) return;
+
+
+        AUDIO.unlock();
+
+
+        const current =
+            this.path[
+                this.path.length-1
+            ];
+
+
+        const nr =
+            current.r + dr;
+
+        const nc =
+            current.c + dc;
+
+
+        if(
+            nr < 0 ||
+            nr >= this.rows ||
+            nc < 0 ||
+            nc >= this.cols
+        ){
+
+            this.bump();
+            return;
+        }
+
+
+        const previous =
+            this.path.length>=2
+            ? this.path[
+                this.path.length-2
+            ]
+            : null;
+
+
+        // UNDO
+        if(
+            previous &&
+            previous.r === nr &&
+            previous.c === nc
+        ){
+
+            this.path.pop();
+
+            AUDIO.back();
+
+            this.clearHint();
+
+            this.animateMagnetTo(
+                nr,
+                nc,
+                dr,
+                dc
+            );
+
+            this.drawBoard();
+            this.updateProgress();
+
+            return;
+        }
+
+
+        // tidak boleh cross laluan sendiri
+        const alreadyVisited =
+            this.path.some(
+                p=>
+                    p.r===nr &&
+                    p.c===nc
+            );
+
+
+        if(alreadyVisited){
+
+            this.statusText.setText(
+                "Laluan itu sudah berwarna. Undur jika mahu tukar jalan."
+            );
+
+            this.bump();
+            return;
+        }
+
+
+        // Portal mesti petak terakhir
+        if(
+            nr===this.portalCell.r &&
+            nc===this.portalCell.c &&
+            this.path.length !==
+                this.totalTiles-1
+        ){
+
+            this.statusText.setText(
+                "Portal masih terkunci. Isi petak lain dahulu."
+            );
+
+            this.portalFlash();
+
+            this.bump();
+
+            return;
+        }
+
+
+        this.path.push({
+            r:nr,
+            c:nc
+        });
+
+
+        AUDIO.move();
+
+        this.clearHint();
+
+        this.animateMagnetTo(
+            nr,
+            nc,
+            dr,
+            dc
+        );
+
+
+        this.drawBoard();
+        this.updateProgress();
+
+
+        if(
+            this.path.length ===
+            this.totalTiles
+        ){
+
+            if(
+                nr===this.portalCell.r &&
+                nc===this.portalCell.c
+            ){
+
+                this.locked = true;
+
+                this.statusText.setText(
+                    "Portal dibuka!"
+                );
+
+                AUDIO.complete();
+
+                this.portalSuccess();
+
+                this.time.delayedCall(
+                    650,
+                    ()=>{
+                        this.showQuestion();
+                    }
+                );
+            }
+        }
+    }
+
+
+    animateMagnetTo(
+        r,
+        c,
+        dr,
+        dc
+    ){
+
+        const pos =
+            this.cellCenter(
+                r,
+                c
+            );
+
+
+        let angle=0;
+
+        if(dc===1) angle=90;
+        if(dc===-1) angle=-90;
+        if(dr===1) angle=180;
+        if(dr===-1) angle=0;
+
+
+        this.tweens.killTweensOf(
+            this.magnet
+        );
+
+
+        this.tweens.add({
+            targets:this.magnet,
+            x:pos.x,
+            y:pos.y,
+            angle:angle,
+            duration:115,
+            ease:"Sine.Out"
+        });
+    }
+
+
+    bump(){
+
+        AUDIO.blocked();
+
+        const oldX =
+            this.magnet.x;
+
+        this.tweens.add({
+            targets:this.magnet,
+            x:oldX+5,
+            duration:35,
+            yoyo:true,
+            repeat:2
+        });
+    }
+
+
+    portalFlash(){
+
+        this.tweens.add({
+            targets:
+                this.portalContainer,
+
+            scaleX:
+                this.portalContainer.scaleX
+                *1.22,
+
+            scaleY:
+                this.portalContainer.scaleY
+                *1.22,
+
+            duration:100,
+            yoyo:true,
+            repeat:1
+        });
+    }
+
+
+    portalSuccess(){
+
+        this.portalLock
+            .setVisible(false);
+
+
+        this.portalOuter
+            .setFillStyle(
+                0x111111,
+                1
+            );
+
+
+        this.tweens.add({
+            targets:
+                this.portalContainer,
+
+            scaleX:
+                this.portalContainer.scaleX
+                *1.32,
+
+            scaleY:
+                this.portalContainer.scaleY
+                *1.32,
+
+            angle:360,
+
+            duration:500,
+
+            ease:"Back.Out"
+        });
+
+
+        this.tweens.add({
+            targets:
+                this.magnet,
+
+            scaleX:0,
+            scaleY:0,
+
+            angle:
+                this.magnet.angle +
+                360,
+
+            duration:480,
+
+            ease:"Back.In"
+        });
+    }
+
+
+    updateProgress(){
+
+        const value =
+            this.path.length /
+            this.totalTiles;
+
+
+        const percent =
+            Math.round(
+                value*100
+            );
+
+
+        this.progressFill
+            .displayWidth =
+            Math.max(
+                4,
+                505*value
+            );
+
+
+        this.percentText
+            .setText(
+                percent+"%"
+            );
+
+
+        if(percent < 100){
+
+            const left =
+                this.totalTiles -
+                this.path.length;
+
+            this.statusText
+                .setText(
+                    left+
+                    " petak lagi sebelum portal dibuka."
+                );
+        }
+    }
+
+
+/* =========================================================
+   HINT
+   ========================================================= */
+
+    showHint(){
+
+        if(
+            this.locked ||
+            this.questionOpen
+        ) return;
+
+
+        AUDIO.unlock();
+        AUDIO.hint();
+
+        this.clearHint();
+
+
+        let matches = true;
+
+        for(
+            let i=0;
+            i<this.path.length;
+            i++
+        ){
+
+            if(
+                !this.solution[i] ||
+                this.path[i].r !==
+                    this.solution[i].r ||
+                this.path[i].c !==
+                    this.solution[i].c
+            ){
+
+                matches = false;
+                break;
+            }
+        }
+
+
+        let target;
+
+
+        if(matches){
+
+            target =
+                this.solution[
+                    this.path.length
+                ];
+
+            if(!target){
+                return;
+            }
+
+            this.statusText
+                .setText(
+                    "Petunjuk: cuba petak yang bercahaya."
+                );
+
+        }else{
+
+            if(this.path.length < 2){
+                return;
+            }
+
+            target =
+                this.path[
+                    this.path.length-2
+                ];
+
+            this.statusText
+                .setText(
+                    "Petunjuk: undur ke petak bercahaya dahulu."
+                );
+        }
+
+
+        const pos =
+            this.cellCenter(
+                target.r,
+                target.c
+            );
+
+
+        const radius =
+            this.cellSize*.30;
+
+
+        this.hintGfx.lineStyle(
+            Math.max(
+                5,
+                this.cellSize*.07
+            ),
+            0xffffff,
+            1
+        );
+
+        this.hintGfx.strokeCircle(
+            pos.x,
+            pos.y,
+            radius
+        );
+
+
+        this.hintGfx.lineStyle(
+            3,
+            0xffa600,
+            1
+        );
+
+        this.hintGfx.strokeCircle(
+            pos.x,
+            pos.y,
+            radius+7
+        );
+
+
+        this.hintTween =
+            this.tweens.add({
+                targets:
+                    this.hintGfx,
+                alpha:{
+                    from:.25,
+                    to:1
+                },
+                duration:350,
+                yoyo:true,
+                repeat:4,
+                onComplete:()=>{
+                    this.clearHint();
+                }
+            });
+    }
+
+
+    clearHint(){
+
+        if(this.hintTween){
+            this.hintTween.stop();
+            this.hintTween=null;
+        }
+
+        if(this.hintGfx){
+            this.hintGfx
+                .setAlpha(1);
+
+            this.hintGfx.clear();
+        }
+    }
+
+
+/* =========================================================
+   CONTROLS
+   ========================================================= */
+
+    createControls(){
+
+        const y =
+            973;
+
+
+        this.controlPanel =
+            this.add.rectangle(
+                450,
+                967,
+                820,
+                155,
+                0xffffff,
+                .94
+            )
+            .setStrokeStyle(
+                3,
+                0xc7dae2
+            );
+
+
+        this.instruction =
+            this.add.text(
+                98,
+                918,
+                "SWIPE / TEKAN ARAH",
+                {
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+                    fontSize:"18px",
+                    fontStyle:"bold",
+                    color:"#607986"
+                }
+            )
+            .setOrigin(0,.5);
+
+
+        this.makeControlButton(
+            450,
+            919,
+            "▲",
+            ()=>this.move(-1,0)
+        );
+
+
+        this.makeControlButton(
+            375,
+            984,
+            "◀",
+            ()=>this.move(0,-1)
+        );
+
+
+        this.makeControlButton(
+            525,
+            984,
+            "▶",
+            ()=>this.move(0,1)
+        );
+
+
+        this.makeControlButton(
+            450,
+            1018,
+            "▼",
+            ()=>this.move(1,0)
+        );
+
+
+        this.makeSmallActionButton(
+            115,
+            978,
+            "↻",
+            "RESET",
+            ()=>{
+                this.resetStage();
+            }
+        );
+
+
+        this.makeSmallActionButton(
+            755,
+            978,
+            "⌂",
+            "HOME",
+            ()=>{
+                window.location.href =
+                    "index.html";
+            }
+        );
+    }
+
+
+    makeControlButton(
+        x,
+        y,
+        label,
+        callback
+    ){
+
+        const shadow =
+            this.add.circle(
+                x,
+                y+5,
+                31,
+                0x153c4c,
+                .16
+            );
+
+
+        const btn =
+            this.add.circle(
+                x,
+                y,
+                31,
+                0xf1f8fb,
+                1
+            )
+            .setStrokeStyle(
+                3,
+                0xb7ccd5
+            )
+            .setInteractive({
+                useHandCursor:true
+            });
+
+
+        const txt =
+            this.add.text(
+                x,
+                y-1,
+                label,
+                {
+                    fontFamily:"Arial",
+                    fontSize:"27px",
+                    fontStyle:"bold",
+                    color:"#294958"
+                }
+            )
+            .setOrigin(.5);
+
+
+        btn.on(
+            "pointerdown",
+            ()=>{
+
+                AUDIO.unlock();
+
+                this.tweens.add({
+                    targets:[
+                        btn,
+                        txt
+                    ],
+                    scaleX:.85,
+                    scaleY:.85,
+                    duration:45,
+                    yoyo:true
+                });
+
+                callback();
+            }
+        );
+    }
+
+
+    makeSmallActionButton(
+        x,
+        y,
+        icon,
+        label,
+        callback
+    ){
+
+        const box =
+            this.add.rectangle(
+                x,
+                y,
+                112,
+                85,
+                0xf5fafc,
+                1
+            )
+            .setStrokeStyle(
+                3,
+                0xc3d6de
+            )
+            .setInteractive({
+                useHandCursor:true
+            });
+
+
+        const iconText =
+            this.add.text(
+                x,
+                y-13,
+                icon,
+                {
+                    fontFamily:"Arial",
+                    fontSize:"30px",
+                    fontStyle:"bold",
+                    color:"#294958"
+                }
+            )
+            .setOrigin(.5);
+
+
+        const caption =
+            this.add.text(
+                x,
+                y+24,
+                label,
+                {
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+                    fontSize:"14px",
+                    fontStyle:"bold",
+                    color:"#536f7c"
+                }
+            )
+            .setOrigin(.5);
+
+
+        box.on(
+            "pointerdown",
+            ()=>{
+
+                AUDIO.unlock();
+
+                this.tweens.add({
+                    targets:[
+                        box,
+                        iconText,
+                        caption
+                    ],
+                    scaleX:.94,
+                    scaleY:.94,
+                    duration:55,
+                    yoyo:true
+                });
+
+                callback();
+            }
+        );
+    }
+
+
+    resetStage(){
+
+        if(this.questionOpen){
+            return;
+        }
+
+        AUDIO.unlock();
+
+        this.magnet.setScale(
+            Math.min(
+                1,
+                this.cellSize/72
+            )
+        );
+
+        this.startStage(
+            this.stageIndex
+        );
+
+        AUDIO.back();
+    }
+
+
+/* =========================================================
+   KEYBOARD
+   ========================================================= */
+
+    setupKeyboard(){
+
+        const keys =
+            this.input.keyboard.addKeys({
+                up:
+                    Phaser.Input.Keyboard
+                    .KeyCodes.UP,
+
+                down:
+                    Phaser.Input.Keyboard
+                    .KeyCodes.DOWN,
+
+                left:
+                    Phaser.Input.Keyboard
+                    .KeyCodes.LEFT,
+
+                right:
+                    Phaser.Input.Keyboard
+                    .KeyCodes.RIGHT,
+
+                w:
+                    Phaser.Input.Keyboard
+                    .KeyCodes.W,
+
+                a:
+                    Phaser.Input.Keyboard
+                    .KeyCodes.A,
+
+                s:
+                    Phaser.Input.Keyboard
+                    .KeyCodes.S,
+
+                d:
+                    Phaser.Input.Keyboard
+                    .KeyCodes.D,
+
+                r:
+                    Phaser.Input.Keyboard
+                    .KeyCodes.R
+            });
+
+
+        const hook =
+            (
+                key,
+                callback
+            )=>{
+
+                key.on(
+                    "down",
+                    ()=>{
+
+                        AUDIO.unlock();
+                        callback();
+                    }
+                );
+            };
+
+
+        hook(
+            keys.up,
+            ()=>this.move(-1,0)
+        );
+
+        hook(
+            keys.w,
+            ()=>this.move(-1,0)
+        );
+
+        hook(
+            keys.down,
+            ()=>this.move(1,0)
+        );
+
+        hook(
+            keys.s,
+            ()=>this.move(1,0)
+        );
+
+        hook(
+            keys.left,
+            ()=>this.move(0,-1)
+        );
+
+        hook(
+            keys.a,
+            ()=>this.move(0,-1)
+        );
+
+        hook(
+            keys.right,
+            ()=>this.move(0,1)
+        );
+
+        hook(
+            keys.d,
+            ()=>this.move(0,1)
+        );
+
+        hook(
+            keys.r,
+            ()=>this.resetStage()
+        );
+    }
+
+
+/* =========================================================
+   SWIPE
+   ========================================================= */
+
+    setupSwipe(){
+
+        this.input.on(
+            "pointerdown",
+            pointer=>{
+
+                if(
+                    this.questionOpen ||
+                    this.locked
+                ){
+                    return;
+                }
+
+                this.swipeStart = {
+                    x:pointer.x,
+                    y:pointer.y
+                };
+            }
+        );
+
+
+        this.input.on(
+            "pointerup",
+            pointer=>{
+
+                if(
+                    !this.swipeStart ||
+                    this.questionOpen ||
+                    this.locked
+                ){
+                    this.swipeStart=null;
+                    return;
+                }
+
+
+                const dx =
+                    pointer.x -
+                    this.swipeStart.x;
+
+                const dy =
+                    pointer.y -
+                    this.swipeStart.y;
+
+
+                const distance =
+                    Math.hypot(
+                        dx,
+                        dy
+                    );
+
+
+                this.swipeStart=null;
+
+
+                if(distance < 35){
+                    return;
+                }
+
+
+                if(
+                    Math.abs(dx) >
+                    Math.abs(dy)
+                ){
+
+                    if(dx>0){
+                        this.move(0,1);
+                    }else{
+                        this.move(0,-1);
+                    }
+
+                }else{
+
+                    if(dy>0){
+                        this.move(1,0);
+                    }else{
+                        this.move(-1,0);
+                    }
+                }
+            }
+        );
+    }
+
+
+/* =========================================================
+   QUESTION WINDOW
+   ========================================================= */
+
+    showQuestion(){
+
+        this.questionOpen =
+            true;
+
+        this.locked =
+            true;
+
+        this.questionHadMistake =
+            false;
+
+
+        this.questionLayer =
+            this.add.container(
+                0,
+                0
+            )
+            .setDepth(200);
+
+
+        const dark =
+            this.add.rectangle(
+                450,
+                540,
+                900,
+                1080,
+                0x0b2431,
+                .70
+            )
+            .setInteractive();
+
+
+        const shadow =
+            this.add.rectangle(
+                450,
+                560,
+                790,
+                810,
+                0x071922,
+                .20
+            );
+
+
+        const panel =
+            this.add.rectangle(
+                450,
+                540,
+                790,
+                810,
+                0xffffff,
+                1
+            )
+            .setStrokeStyle(
+                4,
+                0xc7dce6
+            );
+
+
+        this.questionLayer.add([
+            dark,
+            shadow,
+            panel
+        ]);
+
+
+        const q =
+            QUESTIONS[
+                this.stageIndex
+            ];
+
+
+        const badge =
+            this.add.text(
+                450,
+                178,
+                "SOALAN " +
+                (this.stageIndex+1) +
+                " / 25",
+                {
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+                    fontSize:"21px",
+                    fontStyle:"bold",
+                    color:"#ffffff",
+                    backgroundColor:
+                        "#e45151",
+                    padding:{
+                        x:18,
+                        y:9
+                    }
+                }
+            )
+            .setOrigin(.5);
+
+
+        const topic =
+            this.add.text(
+                450,
+                235,
+                q.topic,
+                {
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+                    fontSize:"24px",
+                    fontStyle:"bold",
+                    color:"#3a7188",
+                    align:"center"
+                }
+            )
+            .setOrigin(.5);
+
+
+        const question =
+            this.add.text(
+                450,
+                312,
+                q.q,
+                {
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+                    fontSize:"27px",
+                    fontStyle:"bold",
+                    color:"#183b4a",
+                    align:"center",
+
+                    wordWrap:{
+                        width:675,
+                        useAdvancedWrap:true
+                    },
+
+                    lineSpacing:5
+                }
+            )
+            .setOrigin(.5);
+
+
+        this.questionLayer.add([
+            badge,
+            topic,
+            question
+        ]);
+
+
+        const optionY = [
+            465,
+            585,
+            705,
+            825
+        ];
+
+
+        this.answerButtons=[];
+
+
+        q.a.forEach(
+            (answer,index)=>{
+
+                const letter =
+                    String.fromCharCode(
+                        65+index
+                    );
+
+
+                const button =
+                    this.add.rectangle(
+                        450,
+                        optionY[index],
+                        665,
+                        92,
+                        0xf1f7fa,
+                        1
+                    )
+                    .setStrokeStyle(
+                        3,
+                        0xb8cfda
+                    )
+                    .setInteractive({
+                        useHandCursor:true
+                    });
+
+
+                const badgeCircle =
+                    this.add.circle(
+                        164,
+                        optionY[index],
+                        28,
+                        0x3d7186,
+                        1
+                    );
+
+
+                const badgeLetter =
+                    this.add.text(
+                        164,
+                        optionY[index],
+                        letter,
+                        {
+                            fontFamily:
+                                "Trebuchet MS, Arial",
+                            fontSize:"25px",
+                            fontStyle:"bold",
+                            color:"#ffffff"
+                        }
+                    )
+                    .setOrigin(.5);
+
+
+                const answerText =
+                    this.add.text(
+                        210,
+                        optionY[index],
+                        answer,
+                        {
+                            fontFamily:
+                                "Trebuchet MS, Arial",
+                            fontSize:"23px",
+                            fontStyle:"bold",
+                            color:"#254553",
+
+                            wordWrap:{
+                                width:520,
+                                useAdvancedWrap:true
+                            }
+                        }
+                    )
+                    .setOrigin(
+                        0,
+                        .5
+                    );
+
+
+                this.questionLayer.add([
+                    button,
+                    badgeCircle,
+                    badgeLetter,
+                    answerText
+                ]);
+
+
+                const data = {
+                    button,
+                    badgeCircle,
+                    badgeLetter,
+                    answerText
+                };
+
+
+                this.answerButtons.push(
+                    data
+                );
+
+
+                button.on(
+                    "pointerdown",
+                    ()=>{
+
+                        AUDIO.unlock();
+
+                        this.chooseAnswer(
+                            index,
+                            data
+                        );
+                    }
+                );
+            }
+        );
+
+
+        this.questionLayer
+            .setAlpha(0);
+
+
+        this.questionLayer
+            .setScale(.92);
+
+
+        this.tweens.add({
+            targets:
+                this.questionLayer,
+
+            alpha:1,
+
+            scaleX:1,
+            scaleY:1,
+
+            duration:260,
+            ease:"Back.Out"
+        });
+    }
+
+
+    chooseAnswer(
+        selected,
+        data
+    ){
+
+        if(
+            !this.questionOpen ||
+            this.answerLocked
+        ){
+            return;
+        }
+
+
+        const q =
+            QUESTIONS[
+                this.stageIndex
+            ];
+
+
+        if(
+            selected ===
+            q.correct
+        ){
+
+            this.answerLocked =
+                true;
+
+            data.button
+                .setFillStyle(
+                    0xd6f4db,
+                    1
+                )
+                .setStrokeStyle(
+                    4,
+                    0x54b86a
+                );
+
+
+            data.badgeCircle
+                .setFillStyle(
+                    0x45a65c,
+                    1
+                );
+
+
+            AUDIO.correct();
+
+
+            if(
+                !this.questionHadMistake
+            ){
+                this.firstTryCorrect++;
+            }
+
+
+            const tick =
+                this.add.text(
+                    745,
+                    data.button.y,
+                    "✓",
+                    {
+                        fontFamily:"Arial",
+                        fontSize:"38px",
+                        fontStyle:"bold",
+                        color:"#37a454"
+                    }
+                )
+                .setOrigin(.5);
+
+
+            this.questionLayer
+                .add(tick);
+
+
+            this.time.delayedCall(
+                720,
+                ()=>{
+
+                    this.answerLocked =
+                        false;
+
+                    if(
+                        this.stageIndex >=
+                        QUESTIONS.length-1
+                    ){
+
+                        this.questionLayer.destroy();
+                        this.questionOpen=false;
+
+                        this.showFinish();
+
+                    }else{
+
+                        this.questionLayer.destroy();
+
+                        this.questionOpen=false;
+
+                        this.magnet.setScale(
+                            1
+                        );
+
+                        this.startStage(
+                            this.stageIndex+1
+                        );
+                    }
+                }
+            );
+
+        }else{
+
+            this.questionHadMistake =
+                true;
+
+            AUDIO.wrong();
+
+
+            data.button
+                .setFillStyle(
+                    0xffdddd,
+                    1
+                )
+                .setStrokeStyle(
+                    4,
+                    0xe35e5e
+                );
+
+
+            data.badgeCircle
+                .setFillStyle(
+                    0xd94c4c,
+                    1
+                );
+
+
+            this.tweens.add({
+                targets:[
+                    data.button,
+                    data.badgeCircle,
+                    data.badgeLetter,
+                    data.answerText
+                ],
+
+                x:"+=7",
+                duration:38,
+                yoyo:true,
+                repeat:3,
+
+                onComplete:()=>{
+
+                    data.button
+                        .setFillStyle(
+                            0xf1f7fa,
+                            1
+                        )
+                        .setStrokeStyle(
+                            3,
+                            0xb8cfda
+                        );
+
+                    data.badgeCircle
+                        .setFillStyle(
+                            0x3d7186,
+                            1
+                        );
+                }
+            });
+        }
+    }
+
+
+/* =========================================================
+   FINISH
+   ========================================================= */
+
+    showFinish(){
+
+        AUDIO.complete();
+
+
+        const layer =
+            this.add.container(
+                0,
+                0
+            )
+            .setDepth(300);
+
+
+        const dark =
+            this.add.rectangle(
+                450,
+                540,
+                900,
+                1080,
+                0x092531,
+                .72
+            )
+            .setInteractive();
+
+
+        const shadow =
+            this.add.rectangle(
+                450,
+                553,
+                700,
+                665,
+                0x09202b,
+                .2
+            );
+
+
+        const panel =
+            this.add.rectangle(
+                450,
+                535,
+                700,
+                665,
+                0xffffff,
+                1
+            )
+            .setStrokeStyle(
+                4,
+                0xc0dae5
+            );
+
+
+        layer.add([
+            dark,
+            shadow,
+            panel
+        ]);
+
+
+        const bigMagnet =
+            this.createFinishMagnet(
+                450,
+                325
+            );
+
+
+        layer.add(
+            bigMagnet
+        );
+
+
+        const title =
+            this.add.text(
+                450,
+                460,
+                "MISI MAGNET SELESAI!",
+                {
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+                    fontSize:"36px",
+                    fontStyle:"bold",
+                    color:"#193f50",
+                    align:"center"
+                }
+            )
+            .setOrigin(.5);
+
+
+        const desc =
+            this.add.text(
+                450,
+                525,
+                "Semua 25 puzzle dan 25 soalan telah diselesaikan.",
+                {
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+                    fontSize:"24px",
+                    color:"#56727f",
+                    align:"center",
+
+                    wordWrap:{
+                        width:560
+                    }
+                }
+            )
+            .setOrigin(.5);
+
+
+        const scoreLabel =
+            this.add.text(
+                450,
+                610,
+                "BETUL PADA CUBAAN PERTAMA",
+                {
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+                    fontSize:"18px",
+                    fontStyle:"bold",
+                    color:"#7b8d95"
+                }
+            )
+            .setOrigin(.5);
+
+
+        const score =
+            this.add.text(
+                450,
+                666,
+                this.firstTryCorrect+
+                " / 25",
+                {
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+                    fontSize:"43px",
+                    fontStyle:"bold",
+                    color:"#e45252"
+                }
+            )
+            .setOrigin(.5);
+
+
+        const replay =
+            this.add.rectangle(
+                450,
+                785,
+                420,
+                78,
+                0x3f879f,
+                1
+            )
+            .setStrokeStyle(
+                3,
+                0x316b80
+            )
+            .setInteractive({
+                useHandCursor:true
+            });
+
+
+        const replayText =
+            this.add.text(
+                450,
+                785,
+                "MAIN SEMULA",
+                {
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+                    fontSize:"25px",
+                    fontStyle:"bold",
+                    color:"#ffffff"
+                }
+            )
+            .setOrigin(.5);
+
+
+        layer.add([
+            title,
+            desc,
+            scoreLabel,
+            score,
+            replay,
+            replayText
+        ]);
+
+
+        replay.on(
+            "pointerdown",
+            ()=>{
+
+                AUDIO.unlock();
+
+                this.firstTryCorrect=0;
+
+                layer.destroy();
+
+                this.magnet
+                    .setScale(1)
+                    .setAngle(0);
+
+                this.startStage(0);
+            }
+        );
+
+
+        layer.setScale(.88);
+        layer.setAlpha(0);
+
+
+        this.tweens.add({
+            targets:layer,
+            scaleX:1,
+            scaleY:1,
+            alpha:1,
+            duration:350,
+            ease:"Back.Out"
+        });
+    }
+
+
+    createFinishMagnet(
+        x,
+        y
+    ){
+
+        const con =
+            this.add.container(
+                x,
+                y
+            );
+
+
+        const glow =
+            this.add.circle(
+                0,
+                0,
+                95,
+                0xffd66b,
+                .18
+            );
+
+
+        const g =
+            this.add.graphics();
+
+
+        g.fillStyle(
+            0xef5151,
+            1
+        );
+
+        g.fillRoundedRect(
+            -70,
+            -75,
+            52,
+            120,
+            17
+        );
+
+
+        g.fillStyle(
+            0x4285d4,
+            1
+        );
+
+        g.fillRoundedRect(
+            18,
+            -75,
+            52,
+            120,
+            17
+        );
+
+
+        g.fillStyle(
+            0xef5151,
+            1
+        );
+
+        g.fillRoundedRect(
+            -70,
+            5,
+            70,
+            58,
+            20
+        );
+
+
+        g.fillStyle(
+            0x4285d4,
+            1
+        );
+
+        g.fillRoundedRect(
+            0,
+            5,
+            70,
+            58,
+            20
+        );
+
+
+        g.fillStyle(
+            0xffffff,
+            1
+        );
+
+        g.fillRoundedRect(
+            -70,
+            -82,
+            52,
+            28,
+            10
+        );
+
+        g.fillRoundedRect(
+            18,
+            -82,
+            52,
+            28,
+            10
+        );
+
+
+        const star =
+            this.add.text(
+                0,
+                28,
+                "★",
+                {
+                    fontFamily:"Arial",
+                    fontSize:"35px",
+                    color:"#ffffff"
+                }
+            )
+            .setOrigin(.5);
+
+
+        con.add([
+            glow,
+            g,
+            star
+        ]);
+
+
+        this.tweens.add({
+            targets:glow,
+            scaleX:{
+                from:.85,
+                to:1.18
+            },
+            scaleY:{
+                from:.85,
+                to:1.18
+            },
+            alpha:{
+                from:.10,
+                to:.35
+            },
+            duration:800,
+            yoyo:true,
+            repeat:-1
+        });
+
+
+        return con;
     }
 
 }
 
 
-const audio =
-new SoundEngine();
-
-
 /* =========================================================
-   SOUND BUTTON
-========================================================= */
+   PHASER CONFIG
+   ========================================================= */
 
-const soundBtn =
-document.getElementById(
-    "soundBtn"
-);
+const config = {
 
-soundBtn.addEventListener(
-    "click",
-    ()=>{
+    type:
+        Phaser.AUTO,
 
-        soundEnabled =
-            !soundEnabled;
+    parent:
+        "game",
 
-        soundBtn.textContent =
-            soundEnabled
-            ? "♫"
-            : "♪̸";
+    width:
+        GAME_W,
 
-        if(
-            soundEnabled
-        ){
+    height:
+        GAME_H,
 
-            audio.unlock();
+    backgroundColor:
+        "#dff4ff",
 
-        }
-
-    }
-);
-
-
-/* =========================================================
-   AUDIO UNLOCK MOBILE
-========================================================= */
-
-document.addEventListener(
-    "pointerdown",
-    ()=>{
-
-        audio.unlock();
-
+    render:{
+        antialias:true,
+        pixelArt:false,
+        roundPixels:false
     },
-    {
-        once:true
-    }
-);
+
+    scale:{
+        mode:
+            Phaser.Scale.FIT,
+
+        autoCenter:
+            Phaser.Scale.CENTER_BOTH,
+
+        width:
+            GAME_W,
+
+        height:
+            GAME_H
+    },
+
+    input:{
+        activePointers:3
+    },
+
+    scene:[
+        MagnetGame
+    ]
+
+};
 
 
-/* =========================================================
-   START
-========================================================= */
-
-buildKeyboard();
-
-showQuestion();
+new Phaser.Game(config);
 
 </script>
 
