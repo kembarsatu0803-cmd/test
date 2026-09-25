@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
+
 <meta
   name="viewport"
   content="width=device-width,
@@ -9,88 +10,79 @@
   maximum-scale=1,
   user-scalable=no,
   viewport-fit=cover"
-/>
+>
 
 <title>Magnet Maze — Set 4</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <style>
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  background: #eaf3f8;
-  font-family: Arial, "Trebuchet MS", sans-serif;
-  color: #17324a;
+html,body{
+  margin:0;
+  padding:0;
+  background:#e5eef4;
+  font-family:Arial,Helvetica,sans-serif;
 }
 
-body {
-  min-height: 100vh;
-  padding: 12px 8px 24px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+body{
+  min-height:100vh;
+  padding:8px;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
 }
 
-.game-shell {
-  width: min(980px, 100%);
-  background: #ffffff;
-  border: 1px solid #c9d9e4;
-  border-radius: 18px;
-  box-shadow: 0 10px 30px rgba(31, 68, 94, 0.12);
-  padding: 10px;
-  overflow: hidden;
+.game-wrap{
+  width:min(100%,980px);
+  background:white;
+  border-radius:18px;
+  padding:7px;
+  box-shadow:0 8px 30px rgba(0,0,0,.12);
 }
 
-#game {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  border-radius: 14px;
-  background: #dceaf3;
+#game{
+  width:100%;
+  overflow:hidden;
+  border-radius:14px;
+  background:#d7e8f2;
 }
 
-#game canvas {
-  display: block;
-  max-width: 100% !important;
-  height: auto !important;
-  border-radius: 14px;
-  touch-action: none;
+#game canvas{
+  display:block;
+  margin:auto;
+  max-width:100%!important;
+  height:auto!important;
+  touch-action:none;
 }
 
-.note {
-  font-size: 12px;
-  text-align: center;
-  color: #5d7282;
-  padding: 8px 6px 2px;
-  line-height: 1.35;
+.info{
+  text-align:center;
+  padding:7px 5px 3px;
+  font-size:12px;
+  color:#637987;
 }
 
-@media (max-width: 700px) {
-  body {
-    padding: 6px 4px 18px;
+@media(max-width:700px){
+  body{
+    padding:4px;
   }
 
-  .game-shell {
-    padding: 6px;
-    border-radius: 14px;
+  .game-wrap{
+    border-radius:12px;
+    padding:4px;
   }
 
-  #game,
-  #game canvas {
-    border-radius: 10px;
+  #game{
+    border-radius:9px;
   }
 
-  .note {
-    font-size: 11px;
+  .info{
+    font-size:10px;
   }
 }
 </style>
@@ -98,3819 +90,2785 @@ body {
 
 <body>
 
-<main class="game-shell">
+<div class="game-wrap">
 
   <div id="game"></div>
 
-  <div class="note">
-    Gerakkan robot magnet ke kapsul A, B, C atau D.
-    Telefon: guna joystick. Laptop: Arrow / WASD.
+  <div class="info">
+    Telefon/iPad: gunakan analog • Laptop: gunakan Arrow atau WASD
   </div>
 
-</main>
+</div>
 
 <script>
 (() => {
 
-  "use strict";
-
-  /* =========================================================
-     DEVICE
-  ========================================================= */
-
-  const PHONE =
-    window.matchMedia("(max-width: 700px)").matches;
-
-  const GAME_W = PHONE ? 540 : 900;
-  const GAME_H = PHONE ? 760 : 620;
-
-
-  /* =========================================================
-     QUESTION SET 4
-  ========================================================= */
-
-  const QUESTIONS = [
-
-    /* ================================
-       APAKAH GUNANYA MAGNET?
-    ================================ */
-
-    {
-      section: "Apakah Gunanya Magnet?",
-      q: "1. [TP1] Antara berikut, yang manakah dinyatakan menggunakan magnet?",
-      o: [
-        "Kertas lukisan",
-        "Botol air plastik",
-        "Buku latihan",
-        "Beg tangan"
-      ],
-      a: 3
-    },
-
-    {
-      section: "Apakah Gunanya Magnet?",
-      q: "2. [TP2] Antara situasi berikut, yang manakah menunjukkan magnet digunakan pada penutup?",
-      o: [
-        "Pensel diasah",
-        "Pemadam digunakan",
-        "Kotak pensel tertutup rapat",
-        "Guli bergerak"
-      ],
-      a: 2
-    },
-
-    {
-      section: "Apakah Gunanya Magnet?",
-      q: "3. [TP2] Seorang pekerja mahu skru melekat pada hujung alat ketika bekerja. Apakah alat yang sesuai?",
-      o: [
-        "Pemutar skru bermagnet",
-        "Pensel",
-        "Pembaris plastik",
-        "Pemadam"
-      ],
-      a: 0
-    },
-
-    {
-      section: "Apakah Gunanya Magnet?",
-      q: "4. [TP2] Yang manakah contoh kegunaan magnet untuk memegang objek kecil?",
-      o: [
-        "Pemadam memadam tulisan",
-        "Pemutar skru bermagnet memegang skru",
-        "Pembaris mengukur meja",
-        "Guli bergolek"
-      ],
-      a: 1
-    },
-
-    {
-      section: "Apakah Gunanya Magnet?",
-      q: "5. [TP1] Apakah yang membantu pintu peti sejuk ditutup rapat?",
-      o: [
-        "Pembaris",
-        "Guli",
-        "Getah pemadam",
-        "Magnet"
-      ],
-      a: 3
-    },
-
-
-    /* ================================
-       BENTUK MAGNET
-    ================================ */
-
-    {
-      section: "Bentuk Magnet",
-      q: "6. [TP1] Kutub magnet ladam adalah lebih ____ berbanding magnet bentuk U.",
-      o: [
-        "Rapat",
-        "Besar",
-        "Jauh",
-        "Panjang"
-      ],
-      a: 0
-    },
-
-    {
-      section: "Bentuk Magnet",
-      q: "7. [TP2] Pasangan manakah mengandungi magnet bar bersama satu lagi bentuk magnet yang betul?",
-      o: [
-        "Magnet pasir dan magnet air",
-        "Magnet bunga dan magnet ranting",
-        "Magnet daun dan magnet akar",
-        "Magnet bar dan magnet cincin"
-      ],
-      a: 3
-    },
-
-    {
-      section: "Bentuk Magnet",
-      q: "8. [TP2] Jika magnet mempunyai dua hujung melengkung seperti ladam kuda, magnet itu ialah ____.",
-      o: [
-        "Magnet butang",
-        "Magnet ladam",
-        "Magnet cincin",
-        "Magnet bar"
-      ],
-      a: 1
-    },
-
-    {
-      section: "Bentuk Magnet",
-      q: "9. [TP1] Yang manakah nama magnet yang berbentuk seperti ladam?",
-      o: [
-        "Magnet akar",
-        "Magnet ranting",
-        "Magnet ladam",
-        "Magnet daun"
-      ],
-      a: 2
-    },
-
-    {
-      section: "Bentuk Magnet",
-      q: "10. [TP1] Berapakah bentuk magnet yang ditunjukkan dalam buku?",
-      o: [
-        "Empat",
-        "Enam",
-        "Dua",
-        "Tiga"
-      ],
-      a: 1
-    },
-
-
-    /* ================================
-       HEBATNYA MAGNET
-    ================================ */
-
-    {
-      section: "Hebatnya Magnet",
-      q: "11. [TP1] Untuk menguji sama ada objek boleh ditarik magnet, magnet perlu ____ kepada objek.",
-      o: [
-        "Disembunyikan",
-        "Dijauhkan terus",
-        "Ditutup dengan kertas",
-        "Didekatkan"
-      ],
-      a: 3
-    },
-
-    {
-      section: "Hebatnya Magnet",
-      q: "12. [TP1] Objek logam manakah dalam aktiviti yang boleh ditarik oleh magnet?",
-      o: [
-        "Kayu aiskrim",
-        "Pemadam",
-        "Penutup botol logam",
-        "Guli"
-      ],
-      a: 2
-    },
-
-    {
-      section: "Hebatnya Magnet",
-      q: "13. [TP2] Dalam satu ujian, paku melekat pada magnet tetapi pensel tidak. Objek yang ditarik ialah ____.",
-      o: [
-        "Paku",
-        "Tiada",
-        "Kedua-duanya",
-        "Pensel"
-      ],
-      a: 0
-    },
-
-    {
-      section: "Hebatnya Magnet",
-      q: "14. [TP2] Jika objek tidak bergerak ke arah magnet, keputusan yang sesuai dalam jadual ialah ____.",
-      o: [
-        "Mengembang",
-        "Mencair",
-        "Menarik",
-        "Tidak menarik"
-      ],
-      a: 3
-    },
-
-    {
-      section: "Hebatnya Magnet",
-      q: "15. [TP1] Objek kayu manakah dalam aktiviti yang tidak dapat ditarik magnet?",
-      o: [
-        "Skru",
-        "Paku",
-        "Kayu aiskrim",
-        "Pin baju"
-      ],
-      a: 2
-    },
-
-
-    /* ================================
-       TARIKAN DAN TOLAKAN MAGNET
-    ================================ */
-
-    {
-      section: "Tarikan dan Tolakan Magnet",
-      q: "16. [TP1] Kutub Selatan didekatkan dengan kutub Selatan. Apakah yang berlaku?",
-      o: [
-        "Menolak",
-        "Menarik",
-        "Mencair",
-        "Berubah menjadi kayu"
-      ],
-      a: 0
-    },
-
-    {
-      section: "Tarikan dan Tolakan Magnet",
-      q: "17. [TP1] Kutub Utara didekatkan dengan kutub Selatan. Apakah yang berlaku?",
-      o: [
-        "Tidak mempunyai tindakan",
-        "Menarik",
-        "Mencair",
-        "Menolak"
-      ],
-      a: 1
-    },
-
-    {
-      section: "Tarikan dan Tolakan Magnet",
-      q: "18. [TP2] Magnet A menunjukkan kutub Selatan menghadap kutub Selatan magnet B. Apakah yang akan berlaku?",
-      o: [
-        "Kedua-dua magnet menolak",
-        "Magnet hilang kutub",
-        "Magnet bertukar bentuk",
-        "Kedua-dua magnet menarik"
-      ],
-      a: 0
-    },
-
-    {
-      section: "Tarikan dan Tolakan Magnet",
-      q: "19. [TP2] Sara mahu melihat tarikan antara dua magnet. Apakah susunan yang sesuai?",
-      o: [
-        "Kutub yang sama didekatkan",
-        "Satu magnet dibuang",
-        "Kutub yang berlainan didekatkan",
-        "Kedua-dua magnet disimpan"
-      ],
-      a: 2
-    },
-
-    {
-      section: "Tarikan dan Tolakan Magnet",
-      q: "20. [TP2] Kutub Utara sebuah magnet menghadap kutub Selatan magnet lain. Apakah yang berlaku?",
-      o: [
-        "Tiada tindakan",
-        "Kedua-dua magnet menarik",
-        "Kedua-dua magnet menolak",
-        "Magnet menjadi plastik"
-      ],
-      a: 1
-    },
-
-
-    /* ================================
-       KEKUATAN MAGNET
-    ================================ */
-
-    {
-      section: "Kekuatan Magnet",
-      q: "21. [TP1] Magnet bulat padat manakah yang digunakan dalam aktiviti menguji kekuatan magnet?",
-      o: [
-        "Pemadam",
-        "Pensel",
-        "Guli",
-        "Magnet butang"
-      ],
-      a: 3
-    },
-
-    {
-      section: "Kekuatan Magnet",
-      q: "22. [TP1] Magnet bulat berlubang manakah yang digunakan dalam aktiviti menguji kekuatan magnet?",
-      o: [
-        "Magnet cincin",
-        "Kayu aiskrim",
-        "Pemadam",
-        "Guli"
-      ],
-      a: 0
-    },
-
-    {
-      section: "Kekuatan Magnet",
-      q: "23. [TP2] Satu magnet menarik banyak klip kertas dan satu lagi menarik sedikit. Perbezaan ini menunjukkan magnet mempunyai ____.",
-      o: [
-        "Bau yang sama",
-        "Warna yang sama",
-        "Rasa yang berbeza",
-        "Kekuatan yang berbeza"
-      ],
-      a: 3
-    },
-
-    {
-      section: "Kekuatan Magnet",
-      q: "24. [TP2] Magnet A menarik 8 klip kertas manakala magnet B menarik 3 klip. Magnet manakah lebih kuat?",
-      o: [
-        "Kedua-duanya sama",
-        "Magnet A",
-        "Magnet B",
-        "Tidak boleh dibandingkan langsung"
-      ],
-      a: 1
-    },
-
-    {
-      section: "Kekuatan Magnet",
-      q: "25. [TP1] Apakah objek yang digunakan untuk membandingkan kekuatan magnet dalam aktiviti buku?",
-      o: [
-        "Pensel",
-        "Pemadam",
-        "Klip kertas",
-        "Guli"
-      ],
-      a: 2
-    }
-
-  ];
-
-
-  const LETTERS = ["A", "B", "C", "D"];
-
-
-  /* =========================================================
-     AUDIO
-     MUSIC + SFX TANPA FAIL LUAR
-  ========================================================= */
-
-  class SynthAudio {
-
-    constructor() {
-
-      this.ctx = null;
-      this.master = null;
-
-      this.musicOn = true;
-
-      this.timer = null;
-      this.step = 0;
-
-      this.notes = [
-        261.63,
-        329.63,
-        392.00,
-        329.63,
-        293.66,
-        349.23,
-        440.00,
-        349.23
-      ];
-
-    }
-
-
-    unlock() {
-
-      if (!this.ctx) {
-
-        const AC =
-          window.AudioContext ||
-          window.webkitAudioContext;
-
-        if (!AC) return;
-
-        this.ctx = new AC();
-
-        this.master =
-          this.ctx.createGain();
-
-        this.master.gain.value = 0.18;
-
-        this.master.connect(
-          this.ctx.destination
-        );
-
-      }
-
-
-      if (
-        this.ctx.state === "suspended"
-      ) {
-
-        this.ctx.resume();
-
-      }
-
-
-      this.startMusic();
-
-    }
-
-
-    tone(
-      freq = 440,
-      dur = 0.12,
-      type = "sine",
-      vol = 0.16,
-      slide = 0
-    ) {
-
-      if (
-        !this.ctx ||
-        !this.master
-      ) return;
-
-
-      const now =
-        this.ctx.currentTime;
-
-
-      const osc =
-        this.ctx.createOscillator();
-
-      const gain =
-        this.ctx.createGain();
-
-
-      osc.type = type;
-
-
-      osc.frequency.setValueAtTime(
-        freq,
-        now
-      );
-
-
-      if (slide) {
-
-        osc.frequency
-          .exponentialRampToValueAtTime(
-            Math.max(
-              40,
-              freq + slide
-            ),
-            now + dur
-          );
-
-      }
-
-
-      gain.gain.setValueAtTime(
-        Math.max(
-          0.0001,
-          vol
-        ),
-        now
-      );
-
-
-      gain.gain
-        .exponentialRampToValueAtTime(
-          0.0001,
-          now + dur
-        );
-
-
-      osc.connect(gain);
-
-      gain.connect(
-        this.master
-      );
-
-
-      osc.start(now);
-
-      osc.stop(
-        now + dur + 0.02
-      );
-
-    }
-
-
-    correct() {
-
-      this.tone(
-        523,
-        0.08,
-        "triangle",
-        0.18,
-        120
-      );
-
-
-      setTimeout(() => {
-
-        this.tone(
-          659,
-          0.11,
-          "triangle",
-          0.16,
-          120
-        );
-
-      }, 85);
-
-    }
-
-
-    wrong() {
-
-      this.tone(
-        180,
-        0.16,
-        "sawtooth",
-        0.12,
-        -70
-      );
-
-    }
-
-
-    pickup() {
-
-      this.tone(
-        760,
-        0.06,
-        "square",
-        0.09,
-        80
-      );
-
-    }
-
-
-    win() {
-
-      [
-        523,
-        659,
-        784,
-        1046
-      ].forEach(
-        (n, i) => {
-
-          setTimeout(
-            () => {
-
-              this.tone(
-                n,
-                0.2,
-                "triangle",
-                0.16,
-                100
-              );
-
-            },
-            i * 120
-          );
-
-        }
-      );
-
-    }
-
-
-    startMusic() {
-
-      if (
-        this.timer ||
-        !this.ctx
-      ) return;
+"use strict";
+
+/* =========================================================
+   DEVICE
+========================================================= */
+
+const PHONE = window.innerWidth <= 700;
+
+const GAME_W = PHONE ? 540 : 900;
+const GAME_H = PHONE ? 820 : 650;
+
+
+/* =========================================================
+   SOALAN
+========================================================= */
+
+const QUESTIONS = [
+
+{
+section:"Apakah Gunanya Magnet?",
+q:"1. [TP1] Antara berikut, yang manakah dinyatakan menggunakan magnet?",
+o:[
+"Kertas lukisan",
+"Botol air plastik",
+"Buku latihan",
+"Beg tangan"
+],
+a:3
+},
+
+{
+section:"Apakah Gunanya Magnet?",
+q:"2. [TP2] Antara situasi berikut, yang manakah menunjukkan magnet digunakan pada penutup?",
+o:[
+"Pensel diasah",
+"Pemadam digunakan",
+"Kotak pensel tertutup rapat",
+"Guli bergerak"
+],
+a:2
+},
+
+{
+section:"Apakah Gunanya Magnet?",
+q:"3. [TP2] Seorang pekerja mahu skru melekat pada hujung alat ketika bekerja. Apakah alat yang sesuai?",
+o:[
+"Pemutar skru bermagnet",
+"Pensel",
+"Pembaris plastik",
+"Pemadam"
+],
+a:0
+},
+
+{
+section:"Apakah Gunanya Magnet?",
+q:"4. [TP2] Yang manakah contoh kegunaan magnet untuk memegang objek kecil?",
+o:[
+"Pemadam memadam tulisan",
+"Pemutar skru bermagnet memegang skru",
+"Pembaris mengukur meja",
+"Guli bergolek"
+],
+a:1
+},
+
+{
+section:"Apakah Gunanya Magnet?",
+q:"5. [TP1] Apakah yang membantu pintu peti sejuk ditutup rapat?",
+o:[
+"Pembaris",
+"Guli",
+"Getah pemadam",
+"Magnet"
+],
+a:3
+},
+
+{
+section:"Bentuk Magnet",
+q:"6. [TP1] Kutub magnet ladam adalah lebih ____ berbanding magnet bentuk U.",
+o:[
+"Rapat",
+"Besar",
+"Jauh",
+"Panjang"
+],
+a:0
+},
+
+{
+section:"Bentuk Magnet",
+q:"7. [TP2] Pasangan manakah mengandungi magnet bar bersama satu lagi bentuk magnet yang betul?",
+o:[
+"Magnet pasir dan magnet air",
+"Magnet bunga dan magnet ranting",
+"Magnet daun dan magnet akar",
+"Magnet bar dan magnet cincin"
+],
+a:3
+},
+
+{
+section:"Bentuk Magnet",
+q:"8. [TP2] Jika magnet mempunyai dua hujung melengkung seperti ladam kuda, magnet itu ialah ____.",
+o:[
+"Magnet butang",
+"Magnet ladam",
+"Magnet cincin",
+"Magnet bar"
+],
+a:1
+},
+
+{
+section:"Bentuk Magnet",
+q:"9. [TP1] Yang manakah nama magnet yang berbentuk seperti ladam?",
+o:[
+"Magnet akar",
+"Magnet ranting",
+"Magnet ladam",
+"Magnet daun"
+],
+a:2
+},
+
+{
+section:"Bentuk Magnet",
+q:"10. [TP1] Berapakah bentuk magnet yang ditunjukkan dalam buku?",
+o:[
+"Empat",
+"Enam",
+"Dua",
+"Tiga"
+],
+a:1
+},
+
+{
+section:"Hebatnya Magnet",
+q:"11. [TP1] Untuk menguji sama ada objek boleh ditarik magnet, magnet perlu ____ kepada objek.",
+o:[
+"Disembunyikan",
+"Dijauhkan terus",
+"Ditutup dengan kertas",
+"Didekatkan"
+],
+a:3
+},
+
+{
+section:"Hebatnya Magnet",
+q:"12. [TP1] Objek logam manakah dalam aktiviti yang boleh ditarik oleh magnet?",
+o:[
+"Kayu aiskrim",
+"Pemadam",
+"Penutup botol logam",
+"Guli"
+],
+a:2
+},
+
+{
+section:"Hebatnya Magnet",
+q:"13. [TP2] Dalam satu ujian, paku melekat pada magnet tetapi pensel tidak. Objek yang ditarik ialah ____.",
+o:[
+"Paku",
+"Tiada",
+"Kedua-duanya",
+"Pensel"
+],
+a:0
+},
+
+{
+section:"Hebatnya Magnet",
+q:"14. [TP2] Jika objek tidak bergerak ke arah magnet, keputusan yang sesuai dalam jadual ialah ____.",
+o:[
+"Mengembang",
+"Mencair",
+"Menarik",
+"Tidak menarik"
+],
+a:3
+},
+
+{
+section:"Hebatnya Magnet",
+q:"15. [TP1] Objek kayu manakah dalam aktiviti yang tidak dapat ditarik magnet?",
+o:[
+"Skru",
+"Paku",
+"Kayu aiskrim",
+"Pin baju"
+],
+a:2
+},
+
+{
+section:"Tarikan dan Tolakan Magnet",
+q:"16. [TP1] Kutub Selatan didekatkan dengan kutub Selatan. Apakah yang berlaku?",
+o:[
+"Menolak",
+"Menarik",
+"Mencair",
+"Berubah menjadi kayu"
+],
+a:0
+},
+
+{
+section:"Tarikan dan Tolakan Magnet",
+q:"17. [TP1] Kutub Utara didekatkan dengan kutub Selatan. Apakah yang berlaku?",
+o:[
+"Tidak mempunyai tindakan",
+"Menarik",
+"Mencair",
+"Menolak"
+],
+a:1
+},
+
+{
+section:"Tarikan dan Tolakan Magnet",
+q:"18. [TP2] Magnet A menunjukkan kutub Selatan menghadap kutub Selatan magnet B. Apakah yang akan berlaku?",
+o:[
+"Kedua-dua magnet menolak",
+"Magnet hilang kutub",
+"Magnet bertukar bentuk",
+"Kedua-dua magnet menarik"
+],
+a:0
+},
+
+{
+section:"Tarikan dan Tolakan Magnet",
+q:"19. [TP2] Sara mahu melihat tarikan antara dua magnet. Apakah susunan yang sesuai?",
+o:[
+"Kutub yang sama didekatkan",
+"Satu magnet dibuang",
+"Kutub yang berlainan didekatkan",
+"Kedua-dua magnet disimpan"
+],
+a:2
+},
+
+{
+section:"Tarikan dan Tolakan Magnet",
+q:"20. [TP2] Kutub Utara sebuah magnet menghadap kutub Selatan magnet lain. Apakah yang berlaku?",
+o:[
+"Tiada tindakan",
+"Kedua-dua magnet menarik",
+"Kedua-dua magnet menolak",
+"Magnet menjadi plastik"
+],
+a:1
+},
+
+{
+section:"Kekuatan Magnet",
+q:"21. [TP1] Magnet bulat padat manakah yang digunakan dalam aktiviti menguji kekuatan magnet?",
+o:[
+"Pemadam",
+"Pensel",
+"Guli",
+"Magnet butang"
+],
+a:3
+},
+
+{
+section:"Kekuatan Magnet",
+q:"22. [TP1] Magnet bulat berlubang manakah yang digunakan dalam aktiviti menguji kekuatan magnet?",
+o:[
+"Magnet cincin",
+"Kayu aiskrim",
+"Pemadam",
+"Guli"
+],
+a:0
+},
+
+{
+section:"Kekuatan Magnet",
+q:"23. [TP2] Satu magnet menarik banyak klip kertas dan satu lagi menarik sedikit. Perbezaan ini menunjukkan magnet mempunyai ____.",
+o:[
+"Bau yang sama",
+"Warna yang sama",
+"Rasa yang berbeza",
+"Kekuatan yang berbeza"
+],
+a:3
+},
+
+{
+section:"Kekuatan Magnet",
+q:"24. [TP2] Magnet A menarik 8 klip kertas manakala magnet B menarik 3 klip. Magnet manakah lebih kuat?",
+o:[
+"Kedua-duanya sama",
+"Magnet A",
+"Magnet B",
+"Tidak boleh dibandingkan langsung"
+],
+a:1
+},
+
+{
+section:"Kekuatan Magnet",
+q:"25. [TP1] Apakah objek yang digunakan untuk membandingkan kekuatan magnet dalam aktiviti buku?",
+o:[
+"Pensel",
+"Pemadam",
+"Klip kertas",
+"Guli"
+],
+a:2
+}
+
+];
+
+const LETTERS = ["A","B","C","D"];
+
+
+/* =========================================================
+   AUDIO
+========================================================= */
+
+class GameAudio{
+
+constructor(){
+
+this.ctx=null;
+this.master=null;
+this.musicTimer=null;
+this.musicOn=true;
+this.noteIndex=0;
+
+this.notes=[
+261.63,
+329.63,
+392.00,
+349.23,
+293.66,
+349.23,
+440.00,
+392.00
+];
+
+}
+
+unlock(){
+
+if(!this.ctx){
+
+const AC=
+window.AudioContext||
+window.webkitAudioContext;
+
+if(!AC)return;
+
+this.ctx=new AC();
+
+this.master=this.ctx.createGain();
+
+this.master.gain.value=.22;
+
+this.master.connect(
+this.ctx.destination
+);
+
+}
+
+if(this.ctx.state==="suspended"){
+this.ctx.resume();
+}
+
+this.startMusic();
+
+}
+
+tone(freq,duration=.1,type="sine",volume=.12,endFreq=null){
+
+if(!this.ctx)return;
+
+const now=this.ctx.currentTime;
+
+const osc=this.ctx.createOscillator();
+const gain=this.ctx.createGain();
+
+osc.type=type;
+
+osc.frequency.setValueAtTime(
+freq,
+now
+);
+
+if(endFreq){
+
+osc.frequency.exponentialRampToValueAtTime(
+Math.max(50,endFreq),
+now+duration
+);
+
+}
+
+gain.gain.setValueAtTime(
+volume,
+now
+);
+
+gain.gain.exponentialRampToValueAtTime(
+.0001,
+now+duration
+);
+
+osc.connect(gain);
+gain.connect(this.master);
+
+osc.start(now);
+osc.stop(now+duration+.02);
+
+}
+
+startMusic(){
+
+if(this.musicTimer)return;
+
+this.musicTimer=setInterval(()=>{
+
+if(
+!this.musicOn||
+!this.ctx||
+document.hidden
+)return;
+
+const note=
+this.notes[
+this.noteIndex%
+this.notes.length
+];
+
+this.noteIndex++;
+
+this.tone(
+note,
+.2,
+"sine",
+.025
+);
+
+},430);
+
+}
+
+correct(){
+
+this.tone(
+520,
+.1,
+"triangle",
+.16,
+650
+);
+
+setTimeout(()=>{
+
+this.tone(
+700,
+.13,
+"triangle",
+.14,
+900
+);
+
+},100);
+
+}
+
+wrong(){
+
+this.tone(
+180,
+.2,
+"sawtooth",
+.11,
+100
+);
+
+}
+
+collect(){
+
+this.tone(
+850,
+.07,
+"square",
+.07,
+1050
+);
+
+}
+
+win(){
+
+[
+523,
+659,
+784,
+1046
+].forEach((n,i)=>{
+
+setTimeout(()=>{
+
+this.tone(
+n,
+.25,
+"triangle",
+.14,
+n+100
+);
+
+},i*120);
+
+});
+
+}
+
+toggle(){
+
+this.musicOn=!this.musicOn;
+
+return this.musicOn;
+
+}
+
+}
+
+const AUDIO=new GameAudio();
+
+
+/* =========================================================
+   SCENE
+========================================================= */
+
+class GameScene extends Phaser.Scene{
+
+constructor(){
+
+super("game");
+
+}
+
+/* =========================================================
+   CREATE
+========================================================= */
+
+create(){
+
+this.questionIndex=0;
+this.score=0;
+
+this.gameStarted=false;
+this.answerLocked=true;
+
+this.joyActive=false;
+
+this.joyVector=
+new Phaser.Math.Vector2(0,0);
+
+this.tokens=[];
+
+this.createTextures();
+
+this.createBackground();
+
+this.createHeader();
+
+this.createQuestionPanel();
+
+this.createArena();
+
+this.createPhysicsGroups();
+
+this.createPlayer();
+
+this.createJoystick();
+
+this.setupKeyboard();
+
+this.setupPointer();
+
+this.createPhysicsCollision();
+
+this.showStart();
+
+}
+
+
+/* =========================================================
+   TEXTURE
+========================================================= */
+
+createTextures(){
+
+const g=this.make.graphics({
+add:false
+});
+
+/* ROBOT */
+
+g.fillStyle(0xffffff,1);
+g.fillCircle(32,32,29);
+
+g.lineStyle(
+4,
+0x1f465e,
+1
+);
+
+g.strokeCircle(
+32,
+32,
+29
+);
+
+/* MAGNET LEFT */
+
+g.fillStyle(
+0xe64e55,
+1
+);
+
+g.fillRoundedRect(
+12,
+15,
+15,
+31,
+7
+);
+
+/* MAGNET RIGHT */
+
+g.fillStyle(
+0x4285e8,
+1
+);
+
+g.fillRoundedRect(
+37,
+15,
+15,
+31,
+7
+);
+
+/* BOTTOM CONNECT */
+
+g.fillStyle(
+0x1e4055,
+1
+);
+
+g.fillRoundedRect(
+21,
+38,
+22,
+10,
+4
+);
+
+/* EYES */
+
+g.fillStyle(
+0x173244,
+1
+);
+
+g.fillCircle(
+25,
+25,
+3
+);
+
+g.fillCircle(
+39,
+25,
+3
+);
+
+g.generateTexture(
+"robot",
+64,
+64
+);
+
+g.clear();
+
+
+/* STAR / PARTICLE */
+
+g.fillStyle(
+0xffffff,
+1
+);
+
+g.fillCircle(
+5,
+5,
+5
+);
+
+g.generateTexture(
+"particle",
+10,
+10
+);
+
+g.destroy();
+
+}
+
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+createBackground(){
+
+this.cameras.main
+.setBackgroundColor(
+"#dcebf3"
+);
+
+const g=this.add.graphics();
+
+g.fillStyle(
+0xdcebf3,
+1
+);
+
+g.fillRect(
+0,
+0,
+GAME_W,
+GAME_H
+);
+
+g.fillStyle(
+0xbcd7e6,
+.25
+);
+
+for(let i=0;i<35;i++){
+
+const x=
+(i*143)%GAME_W;
+
+const y=
+(i*91)%GAME_H;
+
+g.fillCircle(
+x,
+y,
+PHONE?9:11
+);
+
+}
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+createHeader(){
+
+this.add.rectangle(
+GAME_W/2,
+25,
+GAME_W,
+50,
+0x153c55
+);
+
+this.add.text(
+18,
+15,
+"MAGNET MAZE",
+{
+fontFamily:"Arial",
+fontSize:PHONE?"18px":"21px",
+fontStyle:"bold",
+color:"#ffffff"
+}
+);
+
+this.progressText=
+this.add.text(
+GAME_W/2,
+16,
+"1 / 25",
+{
+fontFamily:"Arial",
+fontSize:PHONE?"16px":"18px",
+fontStyle:"bold",
+color:"#ffffff"
+}
+)
+.setOrigin(.5,0);
+
+this.scoreText=
+this.add.text(
+GAME_W-18,
+16,
+"Skor 0",
+{
+fontFamily:"Arial",
+fontSize:PHONE?"14px":"16px",
+fontStyle:"bold",
+color:"#ffffff"
+}
+)
+.setOrigin(1,0);
+
+}
+
+
+/* =========================================================
+   QUESTION PANEL
+========================================================= */
+
+createQuestionPanel(){
+
+this.panelY=57;
+
+this.panelH=
+PHONE
+?260
+:162;
+
+this.panelBottom=
+this.panelY+
+this.panelH;
+
+this.add.rectangle(
+GAME_W/2,
+this.panelY+
+this.panelH/2,
+GAME_W-20,
+this.panelH,
+0xffffff,
+.97
+)
+.setStrokeStyle(
+2,
+0x92afc0
+);
+
+this.sectionText=
+this.add.text(
+20,
+this.panelY+10,
+"",
+{
+fontFamily:"Arial",
+fontSize:PHONE?"12px":"13px",
+fontStyle:"bold",
+color:"#26708f"
+}
+);
+
+this.questionText=
+this.add.text(
+20,
+this.panelY+31,
+"",
+{
+fontFamily:"Arial",
+fontSize:PHONE?"16px":"18px",
+fontStyle:"bold",
+color:"#19394e",
+
+wordWrap:{
+width:GAME_W-40,
+useAdvancedWrap:true
+},
+
+lineSpacing:2
+}
+);
+
+this.optionTexts=[];
+
+if(PHONE){
+
+for(let i=0;i<4;i++){
+
+const t=
+this.add.text(
+26,
+this.panelY+
+112+
+i*34,
+"",
+{
+fontFamily:"Arial",
+fontSize:"13px",
+color:"#29495d",
+
+wordWrap:{
+width:GAME_W-50,
+useAdvancedWrap:true
+}
+}
+);
+
+this.optionTexts.push(t);
+
+}
+
+}else{
+
+const colW=
+(GAME_W-50)/2;
+
+for(let i=0;i<4;i++){
+
+const col=i%2;
+const row=Math.floor(i/2);
+
+const t=
+this.add.text(
+25+
+col*colW,
+this.panelY+
+103+
+row*29,
+"",
+{
+fontFamily:"Arial",
+fontSize:"14px",
+color:"#29495d",
+
+wordWrap:{
+width:colW-15,
+useAdvancedWrap:true
+}
+}
+);
+
+this.optionTexts.push(t);
+
+}
+
+}
+
+}
+
+
+/* =========================================================
+   ARENA
+========================================================= */
+
+createArena(){
+
+this.arena={
+
+x:18,
+
+y:this.panelBottom+10,
+
+w:GAME_W-36,
+
+h:
+GAME_H-
+(this.panelBottom+10)-
+48
+
+};
+
+this.add.rectangle(
+this.arena.x+
+this.arena.w/2,
+this.arena.y+
+this.arena.h/2,
+this.arena.w,
+this.arena.h,
+0xf7fbfd
+)
+.setStrokeStyle(
+3,
+0x628ea6
+);
+
+
+/* GRID */
+
+const grid=this.add.graphics();
+
+grid.lineStyle(
+1,
+0xaac8d7,
+.28
+);
+
+const gridSize=
+PHONE?36:42;
+
+for(
+let x=
+this.arena.x+
+gridSize;
+
+x<
+this.arena.x+
+this.arena.w;
+
+x+=gridSize
+){
+
+grid.lineBetween(
+x,
+this.arena.y,
+x,
+this.arena.y+
+this.arena.h
+);
+
+}
+
+for(
+let y=
+this.arena.y+
+gridSize;
+
+y<
+this.arena.y+
+this.arena.h;
+
+y+=gridSize
+){
+
+grid.lineBetween(
+this.arena.x,
+y,
+this.arena.x+
+this.arena.w,
+y
+);
+
+}
+
+}
+
+
+/* =========================================================
+   PHYSICS GROUPS
+========================================================= */
+
+createPhysicsGroups(){
+
+this.borderGroup=
+this.physics.add.staticGroup();
+
+this.mazeGroup=
+this.physics.add.staticGroup();
+
+this.createArenaBorders();
+
+}
+
+
+/* =========================================================
+   ARENA BORDERS
+========================================================= */
+
+createArenaBorders(){
+
+const a=this.arena;
+
+const size=12;
+
+/* TOP */
+
+this.createPhysicsWall(
+a.x+a.w/2,
+a.y,
+a.w,
+size,
+0x628ea6,
+this.borderGroup,
+0
+);
+
+/* BOTTOM */
+
+this.createPhysicsWall(
+a.x+a.w/2,
+a.y+a.h,
+a.w,
+size,
+0x628ea6,
+this.borderGroup,
+0
+);
+
+/* LEFT */
+
+this.createPhysicsWall(
+a.x,
+a.y+a.h/2,
+size,
+a.h,
+0x628ea6,
+this.borderGroup,
+0
+);
+
+/* RIGHT */
+
+this.createPhysicsWall(
+a.x+a.w,
+a.y+a.h/2,
+size,
+a.h,
+0x628ea6,
+this.borderGroup,
+0
+);
+
+}
+
+
+/* =========================================================
+   CREATE PHYSICS WALL
+========================================================= */
+
+createPhysicsWall(
+x,
+y,
+w,
+h,
+color,
+group,
+alpha=1
+){
+
+const wall=
+this.add.rectangle(
+x,
+y,
+w,
+h,
+color,
+alpha
+);
+
+group.add(wall);
+
+wall.body.setSize(
+w,
+h
+);
+
+wall.body.updateFromGameObject();
+
+return wall;
+
+}
+
+
+/* =========================================================
+   PLAYER
+========================================================= */
+
+createPlayer(){
+
+const spawn=
+this.getSpawnPoint();
+
+this.player=
+this.physics.add.sprite(
+spawn.x,
+spawn.y,
+"robot"
+);
+
+this.player
+.setDisplaySize(
+PHONE?48:52,
+PHONE?48:52
+)
+.setDepth(20);
+
+this.player.body
+.setCircle(
+23,
+9,
+9
+);
+
+this.player
+.setCollideWorldBounds(false);
+
+this.player
+.setDrag(
+700,
+700
+);
+
+this.player
+.setMaxVelocity(
+250,
+250
+);
+
+
+/* GLOW */
+
+this.playerGlow=
+this.add.circle(
+spawn.x,
+spawn.y,
+PHONE?30:32,
+0x43a8e6,
+.12
+)
+.setDepth(18);
+
+}
+
+
+/* =========================================================
+   SAFE SPAWN
+========================================================= */
+
+getSpawnPoint(){
+
+return{
+
+x:
+this.arena.x+
+this.arena.w/2,
+
+y:
+this.arena.y+
+this.arena.h-
+(PHONE?75:68)
+
+};
+
+}
+
+
+/* =========================================================
+   COLLISION
+========================================================= */
+
+createPhysicsCollision(){
+
+this.physics.add.collider(
+this.player,
+this.borderGroup
+);
+
+this.physics.add.collider(
+this.player,
+this.mazeGroup
+);
+
+}
+
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
+setupKeyboard(){
+
+this.cursors=
+this.input.keyboard
+.createCursorKeys();
+
+this.keys=
+this.input.keyboard.addKeys({
+up:Phaser.Input.Keyboard.KeyCodes.W,
+down:Phaser.Input.Keyboard.KeyCodes.S,
+left:Phaser.Input.Keyboard.KeyCodes.A,
+right:Phaser.Input.Keyboard.KeyCodes.D
+});
+
+}
+
+
+/* =========================================================
+   JOYSTICK
+========================================================= */
+
+createJoystick(){
+
+const x=
+this.arena.x+
+70;
+
+const y=
+this.arena.y+
+this.arena.h-
+68;
+
+this.joyCenter=
+new Phaser.Math.Vector2(
+x,
+y
+);
+
+this.joyRadius=
+PHONE?47:43;
+
+this.joyBase=
+this.add.circle(
+x,
+y,
+this.joyRadius,
+0x173f58,
+.14
+)
+.setStrokeStyle(
+3,
+0x173f58,
+.30
+)
+.setDepth(30);
+
+this.joyKnob=
+this.add.circle(
+x,
+y,
+PHONE?22:20,
+0x173f58,
+.55
+)
+.setDepth(31);
+
+this.add.text(
+x,
+y-
+this.joyRadius-
+15,
+"GERAK",
+{
+fontFamily:"Arial",
+fontSize:"10px",
+fontStyle:"bold",
+color:"#4d7084"
+}
+)
+.setOrigin(.5)
+.setDepth(30);
+
+}
+
+
+/* =========================================================
+   POINTER
+========================================================= */
+
+setupPointer(){
+
+this.input.on(
+"pointerdown",
+pointer=>{
+
+AUDIO.unlock();
+
+const distance=
+Phaser.Math.Distance.Between(
+pointer.x,
+pointer.y,
+this.joyCenter.x,
+this.joyCenter.y
+);
+
+if(
+distance<=
+this.joyRadius+35
+){
+
+this.joyActive=true;
+
+this.updateJoystick(
+pointer.x,
+pointer.y
+);
+
+}
+
+}
+);
+
+this.input.on(
+"pointermove",
+pointer=>{
+
+if(
+this.joyActive&&
+pointer.isDown
+){
+
+this.updateJoystick(
+pointer.x,
+pointer.y
+);
+
+}
+
+}
+);
+
+this.input.on(
+"pointerup",
+()=>{
+this.resetJoystick();
+}
+);
+
+this.input.on(
+"pointerupoutside",
+()=>{
+this.resetJoystick();
+}
+);
+
+}
+
+
+/* =========================================================
+   UPDATE JOYSTICK
+========================================================= */
+
+updateJoystick(px,py){
+
+let dx=
+px-
+this.joyCenter.x;
+
+let dy=
+py-
+this.joyCenter.y;
+
+const distance=
+Math.sqrt(
+dx*dx+
+dy*dy
+);
+
+if(distance===0){
+
+this.joyVector.set(
+0,
+0
+);
+
+return;
+
+}
+
+const max=
+Math.min(
+distance,
+this.joyRadius
+);
+
+const nx=
+dx/distance;
+
+const ny=
+dy/distance;
+
+this.joyKnob.setPosition(
+this.joyCenter.x+
+nx*max,
+
+this.joyCenter.y+
+ny*max
+);
+
+const strength=
+max/
+this.joyRadius;
+
+this.joyVector.set(
+nx*strength,
+ny*strength
+);
+
+}
+
+
+/* =========================================================
+   RESET JOYSTICK
+========================================================= */
+
+resetJoystick(){
+
+this.joyActive=false;
+
+this.joyVector.set(
+0,
+0
+);
+
+this.joyKnob.setPosition(
+this.joyCenter.x,
+this.joyCenter.y
+);
+
+}
+
+
+/* =========================================================
+   START WINDOW
+========================================================= */
+
+showStart(){
+
+const dark=
+this.add.rectangle(
+GAME_W/2,
+GAME_H/2,
+GAME_W,
+GAME_H,
+0x0a2433,
+.76
+)
+.setDepth(100);
+
+const w=
+PHONE
+?GAME_W-36
+:530;
+
+const h=
+PHONE
+?370
+:320;
+
+const box=
+this.add.rectangle(
+GAME_W/2,
+GAME_H/2,
+w,
+h,
+0xffffff
+)
+.setStrokeStyle(
+3,
+0x54859f
+)
+.setDepth(101);
+
+const title=
+this.add.text(
+GAME_W/2,
+GAME_H/2-
+h/2+
+42,
+"MAGNET MAZE",
+{
+fontFamily:"Arial",
+fontSize:PHONE?"29px":"31px",
+fontStyle:"bold",
+color:"#173f58"
+}
+)
+.setOrigin(.5)
+.setDepth(102);
+
+const subtitle=
+this.add.text(
+GAME_W/2,
+GAME_H/2-
+h/2+
+78,
+"Misi Cari Jawapan",
+{
+fontFamily:"Arial",
+fontSize:PHONE?"16px":"17px",
+fontStyle:"bold",
+color:"#3980a1"
+}
+)
+.setOrigin(.5)
+.setDepth(102);
+
+const instructions=
+this.add.text(
+GAME_W/2,
+GAME_H/2-5,
+
+"• Baca soalan di bahagian atas.\n\n"+
+"• Gerakkan robot menggunakan analog.\n\n"+
+"• Pergi ke kapsul A, B, C atau D.\n\n"+
+"• Elakkan dinding dalam makmal.\n\n"+
+"• Jawab semua 25 soalan.",
+
+{
+fontFamily:"Arial",
+fontSize:PHONE?"16px":"17px",
+color:"#315568",
+lineSpacing:2,
+
+wordWrap:{
+width:w-60
+}
+}
+)
+.setOrigin(.5)
+.setDepth(102);
+
+const button=
+this.add.rectangle(
+GAME_W/2,
+GAME_H/2+
+h/2-
+56,
+PHONE?205:220,
+54,
+0x2b8c59
+)
+.setStrokeStyle(
+2,
+0x17683e
+)
+.setInteractive({
+useHandCursor:true
+})
+.setDepth(102);
+
+const buttonText=
+this.add.text(
+GAME_W/2,
+GAME_H/2+
+h/2-
+56,
+"MULA GAME",
+{
+fontFamily:"Arial",
+fontSize:"18px",
+fontStyle:"bold",
+color:"#ffffff"
+}
+)
+.setOrigin(.5)
+.setDepth(103);
+
+button.on(
+"pointerdown",
+()=>{
+
+AUDIO.unlock();
+
+[
+dark,
+box,
+title,
+subtitle,
+instructions,
+button,
+buttonText
+].forEach(
+x=>x.destroy()
+);
+
+this.gameStarted=true;
+
+this.startTime=
+Date.now();
+
+this.loadQuestion();
+
+}
+);
+
+}
+
+
+/* =========================================================
+   LOAD QUESTION
+========================================================= */
+
+loadQuestion(){
+
+if(
+this.questionIndex>=
+QUESTIONS.length
+){
+
+this.showWin();
+return;
+
+}
+
+this.answerLocked=true;
+
+this.clearTokens();
+
+this.clearMaze();
+
+this.createMaze();
+
+const item=
+QUESTIONS[
+this.questionIndex
+];
+
+this.progressText.setText(
+`${this.questionIndex+1} / ${QUESTIONS.length}`
+);
+
+this.scoreText.setText(
+`Skor ${this.score}`
+);
+
+this.sectionText.setText(
+item.section
+);
+
+this.questionText.setText(
+item.q
+);
+
+for(
+let i=0;
+i<4;
+i++
+){
+
+this.optionTexts[i]
+.setText(
+`${LETTERS[i]}. ${item.o[i]}`
+);
+
+}
+
+this.resetPlayer();
+
+this.createAnswerTokens();
+
+this.time.delayedCall(
+200,
+()=>{
+this.answerLocked=false;
+}
+);
+
+}
+
+
+/* =========================================================
+   CLEAR MAZE
+========================================================= */
+
+clearMaze(){
+
+this.mazeGroup.clear(
+true,
+true
+);
+
+}
+
+
+/* =========================================================
+   CREATE MAZE
+========================================================= */
+
+createMaze(){
+
+const a=this.arena;
+
+/*
+   Dinding sengaja tidak diletakkan
+   dekat kawasan spawn bawah tengah.
+*/
+
+const patterns=[
+
+[
+[.29,.28,.08,.25],
+[.70,.28,.08,.25],
+[.50,.50,.26,.06],
+[.25,.63,.18,.06],
+[.76,.63,.18,.06]
+],
+
+[
+[.25,.38,.22,.06],
+[.75,.38,.22,.06],
+[.38,.61,.07,.20],
+[.63,.61,.07,.20]
+],
+
+[
+[.32,.30,.07,.22],
+[.68,.30,.07,.22],
+[.50,.53,.20,.06],
+[.20,.61,.14,.06],
+[.80,.61,.14,.06]
+],
+
+[
+[.50,.28,.28,.06],
+[.26,.50,.07,.22],
+[.74,.50,.07,.22],
+[.50,.65,.20,.06]
+],
+
+[
+[.22,.30,.15,.06],
+[.78,.30,.15,.06],
+[.38,.48,.07,.18],
+[.62,.48,.07,.18],
+[.50,.65,.18,.06]
+]
+
+];
+
+const pattern=
+patterns[
+Phaser.Math.Between(
+0,
+patterns.length-1
+)
+];
+
+pattern.forEach((p,i)=>{
+
+const w=
+Math.max(
+28,
+a.w*p[2]
+);
+
+const h=
+Math.max(
+20,
+a.h*p[3]
+);
+
+const x=
+a.x+
+a.w*p[0];
+
+const y=
+a.y+
+a.h*p[1];
+
+const wall=
+this.add.rectangle(
+x,
+y,
+w,
+h,
+i%2
+?0x82aabd
+:0x719aad
+);
+
+wall.setStrokeStyle(
+2,
+0x557f94
+);
+
+this.mazeGroup.add(
+wall
+);
+
+wall.body.setSize(
+w,
+h
+);
+
+wall.body.updateFromGameObject();
+
+});
+
+}
+
+
+/* =========================================================
+   RESET PLAYER
+========================================================= */
+
+resetPlayer(){
+
+const spawn=
+this.getSpawnPoint();
+
+this.player.setVelocity(
+0,
+0
+);
+
+this.player.setPosition(
+spawn.x,
+spawn.y
+);
+
+this.player.body.reset(
+spawn.x,
+spawn.y
+);
+
+this.player.rotation=0;
+
+this.playerGlow.setPosition(
+spawn.x,
+spawn.y
+);
+
+this.resetJoystick();
+
+}
+
+
+/* =========================================================
+   ANSWER TOKENS
+========================================================= */
+
+createAnswerTokens(){
+
+const a=this.arena;
+
+let positions=[
+
+{
+x:a.x+65,
+y:a.y+65
+},
+
+{
+x:a.x+a.w-65,
+y:a.y+65
+},
+
+{
+x:a.x+70,
+y:a.y+a.h*.62
+},
+
+{
+x:a.x+a.w-70,
+y:a.y+a.h*.62
+}
+
+];
+
+positions=
+Phaser.Utils.Array.Shuffle(
+positions
+);
+
+const colors=[
+0xe75459,
+0x4787dc,
+0xf0a738,
+0x46a86d
+];
+
+for(
+let i=0;
+i<4;
+i++
+){
+
+const pos=
+positions[i];
+
+const container=
+this.add.container(
+pos.x,
+pos.y
+)
+.setDepth(15);
+
+const glow=
+this.add.circle(
+0,
+0,
+PHONE?36:38,
+colors[i],
+.15
+);
+
+const body=
+this.add.circle(
+0,
+0,
+PHONE?27:29,
+0xffffff
+)
+.setStrokeStyle(
+4,
+colors[i]
+);
+
+const letter=
+this.add.text(
+0,
+0,
+LETTERS[i],
+{
+fontFamily:"Arial",
+fontSize:PHONE?"25px":"27px",
+fontStyle:"bold",
+color:"#173b55"
+}
+)
+.setOrigin(.5);
+
+container.add([
+glow,
+body,
+letter
+]);
+
+container.answerIndex=i;
+
+container.originalY=
+pos.y;
+
+this.tokens.push(
+container
+);
+
+this.tweens.add({
+
+targets:container,
+
+y:
+pos.y-
+5,
+
+duration:
+700+
+i*110,
+
+yoyo:true,
+
+repeat:-1,
+
+ease:"Sine.easeInOut"
+
+});
+
+}
+
+}
+
+
+/* =========================================================
+   CLEAR TOKENS
+========================================================= */
+
+clearTokens(){
+
+this.tokens.forEach(
+token=>{
+
+this.tweens.killTweensOf(
+token
+);
+
+token.destroy(
+true
+);
+
+}
+);
+
+this.tokens=[];
+
+}
+
+
+/* =========================================================
+   UPDATE
+========================================================= */
+
+update(){
+
+if(
+!this.gameStarted||
+!this.player
+){
+
+return;
+
+}
+
+
+/* =========================================
+   MOVEMENT
+========================================= */
+
+let moveX=0;
+let moveY=0;
+
+
+/* KEYBOARD */
+
+if(
+this.cursors.left.isDown||
+this.keys.left.isDown
+){
+
+moveX-=1;
+
+}
+
+if(
+this.cursors.right.isDown||
+this.keys.right.isDown
+){
+
+moveX+=1;
+
+}
+
+if(
+this.cursors.up.isDown||
+this.keys.up.isDown
+){
+
+moveY-=1;
+
+}
+
+if(
+this.cursors.down.isDown||
+this.keys.down.isDown
+){
+
+moveY+=1;
+
+}
+
+
+/* ANALOG */
+
+moveX+=
+this.joyVector.x;
+
+moveY+=
+this.joyVector.y;
+
+
+/* NORMALIZE */
+
+const length=
+Math.sqrt(
+moveX*moveX+
+moveY*moveY
+);
+
+if(length>1){
+
+moveX/=length;
+moveY/=length;
+
+}
+
+
+const speed=
+PHONE
+?190
+:210;
+
+
+this.player.setVelocity(
+moveX*speed,
+moveY*speed
+);
+
+
+/* ROTATE CHARACTER */
+
+if(
+Math.abs(moveX)>.05||
+Math.abs(moveY)>.05
+){
+
+const targetAngle=
+Math.atan2(
+moveY,
+moveX
+);
+
+this.player.rotation=
+Phaser.Math.Angle.RotateTo(
+this.player.rotation,
+targetAngle,
+.08
+);
+
+}
+
+
+/* GLOW */
+
+this.playerGlow.setPosition(
+this.player.x,
+this.player.y
+);
+
+
+/* ANSWER COLLISION */
+
+if(
+!this.answerLocked
+){
+
+this.checkAnswerCollision();
+
+}
+
+}
+
+
+/* =========================================================
+   CHECK ANSWER
+========================================================= */
+
+checkAnswerCollision(){
+
+for(
+const token of
+this.tokens
+){
+
+const distance=
+Phaser.Math.Distance.Between(
+this.player.x,
+this.player.y,
+token.x,
+token.y
+);
+
+if(
+distance<
+PHONE?43:45
+){
+
+this.selectAnswer(
+token
+);
+
+return;
+
+}
+
+}
+
+}
+
+
+/* =========================================================
+   SELECT ANSWER
+========================================================= */
+
+selectAnswer(token){
+
+if(this.answerLocked)return;
+
+this.answerLocked=true;
+
+this.player.setVelocity(
+0,
+0
+);
+
+AUDIO.collect();
+
+const item=
+QUESTIONS[
+this.questionIndex
+];
 
+const correct=
+token.answerIndex===
+item.a;
 
-      this.timer =
-        setInterval(
-          () => {
 
-            if (
-              !this.musicOn ||
-              document.hidden
-            ) return;
+/* =========================================
+   BETUL
+========================================= */
 
+if(correct){
 
-            const n =
-              this.notes[
-                this.step %
-                this.notes.length
-              ];
+this.score+=100;
 
+this.scoreText.setText(
+`Skor ${this.score}`
+);
 
-            this.step++;
+AUDIO.correct();
 
+this.showMessage(
+"BETUL! +100",
+0x278b54
+);
 
-            this.tone(
-              n,
-              0.18,
-              "sine",
-              0.035,
-              8
-            );
+this.createParticles(
+token.x,
+token.y
+);
 
-          },
-          420
-        );
+this.tweens.add({
 
-    }
+targets:token,
 
+scale:1.4,
 
-    toggle() {
+duration:160,
 
-      this.musicOn =
-        !this.musicOn;
+yoyo:true
 
-      return this.musicOn;
+});
 
-    }
+this.time.delayedCall(
+750,
+()=>{
 
-  }
+this.questionIndex++;
 
+this.loadQuestion();
 
-  const AUDIO =
-    new SynthAudio();
+}
+);
 
+}
 
-  /* =========================================================
-     GAME SCENE
-  ========================================================= */
 
-  class GameScene
-    extends Phaser.Scene {
+/* =========================================
+   SALAH
+========================================= */
 
-    constructor() {
+else{
 
-      super(
-        "GameScene"
-      );
+this.score=
+Math.max(
+0,
+this.score-20
+);
 
-    }
+this.scoreText.setText(
+`Skor ${this.score}`
+);
 
+AUDIO.wrong();
 
-    create() {
+this.showMessage(
+"SALAH — CUBA LAGI",
+0xc84646
+);
 
-      this.qIndex = 0;
+this.cameras.main.shake(
+150,
+.006
+);
 
-      this.score = 0;
+this.tweens.add({
 
-      this.roundLocked = true;
+targets:token,
 
-      this.lastPattern = -1;
+x:token.x+8,
 
-      this.started = false;
+duration:60,
 
-      this.tokenGroup = [];
+yoyo:true,
 
-      this.walls = [];
+repeat:4
 
-      this.joyActive = false;
+});
 
-      this.joyVec =
-        new Phaser.Math.Vector2(
-          0,
-          0
-        );
+this.time.delayedCall(
+650,
+()=>{
 
+this.resetPlayer();
 
-      this.createTextures();
+this.answerLocked=false;
 
-      this.drawBackground();
+}
+);
 
-      this.createHUD();
+}
 
-      this.createArena();
+}
 
-      this.createControls();
 
-      this.createPlayer();
+/* =========================================================
+   PARTICLES
+========================================================= */
 
-      this.createInput();
+createParticles(x,y){
 
-      this.showStartOverlay();
+for(let i=0;i<12;i++){
+
+const p=
+this.add.image(
+x,
+y,
+"particle"
+)
+.setDepth(40)
+.setTint(
+Phaser.Utils.Array.GetRandom([
+0xffd35a,
+0x54d68c,
+0x56a7e8,
+0xff7272
+])
+);
+
+const angle=
+Math.random()*
+Math.PI*
+2;
 
-    }
+const distance=
+Phaser.Math.Between(
+30,
+80
+);
 
+const tx=
+x+
+Math.cos(angle)*
+distance;
 
-    /* =====================================================
-       TEXTURES
-    ===================================================== */
+const ty=
+y+
+Math.sin(angle)*
+distance;
 
-    createTextures() {
+this.tweens.add({
 
-      const g =
-        this.make.graphics({
-          x: 0,
-          y: 0,
-          add: false
-        });
+targets:p,
 
+x:tx,
+y:ty,
 
-      /* WALL */
+alpha:0,
 
-      g.fillStyle(
-        0xffffff,
-        1
-      );
+scale:0,
 
-      g.fillRoundedRect(
-        0,
-        0,
-        64,
-        64,
-        14
-      );
+duration:
+Phaser.Math.Between(
+350,
+650
+),
 
-      g.generateTexture(
-        "wallTex",
-        64,
-        64
-      );
+onComplete:()=>{
+p.destroy();
+}
 
+});
 
-      g.clear();
+}
 
+}
 
-      /* MAGNET ROBOT */
 
-      g.fillStyle(
-        0xf8fbfd,
-        1
-      );
+/* =========================================================
+   MESSAGE
+========================================================= */
 
-      g.fillCircle(
-        32,
-        32,
-        29
-      );
+showMessage(
+text,
+color
+){
 
+const y=
+this.arena.y+
+28;
 
-      g.lineStyle(
-        4,
-        0x24485e,
-        1
-      );
+const bg=
+this.add.rectangle(
+GAME_W/2,
+y,
+PHONE?270:320,
+40,
+color,
+.96
+)
+.setDepth(70);
 
-      g.strokeCircle(
-        32,
-        32,
-        29
-      );
+const label=
+this.add.text(
+GAME_W/2,
+y,
+text,
+{
+fontFamily:"Arial",
+fontSize:PHONE?"15px":"17px",
+fontStyle:"bold",
+color:"#ffffff"
+}
+)
+.setOrigin(.5)
+.setDepth(71);
+
+bg.setScale(.8);
+label.setScale(.8);
+
+this.tweens.add({
+
+targets:[
+bg,
+label
+],
+
+scale:1,
+
+duration:150,
+
+ease:"Back.Out"
+
+});
+
+this.time.delayedCall(
+520,
+()=>{
+
+bg.destroy();
+label.destroy();
+
+}
+);
+
+}
+
+
+/* =========================================================
+   WIN
+========================================================= */
+
+showWin(){
+
+this.answerLocked=true;
+
+this.player.setVelocity(
+0,
+0
+);
+
+this.clearTokens();
+
+AUDIO.win();
+
+const totalSeconds=
+Math.round(
+(Date.now()-this.startTime)/
+1000
+);
+
+const minutes=
+Math.floor(
+totalSeconds/60
+);
+
+const seconds=
+String(
+totalSeconds%60
+).padStart(
+2,
+"0"
+);
+
+const dark=
+this.add.rectangle(
+GAME_W/2,
+GAME_H/2,
+GAME_W,
+GAME_H,
+0x092333,
+.8
+)
+.setDepth(200);
+
+const w=
+PHONE
+?GAME_W-40
+:500;
+
+const h=
+PHONE
+?350
+:310;
+
+const card=
+this.add.rectangle(
+GAME_W/2,
+GAME_H/2,
+w,
+h,
+0xffffff
+)
+.setStrokeStyle(
+4,
+0x2e8b57
+)
+.setDepth(201);
+
+this.add.text(
+GAME_W/2,
+GAME_H/2-
+h/2+
+52,
+"MISI SELESAI!",
+{
+fontFamily:"Arial",
+fontSize:PHONE?"29px":"32px",
+fontStyle:"bold",
+color:"#217648"
+}
+)
+.setOrigin(.5)
+.setDepth(202);
+
+this.add.text(
+GAME_W/2,
+GAME_H/2-20,
+
+"Anda telah menjawab\n"+
+"semua 25 soalan!\n\n"+
+`Skor: ${this.score}\n`+
+`Masa: ${minutes}:${seconds}`,
+
+{
+fontFamily:"Arial",
+fontSize:PHONE?"19px":"21px",
+color:"#284b5e",
+align:"center",
+lineSpacing:6
+}
+)
+.setOrigin(.5)
+.setDepth(202);
 
+const again=
+this.add.rectangle(
+GAME_W/2,
+GAME_H/2+
+h/2-
+60,
+200,
+52,
+0x2b8c59
+)
+.setInteractive({
+useHandCursor:true
+})
+.setDepth(202);
 
-      /* RED MAGNET SIDE */
+this.add.text(
+GAME_W/2,
+GAME_H/2+
+h/2-
+60,
+"MAIN SEMULA",
+{
+fontFamily:"Arial",
+fontSize:"17px",
+fontStyle:"bold",
+color:"#ffffff"
+}
+)
+.setOrigin(.5)
+.setDepth(203);
 
-      g.fillStyle(
-        0xe64f55,
-        1
-      );
+again.on(
+"pointerdown",
+()=>{
 
-      g.fillRoundedRect(
-        13,
-        18,
-        14,
-        29,
-        7
-      );
+this.scene.restart();
 
+}
+);
 
-      /* BLUE MAGNET SIDE */
+}
 
-      g.fillStyle(
-        0x4c86e8,
-        1
-      );
 
-      g.fillRoundedRect(
-        37,
-        18,
-        14,
-        29,
-        7
-      );
+/* =========================================================
+   END SCENE
+========================================================= */
 
+}
 
-      /* CONNECTOR */
 
-      g.fillStyle(
-        0x24485e,
-        1
-      );
+/* =========================================================
+   PHASER CONFIG
+========================================================= */
 
-      g.fillRect(
-        22,
-        39,
-        20,
-        9
-      );
+const config={
 
+type:Phaser.AUTO,
 
-      g.generateTexture(
-        "robotTex",
-        64,
-        64
-      );
+parent:"game",
 
+width:GAME_W,
 
-      g.destroy();
+height:GAME_H,
 
-    }
+backgroundColor:"#dcebf3",
 
+physics:{
 
-    /* =====================================================
-       BACKGROUND
-    ===================================================== */
+default:"arcade",
 
-    drawBackground() {
+arcade:{
 
-      this.cameras.main
-        .setBackgroundColor(
-          "#dceaf3"
-        );
+gravity:{
+x:0,
+y:0
+},
 
+debug:false
 
-      const bg =
-        this.add.graphics();
+}
 
+},
 
-      bg.fillStyle(
-        0xdceaf3,
-        1
-      );
+render:{
 
-      bg.fillRect(
-        0,
-        0,
-        GAME_W,
-        GAME_H
-      );
+antialias:true,
 
+roundPixels:true
 
-      bg.fillStyle(
-        0xcfe1ec,
-        0.55
-      );
+},
 
+scale:{
 
-      for (
-        let i = 0;
-        i < 26;
-        i++
-      ) {
+mode:Phaser.Scale.FIT,
 
-        const x =
-          (i * 137) %
-          GAME_W;
+autoCenter:
+Phaser.Scale.CENTER_BOTH,
 
-        const y =
-          (i * 83) %
-          GAME_H;
+width:GAME_W,
 
+height:GAME_H
 
-        bg.fillCircle(
-          x,
-          y,
-          PHONE
-            ? 8
-            : 10
-        );
+},
 
-      }
+scene:[
+GameScene
+]
 
-    }
+};
 
 
-    /* =====================================================
-       HUD
-    ===================================================== */
-
-    createHUD() {
-
-      const topH = 48;
-
-
-      this.add.rectangle(
-        GAME_W / 2,
-        topH / 2,
-        GAME_W,
-        topH,
-        0x173b55,
-        1
-      );
-
-
-      this.add.text(
-        18,
-        14,
-        "MAGNET MAZE",
-        {
-          fontFamily: "Arial",
-          fontSize:
-            PHONE
-              ? "18px"
-              : "20px",
-          fontStyle: "bold",
-          color: "#ffffff"
-        }
-      );
-
-
-      this.progressText =
-        this.add.text(
-          GAME_W / 2,
-          15,
-          "1 / 25",
-          {
-            fontFamily: "Arial",
-            fontSize:
-              PHONE
-                ? "16px"
-                : "18px",
-            fontStyle: "bold",
-            color: "#ffffff"
-          }
-        )
-        .setOrigin(
-          0.5,
-          0
-        );
-
-
-      this.scoreText =
-        this.add.text(
-          GAME_W - 118,
-          15,
-          "Skor 0",
-          {
-            fontFamily: "Arial",
-            fontSize:
-              PHONE
-                ? "14px"
-                : "16px",
-            fontStyle: "bold",
-            color: "#ffffff"
-          }
-        );
-
-
-      /* HOME */
-
-      this.homeBtn =
-        this.makeSmallButton(
-
-          42,
-
-          GAME_H - 20,
-
-          "HOME",
-
-          () => {
-
-            window.location.href =
-              "index.html";
-
-          }
-
-        );
-
-
-      /* MUSIC */
-
-      this.soundBtn =
-        this.makeSmallButton(
-
-          GAME_W - 46,
-
-          GAME_H - 20,
-
-          "♪ ON",
-
-          () => {
-
-            AUDIO.unlock();
-
-            const on =
-              AUDIO.toggle();
-
-
-            this.soundBtn.label
-              .setText(
-                on
-                  ? "♪ ON"
-                  : "♪ OFF"
-              );
-
-          }
-
-        );
-
-
-      /* QUESTION PANEL */
-
-      const panelTop = 54;
-
-      const panelH =
-        PHONE
-          ? 218
-          : 137;
-
-
-      this.panelBottom =
-        panelTop +
-        panelH;
-
-
-      this.add.rectangle(
-
-        GAME_W / 2,
-
-        panelTop +
-        panelH / 2,
-
-        GAME_W - 24,
-
-        panelH,
-
-        0xffffff,
-
-        0.96
-
-      )
-      .setStrokeStyle(
-        2,
-        0x9eb7c8,
-        1
-      );
-
-
-      this.sectionText =
-        this.add.text(
-          24,
-          panelTop + 10,
-          "",
-          {
-            fontFamily: "Arial",
-            fontSize:
-              PHONE
-                ? "13px"
-                : "14px",
-            fontStyle: "bold",
-            color: "#31718e"
-          }
-        );
-
-
-      this.questionText =
-        this.add.text(
-          24,
-          panelTop + 31,
-          "",
-          {
-            fontFamily: "Arial",
-
-            fontSize:
-              PHONE
-                ? "17px"
-                : "18px",
-
-            fontStyle: "bold",
-
-            color:
-              "#17324a",
-
-            wordWrap: {
-              width:
-                GAME_W - 48,
-              useAdvancedWrap:
-                true
-            },
-
-            lineSpacing: 2
-          }
-        );
-
-
-      this.optionTexts = [];
-
-
-      const startY =
-        PHONE
-          ? panelTop + 105
-          : panelTop + 82;
-
-
-      const colW =
-        (GAME_W - 52) /
-        2;
-
-
-      for (
-        let i = 0;
-        i < 4;
-        i++
-      ) {
-
-        const col =
-          i % 2;
-
-        const row =
-          Math.floor(
-            i / 2
-          );
-
-
-        const x =
-          26 +
-          col * colW;
-
-
-        const y =
-          startY +
-          row *
-          (
-            PHONE
-              ? 49
-              : 26
-          );
-
-
-        const t =
-          this.add.text(
-            x,
-            y,
-            "",
-            {
-              fontFamily:
-                "Arial",
-
-              fontSize:
-                PHONE
-                  ? "14px"
-                  : "15px",
-
-              color:
-                "#27485e",
-
-              wordWrap: {
-                width:
-                  colW -
-                  18,
-
-                useAdvancedWrap:
-                  true
-              },
-
-              lineSpacing: 1
-            }
-          );
-
-
-        this.optionTexts
-          .push(t);
-
-      }
-
-    }
-
-
-    /* =====================================================
-       SMALL BUTTON
-    ===================================================== */
-
-    makeSmallButton(
-      x,
-      y,
-      label,
-      callback
-    ) {
-
-      const w =
-        PHONE
-          ? 66
-          : 72;
-
-      const h = 30;
-
-
-      const box =
-        this.add.rectangle(
-          x,
-          y,
-          w,
-          h,
-          0xffffff,
-          0.95
-        )
-        .setStrokeStyle(
-          2,
-          0x173b55,
-          1
-        )
-        .setInteractive({
-          useHandCursor: true
-        });
-
-
-      const tx =
-        this.add.text(
-          x,
-          y,
-          label,
-          {
-            fontFamily:
-              "Arial",
-
-            fontSize:
-              "12px",
-
-            fontStyle:
-              "bold",
-
-            color:
-              "#173b55"
-          }
-        )
-        .setOrigin(0.5);
-
-
-      box.on(
-        "pointerdown",
-        () => {
-
-          AUDIO.unlock();
-
-          callback();
-
-        }
-      );
-
-
-      return {
-        box: box,
-        label: tx
-      };
-
-    }
-
-
-    /* =====================================================
-       ARENA
-    ===================================================== */
-
-    createArena() {
-
-      this.arena = {
-
-        x:
-          PHONE
-            ? 18
-            : 24,
-
-        y:
-          this.panelBottom +
-          (
-            PHONE
-              ? 12
-              : 10
-          ),
-
-        w:
-          GAME_W -
-          (
-            PHONE
-              ? 36
-              : 48
-          ),
-
-        h:
-          GAME_H -
-          this.panelBottom -
-          (
-            PHONE
-              ? 60
-              : 50
-          )
-
-      };
-
-
-      this.add.rectangle(
-
-        this.arena.x +
-        this.arena.w / 2,
-
-        this.arena.y +
-        this.arena.h / 2,
-
-        this.arena.w,
-
-        this.arena.h,
-
-        0xf7fbfd,
-
-        1
-
-      )
-      .setStrokeStyle(
-        3,
-        0x6d95aa,
-        1
-      );
-
-
-      /* GRID */
-
-      const grid =
-        this.add.graphics();
-
-
-      grid.lineStyle(
-        1,
-        0xb7cedb,
-        0.35
-      );
-
-
-      const step =
-        PHONE
-          ? 38
-          : 44;
-
-
-      for (
-        let x =
-          this.arena.x +
-          step;
-
-        x <
-        this.arena.x +
-        this.arena.w;
-
-        x += step
-      ) {
-
-        grid.lineBetween(
-
-          x,
-          this.arena.y,
-
-          x,
-          this.arena.y +
-          this.arena.h
-
-        );
-
-      }
-
-
-      for (
-        let y =
-          this.arena.y +
-          step;
-
-        y <
-        this.arena.y +
-        this.arena.h;
-
-        y += step
-      ) {
-
-        grid.lineBetween(
-
-          this.arena.x,
-          y,
-
-          this.arena.x +
-          this.arena.w,
-          y
-
-        );
-
-      }
-
-
-      this.wallSprites = [];
-
-
-      this.makePattern();
-
-    }
-
-
-    /* =====================================================
-       RANDOM MAZE PATTERNS
-    ===================================================== */
-
-    makePattern() {
-
-      this.wallSprites
-        .forEach(
-          s =>
-            s.destroy()
-        );
-
-
-      this.wallSprites.length = 0;
-
-      this.walls.length = 0;
-
-
-      const patterns = [
-
-        [
-          [
-            0.50,
-            0.27,
-            0.08,
-            0.30
-          ],
-
-          [
-            0.50,
-            0.76,
-            0.08,
-            0.28
-          ],
-
-          [
-            0.24,
-            0.52,
-            0.22,
-            0.07
-          ],
-
-          [
-            0.77,
-            0.52,
-            0.20,
-            0.07
-          ]
-        ],
-
-
-        [
-          [
-            0.33,
-            0.34,
-            0.08,
-            0.34
-          ],
-
-          [
-            0.67,
-            0.66,
-            0.08,
-            0.34
-          ],
-
-          [
-            0.50,
-            0.50,
-            0.19,
-            0.07
-          ]
-        ],
-
-
-        [
-          [
-            0.50,
-            0.50,
-            0.08,
-            0.23
-          ],
-
-          [
-            0.23,
-            0.30,
-            0.20,
-            0.07
-          ],
-
-          [
-            0.77,
-            0.30,
-            0.20,
-            0.07
-          ],
-
-          [
-            0.23,
-            0.72,
-            0.20,
-            0.07
-          ],
-
-          [
-            0.77,
-            0.72,
-            0.20,
-            0.07
-          ]
-        ],
-
-
-        [
-          [
-            0.31,
-            0.50,
-            0.09,
-            0.38
-          ],
-
-          [
-            0.69,
-            0.50,
-            0.09,
-            0.38
-          ],
-
-          [
-            0.50,
-            0.28,
-            0.18,
-            0.07
-          ],
-
-          [
-            0.50,
-            0.74,
-            0.18,
-            0.07
-          ]
-        ],
-
-
-        [
-          [
-            0.50,
-            0.35,
-            0.30,
-            0.07
-          ],
-
-          [
-            0.50,
-            0.67,
-            0.30,
-            0.07
-          ],
-
-          [
-            0.23,
-            0.51,
-            0.08,
-            0.18
-          ],
-
-          [
-            0.77,
-            0.51,
-            0.08,
-            0.18
-          ]
-        ],
-
-
-        [
-          [
-            0.35,
-            0.27,
-            0.22,
-            0.07
-          ],
-
-          [
-            0.65,
-            0.73,
-            0.22,
-            0.07
-          ],
-
-          [
-            0.28,
-            0.68,
-            0.08,
-            0.20
-          ],
-
-          [
-            0.72,
-            0.32,
-            0.08,
-            0.20
-          ]
-        ]
-
-      ];
-
-
-      let idx =
-        Phaser.Math.Between(
-          0,
-          patterns.length -
-          1
-        );
-
-
-      if (
-        idx ===
-        this.lastPattern
-      ) {
-
-        idx =
-          (
-            idx + 1
-          ) %
-          patterns.length;
-
-      }
-
-
-      this.lastPattern =
-        idx;
-
-
-      patterns[idx]
-        .forEach(
-          (p, i) => {
-
-            const w =
-              Math.max(
-                PHONE
-                  ? 30
-                  : 38,
-
-                this.arena.w *
-                p[2]
-              );
-
-
-            const h =
-              Math.max(
-                PHONE
-                  ? 18
-                  : 20,
-
-                this.arena.h *
-                p[3]
-              );
-
-
-            const x =
-              this.arena.x +
-              this.arena.w *
-              p[0];
-
-
-            const y =
-              this.arena.y +
-              this.arena.h *
-              p[1];
-
-
-            const s =
-              this.add.image(
-                x,
-                y,
-                "wallTex"
-              )
-              .setDisplaySize(
-                w,
-                h
-              )
-              .setTint(
-                i % 2
-                  ? 0x94b7c8
-                  : 0x7fa7ba
-              );
-
-
-            this.wallSprites
-              .push(s);
-
-
-            this.walls.push({
-
-              x:
-                x -
-                w / 2,
-
-              y:
-                y -
-                h / 2,
-
-              w: w,
-
-              h: h
-
-            });
-
-          }
-        );
-
-    }
-
-
-    /* =====================================================
-       JOYSTICK
-    ===================================================== */
-
-    createControls() {
-
-      const baseX =
-        this.arena.x +
-        (
-          PHONE
-            ? 66
-            : 62
-        );
-
-
-      const baseY =
-        this.arena.y +
-        this.arena.h -
-        (
-          PHONE
-            ? 60
-            : 58
-        );
-
-
-      this.joyBase =
-        this.add.circle(
-
-          baseX,
-
-          baseY,
-
-          PHONE
-            ? 48
-            : 44,
-
-          0x173b55,
-
-          0.18
-
-        )
-        .setStrokeStyle(
-
-          3,
-
-          0x173b55,
-
-          0.35
-
-        );
-
-
-      this.joyKnob =
-        this.add.circle(
-
-          baseX,
-
-          baseY,
-
-          PHONE
-            ? 22
-            : 20,
-
-          0x173b55,
-
-          0.55
-
-        );
-
-
-      this.joyCenter =
-        new Phaser.Math.Vector2(
-          baseX,
-          baseY
-        );
-
-
-      this.joyRadius =
-        PHONE
-          ? 44
-          : 40;
-
-
-      this.add.text(
-
-        baseX,
-
-        baseY -
-        (
-          PHONE
-            ? 62
-            : 57
-        ),
-
-        "GERAK",
-
-        {
-          fontFamily:
-            "Arial",
-
-          fontSize:
-            "10px",
-
-          fontStyle:
-            "bold",
-
-          color:
-            "#58778a"
-        }
-
-      )
-      .setOrigin(
-        0.5
-      );
-
-    }
-
-
-    /* =====================================================
-       PLAYER
-    ===================================================== */
-
-    createPlayer() {
-
-      this.player =
-        this.add.image(
-
-          this.arena.x +
-          this.arena.w /
-          2,
-
-          this.arena.y +
-          this.arena.h /
-          2,
-
-          "robotTex"
-
-        );
-
-
-      this.player
-        .setDisplaySize(
-
-          PHONE
-            ? 48
-            : 50,
-
-          PHONE
-            ? 48
-            : 50
-
-        );
-
-
-      this.player
-        .setDepth(8);
-
-
-      this.playerRadius =
-        PHONE
-          ? 21
-          : 22;
-
-
-      this.playerGlow =
-        this.add.circle(
-
-          this.player.x,
-
-          this.player.y,
-
-          PHONE
-            ? 28
-            : 30,
-
-          0x56b7ff,
-
-          0.13
-
-        )
-        .setDepth(7);
-
-    }
-
-
-    /* =====================================================
-       INPUT
-    ===================================================== */
-
-    createInput() {
-
-      this.cursors =
-        this.input.keyboard
-          .createCursorKeys();
-
-
-      this.keys =
-        this.input.keyboard
-          .addKeys(
-            "W,A,S,D"
-          );
-
-
-      this.input.on(
-
-        "pointerdown",
-
-        p => {
-
-          const d =
-            Phaser.Math.Distance
-              .Between(
-
-                p.x,
-                p.y,
-
-                this.joyCenter.x,
-                this.joyCenter.y
-
-              );
-
-
-          if (
-            d <=
-            this.joyRadius +
-            26
-          ) {
-
-            this.joyActive =
-              true;
-
-
-            this.updateJoystick(
-              p.x,
-              p.y
-            );
-
-          }
-
-        }
-
-      );
-
-
-      this.input.on(
-
-        "pointermove",
-
-        p => {
-
-          if (
-            this.joyActive &&
-            p.isDown
-          ) {
-
-            this.updateJoystick(
-              p.x,
-              p.y
-            );
-
-          }
-
-        }
-
-      );
-
-
-      this.input.on(
-
-        "pointerup",
-
-        () =>
-          this.resetJoystick()
-
-      );
-
-
-      this.input.on(
-
-        "pointerupoutside",
-
-        () =>
-          this.resetJoystick()
-
-      );
-
-    }
-
-
-    updateJoystick(
-      x,
-      y
-    ) {
-
-      const dx =
-        x -
-        this.joyCenter.x;
-
-
-      const dy =
-        y -
-        this.joyCenter.y;
-
-
-      const len =
-        Math.hypot(
-          dx,
-          dy
-        ) || 1;
-
-
-      const mag =
-        Math.min(
-          this.joyRadius,
-          len
-        );
-
-
-      const nx =
-        dx / len;
-
-      const ny =
-        dy / len;
-
-
-      this.joyKnob
-        .setPosition(
-
-          this.joyCenter.x +
-          nx * mag,
-
-          this.joyCenter.y +
-          ny * mag
-
-        );
-
-
-      const power =
-        mag /
-        this.joyRadius;
-
-
-      this.joyVec.set(
-
-        nx * power,
-
-        ny * power
-
-      );
-
-    }
-
-
-    resetJoystick() {
-
-      this.joyActive =
-        false;
-
-
-      this.joyVec
-        .set(
-          0,
-          0
-        );
-
-
-      this.joyKnob
-        .setPosition(
-
-          this.joyCenter.x,
-
-          this.joyCenter.y
-
-        );
-
-    }
-
-
-    /* =====================================================
-       START WINDOW
-    ===================================================== */
-
-    showStartOverlay() {
-
-      const shade =
-        this.add.rectangle(
-
-          GAME_W / 2,
-
-          GAME_H / 2,
-
-          GAME_W,
-
-          GAME_H,
-
-          0x0b2130,
-
-          0.75
-
-        )
-        .setDepth(50);
-
-
-      const cardW =
-        PHONE
-          ? GAME_W - 46
-          : 520;
-
-
-      const cardH =
-        PHONE
-          ? 330
-          : 300;
-
-
-      const card =
-        this.add.rectangle(
-
-          GAME_W / 2,
-
-          GAME_H / 2,
-
-          cardW,
-
-          cardH,
-
-          0xffffff,
-
-          1
-
-        )
-        .setStrokeStyle(
-          3,
-          0x5d8ca6,
-          1
-        )
-        .setDepth(51);
-
-
-      const title =
-        this.add.text(
-
-          GAME_W / 2,
-
-          GAME_H / 2 -
-          cardH / 2 +
-          38,
-
-          "MISI MAGNET MAZE",
-
-          {
-            fontFamily:
-              "Arial",
-
-            fontSize:
-              PHONE
-                ? "26px"
-                : "28px",
-
-            fontStyle:
-              "bold",
-
-            color:
-              "#173b55"
-          }
-
-        )
-        .setOrigin(
-          0.5
-        )
-        .setDepth(
-          52
-        );
-
-
-      const info =
-        this.add.text(
-
-          GAME_W / 2,
-
-          GAME_H / 2 -
-          15,
-
-          "1. Baca soalan dan pilihan jawapan.\n" +
-          "2. Gerakkan robot magnet dalam makmal.\n" +
-          "3. Sentuh kapsul A, B, C atau D yang betul.\n" +
-          "4. Elakkan dinding makmal.\n\n" +
-          "Selesaikan semua 25 soalan!",
-
-          {
-            fontFamily:
-              "Arial",
-
-            fontSize:
-              PHONE
-                ? "16px"
-                : "17px",
-
-            color:
-              "#315469",
-
-            align:
-              "left",
-
-            lineSpacing:
-              7,
-
-            wordWrap: {
-              width:
-                cardW -
-                60,
-
-              useAdvancedWrap:
-                true
-            }
-          }
-
-        )
-        .setOrigin(
-          0.5
-        )
-        .setDepth(
-          52
-        );
-
-
-      const startBtn =
-        this.add.rectangle(
-
-          GAME_W / 2,
-
-          GAME_H / 2 +
-          cardH / 2 -
-          55,
-
-          PHONE
-            ? 190
-            : 210,
-
-          52,
-
-          0x2e8b57,
-
-          1
-
-        )
-        .setStrokeStyle(
-          2,
-          0x1d6b42,
-          1
-        )
-        .setInteractive({
-          useHandCursor: true
-        })
-        .setDepth(52);
-
-
-      const startTxt =
-        this.add.text(
-
-          GAME_W / 2,
-
-          GAME_H / 2 +
-          cardH / 2 -
-          55,
-
-          "MULA GAME",
-
-          {
-            fontFamily:
-              "Arial",
-
-            fontSize:
-              "18px",
-
-            fontStyle:
-              "bold",
-
-            color:
-              "#ffffff"
-          }
-
-        )
-        .setOrigin(
-          0.5
-        )
-        .setDepth(
-          53
-        );
-
-
-      startBtn.on(
-
-        "pointerdown",
-
-        () => {
-
-          AUDIO.unlock();
-
-
-          [
-            shade,
-            card,
-            title,
-            info,
-            startBtn,
-            startTxt
-
-          ].forEach(
-            o =>
-              o.destroy()
-          );
-
-
-          this.started =
-            true;
-
-
-          this.startedAt =
-            Date.now();
-
-
-          this.roundLocked =
-            false;
-
-
-          this.loadQuestion();
-
-        }
-
-      );
-
-    }
-
-
-    /* =====================================================
-       LOAD QUESTION
-    ===================================================== */
-
-    loadQuestion() {
-
-      if (
-        this.qIndex >=
-        QUESTIONS.length
-      ) {
-
-        this.showWin();
-
-        return;
-
-      }
-
-
-      this.roundLocked =
-        true;
-
-
-      this.clearTokens();
-
-      this.makePattern();
-
-
-      const item =
-        QUESTIONS[
-          this.qIndex
-        ];
-
-
-      this.progressText
-        .setText(
-
-          `${this.qIndex + 1} / ${QUESTIONS.length}`
-
-        );
-
-
-      this.scoreText
-        .setText(
-
-          `Skor ${this.score}`
-
-        );
-
-
-      this.sectionText
-        .setText(
-          item.section
-        );
-
-
-      this.questionText
-        .setText(
-          item.q
-        );
-
-
-      for (
-        let i = 0;
-        i < 4;
-        i++
-      ) {
-
-        this.optionTexts[i]
-          .setText(
-
-            `${LETTERS[i]}. ${item.o[i]}`
-
-          );
-
-      }
-
-
-      this.resetPlayer();
-
-      this.createAnswerTokens();
-
-
-      this.time.delayedCall(
-
-        180,
-
-        () => {
-
-          this.roundLocked =
-            false;
-
-        }
-
-      );
-
-    }
-
-
-    /* =====================================================
-       RESET PLAYER
-    ===================================================== */
-
-    resetPlayer() {
-
-      const candidates = [
-
-        [
-          this.arena.x +
-          this.arena.w / 2,
-
-          this.arena.y +
-          this.arena.h / 2
-        ],
-
-        [
-          this.arena.x +
-          this.arena.w / 2,
-
-          this.arena.y +
-          this.arena.h *
-          0.58
-        ],
-
-        [
-          this.arena.x +
-          this.arena.w *
-          0.50,
-
-          this.arena.y +
-          this.arena.h *
-          0.42
-        ]
-
-      ];
-
-
-      let pos =
-        candidates[0];
-
-
-      for (
-        const c of
-        candidates
-      ) {
-
-        if (
-          !this.circleHitsWall(
-
-            c[0],
-
-            c[1],
-
-            this.playerRadius +
-            5
-
-          )
-        ) {
-
-          pos = c;
-
-          break;
-
-        }
-
-      }
-
-
-      this.player
-        .setPosition(
-
-          pos[0],
-
-          pos[1]
-
-        );
-
-
-      this.playerGlow
-        .setPosition(
-
-          pos[0],
-
-          pos[1]
-
-        );
-
-
-      this.resetJoystick();
-
-    }
-
-
-    /* =====================================================
-       ANSWER CAPSULES
-    ===================================================== */
-
-    createAnswerTokens() {
-
-      const a =
-        this.arena;
-
-
-      const positions =
-        PHONE
-          ? [
-
-              [
-                a.x + 70,
-                a.y + 66
-              ],
-
-              [
-                a.x +
-                a.w -
-                70,
-
-                a.y +
-                66
-              ],
-
-              [
-                a.x +
-                a.w *
-                0.38,
-
-                a.y +
-                a.h -
-                115
-              ],
-
-              [
-                a.x +
-                a.w *
-                0.76,
-
-                a.y +
-                a.h -
-                115
-              ]
-
-            ]
-
-          : [
-
-              [
-                a.x +
-                78,
-
-                a.y +
-                70
-              ],
-
-              [
-                a.x +
-                a.w -
-                78,
-
-                a.y +
-                70
-              ],
-
-              [
-                a.x +
-                a.w *
-                0.34,
-
-                a.y +
-                a.h -
-                70
-              ],
-
-              [
-                a.x +
-                a.w *
-                0.72,
-
-                a.y +
-                a.h -
-                70
-              ]
-
-            ];
-
-
-      Phaser.Utils.Array
-        .Shuffle(
-          positions
-        );
-
-
-      const palette = [
-
-        0xe64f55,
-
-        0x4c86e8,
-
-        0xf0a83a,
-
-        0x42a76c
-
-      ];
-
-
-      for (
-        let i = 0;
-        i < 4;
-        i++
-      ) {
-
-        let [
-          x,
-          y
-        ] =
-          positions[i];
-
-
-        if (
-          this.circleHitsWall(
-            x,
-            y,
-            34
-          )
-        ) {
-
-          y =
-            this.arena.y +
-            this.arena.h *
-            (
-              0.18 +
-              i *
-              0.2
-            );
-
-
-          x =
-            i % 2 === 0
-              ? this.arena.x +
-                62
-
-              : this.arena.x +
-                this.arena.w -
-                62;
-
-        }
-
-
-        const glow =
-          this.add.circle(
-
-            0,
-            0,
-            34,
-            palette[i],
-            0.16
-
-          );
-
-
-        const ring =
-          this.add.circle(
-
-            0,
-            0,
-            27,
-            0xffffff,
-            1
-
-          )
-          .setStrokeStyle(
-
-            4,
-
-            palette[i],
-
-            1
-
-          );
-
-
-        const txt =
-          this.add.text(
-
-            0,
-            0,
-            LETTERS[i],
-
-            {
-              fontFamily:
-                "Arial",
-
-              fontSize:
-                PHONE
-                  ? "26px"
-                  : "28px",
-
-              fontStyle:
-                "bold",
-
-              color:
-                "#17324a"
-            }
-
-          )
-          .setOrigin(
-            0.5
-          );
-
-
-        const c =
-          this.add.container(
-
-            x,
-
-            y,
-
-            [
-              glow,
-              ring,
-              txt
-            ]
-
-          )
-          .setDepth(6);
-
-
-        c.answerIndex =
-          i;
-
-
-        c.baseY =
-          y;
-
-
-        this.tweens.add({
-
-          targets:
-            c,
-
-          y:
-            y - 6,
-
-          duration:
-            800 +
-            i * 90,
-
-          yoyo:
-            true,
-
-          repeat:
-            -1,
-
-          ease:
-            "Sine.easeInOut"
-
-        });
-
-
-        this.tokenGroup
-          .push(c);
-
-      }
-
-    }
-
-
-    clearTokens() {
-
-      this.tokenGroup
-        .forEach(
-
-          t => {
-
-            this.tweens
-              .killTweensOf(
-                t
-              );
-
-
-            t.destroy(
-              true
-            );
-
-          }
-
-        );
-
-
-      this.tokenGroup = [];
-
-    }
-
-
-    /* =====================================================
-       COLLISION
-    ===================================================== */
-
-    circleHitsWall(
-      cx,
-      cy,
-      r
-    ) {
-
-      for (
-        const w of
-        this.walls
-      ) {
-
-        const nx =
-          Phaser.Math.Clamp(
-
-            cx,
-
-            w.x,
-
-            w.x +
-            w.w
-
-          );
-
-
-        const ny =
-          Phaser.Math.Clamp(
-
-            cy,
-
-            w.y,
-
-            w.y +
-            w.h
-
-          );
-
-
-        const dx =
-          cx - nx;
-
-
-        const dy =
-          cy - ny;
-
-
-        if (
-          dx * dx +
-          dy * dy
-          <
-          r * r
-        ) {
-
-          return true;
-
-        }
-
-      }
-
-
-      return false;
-
-    }
-
-
-    /* =====================================================
-       MOVEMENT
-    ===================================================== */
-
-    tryMove(
-      dx,
-      dy
-    ) {
-
-      if (
-        !dx &&
-        !dy
-      ) return;
-
-
-      const nx =
-        Phaser.Math.Clamp(
-
-          this.player.x +
-          dx,
-
-          this.arena.x +
-          this.playerRadius,
-
-          this.arena.x +
-          this.arena.w -
-          this.playerRadius
-
-        );
-
-
-      const ny =
-        Phaser.Math.Clamp(
-
-          this.player.y +
-          dy,
-
-          this.arena.y +
-          this.playerRadius,
-
-          this.arena.y +
-          this.arena.h -
-          this.playerRadius
-
-        );
-
-
-      if (
-        !this.circleHitsWall(
-
-          nx,
-
-          this.player.y,
-
-          this.playerRadius
-
-        )
-      ) {
-
-        this.player.x =
-          nx;
-
-      }
-
-
-      if (
-        !this.circleHitsWall(
-
-          this.player.x,
-
-          ny,
-
-          this.playerRadius
-
-        )
-      ) {
-
-        this.player.y =
-          ny;
-
-      }
-
-
-      this.playerGlow
-        .setPosition(
-
-          this.player.x,
-
-          this.player.y
-
-        );
-
-    }
-
-
-    /* =====================================================
-       UPDATE
-    ===================================================== */
-
-    update(
-      time,
-      delta
-    ) {
-
-      if (
-        !this.started ||
-        this.roundLocked
-      ) {
-
-        return;
-
-      }
-
-
-      let x = 0;
-      let y = 0;
-
-
-      /* KEYBOARD */
-
-      if (
-        this.cursors.left.isDown ||
-        this.keys.A.isDown
-      ) {
-
-        x -= 1;
-
-      }
-
-
-      if (
-        this.cursors.right.isDown ||
-        this.keys.D.isDown
-      ) {
-
-        x += 1;
-
-      }
-
-
-      if (
-        this.cursors.up.isDown ||
-        this.keys.W.isDown
-      ) {
-
-        y -= 1;
-
-      }
-
-
-      if (
-        this.cursors.down.isDown ||
-        this.keys.S.isDown
-      ) {
-
-        y += 1;
-
-      }
-
-
-      /* JOYSTICK */
-
-      x +=
-        this.joyVec.x;
-
-      y +=
-        this.joyVec.y;
-
-
-      const len =
-        Math.hypot(
-          x,
-          y
-        );
-
-
-      if (
-        len > 1
-      ) {
-
-        x /= len;
-
-        y /= len;
-
-      }
-
-
-      const speed =
-        PHONE
-          ? 185
-          : 205;
-
-
-      const dt =
-        Math.min(
-          delta,
-          34
-        ) /
-        1000;
-
-
-      this.tryMove(
-
-        x *
-        speed *
-        dt,
-
-        y *
-        speed *
-        dt
-
-      );
-
-
-      /* SMALL ROTATION */
-
-      if (
-        len >
-        0.08
-      ) {
-
-        this.player.rotation +=
-          dt *
-          1.5;
-
-      }
-
-
-      /* CHECK ANSWERS */
-
-      for (
-        const token of
-        this.tokenGroup
-      ) {
-
-        const d =
-          Phaser.Math.Distance
-            .Between(
-
-              this.player.x,
-
-              this.player.y,
-
-              token.x,
-
-              token.y
-
-            );
-
-
-        if (
-          d <
-          (
-            PHONE
-              ? 43
-              : 45
-          )
-        ) {
-
-          this.chooseAnswer(
-            token
-          );
-
-          break;
-
-        }
-
-      }
-
-    }
-
-
-    /* =====================================================
-       ANSWER RESULT
-    ===================================================== */
-
-    chooseAnswer(
-      token
-    ) {
-
-      if (
-        this.roundLocked
-      ) return;
-
-
-      this.roundLocked =
-        true;
-
-
-      AUDIO.unlock();
-
-      AUDIO.pickup();
-
-
-      const item =
-        QUESTIONS[
-          this.qIndex
-        ];
-
-
-      const correct =
-        token.answerIndex ===
-        item.a;
-
-
-      /* CORRECT */
-
-      if (
-        correct
-      ) {
-
-        this.score +=
-          100;
-
-
-        this.scoreText
-          .setText(
-
-            `Skor ${this.score}`
-
-          );
-
-
-        AUDIO.correct();
-
-
-        this.flashMessage(
-
-          "BETUL! +100",
-
-          0x2e8b57
-
-        );
-
-
-        this.tweens.add({
-
-          targets:
-            token,
-
-          scale:
-            1.35,
-
-          duration:
-            150,
-
-          yoyo:
-            true
-
-        });
-
-
-        this.time.delayedCall(
-
-          720,
-
-          () => {
-
-            this.qIndex++;
-
-            this.loadQuestion();
-
-          }
-
-        );
-
-      }
-
-
-      /* WRONG */
-
-      else {
-
-        this.score =
-          Math.max(
-
-            0,
-
-            this.score -
-            20
-
-          );
-
-
-        this.scoreText
-          .setText(
-
-            `Skor ${this.score}`
-
-          );
-
-
-        AUDIO.wrong();
-
-
-        this.flashMessage(
-
-          "BELUM TEPAT — CUBA LAGI",
-
-          0xc84646
-
-        );
-
-
-        this.cameras.main
-          .shake(
-            150,
-            0.006
-          );
-
-
-        this.tweens.add({
-
-          targets:
-            token,
-
-          angle:
-            12,
-
-          duration:
-            70,
-
-          yoyo:
-            true,
-
-          repeat:
-            3
-
-        });
-
-
-        this.time.delayedCall(
-
-          620,
-
-          () => {
-
-            this.resetPlayer();
-
-            this.roundLocked =
-              false;
-
-          }
-
-        );
-
-      }
-
-    }
-
-
-    /* =====================================================
-       MESSAGE
-    ===================================================== */
-
-    flashMessage(
-      text,
-      color
-    ) {
-
-      const y =
-        this.arena.y +
-        28;
-
-
-      const bg =
-        this.add.rectangle(
-
-          GAME_W / 2,
-
-          y,
-
-          PHONE
-            ? 280
-            : 320,
-
-          38,
-
-          color,
-
-          0.94
-
-        )
-        .setDepth(30);
-
-
-      const tx =
-        this.add.text(
-
-          GAME_W / 2,
-
-          y,
-
-          text,
-
-          {
-            fontFamily:
-              "Arial",
-
-            fontSize:
-              PHONE
-                ? "15px"
-                : "16px",
-
-            fontStyle:
-              "bold",
-
-            color:
-              "#ffffff"
-          }
-
-        )
-        .setOrigin(
-          0.5
-        )
-        .setDepth(
-          31
-        );
-
-
-      bg.setScale(
-        0.8
-      );
-
-      tx.setScale(
-        0.8
-      );
-
-
-      this.tweens.add({
-
-        targets: [
-          bg,
-          tx
-        ],
-
-        scale:
-          1,
-
-        duration:
-          130,
-
-        ease:
-          "Back.Out"
-
-      });
-
-
-      this.time.delayedCall(
-
-        520,
-
-        () => {
-
-          bg.destroy();
-
-          tx.destroy();
-
-        }
-
-      );
-
-    }
-
-
-    /* =====================================================
-       WIN
-    ===================================================== */
-
-    showWin() {
-
-      this.roundLocked =
-        true;
-
-
-      this.clearTokens();
-
-
-      AUDIO.win();
-
-
-      const elapsed =
-        Math.max(
-
-          1,
-
-          Math.round(
-
-            (
-              Date.now() -
-              this.startedAt
-            ) /
-            1000
-
-          )
-
-        );
-
-
-      const min =
-        Math.floor(
-          elapsed /
-          60
-        );
-
-
-      const sec =
-        String(
-          elapsed %
-          60
-        )
-        .padStart(
-          2,
-          "0"
-        );
-
-
-      const shade =
-        this.add.rectangle(
-
-          GAME_W / 2,
-
-          GAME_H / 2,
-
-          GAME_W,
-
-          GAME_H,
-
-          0x0b2130,
-
-          0.78
-
-        )
-        .setDepth(60);
-
-
-      const cardW =
-        PHONE
-          ? GAME_W - 44
-          : 520;
-
-
-      const cardH =
-        PHONE
-          ? 330
-          : 300;
-
-
-      const card =
-        this.add.rectangle(
-
-          GAME_W / 2,
-
-          GAME_H / 2,
-
-          cardW,
-
-          cardH,
-
-          0xffffff,
-
-          1
-
-        )
-        .setStrokeStyle(
-
-          3,
-
-          0x2e8b57,
-
-          1
-
-        )
-        .setDepth(61);
-
-
-      this.add.text(
-
-        GAME_W / 2,
-
-        GAME_H / 2 -
-        cardH / 2 +
-        46,
-
-        "MISI SELESAI!",
-
-        {
-          fontFamily:
-            "Arial",
-
-          fontSize:
-            PHONE
-              ? "30px"
-              : "32px",
-
-          fontStyle:
-            "bold",
-
-          color:
-            "#1f7048"
-        }
-
-      )
-      .setOrigin(
-        0.5
-      )
-      .setDepth(
-        62
-      );
-
-
-      this.add.text(
-
-        GAME_W / 2,
-
-        GAME_H / 2 -
-        20,
-
-        `25 / 25 soalan selesai\nSkor: ${this.score}\nMasa: ${min}:${sec}`,
-
-        {
-          fontFamily:
-            "Arial",
-
-          fontSize:
-            PHONE
-              ? "20px"
-              : "21px",
-
-          color:
-            "#27485e",
-
-          align:
-            "center",
-
-          lineSpacing:
-            9
-        }
-
-      )
-      .setOrigin(
-        0.5
-      )
-      .setDepth(
-        62
-      );
-
-
-      const again =
-        this.add.rectangle(
-
-          GAME_W / 2,
-
-          GAME_H / 2 +
-          cardH / 2 -
-          62,
-
-          PHONE
-            ? 190
-            : 210,
-
-          52,
-
-          0x2e8b57,
-
-          1
-
-        )
-        .setInteractive({
-          useHandCursor: true
-        })
-        .setDepth(62);
-
-
-      this.add.text(
-
-        GAME_W / 2,
-
-        GAME_H / 2 +
-        cardH / 2 -
-        62,
-
-        "MAIN SEMULA",
-
-        {
-          fontFamily:
-            "Arial",
-
-          fontSize:
-            "17px",
-
-          fontStyle:
-            "bold",
-
-          color:
-            "#ffffff"
-        }
-
-      )
-      .setOrigin(
-        0.5
-      )
-      .setDepth(
-        63
-      );
-
-
-      again.on(
-
-        "pointerdown",
-
-        () => {
-
-          this.scene.restart();
-
-        }
-
-      );
-
-    }
-
-  }
-
-
-  /* =========================================================
-     PHASER CONFIG
-  ========================================================= */
-
-  const config = {
-
-    type:
-      Phaser.AUTO,
-
-    parent:
-      "game",
-
-    width:
-      GAME_W,
-
-    height:
-      GAME_H,
-
-    backgroundColor:
-      "#dceaf3",
-
-    render: {
-
-      antialias:
-        true,
-
-      pixelArt:
-        false,
-
-      roundPixels:
-        true
-
-    },
-
-    scale: {
-
-      mode:
-        Phaser.Scale.FIT,
-
-      autoCenter:
-        Phaser.Scale.CENTER_BOTH,
-
-      width:
-        GAME_W,
-
-      height:
-        GAME_H
-
-    },
-
-    scene: [
-      GameScene
-    ]
-
-  };
-
-
-  new Phaser.Game(
-    config
-  );
+new Phaser.Game(
+config
+);
 
 })();
 </script>
