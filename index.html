@@ -13,11 +13,12 @@ user-scalable=no,
 viewport-fit=cover
 ">
 
-<title>Maze Puzzle Magnet - Set 4</title>
+<title>Maze Puzzle — Set 4</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <style>
+
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
@@ -27,7 +28,7 @@ html,
 body{
     margin:0;
     padding:0;
-    background:#dbe7ed;
+    background:#dce8ee;
     font-family:Arial,Helvetica,sans-serif;
 }
 
@@ -36,23 +37,22 @@ body{
     display:flex;
     justify-content:center;
     align-items:flex-start;
-    padding:6px;
+    padding:5px;
 }
 
 .game-shell{
     width:min(100%,1000px);
     background:#ffffff;
     border-radius:18px;
-    padding:6px;
+    padding:5px;
     box-shadow:0 8px 25px rgba(0,0,0,.12);
 }
 
 #game{
     width:100%;
     overflow:hidden;
-    border-radius:14px;
-    background:#dceaf1;
-    position:relative;
+    border-radius:13px;
+    background:#dbeaf1;
 }
 
 #game canvas{
@@ -64,19 +64,19 @@ body{
 }
 
 .note{
-    padding:6px 3px 2px;
     text-align:center;
+    padding:6px 3px 2px;
     font-size:11px;
-    color:#587182;
+    color:#587181;
 }
 
 #errorBox{
     display:none;
-    padding:25px;
-    text-align:center;
-    color:#8a2222;
+    padding:20px;
     background:#fff1f1;
-    border-radius:12px;
+    color:#8b2222;
+    text-align:center;
+    border-radius:10px;
 }
 
 @media(max-width:700px){
@@ -97,10 +97,11 @@ body{
     .note{
         font-size:10px;
     }
+
 }
+
 </style>
 </head>
-
 
 <body>
 
@@ -116,13 +117,14 @@ body{
     </div>
 
     <div class="note">
-        Telefon / iPad: gunakan analog besar • Laptop: Arrow atau WASD
+        Telefon / iPad: gunakan analog • Laptop: Arrow atau WASD
     </div>
 
 </div>
 
 
 <script>
+
 (() => {
 
 "use strict";
@@ -134,11 +136,11 @@ body{
 
 if(typeof Phaser === "undefined"){
 
-    const errorBox =
+    const box =
     document.getElementById("errorBox");
 
-    if(errorBox){
-        errorBox.style.display = "block";
+    if(box){
+        box.style.display = "block";
     }
 
     return;
@@ -146,11 +148,12 @@ if(typeof Phaser === "undefined"){
 
 
 /* =========================================================
-   DEVICE / GAME SIZE
+   SCREEN
 ========================================================= */
 
 const PORTRAIT =
-window.innerHeight >= window.innerWidth;
+window.innerHeight >=
+window.innerWidth;
 
 
 const GAME_W =
@@ -174,7 +177,7 @@ const LETTERS = [
 
 
 /* =========================================================
-   QUESTIONS SET 4
+   QUESTIONS
 ========================================================= */
 
 const QUESTIONS = [
@@ -312,7 +315,7 @@ a:3
 },
 
 {
-section:"Hebatnya Magnet?",
+section:"Hebatnya Magnet",
 q:"12. [TP1] Objek logam manakah dalam aktiviti yang boleh ditarik oleh magnet?",
 o:[
 "Kayu aiskrim",
@@ -491,14 +494,10 @@ class AudioSystem{
 constructor(){
 
     this.ctx = null;
-
     this.master = null;
-
     this.musicTimer = null;
-
     this.musicOn = true;
-
-    this.noteIndex = 0;
+    this.musicIndex = 0;
 
     this.notes = [
         261.63,
@@ -529,14 +528,11 @@ unlock(){
         this.ctx =
         new AC();
 
-
         this.master =
         this.ctx.createGain();
 
-
         this.master.gain.value =
-        0.16;
-
+        0.15;
 
         this.master.connect(
             this.ctx.destination
@@ -548,6 +544,7 @@ unlock(){
         this.ctx.state ===
         "suspended"
     ){
+
         this.ctx.resume();
     }
 
@@ -557,11 +554,11 @@ unlock(){
 
 
 tone(
-    frequency,
-    duration = 0.1,
-    type = "sine",
-    volume = 0.08,
-    endFrequency = null
+frequency,
+duration = 0.1,
+type = "sine",
+volume = 0.08,
+endFrequency = null
 ){
 
     if(!this.ctx){
@@ -573,7 +570,7 @@ tone(
     this.ctx.currentTime;
 
 
-    const oscillator =
+    const osc =
     this.ctx.createOscillator();
 
 
@@ -581,11 +578,11 @@ tone(
     this.ctx.createGain();
 
 
-    oscillator.type =
+    osc.type =
     type;
 
 
-    oscillator.frequency
+    osc.frequency
     .setValueAtTime(
         frequency,
         now
@@ -594,13 +591,17 @@ tone(
 
     if(endFrequency){
 
-        oscillator.frequency
+        osc.frequency
         .exponentialRampToValueAtTime(
+
             Math.max(
                 40,
                 endFrequency
             ),
-            now + duration
+
+            now +
+            duration
+
         );
     }
 
@@ -619,22 +620,16 @@ tone(
     );
 
 
-    oscillator.connect(
-        gain
-    );
-
+    osc.connect(gain);
 
     gain.connect(
         this.master
     );
 
 
-    oscillator.start(
-        now
-    );
+    osc.start(now);
 
-
-    oscillator.stop(
+    osc.stop(
         now +
         duration +
         0.02
@@ -658,28 +653,31 @@ startMusic(){
                 !this.musicOn ||
                 document.hidden
             ){
+
                 return;
             }
 
 
-            const note =
-            this.notes[
-                this.noteIndex %
-                this.notes.length
-            ];
-
-
-            this.noteIndex++;
-
-
             this.tone(
-                note,
-                0.2,
+
+                this.notes[
+                    this.musicIndex %
+                    this.notes.length
+                ],
+
+                0.18,
+
                 "sine",
-                0.023
+
+                0.022
+
             );
 
+
+            this.musicIndex++;
+
         },
+
         450
     );
 }
@@ -691,8 +689,8 @@ correct(){
         520,
         0.09,
         "triangle",
-        0.15,
-        680
+        0.14,
+        700
     );
 
 
@@ -703,7 +701,7 @@ correct(){
                 760,
                 0.14,
                 "triangle",
-                0.13,
+                0.12,
                 920
             );
 
@@ -717,7 +715,7 @@ wrong(){
 
     this.tone(
         180,
-        0.2,
+        0.20,
         "sawtooth",
         0.09,
         100
@@ -746,22 +744,22 @@ win(){
         1046
     ]
     .forEach(
-        (n,i) => {
+        (note,i) => {
 
             setTimeout(
                 () => {
 
                     this.tone(
-                        n,
+                        note,
                         0.25,
                         "triangle",
                         0.13
                     );
 
                 },
+
                 i * 120
             );
-
         }
     );
 }
@@ -783,12 +781,11 @@ new AudioSystem();
 
 
 /* =========================================================
-   MAIN GAME
+   MAZE SCENE
 ========================================================= */
 
 class MazeScene
 extends Phaser.Scene{
-
 
 constructor(){
 
@@ -816,11 +813,9 @@ create(){
 
     this.floorObjects = [];
 
-    this.wallObjects = [];
+    this.joyActive = false;
 
     this.lastMazeSignature = "";
-
-    this.joyActive = false;
 
 
     this.joyVector =
@@ -832,7 +827,7 @@ create(){
 
     this.createTextures();
 
-    this.drawBackground();
+    this.createBackground();
 
     this.createHeader();
 
@@ -849,7 +844,7 @@ create(){
 
     this.createControls();
 
-    this.createInputs();
+    this.createInput();
 
 
     this.physics.add.collider(
@@ -858,7 +853,7 @@ create(){
     );
 
 
-    this.showStartWindow();
+    this.showStart();
 }
 
 
@@ -875,24 +870,17 @@ createTextures(){
 
 
     /* =====================================================
-       MAGNET CHARACTER
+       SYMBOLIC PLAYER
+
+       BUKAN BENTUK MAGNET.
+       HANYA TOKEN BULAT "M".
     ===================================================== */
-
-    /*
-        Magnet ladam:
-
-             RED        BLUE
-              |          |
-              |          |
-               \________/
-
-    */
 
 
     /* SHADOW */
 
     g.fillStyle(
-        0x18313d,
+        0x17394a,
         0.20
     );
 
@@ -904,94 +892,67 @@ createTextures(){
     );
 
 
-    /* BOTTOM CURVE */
-
-    g.lineStyle(
-        17,
-        0x596d78,
-        1
-    );
-
-    g.beginPath();
-
-    g.arc(
-        32,
-        34,
-        17,
-        0,
-        Math.PI,
-        false
-    );
-
-    g.strokePath();
-
-
-    /* RED LEG */
-
-    g.fillStyle(
-        0xe84f55,
-        1
-    );
-
-    g.fillRoundedRect(
-        7,
-        7,
-        18,
-        32,
-        7
-    );
-
-
-    /* BLUE LEG */
-
-    g.fillStyle(
-        0x4789e8,
-        1
-    );
-
-    g.fillRoundedRect(
-        39,
-        7,
-        18,
-        32,
-        7
-    );
-
-
-    /* POLE WHITE */
+    /* OUTER CIRCLE */
 
     g.fillStyle(
         0xffffff,
         1
     );
 
-    g.fillRoundedRect(
-        7,
-        5,
-        18,
-        10,
-        4
-    );
-
-    g.fillRoundedRect(
-        39,
-        5,
-        18,
-        10,
-        4
+    g.fillCircle(
+        32,
+        30,
+        27
     );
 
 
-    /* N / S */
+    g.lineStyle(
+        4,
+        0x173e55,
+        1
+    );
+
+    g.strokeCircle(
+        32,
+        30,
+        27
+    );
+
+
+    /* LEFT ACCENT */
 
     g.fillStyle(
-        0x243947,
+        0xe45457,
         1
+    );
+
+    g.fillRoundedRect(
+        10,
+        20,
+        7,
+        20,
+        3
+    );
+
+
+    /* RIGHT ACCENT */
+
+    g.fillStyle(
+        0x4387df,
+        1
+    );
+
+    g.fillRoundedRect(
+        47,
+        20,
+        7,
+        20,
+        3
     );
 
 
     g.generateTexture(
-        "magnetPlayer",
+        "playerToken",
         64,
         64
     );
@@ -1029,7 +990,7 @@ createTextures(){
    BACKGROUND
 ========================================================= */
 
-drawBackground(){
+createBackground(){
 
     this.cameras.main
     .setBackgroundColor(
@@ -1056,21 +1017,27 @@ drawBackground(){
 
 
     g.fillStyle(
-        0xb7d3df,
-        0.23
+        0xb8d4e0,
+        0.24
     );
 
 
     for(
         let i = 0;
-        i < 50;
+        i < 48;
         i++
     ){
 
         g.fillCircle(
-            (i * 149) % GAME_W,
-            (i * 91) % GAME_H,
+
+            (i * 149) %
+            GAME_W,
+
+            (i * 91) %
+            GAME_H,
+
             10
+
         );
     }
 }
@@ -1087,14 +1054,14 @@ createHeader(){
         26,
         GAME_W,
         52,
-        0x143c55
+        0x153c55
     );
 
 
     this.add.text(
         18,
         15,
-        "MAZE MAGNET",
+        "MAZE PUZZLE",
         {
             fontFamily:"Arial",
 
@@ -1186,7 +1153,7 @@ createQuestionPanel(){
     )
     .setStrokeStyle(
         2,
-        0x94afbe
+        0x96b1c0
     );
 
 
@@ -1340,8 +1307,8 @@ createMazeArea(){
 
     const controlSpace =
     PORTRAIT
-    ? 145
-    : 80;
+    ? 150
+    : 82;
 
 
     this.mazeArea = {
@@ -1366,7 +1333,6 @@ createMazeArea(){
     };
 
 
-    this.mazeBackground =
     this.add.rectangle(
 
         this.mazeArea.x +
@@ -1379,9 +1345,7 @@ createMazeArea(){
 
         this.mazeArea.h,
 
-        0x334d59,
-
-        1
+        0x334e5a
 
     )
     .setStrokeStyle(
@@ -1390,33 +1354,35 @@ createMazeArea(){
     );
 
 
-    /*
-        REAL MAZE CELLS
-    */
-
     if(PORTRAIT){
 
-        this.cols = 13;
+        this.cols =
+        13;
 
-        this.rows = 15;
+        this.rows =
+        15;
     }
 
     else{
 
-        this.cols = 19;
+        this.cols =
+        19;
 
-        this.rows = 11;
+        this.rows =
+        11;
     }
 
 
     this.cellSize =
     Math.floor(
         Math.min(
+
             this.mazeArea.w /
             this.cols,
 
             this.mazeArea.h /
             this.rows
+
         )
     );
 
@@ -1446,7 +1412,7 @@ createMazeArea(){
 
 
 /* =========================================================
-   CREATE PLAYER
+   PLAYER
 ========================================================= */
 
 createPlayer(){
@@ -1455,13 +1421,13 @@ createPlayer(){
     this.physics.add.sprite(
         -100,
         -100,
-        "magnetPlayer"
+        "playerToken"
     );
 
 
     const size =
     this.cellSize *
-    0.56;
+    0.57;
 
 
     this.player
@@ -1474,27 +1440,46 @@ createPlayer(){
 
     this.player.body
     .setCircle(
-        22,
-        10,
-        10
+        21,
+        11,
+        9
     );
 
 
-    this.player
-    .setMaxVelocity(
-        220,
-        220
-    );
+    /*
+        SIMBOL M
+    */
+
+    this.playerLetter =
+    this.add.text(
+        -100,
+        -100,
+        "M",
+        {
+            fontFamily:"Arial",
+            fontSize:
+            `${Math.max(
+                18,
+                size * .46
+            )}px`,
+
+            fontStyle:"bold",
+
+            color:"#173e55"
+        }
+    )
+    .setOrigin(.5)
+    .setDepth(81);
 }
 
 
 /* =========================================================
-   MAZE CELL HELPERS
+   CREATE MAZE CELL
 ========================================================= */
 
 createCell(
-    x,
-    y
+x,
+y
 ){
 
     return {
@@ -1510,238 +1495,8 @@ createCell(
             bottom:true,
             left:true
         }
+
     };
-}
-
-
-/* =========================================================
-   GENERATE PERFECT MAZE
-========================================================= */
-
-generateMaze(){
-
-    let maze;
-    let signature;
-
-    let attempts = 0;
-
-
-    do{
-
-        attempts++;
-
-
-        maze = [];
-
-
-        for(
-            let y = 0;
-            y < this.rows;
-            y++
-        ){
-
-            const row = [];
-
-
-            for(
-                let x = 0;
-                x < this.cols;
-                x++
-            ){
-
-                row.push(
-                    this.createCell(
-                        x,
-                        y
-                    )
-                );
-            }
-
-
-            maze.push(
-                row
-            );
-        }
-
-
-        /*
-            Start dekat tengah maze.
-        */
-
-        const startX =
-        Math.floor(
-            this.cols / 2
-        );
-
-
-        const startY =
-        Math.floor(
-            this.rows / 2
-        );
-
-
-        const stack = [];
-
-
-        let current =
-        maze[startY][startX];
-
-
-        current.visited =
-        true;
-
-
-        let visitedCount =
-        1;
-
-
-        const total =
-        this.cols *
-        this.rows;
-
-
-        while(
-            visitedCount <
-            total
-        ){
-
-            const neighbours = [];
-
-
-            const x =
-            current.x;
-
-
-            const y =
-            current.y;
-
-
-            if(
-                y > 0 &&
-                !maze[y - 1][x].visited
-            ){
-
-                neighbours.push({
-                    cell:
-                    maze[y - 1][x],
-
-                    dir:
-                    "top"
-                });
-            }
-
-
-            if(
-                x <
-                this.cols - 1 &&
-                !maze[y][x + 1].visited
-            ){
-
-                neighbours.push({
-                    cell:
-                    maze[y][x + 1],
-
-                    dir:
-                    "right"
-                });
-            }
-
-
-            if(
-                y <
-                this.rows - 1 &&
-                !maze[y + 1][x].visited
-            ){
-
-                neighbours.push({
-                    cell:
-                    maze[y + 1][x],
-
-                    dir:
-                    "bottom"
-                });
-            }
-
-
-            if(
-                x > 0 &&
-                !maze[y][x - 1].visited
-            ){
-
-                neighbours.push({
-                    cell:
-                    maze[y][x - 1],
-
-                    dir:
-                    "left"
-                });
-            }
-
-
-            if(
-                neighbours.length
-            ){
-
-                Phaser.Utils.Array
-                .Shuffle(
-                    neighbours
-                );
-
-
-                const next =
-                neighbours[0];
-
-
-                stack.push(
-                    current
-                );
-
-
-                this.removeWall(
-                    current,
-                    next.cell,
-                    next.dir
-                );
-
-
-                current =
-                next.cell;
-
-
-                current.visited =
-                true;
-
-
-                visitedCount++;
-            }
-
-            else{
-
-                current =
-                stack.pop();
-            }
-        }
-
-
-        signature =
-        this.mazeSignature(
-            maze
-        );
-
-
-    }
-    while(
-        signature ===
-        this.lastMazeSignature &&
-        attempts < 10
-    );
-
-
-    this.lastMazeSignature =
-    signature;
-
-
-    return maze;
 }
 
 
@@ -1750,9 +1505,9 @@ generateMaze(){
 ========================================================= */
 
 removeWall(
-    current,
-    next,
-    direction
+current,
+next,
+direction
 ){
 
     if(
@@ -1809,14 +1564,247 @@ removeWall(
 
 
 /* =========================================================
-   MAZE SIGNATURE
+   GENERATE PERFECT RANDOM MAZE
 ========================================================= */
 
-mazeSignature(
-    maze
+generateMaze(){
+
+    let maze;
+
+    let signature;
+
+    let attempts =
+    0;
+
+
+    do{
+
+        attempts++;
+
+
+        maze = [];
+
+
+        for(
+            let y = 0;
+            y < this.rows;
+            y++
+        ){
+
+            const row = [];
+
+
+            for(
+                let x = 0;
+                x < this.cols;
+                x++
+            ){
+
+                row.push(
+                    this.createCell(
+                        x,
+                        y
+                    )
+                );
+            }
+
+
+            maze.push(
+                row
+            );
+        }
+
+
+        const startX =
+        Math.floor(
+            this.cols / 2
+        );
+
+
+        const startY =
+        Math.floor(
+            this.rows / 2
+        );
+
+
+        let current =
+        maze[startY][startX];
+
+
+        current.visited =
+        true;
+
+
+        const stack = [];
+
+
+        let visited =
+        1;
+
+
+        const total =
+        this.cols *
+        this.rows;
+
+
+        while(
+            visited <
+            total
+        ){
+
+            const neighbours = [];
+
+
+            const x =
+            current.x;
+
+
+            const y =
+            current.y;
+
+
+            if(
+                y > 0 &&
+                !maze[y - 1][x].visited
+            ){
+
+                neighbours.push({
+                    cell:
+                    maze[y - 1][x],
+
+                    direction:
+                    "top"
+                });
+            }
+
+
+            if(
+                x <
+                this.cols - 1 &&
+                !maze[y][x + 1].visited
+            ){
+
+                neighbours.push({
+                    cell:
+                    maze[y][x + 1],
+
+                    direction:
+                    "right"
+                });
+            }
+
+
+            if(
+                y <
+                this.rows - 1 &&
+                !maze[y + 1][x].visited
+            ){
+
+                neighbours.push({
+                    cell:
+                    maze[y + 1][x],
+
+                    direction:
+                    "bottom"
+                });
+            }
+
+
+            if(
+                x > 0 &&
+                !maze[y][x - 1].visited
+            ){
+
+                neighbours.push({
+                    cell:
+                    maze[y][x - 1],
+
+                    direction:
+                    "left"
+                });
+            }
+
+
+            if(
+                neighbours.length
+            ){
+
+                Phaser.Utils.Array
+                .Shuffle(
+                    neighbours
+                );
+
+
+                const next =
+                neighbours[0];
+
+
+                stack.push(
+                    current
+                );
+
+
+                this.removeWall(
+
+                    current,
+
+                    next.cell,
+
+                    next.direction
+
+                );
+
+
+                current =
+                next.cell;
+
+
+                current.visited =
+                true;
+
+
+                visited++;
+            }
+
+            else{
+
+                current =
+                stack.pop();
+            }
+        }
+
+
+        signature =
+        this.getMazeSignature(
+            maze
+        );
+
+    }
+    while(
+        signature ===
+        this.lastMazeSignature &&
+        attempts < 10
+    );
+
+
+    this.lastMazeSignature =
+    signature;
+
+
+    return maze;
+}
+
+
+/* =========================================================
+   SIGNATURE
+========================================================= */
+
+getMazeSignature(
+maze
 ){
 
-    let output = "";
+    let result =
+    "";
 
 
     for(
@@ -1831,36 +1819,36 @@ mazeSignature(
             x++
         ){
 
-            const w =
+            const walls =
             maze[y][x].walls;
 
 
-            output +=
-            w.top ? "1" : "0";
+            result +=
+            walls.top ? "1" : "0";
 
-            output +=
-            w.right ? "1" : "0";
+            result +=
+            walls.right ? "1" : "0";
 
-            output +=
-            w.bottom ? "1" : "0";
+            result +=
+            walls.bottom ? "1" : "0";
 
-            output +=
-            w.left ? "1" : "0";
+            result +=
+            walls.left ? "1" : "0";
         }
     }
 
 
-    return output;
+    return result;
 }
 
 
 /* =========================================================
-   CELL WORLD POSITION
+   CELL POSITION
 ========================================================= */
 
 cellPosition(
-    x,
-    y
+x,
+y
 ){
 
     return {
@@ -1874,12 +1862,13 @@ cellPosition(
         this.mazeY +
         y * this.cellSize +
         this.cellSize / 2
+
     };
 }
 
 
 /* =========================================================
-   CLEAR CURRENT MAZE
+   CLEAR MAZE
 ========================================================= */
 
 clearMaze(){
@@ -1890,15 +1879,10 @@ clearMaze(){
     );
 
 
-    this.wallObjects = [];
-
-
     this.floorObjects
     .forEach(
-        obj => {
-
-            obj.destroy();
-        }
+        object =>
+        object.destroy()
     );
 
 
@@ -1954,12 +1938,12 @@ buildNewMaze(){
 
 
 /* =========================================================
-   DRAW REAL MAZE
+   DRAW MAZE
 ========================================================= */
 
 drawMaze(){
 
-    const wallThickness =
+    const thickness =
     Math.max(
         4,
         Math.floor(
@@ -1992,28 +1976,18 @@ drawMaze(){
             );
 
 
-            /*
-                FLOOR CELL
-            */
-
-            const floorColor =
-            (x + y) % 2 === 0
-            ? 0xf2e7c9
-            : 0xebddba;
-
-
             const floor =
             this.add.rectangle(
 
                 p.x,
-
                 p.y,
 
                 this.cellSize,
-
                 this.cellSize,
 
-                floorColor
+                (x + y) % 2 === 0
+                ? 0xf4e8c9
+                : 0xecddba
 
             )
             .setDepth(10);
@@ -2023,10 +1997,6 @@ drawMaze(){
                 floor
             );
 
-
-            /*
-                TOP WALL
-            */
 
             if(
                 cell.walls.top
@@ -2040,17 +2010,13 @@ drawMaze(){
                     this.cellSize / 2,
 
                     this.cellSize +
-                    wallThickness,
+                    thickness,
 
-                    wallThickness
+                    thickness
 
                 );
             }
 
-
-            /*
-                LEFT WALL
-            */
 
             if(
                 cell.walls.left
@@ -2063,18 +2029,14 @@ drawMaze(){
 
                     p.y,
 
-                    wallThickness,
+                    thickness,
 
                     this.cellSize +
-                    wallThickness
+                    thickness
 
                 );
             }
 
-
-            /*
-                RIGHT OUTER WALL ONLY
-            */
 
             if(
                 x ===
@@ -2089,18 +2051,14 @@ drawMaze(){
 
                     p.y,
 
-                    wallThickness,
+                    thickness,
 
                     this.cellSize +
-                    wallThickness
+                    thickness
 
                 );
             }
 
-
-            /*
-                BOTTOM OUTER WALL ONLY
-            */
 
             if(
                 y ===
@@ -2116,9 +2074,9 @@ drawMaze(){
                     this.cellSize / 2,
 
                     this.cellSize +
-                    wallThickness,
+                    thickness,
 
-                    wallThickness
+                    thickness
 
                 );
             }
@@ -2128,14 +2086,14 @@ drawMaze(){
 
 
 /* =========================================================
-   CREATE WALL
+   WALL
 ========================================================= */
 
 createWall(
-    x,
-    y,
-    width,
-    height
+x,
+y,
+width,
+height
 ){
 
     const wall =
@@ -2147,13 +2105,12 @@ createWall(
         width,
         height,
 
-        0x355c70
+        0x355d70
 
     )
     .setStrokeStyle(
         1,
-        0x213d4b,
-        1
+        0x203d4b
     )
     .setDepth(30);
 
@@ -2163,8 +2120,7 @@ createWall(
     );
 
 
-    wall.body
-    .setSize(
+    wall.body.setSize(
         width,
         height
     );
@@ -2172,11 +2128,6 @@ createWall(
 
     wall.body
     .updateFromGameObject();
-
-
-    this.wallObjects.push(
-        wall
-    );
 }
 
 
@@ -2185,7 +2136,7 @@ createWall(
 ========================================================= */
 
 openingCount(
-    cell
+cell
 ){
 
     let count = 0;
@@ -2195,16 +2146,13 @@ openingCount(
         count++;
     }
 
-
     if(!cell.walls.right){
         count++;
     }
 
-
     if(!cell.walls.bottom){
         count++;
     }
-
 
     if(!cell.walls.left){
         count++;
@@ -2216,7 +2164,7 @@ openingCount(
 
 
 /* =========================================================
-   BFS DISTANCES
+   GET DISTANCES
 ========================================================= */
 
 getDistances(){
@@ -2230,32 +2178,34 @@ getDistances(){
         () =>
         Array(
             this.cols
-        ).fill(-1)
+        )
+        .fill(-1)
     );
 
 
     const queue = [];
 
 
-    const sx =
+    const startX =
     this.startCell.x;
 
 
-    const sy =
+    const startY =
     this.startCell.y;
 
 
-    distances[sy][sx] =
+    distances[startY][startX] =
     0;
 
 
     queue.push({
-        x:sx,
-        y:sy
+        x:startX,
+        y:startY
     });
 
 
-    let head = 0;
+    let head =
+    0;
 
 
     while(
@@ -2267,35 +2217,28 @@ getDistances(){
         queue[head++];
 
 
+        const x =
+        current.x;
+
+
+        const y =
+        current.y;
+
+
         const cell =
-        this.maze[
-            current.y
-        ][
-            current.x
-        ];
+        this.maze[y][x];
 
 
         const nextDistance =
-        distances[
-            current.y
-        ][
-            current.x
-        ] + 1;
+        distances[y][x] + 1;
 
-
-        /*
-            TOP
-        */
 
         if(
             !cell.walls.top
         ){
 
-            const nx =
-            current.x;
-
-            const ny =
-            current.y - 1;
+            const nx = x;
+            const ny = y - 1;
 
 
             if(
@@ -2313,20 +2256,13 @@ getDistances(){
             }
         }
 
-
-        /*
-            RIGHT
-        */
 
         if(
             !cell.walls.right
         ){
 
-            const nx =
-            current.x + 1;
-
-            const ny =
-            current.y;
+            const nx = x + 1;
+            const ny = y;
 
 
             if(
@@ -2344,20 +2280,13 @@ getDistances(){
             }
         }
 
-
-        /*
-            BOTTOM
-        */
 
         if(
             !cell.walls.bottom
         ){
 
-            const nx =
-            current.x;
-
-            const ny =
-            current.y + 1;
+            const nx = x;
+            const ny = y + 1;
 
 
             if(
@@ -2376,19 +2305,12 @@ getDistances(){
         }
 
 
-        /*
-            LEFT
-        */
-
         if(
             !cell.walls.left
         ){
 
-            const nx =
-            current.x - 1;
-
-            const ny =
-            current.y;
+            const nx = x - 1;
+            const ny = y;
 
 
             if(
@@ -2413,7 +2335,7 @@ getDistances(){
 
 
 /* =========================================================
-   FIND FOUR DEAD-END ANSWERS
+   FIND ANSWER DEAD-ENDS
 ========================================================= */
 
 findAnswerCells(){
@@ -2443,6 +2365,7 @@ findAnswerCells(){
                 y ===
                 this.startCell.y
             ){
+
                 continue;
             }
 
@@ -2471,10 +2394,6 @@ findAnswerCells(){
     }
 
 
-    /*
-        Paling jauh dari START dahulu.
-    */
-
     deadEnds.sort(
         (a,b) =>
         b.distance -
@@ -2484,11 +2403,6 @@ findAnswerCells(){
 
     const selected = [];
 
-
-    /*
-        Cuba pilih hujung yang tidak
-        terlalu rapat antara satu sama lain.
-    */
 
     for(
         const candidate of
@@ -2539,15 +2453,11 @@ findAnswerCells(){
         if(
             selected.length === 4
         ){
+
             break;
         }
     }
 
-
-    /*
-        Jika tak cukup 4,
-        ambil dead end lain.
-    */
 
     if(
         selected.length < 4
@@ -2560,9 +2470,9 @@ findAnswerCells(){
 
             const exists =
             selected.some(
-                s =>
-                s.x === candidate.x &&
-                s.y === candidate.y
+                item =>
+                item.x === candidate.x &&
+                item.y === candidate.y
             );
 
 
@@ -2577,91 +2487,7 @@ findAnswerCells(){
             if(
                 selected.length === 4
             ){
-                break;
-            }
-        }
-    }
 
-
-    /*
-        Kes sangat jarang:
-        kalau dead end kurang 4,
-        ambil sel terjauh.
-    */
-
-    if(
-        selected.length < 4
-    ){
-
-        const all = [];
-
-
-        for(
-            let y = 0;
-            y < this.rows;
-            y++
-        ){
-
-            for(
-                let x = 0;
-                x < this.cols;
-                x++
-            ){
-
-                if(
-                    x ===
-                    this.startCell.x &&
-                    y ===
-                    this.startCell.y
-                ){
-                    continue;
-                }
-
-
-                all.push({
-
-                    x:x,
-                    y:y,
-
-                    distance:
-                    distances[y][x]
-
-                });
-            }
-        }
-
-
-        all.sort(
-            (a,b) =>
-            b.distance -
-            a.distance
-        );
-
-
-        for(
-            const candidate of
-            all
-        ){
-
-            const exists =
-            selected.some(
-                s =>
-                s.x === candidate.x &&
-                s.y === candidate.y
-            );
-
-
-            if(!exists){
-
-                selected.push(
-                    candidate
-                );
-            }
-
-
-            if(
-                selected.length === 4
-            ){
                 break;
             }
         }
@@ -2676,7 +2502,7 @@ findAnswerCells(){
 
 
 /* =========================================================
-   CREATE ANSWERS
+   ANSWERS
 ========================================================= */
 
 createAnswers(){
@@ -2688,19 +2514,14 @@ createAnswers(){
 
 
     const colors = [
-
-        0xe65155,
-
-        0x4385df,
-
+        0xe35357,
+        0x4387df,
         0xf0aa3a,
-
-        0x42a76b
-
+        0x42a86b
     ];
 
 
-    const answerSize =
+    const size =
     this.cellSize *
     0.68;
 
@@ -2740,8 +2561,7 @@ createAnswers(){
             0,
             0,
 
-            answerSize *
-            0.57,
+            size * 0.58,
 
             colors[
                 answerIndex
@@ -2752,14 +2572,14 @@ createAnswers(){
         );
 
 
-        const pad =
+        const box =
         this.add.rectangle(
 
             0,
             0,
 
-            answerSize,
-            answerSize,
+            size,
+            size,
 
             0xffffff
 
@@ -2768,8 +2588,7 @@ createAnswers(){
 
             Math.max(
                 3,
-                this.cellSize *
-                0.07
+                this.cellSize * 0.07
             ),
 
             colors[
@@ -2795,7 +2614,7 @@ createAnswers(){
                 fontSize:
                 `${Math.max(
                     17,
-                    this.cellSize * 0.48
+                    this.cellSize * .48
                 )}px`,
 
                 fontStyle:"bold",
@@ -2804,12 +2623,12 @@ createAnswers(){
             }
 
         )
-        .setOrigin(0.5);
+        .setOrigin(.5);
 
 
         container.add([
             glow,
-            pad,
+            box,
             letter
         ]);
 
@@ -2827,6 +2646,7 @@ createAnswers(){
 
             y:
             p.y
+
         });
 
 
@@ -2836,7 +2656,7 @@ createAnswers(){
             container,
 
             scale:
-            1.08,
+            1.07,
 
             duration:
             650 +
@@ -2875,9 +2695,7 @@ clearAnswers(){
 
 
                 zone.container
-                .destroy(
-                    true
-                );
+                .destroy(true);
             }
         }
     );
@@ -2924,8 +2742,11 @@ resetPlayer(){
     );
 
 
-    this.player
-    .setRotation(0);
+    this.playerLetter
+    .setPosition(
+        p.x,
+        p.y - 2
+    );
 
 
     this.resetJoystick();
@@ -2943,27 +2764,27 @@ createControls(){
     this.mazeArea.h +
     (
         PORTRAIT
-        ? 75
-        : 40
+        ? 76
+        : 41
     );
 
 
     /*
-        ANALOG DIBESARKAN
+        ANALOG BESAR
     */
 
     this.joyRadius =
     PORTRAIT
-    ? 66
-    : 54;
+    ? 70
+    : 55;
 
 
     this.joyCenter =
     new Phaser.Math.Vector2(
 
         PORTRAIT
-        ? 105
-        : 95,
+        ? 108
+        : 96,
 
         this.controlY
 
@@ -2985,15 +2806,75 @@ createControls(){
 
     )
     .setStrokeStyle(
-
         4,
-
         0x153d55,
-
-        0.45
-
+        0.46
     )
     .setDepth(100);
+
+
+    /*
+        DIRECTION MARKS
+    */
+
+    this.add.text(
+        this.joyCenter.x,
+        this.joyCenter.y -
+        this.joyRadius +
+        13,
+        "▲",
+        {
+            fontSize:"16px",
+            color:"#173e55"
+        }
+    )
+    .setOrigin(.5)
+    .setDepth(101);
+
+
+    this.add.text(
+        this.joyCenter.x,
+        this.joyCenter.y +
+        this.joyRadius -
+        13,
+        "▼",
+        {
+            fontSize:"16px",
+            color:"#173e55"
+        }
+    )
+    .setOrigin(.5)
+    .setDepth(101);
+
+
+    this.add.text(
+        this.joyCenter.x -
+        this.joyRadius +
+        13,
+        this.joyCenter.y,
+        "◀",
+        {
+            fontSize:"16px",
+            color:"#173e55"
+        }
+    )
+    .setOrigin(.5)
+    .setDepth(101);
+
+
+    this.add.text(
+        this.joyCenter.x +
+        this.joyRadius -
+        13,
+        this.joyCenter.y,
+        "▶",
+        {
+            fontSize:"16px",
+            color:"#173e55"
+        }
+    )
+    .setOrigin(.5)
+    .setDepth(101);
 
 
     this.joyKnob =
@@ -3004,24 +2885,20 @@ createControls(){
         this.joyCenter.y,
 
         PORTRAIT
-        ? 32
-        : 26,
+        ? 34
+        : 27,
 
-        0x153d55,
+        0x173e55,
 
         0.68
 
     )
     .setStrokeStyle(
-
         3,
-
         0xffffff,
-
-        0.40
-
+        0.4
     )
-    .setDepth(101);
+    .setDepth(102);
 
 
     this.add.text(
@@ -3038,11 +2915,11 @@ createControls(){
             fontFamily:"Arial",
             fontSize:"11px",
             fontStyle:"bold",
-            color:"#476c80"
+            color:"#486d80"
         }
 
     )
-    .setOrigin(0.5)
+    .setOrigin(.5)
     .setDepth(100);
 
 
@@ -3054,7 +2931,7 @@ createControls(){
         GAME_W -
         (
             PORTRAIT
-            ? 178
+            ? 180
             : 170
         ),
 
@@ -3084,14 +2961,14 @@ createControls(){
         GAME_W -
         (
             PORTRAIT
-            ? 61
-            : 57
+            ? 62
+            : 58
         ),
 
         this.controlY,
 
         PORTRAIT
-        ? 86
+        ? 88
         : 82,
 
         42,
@@ -3123,25 +3000,21 @@ createControls(){
 ========================================================= */
 
 createButton(
-    x,
-    y,
-    width,
-    height,
-    label,
-    callback
+x,
+y,
+width,
+height,
+text,
+callback
 ){
 
     const box =
     this.add.rectangle(
-
         x,
         y,
-
         width,
         height,
-
         0xffffff
-
     )
     .setStrokeStyle(
         2,
@@ -3153,11 +3026,11 @@ createButton(
     .setDepth(100);
 
 
-    const text =
+    const label =
     this.add.text(
         x,
         y,
-        label,
+        text,
         {
             fontFamily:"Arial",
             fontSize:"12px",
@@ -3165,7 +3038,7 @@ createButton(
             color:"#244e63"
         }
     )
-    .setOrigin(0.5)
+    .setOrigin(.5)
     .setDepth(101);
 
 
@@ -3182,16 +3055,16 @@ createButton(
 
     return{
         box:box,
-        label:text
+        label:label
     };
 }
 
 
 /* =========================================================
-   INPUTS
+   INPUT
 ========================================================= */
 
-createInputs(){
+createInput(){
 
     this.cursors =
     this.input.keyboard
@@ -3201,6 +3074,7 @@ createInputs(){
     this.keys =
     this.input.keyboard
     .addKeys({
+
         W:
         Phaser.Input.Keyboard.KeyCodes.W,
 
@@ -3212,6 +3086,7 @@ createInputs(){
 
         D:
         Phaser.Input.Keyboard.KeyCodes.D
+
     });
 
 
@@ -3237,7 +3112,7 @@ createInputs(){
             if(
                 distance <=
                 this.joyRadius +
-                42
+                45
             ){
 
                 this.joyActive =
@@ -3291,12 +3166,12 @@ createInputs(){
 
 
 /* =========================================================
-   UPDATE JOYSTICK
+   JOYSTICK
 ========================================================= */
 
 updateJoystick(
-    pointerX,
-    pointerY
+pointerX,
+pointerY
 ){
 
     const dx =
@@ -3320,7 +3195,8 @@ updateJoystick(
         distance === 0
     ){
 
-        this.joyVector.set(
+        this.joyVector
+        .set(
             0,
             0
         );
@@ -3330,11 +3206,13 @@ updateJoystick(
 
 
     const nx =
-    dx / distance;
+    dx /
+    distance;
 
 
     const ny =
-    dy / distance;
+    dy /
+    distance;
 
 
     const amount =
@@ -3361,7 +3239,8 @@ updateJoystick(
     );
 
 
-    this.joyVector.set(
+    this.joyVector
+    .set(
 
         nx * strength,
 
@@ -3381,15 +3260,14 @@ resetJoystick(){
     false;
 
 
-    this.joyVector.set(
+    this.joyVector
+    .set(
         0,
         0
     );
 
 
-    if(
-        this.joyKnob
-    ){
+    if(this.joyKnob){
 
         this.joyKnob
         .setPosition(
@@ -3404,10 +3282,10 @@ resetJoystick(){
 
 
 /* =========================================================
-   START WINDOW
+   START
 ========================================================= */
 
-showStartWindow(){
+showStart(){
 
     const shade =
     this.add.rectangle(
@@ -3420,9 +3298,9 @@ showStartWindow(){
 
         GAME_H,
 
-        0x0c2838,
+        0x0b2837,
 
-        0.84
+        .84
 
     )
     .setDepth(300);
@@ -3430,13 +3308,13 @@ showStartWindow(){
 
     const width =
     PORTRAIT
-    ? GAME_W - 54
+    ? GAME_W - 52
     : 540;
 
 
     const height =
     PORTRAIT
-    ? 430
+    ? 425
     : 330;
 
 
@@ -3468,17 +3346,17 @@ showStartWindow(){
 
         GAME_H / 2 -
         height / 2 +
-        53,
+        52,
 
-        "MAGNET MAZE PUZZLE",
+        "MAZE PUZZLE",
 
         {
             fontFamily:"Arial",
 
             fontSize:
             PORTRAIT
-            ? "29px"
-            : "28px",
+            ? "30px"
+            : "29px",
 
             fontStyle:"bold",
 
@@ -3486,7 +3364,7 @@ showStartWindow(){
         }
 
     )
-    .setOrigin(0.5)
+    .setOrigin(.5)
     .setDepth(302);
 
 
@@ -3498,15 +3376,16 @@ showStartWindow(){
         GAME_H / 2 -
         12,
 
-        "Ini ialah maze puzzle sebenar.\n\n" +
+        "Token M ialah simbol pemain sahaja.\n\n" +
 
-        "Cari jalan melalui simpang dan jalan mati.\n" +
+        "Cari jalan di dalam maze sebenar.\n" +
 
-        "Empat hujung maze mengandungi A, B, C dan D.\n\n" +
+        "Maze mempunyai simpang dan jalan mati.\n\n" +
 
-        "Gerakkan magnet ke jawapan yang betul.\n\n" +
+        "Cari A, B, C atau D yang betul.\n\n" +
 
         "Setiap soalan akan menghasilkan\n" +
+
         "maze baru yang berbeza.",
 
         {
@@ -3530,24 +3409,24 @@ showStartWindow(){
         }
 
     )
-    .setOrigin(0.5)
+    .setOrigin(.5)
     .setDepth(302);
 
 
-    const startButton =
+    const start =
     this.add.rectangle(
 
         GAME_W / 2,
 
         GAME_H / 2 +
         height / 2 -
-        61,
+        60,
 
         220,
 
         56,
 
-        0x2d8d58
+        0x2e8d59
 
     )
     .setStrokeStyle(
@@ -3567,7 +3446,7 @@ showStartWindow(){
 
         GAME_H / 2 +
         height / 2 -
-        61,
+        60,
 
         "MULA GAME",
 
@@ -3579,11 +3458,11 @@ showStartWindow(){
         }
 
     )
-    .setOrigin(0.5)
+    .setOrigin(.5)
     .setDepth(303);
 
 
-    startButton.on(
+    start.on(
         "pointerdown",
         () => {
 
@@ -3595,7 +3474,7 @@ showStartWindow(){
                 card,
                 title,
                 info,
-                startButton,
+                start,
                 startText
             ]
             .forEach(
@@ -3639,7 +3518,7 @@ loadQuestion(){
     true;
 
 
-    const item =
+    const data =
     QUESTIONS[
         this.questionIndex
     ];
@@ -3663,13 +3542,13 @@ loadQuestion(){
 
     this.sectionText
     .setText(
-        item.section
+        data.section
     );
 
 
     this.questionText
     .setText(
-        item.q
+        data.q
     );
 
 
@@ -3682,15 +3561,14 @@ loadQuestion(){
         this.optionTexts[i]
         .setText(
 
-            `${LETTERS[i]}. ${item.o[i]}`
+            `${LETTERS[i]}. ${data.o[i]}`
 
         );
     }
 
 
     /*
-        ROMBAK MAZE UNTUK
-        SETIAP SOALAN.
+        MAZE BARU SETIAP SOALAN
     */
 
     this.buildNewMaze();
@@ -3711,25 +3589,30 @@ loadQuestion(){
 
 
 /* =========================================================
-   MAZE NEW MESSAGE
+   MAZE NUMBER
 ========================================================= */
 
 showMazeNumber(){
+
+    const y =
+    this.mazeArea.y +
+    25;
+
 
     const bg =
     this.add.rectangle(
 
         GAME_W / 2,
 
-        this.mazeArea.y + 25,
+        y,
 
-        230,
+        225,
 
         38,
 
         0x173e54,
 
-        0.94
+        .94
 
     )
     .setDepth(150);
@@ -3740,7 +3623,7 @@ showMazeNumber(){
 
         GAME_W / 2,
 
-        this.mazeArea.y + 25,
+        y,
 
         `MAZE ${this.questionIndex + 1}`,
 
@@ -3752,18 +3635,13 @@ showMazeNumber(){
         }
 
     )
-    .setOrigin(0.5)
+    .setOrigin(.5)
     .setDepth(151);
 
 
-    bg.setScale(
-        0.75
-    );
+    bg.setScale(.75);
 
-
-    text.setScale(
-        0.75
-    );
+    text.setScale(.75);
 
 
     this.tweens.add({
@@ -3775,7 +3653,7 @@ showMazeNumber(){
 
         scale:1,
 
-        duration:160,
+        duration:150,
 
         ease:"Back.Out"
 
@@ -3787,7 +3665,6 @@ showMazeNumber(){
         () => {
 
             bg.destroy();
-
             text.destroy();
         }
     );
@@ -3804,24 +3681,22 @@ update(){
         !this.started ||
         !this.player
     ){
+
         return;
     }
 
 
-    let moveX = 0;
+    let x = 0;
+    let y = 0;
 
-    let moveY = 0;
 
-
-    /* =====================================================
-       KEYBOARD
-    ===================================================== */
+    /* KEYBOARD */
 
     if(
         this.cursors.left.isDown ||
         this.keys.A.isDown
     ){
-        moveX -= 1;
+        x -= 1;
     }
 
 
@@ -3829,7 +3704,7 @@ update(){
         this.cursors.right.isDown ||
         this.keys.D.isDown
     ){
-        moveX += 1;
+        x += 1;
     }
 
 
@@ -3837,7 +3712,7 @@ update(){
         this.cursors.up.isDown ||
         this.keys.W.isDown
     ){
-        moveY -= 1;
+        y -= 1;
     }
 
 
@@ -3845,26 +3720,24 @@ update(){
         this.cursors.down.isDown ||
         this.keys.S.isDown
     ){
-        moveY += 1;
+        y += 1;
     }
 
 
-    /* =====================================================
-       ANALOG
-    ===================================================== */
+    /* ANALOG */
 
-    moveX +=
+    x +=
     this.joyVector.x;
 
 
-    moveY +=
+    y +=
     this.joyVector.y;
 
 
     const length =
     Math.hypot(
-        moveX,
-        moveY
+        x,
+        y
     );
 
 
@@ -3872,19 +3745,18 @@ update(){
         length > 1
     ){
 
-        moveX /=
+        x /=
         length;
 
-
-        moveY /=
+        y /=
         length;
     }
 
 
     const speed =
     PORTRAIT
-    ? 135
-    : 150;
+    ? 138
+    : 152;
 
 
     if(
@@ -3903,41 +3775,35 @@ update(){
         this.player
         .setVelocity(
 
-            moveX *
-            speed,
+            x * speed,
 
-            moveY *
-            speed
+            y * speed
 
         );
     }
 
 
     /*
-        Magnet kekal tegak supaya
-        simbol sentiasa jelas.
-        Cuma sedikit tilt semasa bergerak.
+        TOKEN TIDAK BERPUTAR.
+        HANYA SYMBOLIC.
     */
 
-    if(
-        Math.abs(moveX) >
-        Math.abs(moveY)
-    ){
+    this.player
+    .setRotation(0);
 
-        this.player
-        .setRotation(
-            moveX *
-            0.10
-        );
-    }
 
-    else{
+    /*
+        HURUF M IKUT PLAYER
+    */
 
-        this.player
-        .setRotation(
-            0
-        );
-    }
+    this.playerLetter
+    .setPosition(
+
+        this.player.x,
+
+        this.player.y - 2
+
+    );
 
 
     if(
@@ -3957,7 +3823,7 @@ checkAnswer(){
 
     const triggerDistance =
     this.cellSize *
-    0.40;
+    .40;
 
 
     for(
@@ -3993,16 +3859,17 @@ checkAnswer(){
 
 
 /* =========================================================
-   CHOOSE ANSWER
+   SELECT ANSWER
 ========================================================= */
 
 chooseAnswer(
-    zone
+zone
 ){
 
     if(
         this.locked
     ){
+
         return;
     }
 
@@ -4018,19 +3885,15 @@ chooseAnswer(
     );
 
 
-    const item =
+    const data =
     QUESTIONS[
         this.questionIndex
     ];
 
 
-/* =========================================================
-   CORRECT
-========================================================= */
-
     if(
         zone.answerIndex ===
-        item.a
+        data.a
     ){
 
         this.score +=
@@ -4047,7 +3910,7 @@ chooseAnswer(
 
 
         this.showMessage(
-            "BETUL! MAZE BARU AKAN DIBINA",
+            "BETUL! MAZE BARU",
             0x2e9259
         );
 
@@ -4059,7 +3922,7 @@ chooseAnswer(
 
 
         this.time.delayedCall(
-            900,
+            850,
             () => {
 
                 this.questionIndex++;
@@ -4068,11 +3931,6 @@ chooseAnswer(
             }
         );
     }
-
-
-/* =========================================================
-   WRONG
-========================================================= */
 
     else{
 
@@ -4100,20 +3958,14 @@ chooseAnswer(
 
         this.cameras.main
         .shake(
-            150,
-            0.005
+            140,
+            .005
         );
 
 
         this.time.delayedCall(
-            750,
+            700,
             () => {
-
-                /*
-                    Salah:
-                    maze TIDAK berubah.
-                    Hanya kembali start.
-                */
 
                 this.resetPlayer();
 
@@ -4130,15 +3982,9 @@ chooseAnswer(
 ========================================================= */
 
 showMessage(
-    text,
-    color
+text,
+color
 ){
-
-    const width =
-    PORTRAIT
-    ? 380
-    : 410;
-
 
     const y =
     this.mazeArea.y +
@@ -4152,13 +3998,15 @@ showMessage(
 
         y,
 
-        width,
+        PORTRAIT
+        ? 360
+        : 380,
 
         42,
 
         color,
 
-        0.97
+        .97
 
     )
     .setDepth(180);
@@ -4187,18 +4035,13 @@ showMessage(
         }
 
     )
-    .setOrigin(0.5)
+    .setOrigin(.5)
     .setDepth(181);
 
 
-    bg.setScale(
-        0.8
-    );
+    bg.setScale(.8);
 
-
-    label.setScale(
-        0.8
-    );
+    label.setScale(.8);
 
 
     this.tweens.add({
@@ -4213,11 +4056,12 @@ showMessage(
         duration:150,
 
         ease:"Back.Out"
+
     });
 
 
     this.time.delayedCall(
-        600,
+        570,
         () => {
 
             bg.destroy();
@@ -4233,21 +4077,21 @@ showMessage(
 ========================================================= */
 
 createParticles(
-    x,
-    y
+x,
+y
 ){
 
     const colors = [
         0xffd55a,
         0x54c983,
         0x56a8e8,
-        0xff6f70
+        0xff7070
     ];
 
 
     for(
         let i = 0;
-        i < 16;
+        i < 15;
         i++
     ){
 
@@ -4257,13 +4101,12 @@ createParticles(
             y,
             "spark"
         )
-        .setDepth(190)
         .setTint(
-            Phaser.Utils.Array
-            .GetRandom(
+            Phaser.Utils.Array.GetRandom(
                 colors
             )
-        );
+        )
+        .setDepth(190);
 
 
         const angle =
@@ -4274,8 +4117,8 @@ createParticles(
 
         const distance =
         Phaser.Math.Between(
-            28,
-            85
+            30,
+            82
         );
 
 
@@ -4286,16 +4129,12 @@ createParticles(
 
             x:
             x +
-            Math.cos(
-                angle
-            ) *
+            Math.cos(angle) *
             distance,
 
             y:
             y +
-            Math.sin(
-                angle
-            ) *
+            Math.sin(angle) *
             distance,
 
             alpha:0,
@@ -4313,6 +4152,7 @@ createParticles(
 
                 particle.destroy();
             }
+
         });
     }
 }
@@ -4338,27 +4178,25 @@ showWin(){
     AUDIO.win();
 
 
-    const totalSeconds =
+    const total =
     Math.round(
-
         (
             Date.now() -
             this.startTime
         ) /
         1000
-
     );
 
 
     const minutes =
     Math.floor(
-        totalSeconds / 60
+        total / 60
     );
 
 
     const seconds =
     String(
-        totalSeconds % 60
+        total % 60
     )
     .padStart(
         2,
@@ -4379,7 +4217,7 @@ showWin(){
 
         0x092535,
 
-        0.85
+        .85
 
     )
     .setDepth(400);
@@ -4442,7 +4280,7 @@ showWin(){
         }
 
     )
-    .setOrigin(0.5)
+    .setOrigin(.5)
     .setDepth(402);
 
 
@@ -4450,29 +4288,20 @@ showWin(){
 
         GAME_W / 2,
 
-        GAME_H / 2 -
-        15,
+        GAME_H / 2 - 15,
 
-        "25 / 25 soalan selesai\n\n" +
-
-        `Skor: ${this.score}\n` +
-
-        `Masa: ${minutes}:${seconds}`,
+        `25 / 25 soalan selesai\n\nSkor: ${this.score}\nMasa: ${minutes}:${seconds}`,
 
         {
             fontFamily:"Arial",
-
             fontSize:"20px",
-
             color:"#294c5f",
-
             align:"center",
-
             lineSpacing:7
         }
 
     )
-    .setOrigin(0.5)
+    .setOrigin(.5)
     .setDepth(402);
 
 
@@ -4516,7 +4345,7 @@ showWin(){
         }
 
     )
-    .setOrigin(0.5)
+    .setOrigin(.5)
     .setDepth(403);
 
 
@@ -4533,35 +4362,25 @@ showWin(){
 
 
 /* =========================================================
-   PHASER CONFIG
+   CONFIG
 ========================================================= */
 
 const config = {
 
-    /*
-        CANVAS lebih stabil
-        untuk Safari / iPad.
-    */
-
     type:
     Phaser.CANVAS,
-
 
     parent:
     "game",
 
-
     width:
     GAME_W,
-
 
     height:
     GAME_H,
 
-
     backgroundColor:
     "#dceaf1",
-
 
     physics:{
 
@@ -4579,14 +4398,12 @@ const config = {
         }
     },
 
-
     render:{
 
         antialias:true,
 
         roundPixels:true
     },
-
 
     scale:{
 
@@ -4602,7 +4419,6 @@ const config = {
         height:
         GAME_H
     },
-
 
     scene:[
         MazeScene
