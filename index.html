@@ -17,7 +17,6 @@ viewport-fit=cover"
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <style>
-
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
@@ -63,8 +62,8 @@ body{
 }
 
 .note{
-    padding:6px 3px 2px;
     text-align:center;
+    padding:6px 4px 2px;
     font-size:11px;
     color:#587181;
 }
@@ -92,8 +91,10 @@ body{
         border-radius:9px;
     }
 
+    .note{
+        font-size:10px;
+    }
 }
-
 </style>
 </head>
 
@@ -111,14 +112,13 @@ body{
     </div>
 
     <div class="note">
-        Tekan START dan lukis laluan dengan jari atau mouse hingga ke jawapan.
+        Tekan START dan lukis laluan hingga ke jawapan. Dinding tidak akan restart game.
     </div>
 
 </div>
 
 
 <script>
-
 (() => {
 
 "use strict";
@@ -146,17 +146,21 @@ if(typeof Phaser === "undefined"){
 ========================================================= */
 
 const PORTRAIT =
-window.innerHeight >= window.innerWidth;
+window.innerHeight >=
+window.innerWidth;
+
 
 const GAME_W =
 PORTRAIT
 ? 720
 : 960;
 
+
 const GAME_H =
 PORTRAIT
 ? 1080
 : 720;
+
 
 const LETTERS = [
     "A",
@@ -649,6 +653,7 @@ startMusic(){
                 !this.musicOn ||
                 document.hidden
             ){
+
                 return;
             }
 
@@ -678,25 +683,14 @@ startMusic(){
 }
 
 
-draw(){
-
-    this.tone(
-        600,
-        .035,
-        "sine",
-        .02
-    );
-}
-
-
 wall(){
 
     this.tone(
-        160,
-        .15,
+        190,
+        .05,
         "square",
-        .08,
-        90
+        .025,
+        150
     );
 }
 
@@ -775,6 +769,7 @@ win(){
                     );
 
                 },
+
                 i * 120
             );
         }
@@ -837,6 +832,8 @@ create(){
     this.floorObjects = [];
 
     this.lastMazeSignature = "";
+
+    this.wallSoundReady = true;
 
 
     this.createBackground();
@@ -1388,7 +1385,7 @@ direction
 
 
 /* =========================================================
-   GENERATE PERFECT MAZE
+   GENERATE RANDOM PERFECT MAZE
 ========================================================= */
 
 generateMaze(){
@@ -1621,14 +1618,14 @@ generateMaze(){
 
 
 /* =========================================================
-   SIGNATURE
+   MAZE SIGNATURE
 ========================================================= */
 
 mazeSignature(
 maze
 ){
 
-    let output =
+    let result =
     "";
 
 
@@ -1648,22 +1645,22 @@ maze
             maze[y][x].walls;
 
 
-            output +=
+            result +=
             w.top ? "1" : "0";
 
-            output +=
+            result +=
             w.right ? "1" : "0";
 
-            output +=
+            result +=
             w.bottom ? "1" : "0";
 
-            output +=
+            result +=
             w.left ? "1" : "0";
         }
     }
 
 
-    return output;
+    return result;
 }
 
 
@@ -1715,6 +1712,9 @@ clearMaze(){
 
         this.mazeGraphics
         .destroy();
+
+        this.mazeGraphics =
+        null;
     }
 
 
@@ -1733,7 +1733,7 @@ buildNewMaze(){
     this.clearMaze();
 
 
-    let validMaze =
+    let valid =
     false;
 
 
@@ -1742,8 +1742,8 @@ buildNewMaze(){
 
 
     while(
-        !validMaze &&
-        attempts < 25
+        !valid &&
+        attempts < 30
     ){
 
         attempts++;
@@ -1767,22 +1767,22 @@ buildNewMaze(){
         };
 
 
-        const answers =
+        const ends =
         this.findAnswerCells();
 
 
         if(
-            answers.length >= 4
+            ends.length >= 4
         ){
 
             this.endCells =
-            answers.slice(
+            ends.slice(
                 0,
                 4
             );
 
 
-            validMaze =
+            valid =
             true;
         }
     }
@@ -1845,11 +1845,9 @@ drawMaze(){
             this.add.rectangle(
 
                 p.x,
-
                 p.y,
 
                 this.cellSize,
-
                 this.cellSize,
 
                 (x + y) % 2 === 0
@@ -1898,8 +1896,6 @@ drawMaze(){
             );
 
 
-            /* TOP */
-
             if(
                 cell.walls.top
             ){
@@ -1920,8 +1916,6 @@ drawMaze(){
             }
 
 
-            /* LEFT */
-
             if(
                 cell.walls.left
             ){
@@ -1941,8 +1935,6 @@ drawMaze(){
                 );
             }
 
-
-            /* RIGHT OUTER */
 
             if(
                 x ===
@@ -1965,8 +1957,6 @@ drawMaze(){
                 );
             }
 
-
-            /* BOTTOM OUTER */
 
             if(
                 y ===
@@ -2012,6 +2002,7 @@ h
         y - h / 2,
 
         w,
+
         h
 
     );
@@ -2034,7 +2025,7 @@ h
 
 
 /* =========================================================
-   START MARKER
+   START
 ========================================================= */
 
 createStart(){
@@ -2049,8 +2040,7 @@ createStart(){
     );
 
 
-    this.startPos =
-    {
+    this.startPos = {
         x:p.x,
         y:p.y
     };
@@ -2065,9 +2055,9 @@ createStart(){
         this.cellSize *
         .38,
 
-        0x34b56d,
+        0x38b66f,
 
-        .20
+        .22
 
     )
     .setDepth(40);
@@ -2082,19 +2072,18 @@ createStart(){
         this.cellSize *
         .28,
 
-        0xffffff,
-
-        1
+        0xffffff
 
     )
     .setStrokeStyle(
 
         Math.max(
             3,
-            this.cellSize * .07
+            this.cellSize *
+            .07
         ),
 
-        0x2a9a5b
+        0x2a985a
 
     )
     .setDepth(41);
@@ -2114,7 +2103,8 @@ createStart(){
             fontSize:
             `${Math.max(
                 8,
-                this.cellSize * .18
+                this.cellSize *
+                .18
             )}px`,
 
             fontStyle:"bold",
@@ -2129,7 +2119,7 @@ createStart(){
 
 
 /* =========================================================
-   OPEN COUNT
+   OPENING COUNT
 ========================================================= */
 
 openingCount(
@@ -2162,7 +2152,7 @@ cell
 
 
 /* =========================================================
-   DISTANCES FROM START
+   GET DISTANCES
 ========================================================= */
 
 getDistances(){
@@ -2227,7 +2217,7 @@ getDistances(){
         this.maze[y][x];
 
 
-        const d =
+        const nextDistance =
         distances[y][x] + 1;
 
 
@@ -2243,7 +2233,9 @@ getDistances(){
                 distances[ny][nx] === -1
             ){
 
-                distances[ny][nx] = d;
+                distances[ny][nx] =
+                nextDistance;
+
 
                 queue.push({
                     x:nx,
@@ -2265,7 +2257,9 @@ getDistances(){
                 distances[ny][nx] === -1
             ){
 
-                distances[ny][nx] = d;
+                distances[ny][nx] =
+                nextDistance;
+
 
                 queue.push({
                     x:nx,
@@ -2287,7 +2281,9 @@ getDistances(){
                 distances[ny][nx] === -1
             ){
 
-                distances[ny][nx] = d;
+                distances[ny][nx] =
+                nextDistance;
+
 
                 queue.push({
                     x:nx,
@@ -2309,7 +2305,9 @@ getDistances(){
                 distances[ny][nx] === -1
             ){
 
-                distances[ny][nx] = d;
+                distances[ny][nx] =
+                nextDistance;
+
 
                 queue.push({
                     x:nx,
@@ -2325,7 +2323,7 @@ getDistances(){
 
 
 /* =========================================================
-   ANSWER DEAD ENDS
+   FIND ANSWER CELLS
 ========================================================= */
 
 findAnswerCells(){
@@ -2409,7 +2407,7 @@ findAnswerCells(){
             selected
         ){
 
-            const d =
+            const distance =
             Math.abs(
                 candidate.x -
                 existing.x
@@ -2422,7 +2420,7 @@ findAnswerCells(){
 
 
             if(
-                d < 3
+                distance < 3
             ){
 
                 tooClose =
@@ -2461,9 +2459,9 @@ findAnswerCells(){
 
             const exists =
             selected.some(
-                a =>
-                a.x === candidate.x &&
-                a.y === candidate.y
+                item =>
+                item.x === candidate.x &&
+                item.y === candidate.y
             );
 
 
@@ -2576,7 +2574,8 @@ createAnswers(){
 
             Math.max(
                 3,
-                this.cellSize * .07
+                this.cellSize *
+                .07
             ),
 
             colors[
@@ -2602,7 +2601,8 @@ createAnswers(){
                 fontSize:
                 `${Math.max(
                     17,
-                    this.cellSize * .45
+                    this.cellSize *
+                    .45
                 )}px`,
 
                 fontStyle:"bold",
@@ -2701,11 +2701,16 @@ clearAnswers(){
         this.startText.destroy();
 
 
-        this.startGlow = null;
+        this.startGlow =
+        null;
 
-        this.startCircle = null;
 
-        this.startText = null;
+        this.startCircle =
+        null;
+
+
+        this.startText =
+        null;
     }
 }
 
@@ -2735,7 +2740,7 @@ clearTrace(){
 ========================================================= */
 
 drawTrace(
-color = 0x28a4dc
+color = 0x27a5dd
 ){
 
     this.traceGraphics.clear();
@@ -2759,7 +2764,7 @@ color = 0x28a4dc
 
         color,
 
-        .90
+        .92
 
     );
 
@@ -2802,7 +2807,7 @@ color = 0x28a4dc
 
 
 /* =========================================================
-   POINT HIT WALL
+   WALL COLLISION
 ========================================================= */
 
 pointHitsWall(
@@ -2812,8 +2817,8 @@ y
 
     const margin =
     PORTRAIT
-    ? 5
-    : 4;
+    ? 4
+    : 3;
 
 
     for(
@@ -2857,7 +2862,7 @@ y
 
 
 /* =========================================================
-   SEGMENT HIT WALL
+   SEGMENT WALL CHECK
 ========================================================= */
 
 segmentHitsWall(
@@ -2880,7 +2885,7 @@ y2
     Math.max(
         1,
         Math.ceil(
-            distance / 4
+            distance / 3
         )
     );
 
@@ -2944,69 +2949,118 @@ pointer
     }
 
 
+    /*
+        Kalau trace belum ada,
+        wajib mula di START.
+    */
+
+    if(
+        this.tracePoints.length === 0
+    ){
+
+        const distance =
+        Phaser.Math.Distance.Between(
+
+            pointer.x,
+            pointer.y,
+
+            this.startPos.x,
+            this.startPos.y
+
+        );
+
+
+        if(
+            distance >
+            this.cellSize *
+            .50
+        ){
+
+            this.showMessage(
+                "MULA DARI START",
+                0xd18725
+            );
+
+            return;
+        }
+
+
+        this.tracePoints = [
+
+            {
+                x:
+                this.startPos.x,
+
+                y:
+                this.startPos.y
+            }
+
+        ];
+
+
+        this.isDrawing =
+        true;
+
+
+        return;
+    }
+
+
+    /*
+        Kalau user dah lepaskan jari,
+        dia boleh sambung dari hujung
+        garisan terakhir.
+    */
+
+    const last =
+    this.tracePoints[
+        this.tracePoints.length - 1
+    ];
+
+
     const distance =
     Phaser.Math.Distance.Between(
 
         pointer.x,
         pointer.y,
 
-        this.startPos.x,
-        this.startPos.y
+        last.x,
+        last.y
 
     );
 
 
     if(
-        distance >
-        this.cellSize * .48
+        distance <=
+        this.cellSize *
+        .60
     ){
 
-        this.showMiniMessage(
-            "MULA DARI START",
-            0xd38424
-        );
-
-        return;
+        this.isDrawing =
+        true;
     }
 
+    else{
 
-    this.clearTrace();
-
-
-    this.isDrawing =
-    true;
-
-
-    this.tracePoints = [
-
-        {
-            x:
-            this.startPos.x,
-
-            y:
-            this.startPos.y
-        }
-
-    ];
-
-
-    this.tracePoints.push({
-
-        x:
-        pointer.x,
-
-        y:
-        pointer.y
-
-    });
-
-
-    this.drawTrace();
+        this.showMessage(
+            "SAMBUNG DARI HUJUNG GARISAN",
+            0xd18725
+        );
+    }
 }
 
 
 /* =========================================================
    CONTINUE DRAW
+
+   PENTING:
+   BILA TERKENA DINDING:
+   - TAK RESTART
+   - TAK RESET START
+   - TAK PADAM GARISAN
+   - TAK MATI
+   - TAK ADA NYAWA
+   - TITIK BARU CUMA TAK DITAMBAH
 ========================================================= */
 
 continueDraw(
@@ -3048,6 +3102,17 @@ pointer
     }
 
 
+    /*
+        TERKENA DINDING
+
+        Jangan restart.
+        Jangan clear.
+        Jangan stop drawing.
+
+        Garisan cuma tak boleh
+        tembus dinding.
+    */
+
     if(
         this.segmentHitsWall(
 
@@ -3060,47 +3125,48 @@ pointer
         )
     ){
 
-        this.tracePoints.push({
+        /*
+            Sound dinding dikawal supaya
+            tak berbunyi berulang kali
+            setiap frame.
+        */
 
-            x:
-            pointer.x,
+        if(
+            this.wallSoundReady
+        ){
 
-            y:
-            pointer.y
-
-        });
-
-
-        this.drawTrace(
-            0xe14d4d
-        );
+            this.wallSoundReady =
+            false;
 
 
-        AUDIO.wall();
+            AUDIO.wall();
 
 
-        this.isDrawing =
-        false;
+            this.time.delayedCall(
+                120,
+                () => {
+
+                    this.wallSoundReady =
+                    true;
+                }
+            );
+        }
 
 
-        this.showMiniMessage(
-            "TERKENA DINDING!",
-            0xc84444
-        );
+        /*
+            Kekalkan drawing aktif.
 
-
-        this.time.delayedCall(
-            450,
-            () => {
-
-                this.clearTrace();
-            }
-        );
-
+            User boleh gerakkan jari
+            balik ke lorong tanpa restart.
+        */
 
         return;
     }
 
+
+    /*
+        Laluan sah.
+    */
 
     this.tracePoints.push({
 
@@ -3116,7 +3182,7 @@ pointer
     this.drawTrace();
 
 
-    this.checkDrawAnswer(
+    this.checkAnswer(
         pointer.x,
         pointer.y
     );
@@ -3124,17 +3190,44 @@ pointer
 
 
 /* =========================================================
-   CHECK ANSWER WHILE DRAWING
+   END DRAW
 ========================================================= */
 
-checkDrawAnswer(
+endDraw(){
+
+    if(
+        !this.isDrawing
+    ){
+
+        return;
+    }
+
+
+    /*
+        Bila user lepaskan jari,
+        garisan TIDAK dipadam.
+
+        Dia boleh tekan semula dekat
+        hujung garisan dan sambung.
+    */
+
+    this.isDrawing =
+    false;
+}
+
+
+/* =========================================================
+   CHECK ANSWER
+========================================================= */
+
+checkAnswer(
 x,
 y
 ){
 
     const trigger =
     this.cellSize *
-    .42;
+    .43;
 
 
     for(
@@ -3170,48 +3263,17 @@ y
 
 
 /* =========================================================
-   POINTER RELEASE
-========================================================= */
-
-endDraw(){
-
-    if(
-        !this.isDrawing
-    ){
-
-        return;
-    }
-
-
-    this.isDrawing =
-    false;
-
-
-    this.showMiniMessage(
-        "BELUM SAMPAI JAWAPAN",
-        0xd38424
-    );
-
-
-    this.time.delayedCall(
-        400,
-        () => {
-
-            this.clearTrace();
-        }
-    );
-}
-
-
-/* =========================================================
-   FINISH ANSWER
+   ANSWER RESULT
 ========================================================= */
 
 finishAnswer(
 zone
 ){
 
-    if(this.locked){
+    if(
+        this.locked
+    ){
+
         return;
     }
 
@@ -3229,6 +3291,10 @@ zone
         this.questionIndex
     ];
 
+
+/* =========================================================
+   CORRECT
+========================================================= */
 
     if(
         zone.answerIndex ===
@@ -3253,7 +3319,7 @@ zone
         AUDIO.correct();
 
 
-        this.showMiniMessage(
+        this.showMessage(
             "BETUL! +100",
             0x2e9259
         );
@@ -3270,6 +3336,11 @@ zone
         );
     }
 
+
+/* =========================================================
+   WRONG
+========================================================= */
+
     else{
 
         this.score =
@@ -3285,22 +3356,32 @@ zone
         );
 
 
+        AUDIO.wrong();
+
+
         this.drawTrace(
             0xe14d4d
         );
 
 
-        AUDIO.wrong();
-
-
-        this.showMiniMessage(
-            "SALAH — CUBA JAWAPAN LAIN",
+        this.showMessage(
+            "SALAH — CUBA LAGI",
             0xc84949
         );
 
 
+        /*
+            Salah jawapan:
+            trace dibuang supaya user
+            boleh cuba jawapan lain.
+
+            MAZE TAK RESTART.
+            SOALAN TAK RESTART.
+            TIADA NYAWA.
+        */
+
         this.time.delayedCall(
-            750,
+            700,
             () => {
 
                 this.clearTrace();
@@ -3324,6 +3405,7 @@ createInput(){
         pointer => {
 
             AUDIO.unlock();
+
 
             this.beginDraw(
                 pointer
@@ -3379,6 +3461,29 @@ createButtons(){
         PORTRAIT
         ? 37
         : 32
+    );
+
+
+    this.resetButton =
+    this.makeButton(
+
+        PORTRAIT
+        ? 80
+        : 75,
+
+        y,
+
+        120,
+
+        42,
+
+        "RESET GARIS",
+
+        () => {
+
+            this.clearTrace();
+        }
+
     );
 
 
@@ -3438,32 +3543,31 @@ createButtons(){
     );
 
 
-    this.add.text(
+    if(
+        !PORTRAIT
+    ){
 
-        18,
+        this.add.text(
 
-        y,
+            155,
 
-        "Tekan START → drag hingga jawapan",
+            y,
 
-        {
-            fontFamily:"Arial",
+            "Drag START → jawapan",
 
-            fontSize:
-            PORTRAIT
-            ? "12px"
-            : "13px",
+            {
+                fontFamily:"Arial",
+                fontSize:"12px",
+                fontStyle:"bold",
+                color:"#4c6c7d"
+            }
 
-            fontStyle:"bold",
-
-            color:"#4c6c7d"
-        }
-
-    )
-    .setOrigin(
-        0,
-        .5
-    );
+        )
+        .setOrigin(
+            0,
+            .5
+        );
+    }
 }
 
 
@@ -3504,7 +3608,7 @@ callback
         text,
         {
             fontFamily:"Arial",
-            fontSize:"12px",
+            fontSize:"11px",
             fontStyle:"bold",
             color:"#244e63"
         }
@@ -3516,7 +3620,15 @@ callback
         "pointerdown",
         pointer => {
 
-            pointer.event.stopPropagation();
+            if(
+                pointer.event &&
+                pointer.event.stopPropagation
+            ){
+
+                pointer.event
+                .stopPropagation();
+            }
+
 
             AUDIO.unlock();
 
@@ -3565,8 +3677,8 @@ showStart(){
 
     const h =
     PORTRAIT
-    ? 420
-    : 330;
+    ? 430
+    : 340;
 
 
     const card =
@@ -3625,19 +3737,20 @@ showStart(){
         GAME_W / 2,
 
         GAME_H / 2 -
-        10,
+        5,
 
-        "Tiada character dan tiada analog.\n\n" +
+        "Tekan START dan lukis laluan.\n\n" +
 
-        "Tekan pada START dan jangan lepaskan jari.\n" +
+        "Bila terkena dinding,\n" +
+        "garisan TIDAK akan restart.\n\n" +
 
-        "Lukis laluan melalui maze hingga A, B, C atau D.\n\n" +
+        "Garisan cuma tidak boleh menembusi dinding.\n" +
+        "Gerakkan jari semula ke dalam lorong.\n\n" +
 
-        "Jika garisan terkena dinding,\n" +
+        "Boleh lepaskan jari dan sambung semula\n" +
+        "daripada hujung garisan.\n\n" +
 
-        "anda perlu mula semula dari START.\n\n" +
-
-        "Setiap soalan mempunyai maze baru.",
+        "Tiada sistem nyawa.",
 
         {
             fontFamily:"Arial",
@@ -3713,7 +3826,15 @@ showStart(){
         "pointerdown",
         pointer => {
 
-            pointer.event.stopPropagation();
+            if(
+                pointer.event &&
+                pointer.event.stopPropagation
+            ){
+
+                pointer.event
+                .stopPropagation();
+            }
+
 
             AUDIO.unlock();
 
@@ -3817,13 +3938,13 @@ loadQuestion(){
 
 
     /*
-       ROMBAK MAZE SETIAP SOALAN
+        MAZE BARU SETIAP SOALAN
     */
 
     this.buildNewMaze();
 
 
-    this.showMiniMessage(
+    this.showMessage(
         `MAZE ${this.questionIndex + 1}`,
         0x173e54
     );
@@ -3844,7 +3965,7 @@ loadQuestion(){
    MESSAGE
 ========================================================= */
 
-showMiniMessage(
+showMessage(
 text,
 color
 ){
@@ -4127,7 +4248,15 @@ showWin(){
         "pointerdown",
         pointer => {
 
-            pointer.event.stopPropagation();
+            if(
+                pointer.event &&
+                pointer.event.stopPropagation
+            ){
+
+                pointer.event
+                .stopPropagation();
+            }
+
 
             this.scene.restart();
         }
