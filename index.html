@@ -2,404 +2,759 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 
-<title>Draw Maze Puzzle — Set 4</title>
+<meta
+name="viewport"
+content="width=device-width,
+initial-scale=1,
+maximum-scale=1,
+user-scalable=no,
+viewport-fit=cover">
+
+<title>Magnet Letter Card Arena — Set 5</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <style>
-:root{
-    --ink:#193f50;
-    --muted:#65808c;
-    --line:#dce7eb;
-}
-
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
 }
 
-body{
+html,body{
     margin:0;
-    padding:14px 8px 24px;
-    background:linear-gradient(150deg,#dbeaf0,#f5f8f3);
-    color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+    padding:0;
+    min-height:100%;
+    font-family:
+        Inter,
+        "Trebuchet MS",
+        Arial,
+        sans-serif;
 }
 
-button,a{
-    touch-action:manipulation;
+body{
+    background:
+        radial-gradient(circle at 20% 10%,rgba(255,255,255,.75),transparent 25%),
+        linear-gradient(145deg,#d7f3ff,#f4eaff 50%,#fff5cf);
+
+    padding:14px;
+    color:#173653;
 }
 
-button{
-    font:inherit;
-    cursor:pointer;
-}
+/* =========================================================
+   GAME SHELL
+========================================================= */
 
-button:disabled{
-    opacity:.5;
-    cursor:default;
-}
-
-.shell{
-    width:min(100%,900px);
+#gameShell{
+    width:min(980px,100%);
     margin:auto;
-    padding:12px;
-    background:#f8fbfc;
-    border:1px solid #fff;
-    border-radius:22px;
-    box-shadow:0 16px 48px #234d601c;
+
+    background:#fdfefe;
+
+    border:
+        4px solid #193d5a;
+
+    border-radius:24px;
+
+    overflow:hidden;
+
+    box-shadow:
+        0 18px 45px rgba(21,61,90,.18);
 }
 
-header{
+/* =========================================================
+   HEADER
+========================================================= */
+
+.topbar{
+    min-height:60px;
+
+    padding:
+        9px
+        12px;
+
     display:flex;
     align-items:center;
-    gap:12px;
-    padding:14px 16px;
-    background:linear-gradient(120deg,#163d50,#2b6073);
-    border-radius:14px;
+    gap:10px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #193d5a,
+            #102d45
+        );
+
     color:white;
 }
 
-.brand{
+.homeBtn,
+.soundBtn{
+    border:none;
+    outline:none;
+
+    min-width:44px;
+    height:42px;
+
+    border-radius:12px;
+
+    background:
+        #ffffff;
+
+    color:#193d5a;
+
+    font-size:19px;
+    font-weight:900;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 4px 0
+        rgba(0,0,0,.15);
+}
+
+.homeBtn:active,
+.soundBtn:active{
+    transform:
+        translateY(2px);
+
+    box-shadow:
+        0 2px 0
+        rgba(0,0,0,.15);
+}
+
+.titleArea{
     flex:1;
+    min-width:0;
 }
 
-h1{
+.gameTitle{
     margin:0;
-    font-size:17px;
-    letter-spacing:1px;
+
+    font-size:
+        clamp(
+            16px,
+            3vw,
+            23px
+        );
+
+    font-weight:950;
+    letter-spacing:.2px;
 }
 
-.subtitle{
-    margin-top:4px;
-    font-size:10px;
-    color:#c4dce5;
+.progressText{
+    margin-top:2px;
+
+    opacity:.82;
+
+    font-size:
+        12px;
+
+    font-weight:800;
 }
 
-.stats{
-    display:flex;
-    gap:8px;
+/* =========================================================
+   QUESTION PANEL
+========================================================= */
+
+.questionPanel{
+    padding:
+        14px
+        16px
+        12px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #eef9ff,
+            #ffffff
+        );
+
+    border-bottom:
+        2px solid #dcebf2;
 }
 
-.pill{
-    padding:7px 10px;
-    background:#ffffff12;
-    border:1px solid #ffffff21;
-    border-radius:9px;
-    font-size:11px;
-    white-space:nowrap;
+.category{
+    display:inline-block;
+
+    padding:
+        5px
+        10px;
+
+    border-radius:
+        999px;
+
+    background:
+        #d9edff;
+
+    color:#174d7a;
+
+    font-size:
+        12px;
+
+    font-weight:900;
+
+    margin-bottom:7px;
 }
 
-.progress{
-    height:4px;
-    margin:10px 2px;
-    background:#dfe9ed;
-    border-radius:9px;
-    overflow:hidden;
-}
+.question{
+    margin:
+        0 0 10px;
 
-.progress i{
-    display:block;
-    width:0;
-    height:100%;
-    background:#38ad90;
-    transition:width .3s;
-}
+    line-height:1.38;
 
-.question-panel{
-    padding:15px;
-    background:white;
-    border:1px solid var(--line);
-    border-radius:14px;
-}
+    font-size:
+        clamp(
+            15px,
+            2.2vw,
+            19px
+        );
 
-.section{
-    font-size:10px;
-    font-weight:700;
-    color:#398699;
-    letter-spacing:.3px;
-}
+    font-weight:900;
 
-h2{
-    margin:8px 0 12px;
-    font-size:14px;
-    font-weight:650;
-    line-height:1.55;
+    color:#173653;
 }
 
 .options{
     display:grid;
-    grid-template-columns:1fr 1fr;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
     gap:7px;
 }
 
 .option{
+    min-height:42px;
+
+    padding:
+        8px
+        10px;
+
     display:flex;
-    align-items:center;
-    gap:9px;
-    min-height:39px;
-    padding:8px 10px;
-    background:#f7fafb;
-    border:1px solid #e5edf0;
-    border-radius:9px;
-    font-size:12px;
-    line-height:1.45;
-}
-
-.badge{
-    display:grid;
-    place-items:center;
-    width:23px;
-    height:23px;
-    flex-shrink:0;
-    border-radius:7px;
-    background:var(--badge);
-    color:white;
-    font-size:11px;
-    font-weight:800;
-}
-
-.maze-frame{
-    margin-top:12px;
-    padding:10px;
-    background:#e4edf0;
-    border:1px solid #cfdee4;
-    border-radius:15px;
-}
-
-.maze-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+    align-items:flex-start;
     gap:8px;
-    margin:0 2px 9px;
-    font-size:10px;
-    color:#5c7682;
+
+    border:
+        2px solid #d6e7f0;
+
+    border-radius:11px;
+
+    background:white;
+
+    font-size:
+        13px;
+
+    line-height:1.3;
+
+    font-weight:750;
+
+    color:#264b65;
 }
 
-.maze-top strong{
-    color:#244f62;
-    letter-spacing:.6px;
-}
+.optionLetter{
+    width:23px;
+    min-width:23px;
+    height:23px;
 
-#game{
-    width:100%;
-    aspect-ratio:900/590;
-    overflow:hidden;
-    border-radius:10px;
-    background:#244a5b;
-    touch-action:none;
-    user-select:none;
-    -webkit-user-select:none;
-}
+    border-radius:7px;
 
-#game canvas{
-    display:block!important;
-    width:100%!important;
-    height:100%!important;
-    touch-action:none;
-    user-select:none;
-    -webkit-user-select:none;
-}
-
-#status{
     display:flex;
     align-items:center;
     justify-content:center;
-    min-height:32px;
-    margin-top:8px;
-    padding:6px;
-    background:#ffffffa6;
-    border-radius:8px;
-    color:#436576;
-    font-size:11px;
-    line-height:1.4;
-    text-align:center;
+
+    background:#193d5a;
+
+    color:white;
+
+    font-size:12px;
+    font-weight:950;
 }
 
-footer{
+/* =========================================================
+   ANSWER AREA
+========================================================= */
+
+.answerArea{
+    background:
+        #fff8d7;
+
+    padding:
+        10px
+        14px
+        11px;
+
+    border-bottom:
+        2px solid #ecdca7;
+}
+
+.answerTop{
     display:flex;
     align-items:center;
-    gap:7px;
-    margin-top:11px;
+    justify-content:space-between;
+    gap:8px;
+
+    margin-bottom:7px;
 }
 
-footer button,
-footer a{
-    padding:10px 12px;
-    background:white;
-    border:1px solid #cedee5;
-    border-radius:9px;
-    color:#32586b;
-    text-decoration:none;
-    font-size:10px;
-    font-weight:700;
-    text-align:center;
+.answerLabel{
+    font-size:
+        12px;
+
+    font-weight:
+        950;
+
+    color:#705521;
 }
 
-footer a{
-    margin-left:auto;
+.feedback{
+    min-height:18px;
+
+    text-align:right;
+
+    font-size:
+        12px;
+
+    font-weight:
+        900;
 }
 
-.hint{
-    margin:10px 4px 0;
-    color:var(--muted);
-    font-size:10px;
-    line-height:1.5;
-    text-align:center;
+.feedback.good{
+    color:#138552;
 }
 
-.overlay{
-    position:fixed;
-    inset:0;
-    z-index:10;
-    display:grid;
-    place-items:center;
-    padding:18px;
-    overflow:auto;
-    background:#102e43c9;
-    backdrop-filter:blur(5px);
+.feedback.bad{
+    color:#d13737;
 }
 
-.overlay[hidden]{
-    display:none;
-}
+/* Long answer box.
+   IMPORTANT:
+   No blank count is shown.
+*/
 
-.modal{
-    width:min(100%,400px);
-    margin:auto;
-    padding:25px;
-    background:#fff;
-    border:1px solid #d9e8ee;
-    border-radius:21px;
-    box-shadow:0 20px 70px #0003;
-}
-
-.eyebrow{
-    display:inline-block;
-    padding:6px 9px;
-    border-radius:7px;
-    background:#eaf5f5;
-    color:#3c8992;
-    font-size:10px;
-    font-weight:700;
-    letter-spacing:.7px;
-}
-
-.modal h3{
-    margin:15px 0 8px;
-    font-size:23px;
-}
-
-.modal p{
-    color:#597480;
-    font-size:12px;
-    line-height:1.7;
-}
-
-.primary{
+.answerStrip{
     width:100%;
-    padding:13px;
-    border:0;
+    min-height:55px;
+
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+
+    gap:4px;
+
+    padding:
+        7px
+        9px;
+
+    border:
+        3px solid #d2ad42;
+
+    border-radius:13px;
+
+    background:white;
+
+    transition:.2s;
+
+    overflow:hidden;
+}
+
+.answerStrip.correct{
+    border-color:#26b56e;
+
+    box-shadow:
+        0 0 0
+        4px
+        rgba(38,181,110,.13);
+}
+
+.answerStrip.wrong{
+    border-color:#e04d4d;
+
+    animation:
+        shake .28s linear;
+}
+
+.placeholder{
+    font-size:
+        13px;
+
+    font-weight:800;
+
+    color:#a0926c;
+}
+
+.typedLetter{
+    width:30px;
+    height:34px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:7px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff,
+            #e5f3ff
+        );
+
+    border:
+        2px solid #86bcdc;
+
+    color:#143b58;
+
+    font-size:
+        17px;
+
+    font-weight:950;
+
+    box-shadow:
+        0 2px 0
+        #c4dae8;
+}
+
+.answerButtons{
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:7px;
+
+    margin-top:8px;
+}
+
+.answerBtn{
+    min-height:39px;
+
+    border:none;
+
     border-radius:10px;
-    background:#278665;
+
+    font-family:inherit;
+
+    font-size:
+        13px;
+
+    font-weight:950;
+
+    cursor:pointer;
+}
+
+.undoBtn{
+    background:#dcecff;
+    color:#195078;
+}
+
+.clearBtn{
+    background:#ffe0e0;
+    color:#a52f2f;
+}
+
+.checkBtn{
+    background:
+        linear-gradient(
+            180deg,
+            #31bc75,
+            #19995b
+        );
+
     color:white;
-    font-size:12px;
-    font-weight:700;
+
+    box-shadow:
+        0 4px 0
+        #10733f;
 }
 
-.primary:hover{
-    background:#207657;
+.answerBtn:active{
+    transform:
+        translateY(2px);
 }
 
-.result{
-    margin:20px 0!important;
-    white-space:pre-line;
-    font-size:14px!important;
+/* =========================================================
+   PHASER GAME
+========================================================= */
+
+.gameSection{
+    position:relative;
+
+    background:
+        #d8f2fb;
 }
 
-#error{
-    padding:20px;
-    background:#fff0f1;
-    color:#b33440;
-    font-size:13px;
+#phaser-game{
+    width:100%;
+    height:430px;
+
+    overflow:hidden;
+
+    touch-action:none;
+}
+
+.canvasInstruction{
+    padding:
+        8px
+        12px;
+
+    background:
+        #e9f7fc;
+
+    border-top:
+        2px solid #cfe6ef;
+
     text-align:center;
+
+    font-size:
+        12px;
+
+    line-height:1.35;
+
+    color:#3c6176;
+
+    font-weight:800;
 }
+
+/* =========================================================
+   FINISH WINDOW
+========================================================= */
+
+.finishOverlay{
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:9999;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
+
+    background:
+        rgba(
+            12,
+            32,
+            48,
+            .66
+        );
+
+    backdrop-filter:
+        blur(5px);
+}
+
+.finishOverlay.show{
+    display:flex;
+}
+
+.finishCard{
+    width:min(420px,100%);
+
+    padding:
+        26px 20px;
+
+    background:white;
+
+    border:
+        4px solid
+        #1d5777;
+
+    border-radius:
+        24px;
+
+    text-align:center;
+
+    box-shadow:
+        0 20px 50px
+        rgba(0,0,0,.25);
+}
+
+.finishIcon{
+    font-size:60px;
+}
+
+.finishTitle{
+    margin:
+        4px
+        0;
+
+    color:#173653;
+
+    font-size:28px;
+    font-weight:950;
+}
+
+.finishText{
+    margin:
+        6px 0
+        18px;
+
+    color:#557084;
+
+    font-weight:800;
+}
+
+.finishButtons{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+}
+
+.finishButtons button{
+    min-height:45px;
+
+    border:none;
+
+    border-radius:12px;
+
+    font-weight:950;
+
+    font-size:14px;
+
+    cursor:pointer;
+}
+
+.restartBtn{
+    color:white;
+    background:#22a86a;
+}
+
+.finishHomeBtn{
+    color:#183d59;
+    background:#dbeeff;
+}
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+@keyframes shake{
+    0%{transform:translateX(0)}
+    25%{transform:translateX(-5px)}
+    50%{transform:translateX(5px)}
+    75%{transform:translateX(-4px)}
+    100%{transform:translateX(0)}
+}
+
+/* =========================================================
+   PHONE
+========================================================= */
 
 @media(max-width:600px){
 
     body{
-        padding:6px 5px 18px;
+        padding:5px;
     }
 
-    .shell{
-        padding:8px;
-        border-radius:16px;
+    #gameShell{
+        border-width:3px;
+        border-radius:17px;
     }
 
-    header{
-        padding:12px;
+    .topbar{
+        padding:
+            7px
+            8px;
+
         gap:7px;
     }
 
-    h1{
-        font-size:15px;
+    .homeBtn,
+    .soundBtn{
+        min-width:39px;
+        height:38px;
+
+        font-size:17px;
     }
 
-    .subtitle{
-        font-size:9px;
-    }
-
-    .pill{
-        padding:6px 7px;
-        font-size:10px;
-    }
-
-    .stats{
-        gap:5px;
-    }
-
-    .question-panel{
-        padding:12px;
-    }
-
-    h2{
-        font-size:13px;
+    .questionPanel{
+        padding:
+            10px
+            10px
+            9px;
     }
 
     .options{
         grid-template-columns:1fr;
+
         gap:5px;
     }
 
     .option{
         min-height:34px;
-        padding:6px 8px;
+
+        padding:
+            6px
+            8px;
+
+        font-size:
+            12px;
+    }
+
+    .answerArea{
+        padding:
+            8px;
+    }
+
+    .answerStrip{
+        min-height:50px;
+
+        padding:
+            6px;
+
+        gap:3px;
+    }
+
+    .typedLetter{
+        width:26px;
+        height:30px;
+
+        font-size:15px;
+    }
+
+    .answerButtons{
+        gap:5px;
+    }
+
+    .answerBtn{
+        min-height:36px;
+
+        font-size:12px;
+    }
+
+    #phaser-game{
+        height:400px;
+    }
+
+    .canvasInstruction{
         font-size:11px;
+
+        padding:
+            6px
+            8px;
+    }
+}
+
+/* very small phone */
+
+@media(max-width:390px){
+
+    #phaser-game{
+        height:390px;
     }
 
-    .badge{
-        width:21px;
-        height:21px;
-        font-size:10px;
+    .gameTitle{
+        font-size:15px;
     }
 
-    .maze-frame{
-        padding:7px;
+    .question{
+        font-size:14px;
     }
 
-    #game{
-        aspect-ratio:600/730;
-    }
-
-    .maze-top{
-        font-size:9px;
-    }
-
-    .hint{
-        font-size:9px;
+    .option{
+        font-size:11.5px;
     }
 }
 </style>
@@ -407,1957 +762,3153 @@ footer a{
 
 <body>
 
-<main class="shell">
+<div id="gameShell">
 
-    <header>
-        <div class="brand">
-            <h1>DRAW MAZE</h1>
-            <div class="subtitle">
-                SAINS TAHUN 1 · SET 4
+    <!-- ================= HEADER ================= -->
+
+    <div class="topbar">
+
+        <button
+        class="homeBtn"
+        id="homeBtn"
+        aria-label="Home">
+            ⌂
+        </button>
+
+        <div class="titleArea">
+
+            <div class="gameTitle">
+                Magnet Letter Card Arena
             </div>
+
+            <div
+            class="progressText"
+            id="progressText">
+                Soalan 1 / 25
+            </div>
+
         </div>
 
-        <div class="stats">
-            <span class="pill" id="progress">1 / 25</span>
-            <span class="pill" id="score">Skor 0</span>
-        </div>
-    </header>
+        <button
+        class="soundBtn"
+        id="soundBtn"
+        aria-label="Sound">
+            ♫
+        </button>
 
-    <div class="progress">
-        <i id="bar"></i>
     </div>
 
-    <section class="question-panel">
-        <div class="section" id="section"></div>
-        <h2 id="question"></h2>
-        <div class="options" id="options"></div>
-    </section>
+    <!-- ================= QUESTION ================= -->
 
-    <section class="maze-frame">
-
-        <div class="maze-top">
-            <strong id="mazeLabel">MAZE 01</strong>
-            <span>START → jawapan A, B, C atau D</span>
-        </div>
-
-        <div id="game"></div>
+    <section class="questionPanel">
 
         <div
-            id="status"
-            role="status"
-            aria-live="polite">
-            Memuatkan maze…
+        class="category"
+        id="category">
+            Apakah Gunanya Magnet?
+        </div>
+
+        <p
+        class="question"
+        id="question">
+        </p>
+
+        <div
+        class="options"
+        id="options">
         </div>
 
     </section>
 
-    <footer>
-        <button id="reset" disabled>RESET GARIS</button>
-        <a href="index.html">HOME</a>
-        <button id="music">♪ MUZIK ON</button>
-    </footer>
+    <!-- ================= ANSWER ================= -->
 
-    <p class="hint">
-        Sentuh START dan drag.
-        Sambung dari hujung garisan jika jari terangkat.
-        Tarik balik untuk padam laluan.
-        Terkena dinding tidak akan reset.
-    </p>
+    <section class="answerArea">
 
-</main>
+        <div class="answerTop">
 
-<div class="overlay" id="win" hidden>
+            <div class="answerLabel">
+                JAWAPAN ANDA
+            </div>
 
-    <section
-        class="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="winTitle">
+            <div
+            class="feedback"
+            id="feedback">
+            </div>
 
-        <span class="eyebrow">MISI SELESAI</span>
+        </div>
 
-        <h3 id="winTitle">Tahniah!</h3>
+        <div
+        class="answerStrip"
+        id="answerStrip">
+        </div>
 
-        <p class="result" id="result"></p>
+        <div class="answerButtons">
 
-        <button class="primary" id="again">
-            MAIN SEMULA
-        </button>
+            <button
+            class="answerBtn undoBtn"
+            id="undoBtn">
+                ↶ UNDUR
+            </button>
+
+            <button
+            class="answerBtn clearBtn"
+            id="clearBtn">
+                ✕ PADAM
+            </button>
+
+            <button
+            class="answerBtn checkBtn"
+            id="checkBtn">
+                ✓ SEMAK
+            </button>
+
+        </div>
+
+    </section>
+
+    <!-- ================= PHASER ================= -->
+
+    <section class="gameSection">
+
+        <div id="phaser-game"></div>
+
+        <div class="canvasInstruction">
+            Tap kad A–Z supaya watak pergi mengambilnya.
+            Anda juga boleh gunakan joystick.
+            Laptop: WASD / Arrow + Space.
+        </div>
 
     </section>
 
 </div>
 
+<!-- ================= FINISH ================= -->
+
+<div
+class="finishOverlay"
+id="finishOverlay">
+
+    <div class="finishCard">
+
+        <div class="finishIcon">
+            🏆
+        </div>
+
+        <div class="finishTitle">
+            Tahniah!
+        </div>
+
+        <div class="finishText">
+            Anda telah menyelesaikan semua 25 soalan
+            Magnet Letter Card Arena.
+        </div>
+
+        <div class="finishButtons">
+
+            <button
+            class="restartBtn"
+            id="restartBtn">
+                MAIN SEMULA
+            </button>
+
+            <button
+            class="finishHomeBtn"
+            id="finishHomeBtn">
+                HOME
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 <script>
-(()=>{
-"use strict";
+/* =========================================================
+   QUESTION DATA
+========================================================= */
 
-const $=id=>document.getElementById(id);
+const questions = [
 
-const LETTERS=["A","B","C","D"];
+/* =========================================================
+   1 - 5
+========================================================= */
 
-const COLORS=[
-    0xdf6772,
-    0x508bce,
-    0xdca044,
-    0x3fa481
-];
-
-const SECTIONS=[
-    "Apakah Gunanya Magnet?",
-    "Bentuk Magnet",
-    "Hebatnya Magnet",
-    "Tarikan dan Tolakan Magnet",
-    "Kekuatan Magnet"
-];
-
-/* =====================================================
-   SOALAN
-===================================================== */
-
-const QUESTIONS=[
-
-[
-    "TP1",
-    "Antara berikut, yang manakah dinyatakan menggunakan magnet?",
-    [
-        "Kertas lukisan",
-        "Botol air plastik",
-        "Buku latihan",
-        "Beg tangan"
-    ],
-    3
+{
+category:"Apakah Gunanya Magnet?",
+question:"1. [TP1] Pelekat nota bermagnet menggunakan ____.",
+options:[
+"Magnet",
+"Kayu",
+"Air",
+"Pasir"
 ],
+answer:0
+},
 
-[
-    "TP2",
-    "Antara situasi berikut, yang manakah menunjukkan magnet digunakan pada penutup?",
-    [
-        "Pensel diasah",
-        "Pemadam digunakan",
-        "Kotak pensel tertutup rapat",
-        "Guli bergerak"
-    ],
-    2
+{
+category:"Apakah Gunanya Magnet?",
+question:"2. [TP1] Antara berikut, yang manakah permainan yang dinyatakan menggunakan magnet?",
+options:[
+"Bola sepak",
+"Congkak kayu",
+"Lompat tali",
+"Permainan catur"
 ],
+answer:3
+},
 
-[
-    "TP2",
-    "Seorang pekerja mahu skru melekat pada hujung alat ketika bekerja. Apakah alat yang sesuai?",
-    [
-        "Pemutar skru bermagnet",
-        "Pensel",
-        "Pembaris plastik",
-        "Pemadam"
-    ],
-    0
+{
+category:"Apakah Gunanya Magnet?",
+question:"3. [TP2] Mengapakah magnet dikatakan berguna dalam kehidupan seharian?",
+options:[
+"Magnet digunakan pada pelbagai barang dan permainan",
+"Magnet hanya digunakan pada tumbuhan",
+"Magnet hanya digunakan di makmal",
+"Magnet hanya digunakan di dalam air"
 ],
+answer:0
+},
 
-[
-    "TP2",
-    "Yang manakah contoh kegunaan magnet untuk memegang objek kecil?",
-    [
-        "Pemadam memadam tulisan",
-        "Pemutar skru bermagnet memegang skru",
-        "Pembaris mengukur meja",
-        "Guli bergolek"
-    ],
-    1
+{
+category:"Apakah Gunanya Magnet?",
+question:"4. [TP2] Dalam permainan memancing ikan bermagnet, apakah fungsi magnet?",
+options:[
+"Mewarnakan ikan",
+"Membesarkan ikan",
+"Membantu menarik ikan permainan",
+"Memanaskan ikan"
 ],
+answer:2
+},
 
-[
-    "TP1",
-    "Apakah yang membantu pintu peti sejuk ditutup rapat?",
-    [
-        "Pembaris",
-        "Guli",
-        "Getah pemadam",
-        "Magnet"
-    ],
-    3
+{
+category:"Apakah Gunanya Magnet?",
+question:"5. [TP1] Pin bermagnet dalam aktiviti Rekreasi Sains menggunakan magnet berbentuk ____.",
+options:[
+"Bar",
+"Butang",
+"Ladam",
+"Silinder"
 ],
+answer:1
+},
 
-[
-    "TP1",
-    "Kutub magnet ladam adalah lebih ____ berbanding magnet bentuk U.",
-    [
-        "Rapat",
-        "Besar",
-        "Jauh",
-        "Panjang"
-    ],
-    0
+/* =========================================================
+   6 - 10
+========================================================= */
+
+{
+category:"Bentuk Magnet",
+question:"6. [TP1] Apakah nama magnet bulat yang mempunyai lubang di tengah?",
+options:[
+"Magnet silinder",
+"Magnet butang",
+"Magnet cincin",
+"Magnet bar"
 ],
+answer:2
+},
 
-[
-    "TP2",
-    "Pasangan manakah mengandungi magnet bar bersama satu lagi bentuk magnet yang betul?",
-    [
-        "Magnet pasir dan magnet air",
-        "Magnet bunga dan magnet ranting",
-        "Magnet daun dan magnet akar",
-        "Magnet bar dan magnet cincin"
-    ],
-    3
+{
+category:"Bentuk Magnet",
+question:"7. [TP2] Magnet yang kelihatan seperti batang segi empat memanjang dinamakan ____.",
+options:[
+"Magnet bar",
+"Magnet butang",
+"Magnet cincin",
+"Magnet ladam"
 ],
+answer:0
+},
 
-[
-    "TP2",
-    "Jika magnet mempunyai dua hujung melengkung seperti ladam kuda, magnet itu ialah ____.",
-    [
-        "Magnet butang",
-        "Magnet ladam",
-        "Magnet cincin",
-        "Magnet bar"
-    ],
-    1
+{
+category:"Bentuk Magnet",
+question:"8. [TP2] Sebuah magnet berbentuk bulat dengan lubang di tengah. Apakah namanya?",
+options:[
+"Magnet butang",
+"Magnet cincin",
+"Magnet ladam",
+"Magnet bar"
 ],
+answer:1
+},
 
-[
-    "TP1",
-    "Yang manakah nama magnet yang berbentuk seperti ladam?",
-    [
-        "Magnet akar",
-        "Magnet ranting",
-        "Magnet ladam",
-        "Magnet daun"
-    ],
-    2
+{
+category:"Bentuk Magnet",
+question:"9. [TP2] Sebuah magnet berbentuk bulat tanpa lubang seperti butang. Apakah namanya?",
+options:[
+"Magnet silinder",
+"Magnet bentuk U",
+"Magnet cincin",
+"Magnet butang"
 ],
+answer:3
+},
 
-[
-    "TP1",
-    "Berapakah bentuk magnet yang ditunjukkan dalam buku?",
-    [
-        "Empat",
-        "Enam",
-        "Dua",
-        "Tiga"
-    ],
-    1
+{
+category:"Bentuk Magnet",
+question:"10. [TP1] Yang manakah nama magnet yang berbentuk huruf U?",
+options:[
+"Magnet bentuk U",
+"Magnet bentuk akar",
+"Magnet bentuk daun",
+"Magnet bentuk bunga"
 ],
+answer:0
+},
 
-[
-    "TP1",
-    "Untuk menguji sama ada objek boleh ditarik magnet, magnet perlu ____ kepada objek.",
-    [
-        "Disembunyikan",
-        "Dijauhkan terus",
-        "Ditutup dengan kertas",
-        "Didekatkan"
-    ],
-    3
+/* =========================================================
+   11 - 15
+========================================================= */
+
+{
+category:"Hebatnya Magnet",
+question:"11. [TP1] Magnet dapat menarik objek, tetapi ____ objek dapat ditarik magnet.",
+options:[
+"Hanya satu",
+"Tiada",
+"Bukan semua",
+"Semua"
 ],
+answer:2
+},
 
-[
-    "TP1",
-    "Objek logam manakah dalam aktiviti yang boleh ditarik oleh magnet?",
-    [
-        "Kayu aiskrim",
-        "Pemadam",
-        "Penutup botol logam",
-        "Guli"
-    ],
-    2
+{
+category:"Hebatnya Magnet",
+question:"12. [TP1] Objek yang digunakan bersama bedak dalam contoh pengasingan ialah ____.",
+options:[
+"Guli",
+"Pemadam",
+"Pembaris plastik",
+"Klip kertas"
 ],
+answer:3
+},
 
-[
-    "TP2",
-    "Dalam satu ujian, paku melekat pada magnet tetapi pensel tidak. Objek yang ditarik ialah ____.",
-    [
-        "Paku",
-        "Tiada",
-        "Kedua-duanya",
-        "Pensel"
-    ],
-    0
+{
+category:"Hebatnya Magnet",
+question:"13. [TP2] Mengapakah magnet sesuai digunakan untuk mengambil klip kertas daripada bedak?",
+options:[
+"Klip kertas larut dalam bedak",
+"Klip kertas dapat ditarik magnet",
+"Bedak menjadi magnet",
+"Magnet menukar bedak menjadi air"
 ],
+answer:1
+},
 
-[
-    "TP2",
-    "Jika objek tidak bergerak ke arah magnet, keputusan yang sesuai dalam jadual ialah ____.",
-    [
-        "Mengembang",
-        "Mencair",
-        "Menarik",
-        "Tidak menarik"
-    ],
-    3
+{
+category:"Hebatnya Magnet",
+question:"14. [TP2] Sebuah magnet didekatkan kepada pensel tetapi pensel tidak bergerak ke arahnya. Apakah kesimpulan yang sesuai?",
+options:[
+"Pensel tidak dapat ditarik magnet",
+"Pensel menolak semua magnet",
+"Pensel ialah magnet",
+"Pensel mempunyai dua kutub"
 ],
+answer:0
+},
 
-[
-    "TP1",
-    "Objek kayu manakah dalam aktiviti yang tidak dapat ditarik magnet?",
-    [
-        "Skru",
-        "Paku",
-        "Kayu aiskrim",
-        "Pin baju"
-    ],
-    2
+{
+category:"Hebatnya Magnet",
+question:"15. [TP1] Dalam aktiviti buku, tindakan magnet terhadap objek ditanda sebagai menarik atau ____.",
+options:[
+"Berbunyi",
+"Berputar",
+"Bercahaya",
+"Tidak menarik"
 ],
+answer:3
+},
 
-[
-    "TP1",
-    "Kutub Selatan didekatkan dengan kutub Selatan. Apakah yang berlaku?",
-    [
-        "Menolak",
-        "Menarik",
-        "Mencair",
-        "Berubah menjadi kayu"
-    ],
-    0
+/* =========================================================
+   16 - 20
+========================================================= */
+
+{
+category:"Tarikan dan Tolakan Magnet",
+question:"16. [TP1] Huruf U pada magnet mewakili kutub ____.",
+options:[
+"Timur",
+"Utara",
+"Barat",
+"Selatan"
 ],
+answer:1
+},
 
-[
-    "TP1",
-    "Kutub Utara didekatkan dengan kutub Selatan. Apakah yang berlaku?",
-    [
-        "Tidak mempunyai tindakan",
-        "Menarik",
-        "Mencair",
-        "Menolak"
-    ],
-    1
+{
+category:"Tarikan dan Tolakan Magnet",
+question:"17. [TP1] Apakah nama kutub yang berlainan daripada kutub Utara?",
+options:[
+"Kutub Tengah",
+"Kutub Barat",
+"Kutub Selatan",
+"Kutub Timur"
 ],
+answer:2
+},
 
-[
-    "TP2",
-    "Magnet A menunjukkan kutub Selatan menghadap kutub Selatan magnet B. Apakah yang akan berlaku?",
-    [
-        "Kedua-dua magnet menolak",
-        "Magnet hilang kutub",
-        "Magnet bertukar bentuk",
-        "Kedua-dua magnet menarik"
-    ],
-    0
+{
+category:"Tarikan dan Tolakan Magnet",
+question:"18. [TP2] Magnet A menunjukkan kutub Utara menghadap kutub Utara magnet B. Apakah yang akan berlaku?",
+options:[
+"Kedua-dua magnet menarik",
+"Kedua-dua magnet menolak",
+"Kedua-dua magnet mencair",
+"Tiada kutub pada magnet"
 ],
+answer:1
+},
 
-[
-    "TP2",
-    "Sara mahu melihat tarikan antara dua magnet. Apakah susunan yang sesuai?",
-    [
-        "Kutub yang sama didekatkan",
-        "Satu magnet dibuang",
-        "Kutub yang berlainan didekatkan",
-        "Kedua-dua magnet disimpan"
-    ],
-    2
+{
+category:"Tarikan dan Tolakan Magnet",
+question:"19. [TP2] Jika S berhadapan dengan S, tindakan yang betul ialah ____.",
+options:[
+"Tarikan",
+"Pemanasan",
+"Tiada tindakan",
+"Tolakan"
 ],
+answer:3
+},
 
-[
-    "TP2",
-    "Kutub Utara sebuah magnet menghadap kutub Selatan magnet lain. Apakah yang berlaku?",
-    [
-        "Tiada tindakan",
-        "Kedua-dua magnet menarik",
-        "Kedua-dua magnet menolak",
-        "Magnet menjadi plastik"
-    ],
-    1
+{
+category:"Tarikan dan Tolakan Magnet",
+question:"20. [TP2] Jika U berhadapan dengan S, tindakan yang betul ialah ____.",
+options:[
+"Tarikan",
+"Pemanasan",
+"Tiada tindakan",
+"Tolakan"
 ],
+answer:0
+},
 
-[
-    "TP1",
-    "Magnet bulat padat manakah yang digunakan dalam aktiviti menguji kekuatan magnet?",
-    [
-        "Pemadam",
-        "Pensel",
-        "Guli",
-        "Magnet butang"
-    ],
-    3
+/* =========================================================
+   21 - 25
+========================================================= */
+
+{
+category:"Kekuatan Magnet",
+question:"21. [TP1] Magnet yang lebih kuat dapat menarik klip kertas dari kedudukan yang lebih ____.",
+options:[
+"Dekat sahaja",
+"Gelap",
+"Jauh",
+"Rendah sahaja"
 ],
+answer:2
+},
 
-[
-    "TP1",
-    "Magnet bulat berlubang manakah yang digunakan dalam aktiviti menguji kekuatan magnet?",
-    [
-        "Magnet cincin",
-        "Kayu aiskrim",
-        "Pemadam",
-        "Guli"
-    ],
-    0
+{
+category:"Kekuatan Magnet",
+question:"22. [TP1] Magnet yang lebih kuat dapat menarik ____ klip kertas.",
+options:[
+"Tiada",
+"Lebih banyak",
+"Satu sahaja",
+"Lebih sedikit"
 ],
+answer:1
+},
 
-[
-    "TP2",
-    "Satu magnet menarik banyak klip kertas dan satu lagi menarik sedikit. Perbezaan ini menunjukkan magnet mempunyai ____.",
-    [
-        "Bau yang sama",
-        "Warna yang sama",
-        "Rasa yang berbeza",
-        "Kekuatan yang berbeza"
-    ],
-    3
+{
+category:"Kekuatan Magnet",
+question:"23. [TP2] Magnet A menarik 2 klip dan magnet B menarik 7 klip. Apakah kesimpulan yang betul?",
+options:[
+"Kedua-duanya lemah",
+"Kedua-duanya sama kuat",
+"Magnet A lebih kuat",
+"Magnet B lebih kuat"
 ],
+answer:3
+},
 
-[
-    "TP2",
-    "Magnet A menarik 8 klip kertas manakala magnet B menarik 3 klip. Magnet manakah lebih kuat?",
-    [
-        "Kedua-duanya sama",
-        "Magnet A",
-        "Magnet B",
-        "Tidak boleh dibandingkan langsung"
-    ],
-    1
+{
+category:"Kekuatan Magnet",
+question:"24. [TP2] Mengapakah magnet yang menarik klip dari lebih jauh dianggap lebih kuat?",
+options:[
+"Tarikannya bertindak dari jarak yang lebih jauh",
+"Saiznya mesti lebih besar",
+"Warnanya lebih terang",
+"Bentuknya mesti bulat"
 ],
+answer:0
+},
 
-[
-    "TP1",
-    "Apakah objek yang digunakan untuk membandingkan kekuatan magnet dalam aktiviti buku?",
-    [
-        "Pensel",
-        "Pemadam",
-        "Klip kertas",
-        "Guli"
-    ],
-    2
-]
-
-];
-
-/* =====================================================
-   PAPARAN SOALAN
-===================================================== */
-
-function displayQuestion(index,score){
-
-    const q=QUESTIONS[index];
-
-    $("progress").textContent=`${index+1} / 25`;
-    $("score").textContent=`Skor ${score}`;
-
-    $("bar").style.width=`${index/25*100}%`;
-
-    $("section").textContent=
-        SECTIONS[Math.floor(index/5)];
-
-    $("question").textContent=
-        `${index+1}. [${q[0]}] ${q[1]}`;
-
-    $("mazeLabel").textContent=
-        `MAZE ${String(index+1).padStart(2,"0")}`;
-
-    $("options").replaceChildren();
-
-    q[2].forEach((text,i)=>{
-
-        const card=document.createElement("div");
-        card.className="option";
-
-        const badge=document.createElement("span");
-        badge.className="badge";
-        badge.textContent=LETTERS[i];
-
-        badge.style.setProperty(
-            "--badge",
-            "#"+COLORS[i].toString(16).padStart(6,"0")
-        );
-
-        const label=document.createElement("span");
-        label.textContent=text;
-
-        card.append(badge,label);
-        $("options").append(card);
-    });
+{
+category:"Kekuatan Magnet",
+question:"25. [TP2] Jika satu magnet menarik lebih banyak klip kertas daripada magnet lain, apakah kesimpulannya?",
+options:[
+"Magnet itu tiada kutub",
+"Kedua-duanya pasti sama",
+"Magnet itu lebih kuat",
+"Magnet itu lebih lemah"
+],
+answer:2
 }
 
-displayQuestion(0,0);
+];
 
-/* =====================================================
-   AUDIO
-===================================================== */
 
-class Sound{
+/* =========================================================
+   GLOBAL GAME STATE
+========================================================= */
+
+let currentQuestion = 0;
+
+let typedLetters = "";
+
+let locked = false;
+
+let sceneRef = null;
+
+let soundEnabled = true;
+
+
+/* =========================================================
+   HTML ELEMENTS
+========================================================= */
+
+const questionEl =
+document.getElementById("question");
+
+const categoryEl =
+document.getElementById("category");
+
+const optionsEl =
+document.getElementById("options");
+
+const progressEl =
+document.getElementById("progressText");
+
+const answerStrip =
+document.getElementById("answerStrip");
+
+const feedbackEl =
+document.getElementById("feedback");
+
+const finishOverlay =
+document.getElementById("finishOverlay");
+
+
+/* =========================================================
+   NORMALIZE ANSWER
+
+   Spaces / punctuation do not need to be entered.
+========================================================= */
+
+function normalizeAnswer(text){
+
+    return text
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(
+        /[\u0300-\u036f]/g,
+        ""
+    )
+    .replace(
+        /[^A-Z]/g,
+        ""
+    );
+
+}
+
+
+/* =========================================================
+   RENDER QUESTION
+========================================================= */
+
+function showQuestion(){
+
+    const data =
+        questions[currentQuestion];
+
+    typedLetters = "";
+
+    locked = false;
+
+    categoryEl.textContent =
+        data.category;
+
+    questionEl.textContent =
+        data.question;
+
+    progressEl.textContent =
+        `Soalan ${currentQuestion + 1} / ${questions.length}`;
+
+    optionsEl.innerHTML = "";
+
+    const labels =
+        ["A","B","C","D"];
+
+    data.options.forEach(
+        (option,index)=>{
+
+            const box =
+                document.createElement("div");
+
+            box.className =
+                "option";
+
+            const letter =
+                document.createElement("div");
+
+            letter.className =
+                "optionLetter";
+
+            letter.textContent =
+                labels[index];
+
+            const text =
+                document.createElement("div");
+
+            text.textContent =
+                option;
+
+            box.appendChild(letter);
+            box.appendChild(text);
+
+            optionsEl.appendChild(box);
+
+        }
+    );
+
+    clearFeedback();
+
+    renderAnswer();
+
+    if(sceneRef){
+
+        sceneRef.prepareQuestion();
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER ANSWER
+========================================================= */
+
+function renderAnswer(){
+
+    answerStrip.innerHTML = "";
+
+    answerStrip.classList.remove(
+        "correct",
+        "wrong"
+    );
+
+    if(
+        typedLetters.length === 0
+    ){
+
+        const placeholder =
+            document.createElement("div");
+
+        placeholder.className =
+            "placeholder";
+
+        placeholder.textContent =
+            "Pilih kad huruf A–Z untuk membina jawapan...";
+
+        answerStrip.appendChild(
+            placeholder
+        );
+
+        return;
+    }
+
+    for(
+        const char
+        of typedLetters
+    ){
+
+        const tile =
+            document.createElement("div");
+
+        tile.className =
+            "typedLetter";
+
+        tile.textContent =
+            char;
+
+        answerStrip.appendChild(
+            tile
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   ADD LETTER
+========================================================= */
+
+function addLetter(letter){
+
+    if(locked) return;
+
+    if(
+        typedLetters.length >= 80
+    ){
+        return;
+    }
+
+    typedLetters +=
+        letter.toUpperCase();
+
+    renderAnswer();
+
+    clearFeedback();
+
+    audio.pick();
+
+}
+
+
+/* =========================================================
+   UNDO
+========================================================= */
+
+function undoLetter(){
+
+    if(locked) return;
+
+    if(!typedLetters.length)
+        return;
+
+    typedLetters =
+        typedLetters.slice(
+            0,
+            -1
+        );
+
+    renderAnswer();
+
+    clearFeedback();
+
+    audio.undo();
+
+}
+
+
+/* =========================================================
+   CLEAR
+========================================================= */
+
+function clearAnswer(){
+
+    if(locked) return;
+
+    typedLetters = "";
+
+    renderAnswer();
+
+    clearFeedback();
+
+    audio.undo();
+
+}
+
+
+/* =========================================================
+   FEEDBACK
+========================================================= */
+
+function clearFeedback(){
+
+    feedbackEl.textContent = "";
+
+    feedbackEl.className =
+        "feedback";
+
+}
+
+
+/* =========================================================
+   CHECK ANSWER
+========================================================= */
+
+function checkAnswer(){
+
+    if(locked)
+        return;
+
+    if(
+        typedLetters.length === 0
+    ){
+
+        feedbackEl.textContent =
+            "Pilih huruf dahulu.";
+
+        feedbackEl.className =
+            "feedback bad";
+
+        audio.wrong();
+
+        return;
+    }
+
+    const data =
+        questions[currentQuestion];
+
+    const correctText =
+        data.options[
+            data.answer
+        ];
+
+    const correct =
+        normalizeAnswer(
+            correctText
+        );
+
+    const player =
+        normalizeAnswer(
+            typedLetters
+        );
+
+    if(
+        player === correct
+    ){
+
+        locked = true;
+
+        answerStrip.classList.add(
+            "correct"
+        );
+
+        feedbackEl.textContent =
+            "Betul!";
+
+        feedbackEl.className =
+            "feedback good";
+
+        audio.correct();
+
+        if(sceneRef){
+
+            sceneRef.correctEffect();
+
+        }
+
+        setTimeout(()=>{
+
+            currentQuestion++;
+
+            if(
+                currentQuestion >=
+                questions.length
+            ){
+
+                finishGame();
+
+            }
+            else{
+
+                showQuestion();
+
+            }
+
+        },1000);
+
+    }
+    else{
+
+        answerStrip.classList.add(
+            "wrong"
+        );
+
+        feedbackEl.textContent =
+            "Belum tepat. Cuba lagi.";
+
+        feedbackEl.className =
+            "feedback bad";
+
+        audio.wrong();
+
+        if(sceneRef){
+
+            sceneRef.wrongEffect();
+
+        }
+
+        setTimeout(()=>{
+
+            answerStrip
+            .classList
+            .remove("wrong");
+
+        },500);
+
+    }
+
+}
+
+
+/* =========================================================
+   FINISH
+========================================================= */
+
+function finishGame(){
+
+    locked = true;
+
+    finishOverlay
+    .classList
+    .add("show");
+
+    audio.win();
+
+}
+
+
+/* =========================================================
+   BUTTON EVENTS
+========================================================= */
+
+document
+.getElementById("undoBtn")
+.addEventListener(
+    "click",
+    undoLetter
+);
+
+document
+.getElementById("clearBtn")
+.addEventListener(
+    "click",
+    clearAnswer
+);
+
+document
+.getElementById("checkBtn")
+.addEventListener(
+    "click",
+    checkAnswer
+);
+
+document
+.getElementById("homeBtn")
+.addEventListener(
+    "click",
+    ()=>{
+
+        window.location.href =
+            "index.html";
+
+    }
+);
+
+document
+.getElementById("finishHomeBtn")
+.addEventListener(
+    "click",
+    ()=>{
+
+        window.location.href =
+            "index.html";
+
+    }
+);
+
+document
+.getElementById("restartBtn")
+.addEventListener(
+    "click",
+    ()=>{
+
+        currentQuestion = 0;
+
+        finishOverlay
+        .classList
+        .remove("show");
+
+        showQuestion();
+
+    }
+);
+
+
+/* =========================================================
+   AUDIO ENGINE
+   Generated directly with Web Audio.
+   No local music/audio files required.
+========================================================= */
+
+class GameAudio{
 
     constructor(){
-        this.on=true;
-        this.n=0;
+
+        this.ctx = null;
+
+        this.musicTimer = null;
+
+        this.musicIndex = 0;
+
+        this.started = false;
+
+        this.sequence = [
+            261.63,
+            329.63,
+            392.00,
+            329.63,
+            293.66,
+            369.99,
+            440.00,
+            369.99
+        ];
+
     }
 
     unlock(){
 
-        try{
+        if(
+            !soundEnabled
+        ) return;
 
-            if(!this.ctx){
+        if(
+            !this.ctx
+        ){
 
-                const AC=
-                    window.AudioContext||
-                    window.webkitAudioContext;
+            const AC =
+                window.AudioContext ||
+                window.webkitAudioContext;
 
-                if(!AC)return;
+            if(!AC)
+                return;
 
-                this.ctx=new AC();
-            }
+            this.ctx =
+                new AC();
 
-            if(this.ctx.state==="suspended"){
-                this.ctx.resume().catch(()=>{});
-            }
-
-            if(!this.timer){
-
-                this.timer=setInterval(()=>{
-
-                    if(this.on&&!document.hidden){
-
-                        const notes=[
-                            261.63,329.63,392,349.23,
-                            293.66,349.23,440,392
-                        ];
-
-                        this.tone(
-                            notes[this.n++%8],
-                            .23,
-                            .018
-                        );
-                    }
-
-                },470);
-            }
-
-        }catch(e){}
-    }
-
-    tone(f,d=.08,v=.045,type="sine"){
-
-        if(!this.ctx||this.ctx.state!=="running"){
-            return;
         }
 
-        const o=this.ctx.createOscillator();
-        const g=this.ctx.createGain();
-        const t=this.ctx.currentTime;
+        if(
+            this.ctx.state ===
+            "suspended"
+        ){
 
-        o.type=type;
-        o.frequency.value=f;
+            this.ctx.resume();
 
-        g.gain.setValueAtTime(.0001,t);
-        g.gain.exponentialRampToValueAtTime(v,t+.008);
-        g.gain.exponentialRampToValueAtTime(.0001,t+d);
+        }
 
-        o.connect(g);
-        g.connect(this.ctx.destination);
+        if(
+            !this.started
+        ){
 
-        o.start(t);
-        o.stop(t+d+.01);
+            this.started = true;
 
-        o.onended=()=>{
-            o.disconnect();
-            g.disconnect();
-        };
+            this.startMusic();
+
+        }
+
+    }
+
+    tone(
+        frequency,
+        duration=.08,
+        volume=.05,
+        type="sine"
+    ){
+
+        if(
+            !soundEnabled ||
+            !this.ctx
+        ) return;
+
+        const osc =
+            this.ctx
+            .createOscillator();
+
+        const gain =
+            this.ctx
+            .createGain();
+
+        osc.type =
+            type;
+
+        osc.frequency.value =
+            frequency;
+
+        gain.gain.setValueAtTime(
+            volume,
+            this.ctx.currentTime
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            .001,
+            this.ctx.currentTime +
+            duration
+        );
+
+        osc.connect(gain);
+
+        gain.connect(
+            this.ctx.destination
+        );
+
+        osc.start();
+
+        osc.stop(
+            this.ctx.currentTime +
+            duration
+        );
+
+    }
+
+    startMusic(){
+
+        if(
+            this.musicTimer
+        ) return;
+
+        this.musicTimer =
+        setInterval(()=>{
+
+            if(
+                !soundEnabled ||
+                !this.ctx
+            ) return;
+
+            const note =
+                this.sequence[
+                    this.musicIndex %
+                    this.sequence.length
+                ];
+
+            this.tone(
+                note,
+                .23,
+                .012,
+                "sine"
+            );
+
+            if(
+                this.musicIndex % 4 === 0
+            ){
+
+                this.tone(
+                    note / 2,
+                    .28,
+                    .008,
+                    "triangle"
+                );
+
+            }
+
+            this.musicIndex++;
+
+        },380);
+
+    }
+
+    pick(){
+
+        this.unlock();
+
+        this.tone(
+            620,
+            .07,
+            .05,
+            "square"
+        );
+
+        setTimeout(()=>{
+
+            this.tone(
+                820,
+                .05,
+                .035,
+                "square"
+            );
+
+        },55);
+
+    }
+
+    undo(){
+
+        this.unlock();
+
+        this.tone(
+            310,
+            .08,
+            .035,
+            "sine"
+        );
+
     }
 
     correct(){
 
-        this.tone(523,.13,.08,"triangle");
-
-        setTimeout(()=>{
-            this.tone(784,.2,.06,"triangle");
-        },110);
-    }
-
-    wrong(){
-        this.tone(150,.2,.04,"sawtooth");
-    }
-}
-
-const audio=new Sound();
-
-/* =====================================================
-   CHECK PHASER
-===================================================== */
-
-if(typeof Phaser==="undefined"){
-
-    $("game").innerHTML=`
-        <div id="error">
-            Phaser tidak berjaya dimuatkan.
-            Pastikan internet aktif dan muat semula halaman.
-        </div>
-    `;
-
-    return;
-}
-
-/* =====================================================
-   PAPARAN
-===================================================== */
-
-const mobile=
-    matchMedia("(max-width:600px)").matches;
-
-const W=mobile?600:900;
-const H=mobile?730:590;
-
-$("game").style.aspectRatio=`${W} / ${H}`;
-
-const DIRS=[
-    [0,-1],
-    [1,0],
-    [0,1],
-    [-1,0]
-];
-
-/* =====================================================
-   GAME SCENE
-===================================================== */
-
-class MazeScene extends Phaser.Scene{
-
-    constructor(){
-        super("Maze");
-    }
-
-    create(){
-
-        this.cols=mobile?15:19;
-        this.rows=mobile?17:11;
-
-        this.size=Math.floor(
-            Math.min(
-                (W-30)/this.cols,
-                (H-30)/this.rows
-            )
-        );
-
-        this.ox=(W-this.cols*this.size)/2;
-        this.oy=(H-this.rows*this.size)/2;
-
-        this.board=this.add.graphics().setDepth(0);
-
-        this.markers=this.add.container().setDepth(30);
-
-        this.line=this.add.graphics().setDepth(35);
-
-        this.tip=this.add.graphics().setDepth(40);
-
-        this.path=[];
-        this.previewPoint=null;
-
-        this.locked=true;
-        this.activePointer=null;
-
-        this.index=0;
-        this.score=0;
-
-        this.used=new Set();
-
-        this.bindPointerInput();
-
-        $("again").onclick=()=>{
-
-            audio.unlock();
-
-            $("win").hidden=true;
-
-            this.restartGame();
-        };
-
-        $("reset").onclick=()=>{
-
-            if(!this.locked){
-
-                this.resetPath();
-
-                this.message(
-                    "Garisan dipadam. Sentuh START dan drag semula."
-                );
-            }
-        };
-
-        $("music").onclick=()=>{
-
-            audio.unlock();
-
-            audio.on=!audio.on;
-
-            $("music").textContent=
-                audio.on
-                ?"♪ MUZIK ON"
-                :"♪ MUZIK OFF";
-        };
-
-        this.restartGame();
-    }
-
-    message(text,color="#436576"){
-
-        $("status").textContent=text;
-        $("status").style.color=color;
-    }
-
-    restartGame(){
-
-        this.index=0;
-        this.score=0;
-
-        this.used.clear();
-
-        this.startedAt=Date.now();
-
-        this.loadQuestion();
-    }
-
-/* =====================================================
-   LOAD QUESTION
-
-   Jangan namakan fungsi ini "load".
-   Nama "load" digunakan oleh plugin Phaser.
-===================================================== */
-
-    loadQuestion(){
-
-        this.locked=true;
-
-        this.clearPath();
-
-        displayQuestion(
-            this.index,
-            this.score
-        );
-
-        this.generate();
-        this.paint();
-        this.resetPath();
-
-        this.locked=false;
-
-        $("reset").disabled=false;
-
-        this.message(
-            "Sentuh START dan drag melalui lorong ke jawapan."
-        );
-
-        audio.tone(
-            380,.1,.035,"triangle"
-        );
-    }
-
-/* =====================================================
-   JANA MAZE
-===================================================== */
-
-    generate(){
-
-        const n=this.cols*this.rows;
-
-        this.start=
-            Math.floor(this.rows/2)*this.cols+
-            Math.floor(this.cols/2);
-
-        let signature;
-
-        do{
-
-            this.cells=Array.from(
-                {length:n},
-                ()=>[true,true,true,true]
-            );
-
-            const seen=new Set([this.start]);
-
-            const stack=[this.start];
-
-            while(stack.length){
-
-                const c=
-                    stack[stack.length-1];
-
-                const x=c%this.cols;
-
-                const y=
-                    Math.floor(c/this.cols);
-
-                const choices=[];
-
-                DIRS.forEach(([dx,dy],d)=>{
-
-                    const nx=x+dx;
-                    const ny=y+dy;
-
-                    const id=
-                        ny*this.cols+nx;
-
-                    if(
-                        nx>=0&&
-                        ny>=0&&
-                        nx<this.cols&&
-                        ny<this.rows&&
-                        !seen.has(id)
-                    ){
-                        choices.push([id,d]);
-                    }
-                });
-
-                if(!choices.length){
-                    stack.pop();
-                    continue;
-                }
-
-                const [next,d]=
-                    Phaser.Utils.Array.GetRandom(choices);
-
-                this.cells[c][d]=false;
-
-                this.cells[next][(d+2)%4]=false;
-
-                seen.add(next);
-
-                stack.push(next);
-            }
-
-            signature=this.cells
-                .map(c=>c.map(Number).join(""))
-                .join("");
-
-        }while(this.used.has(signature));
-
-        this.used.add(signature);
-
-        const distances=
-            Array(n).fill(-1);
-
-        const queue=[this.start];
-
-        distances[this.start]=0;
-
-        for(let k=0;k<queue.length;k++){
-
-            const id=queue[k];
-
-            this.cells[id].forEach((wall,d)=>{
-
-                if(wall)return;
-
-                const [dx,dy]=DIRS[d];
-
-                const next=
-                    id+dx+dy*this.cols;
-
-                if(distances[next]<0){
-
-                    distances[next]=
-                        distances[id]+1;
-
-                    queue.push(next);
-                }
-            });
-        }
-
-        const ends=Array.from(
-            {length:n},
-            (_,i)=>i
-        )
-        .filter(i=>
-
-            i!==this.start&&
-
-            this.cells[i].filter(
-                wall=>!wall
-            ).length===1
-
-        )
-        .sort(
-            (a,b)=>distances[b]-distances[a]
-        );
-
-        const selected=[];
-
-        for(const id of ends){
-
-            const separated=selected.every(c=>
-
-                Math.abs(
-                    c%this.cols-id%this.cols
-                )+
-
-                Math.abs(
-                    Math.floor(c/this.cols)-
-                    Math.floor(id/this.cols)
-                )>=4
-            );
-
-            if(separated){
-                selected.push(id);
-            }
-
-            if(selected.length===4)break;
-        }
-
-        for(const id of ends){
-
-            if(selected.length===4)break;
-
-            if(!selected.includes(id)){
-                selected.push(id);
-            }
-        }
-
-        for(const id of queue.slice().reverse()){
-
-            if(selected.length===4)break;
-
-            if(
-                id!==this.start&&
-                !selected.includes(id)
-            ){
-                selected.push(id);
-            }
-        }
-
-        this.answers=new Map();
-
-        const order=
-            Phaser.Utils.Array.Shuffle([0,1,2,3]);
-
-        selected.forEach((id,i)=>{
-            this.answers.set(id,order[i]);
-        });
-    }
-
-/* =====================================================
-   KOORDINAT
-===================================================== */
-
-    position(id){
-
-        return{
-
-            x:
-                this.ox+
-                (id%this.cols+.5)*this.size,
-
-            y:
-                this.oy+
-                (
-                    Math.floor(id/this.cols)+.5
-                )*this.size
-        };
-    }
-
-    cellAt(x,y){
-
-        const cx=Math.floor(
-            (x-this.ox)/this.size
-        );
-
-        const cy=Math.floor(
-            (y-this.oy)/this.size
-        );
-
-        if(
-            cx>=0&&
-            cy>=0&&
-            cx<this.cols&&
-            cy<this.rows
-        ){
-            return cy*this.cols+cx;
-        }
-
-        return null;
-    }
-
-    text(x,y,value,size,color){
-
-        return this.add.text(
-            x,
-            y,
-            value,
-            {
-                fontFamily:"Arial, sans-serif",
-                fontSize:size+"px",
-                fontStyle:"bold",
-                color
-            }
-        )
-        .setOrigin(.5)
-        .setResolution(
-            Math.min(devicePixelRatio||1,3)
-        );
-    }
-
-/* =====================================================
-   LUKIS MAZE
-===================================================== */
-
-    paint(){
-
-        const g=this.board;
-        const s=this.size;
-
-        g.clear();
-
-        this.markers.removeAll(true);
-
-        g.fillStyle(0x244a5b);
-
-        g.fillRect(0,0,W,H);
-
-        g.fillStyle(0x102f40,.35);
-
-        g.fillRoundedRect(
-            this.ox-5,
-            this.oy-3,
-            this.cols*s+10,
-            this.rows*s+10,
-            7
-        );
-
-        for(let id=0;id<this.cells.length;id++){
-
-            const x=
-                this.ox+
-                id%this.cols*s;
-
-            const y=
-                this.oy+
-                Math.floor(id/this.cols)*s;
-
-            const alternate=(
-                id%this.cols+
-                Math.floor(id/this.cols)
-            )%2;
-
-            g.fillStyle(
-                alternate
-                ?0xf2e9d4
-                :0xf8f1e0
-            );
-
-            g.fillRect(x,y,s,s);
-
-            g.fillStyle(0xcaba96,.2);
-
-            g.fillCircle(
-                x+s/2,
-                y+s/2,
-                1.3
-            );
-        }
-
-        g.lineStyle(
-            Math.max(3,s*.085),
-            0x345e70,
-            1
-        );
-
-        this.cells.forEach((walls,id)=>{
-
-            const x=
-                this.ox+
-                id%this.cols*s;
-
-            const y=
-                this.oy+
-                Math.floor(id/this.cols)*s;
-
-            if(walls[0]){
-                g.lineBetween(x,y,x+s,y);
-            }
-
-            if(walls[3]){
-                g.lineBetween(x,y,x,y+s);
-            }
-
-            if(
-                id%this.cols===this.cols-1&&
-                walls[1]
-            ){
-                g.lineBetween(
-                    x+s,y,
-                    x+s,y+s
-                );
-            }
-
-            if(
-                Math.floor(id/this.cols)===this.rows-1&&
-                walls[2]
-            ){
-                g.lineBetween(
-                    x,y+s,
-                    x+s,y+s
-                );
-            }
-        });
-
-        /* START */
-        const p=
-            this.position(this.start);
-
-        const sg=
-            this.add.graphics();
-
-        sg.fillStyle(0xe5f6e7);
-
-        sg.fillRoundedRect(
-            p.x-s*.4,
-            p.y-s*.31,
-            s*.8,
-            s*.62,
-            5
-        );
-
-        sg.lineStyle(2,0x37956a);
-
-        sg.strokeRoundedRect(
-            p.x-s*.4,
-            p.y-s*.31,
-            s*.8,
-            s*.62,
-            5
-        );
-
-        this.markers.add([
-
-            sg,
-
-            this.text(
-                p.x,
-                p.y,
-                "START",
-                Math.max(8,s*.18),
-                "#23794f"
-            )
-        ]);
-
-        /* A, B, C, D */
-        this.answers.forEach((a,id)=>{
-
-            const p=this.position(id);
-
-            const b=this.add.graphics();
-
-            const r=s*.33;
-
-            b.fillStyle(0x273f48,.12);
-
-            b.fillRoundedRect(
-                p.x-r+1,
-                p.y-r+2,
-                r*2,
-                r*2,
-                5
-            );
-
-            b.fillStyle(0xffffff);
-
-            b.fillRoundedRect(
-                p.x-r,
-                p.y-r,
-                r*2,
-                r*2,
-                5
-            );
-
-            b.lineStyle(2.5,COLORS[a]);
-
-            b.strokeRoundedRect(
-                p.x-r,
-                p.y-r,
-                r*2,
-                r*2,
-                5
-            );
-
-            this.markers.add([
-
-                b,
-
-                this.text(
-                    p.x,
-                    p.y,
-                    LETTERS[a],
-                    s*.38,
-                    "#24495b"
-                )
-            ]);
-        });
-    }
-
-/* =====================================================
-   INPUT SENTUHAN DAN TETIKUS
-===================================================== */
-
-    bindPointerInput(){
-
-        const canvas=
-            this.sys.game.canvas;
-
-        const point=e=>{
-
-            const r=
-                canvas.getBoundingClientRect();
-
-            return{
-
-                x:
-                    (e.clientX-r.left)*
-                    W/r.width,
-
-                y:
-                    (e.clientY-r.top)*
-                    H/r.height,
-
-                id:e.pointerId
-            };
-        };
-
-        const down=e=>{
-
-            if(
-                e.pointerType==="mouse"&&
-                e.button!==0
-            ){
-                return;
-            }
-
-            if(
-                this.locked||
-                this.activePointer!==null
-            ){
-                return;
-            }
-
-            e.preventDefault();
-
-            this.begin(point(e));
-
-            if(
-                this.activePointer===e.pointerId
-            ){
-
-                try{
-
-                    canvas.setPointerCapture(
-                        e.pointerId
-                    );
-
-                }catch(err){}
-            }
-        };
-
-        const move=e=>{
-
-            if(
-                this.activePointer!==e.pointerId
-            ){
-                return;
-            }
-
-            e.preventDefault();
-
-            this.drag(point(e));
-        };
-
-        const up=e=>{
-
-            if(
-                this.activePointer!==e.pointerId
-            ){
-                return;
-            }
-
-            this.stop();
-
-            try{
-
-                if(
-                    canvas.hasPointerCapture(
-                        e.pointerId
-                    )
-                ){
-
-                    canvas.releasePointerCapture(
-                        e.pointerId
-                    );
-                }
-
-            }catch(err){}
-        };
-
-        const blur=()=>{
-            this.stop();
-        };
-
-        const context=e=>{
-            e.preventDefault();
-        };
-
-        canvas.addEventListener(
-            "pointerdown",
-            down,
-            {passive:false}
-        );
-
-        canvas.addEventListener(
-            "pointermove",
-            move,
-            {passive:false}
-        );
-
-        canvas.addEventListener(
-            "pointerup",
-            up
-        );
-
-        canvas.addEventListener(
-            "pointercancel",
-            up
-        );
-
-        canvas.addEventListener(
-            "lostpointercapture",
-            up
-        );
-
-        canvas.addEventListener(
-            "contextmenu",
-            context
-        );
-
-        window.addEventListener(
-            "blur",
-            blur
-        );
-
-        this.events.once("shutdown",()=>{
-
-            canvas.removeEventListener(
-                "pointerdown",down
-            );
-
-            canvas.removeEventListener(
-                "pointermove",move
-            );
-
-            canvas.removeEventListener(
-                "pointerup",up
-            );
-
-            canvas.removeEventListener(
-                "pointercancel",up
-            );
-
-            canvas.removeEventListener(
-                "lostpointercapture",up
-            );
-
-            canvas.removeEventListener(
-                "contextmenu",context
-            );
-
-            window.removeEventListener(
-                "blur",blur
-            );
-        });
-    }
-
-/* =====================================================
-   RESET GARISAN
-===================================================== */
-
-    resetPath(){
-        this.clearPath();
-    }
-
-    clearPath(){
-
-        this.stop();
-
-        this.path=[];
-
-        this.previewPoint=null;
-
-        this.line.clear();
-
-        this.tip.clear();
-    }
-
-    stop(){
-
-        this.activePointer=null;
-
-        this.last=null;
-
-        this.previewPoint=null;
-    }
-
-/* =====================================================
-   GARISAN TERUS IKUT GERAKAN KECIL
-===================================================== */
-
-    updatePreview(p){
-
-        this.previewPoint=null;
-
-        if(!this.path.length)return;
-
-        const id=
-            this.path[this.path.length-1];
-
-        if(
-            this.cellAt(p.x,p.y)!==id
-        ){
-            return;
-        }
-
-        const center=
-            this.position(id);
-
-        const dx=p.x-center.x;
-        const dy=p.y-center.y;
-
-        if(
-            Math.abs(dx)+Math.abs(dy)<.5
-        ){
-            return;
-        }
-
-        const horizontal=
-            Math.abs(dx)>=Math.abs(dy);
-
-        const d=horizontal
-            ?(dx>=0?1:3)
-            :(dy>=0?2:0);
-
-        if(this.cells[id][d]){
-            return;
-        }
-
-        const limit=this.size*.49;
-
-        this.previewPoint={
-
-            x:
-                center.x+
-                (
-                    horizontal
-                    ?Math.max(-limit,Math.min(limit,dx))
-                    :0
-                ),
-
-            y:
-                center.y+
-                (
-                    horizontal
-                    ?0
-                    :Math.max(-limit,Math.min(limit,dy))
-                )
-        };
-    }
-
-/* =====================================================
-   LUKIS SEMULA LALUAN
-
-   Setiap kali undo, graphics dikosongkan
-   kemudian dilukis semula menggunakan laluan terkini.
-===================================================== */
-
-    drawPath(color=0x219ece){
-
-        const g=this.line;
-        const s=this.size;
-
-        g.clear();
-
-        this.tip.clear();
-
-        if(!this.path.length)return;
-
-        const points=this.path.map(
-            id=>this.position(id)
-        );
-
-        if(this.previewPoint){
-
-            const head=
-                points[points.length-1];
-
-            const previous=
-                points[points.length-2];
-
-            const p=this.previewPoint;
-
-            const movingBack=previous&&(
-
-                (p.x-head.x)*
-                (previous.x-head.x)+
-
-                (p.y-head.y)*
-                (previous.y-head.y)
-
-            )>0;
-
-            if(movingBack){
-
-                points[points.length-1]=p;
-            }
-
-            else{
-
-                points.push(p);
-            }
-        }
-
-        if(points.length>1){
-
-            const styles=[
-                [s*.34,0xffffff],
-                [s*.20,color]
-            ];
-
-            for(const [width,c] of styles){
-
-                g.lineStyle(width,c,1);
-
-                g.beginPath();
-
-                g.moveTo(
-                    points[0].x,
-                    points[0].y
-                );
-
-                points.slice(1).forEach(p=>{
-
-                    g.lineTo(
-                        p.x,
-                        p.y
-                    );
-                });
-
-                g.strokePath();
-
-                g.fillStyle(c);
-
-                points.forEach(p=>{
-
-                    g.fillCircle(
-                        p.x,
-                        p.y,
-                        width/2
-                    );
-                });
-            }
-        }
-
-        const end=
-            points[points.length-1];
-
-        const t=this.tip;
-
-        t.fillStyle(0xffffff);
-
-        t.fillCircle(
-            end.x,
-            end.y,
-            s*.25
-        );
-
-        t.lineStyle(2,color);
-
-        t.strokeCircle(
-            end.x,
-            end.y,
-            s*.25
-        );
-
-        t.fillStyle(color);
-
-        t.fillCircle(
-            end.x,
-            end.y,
-            s*.17
-        );
-
-        t.fillStyle(0xffffff,.8);
-
-        t.fillCircle(
-            end.x-s*.045,
-            end.y-s*.055,
-            s*.045
-        );
-    }
-
-/* =====================================================
-   SENTUH START UNTUK MELUKIS
-===================================================== */
-
-    begin(p){
-
-        if(
-            this.locked||
-            this.activePointer!==null
-        ){
-            return;
-        }
-
-        audio.unlock();
-
-        const id=this.cellAt(
-            p.x,p.y
-        );
-
-        if(id===null)return;
-
-        if(id===this.start){
-
-            this.path=[this.start];
-
-            this.previewPoint=null;
-
-            this.drawPath();
-        }
-
-        else if(
-            id!==this.path[this.path.length-1]
-        ){
-
-            this.message(
-                "Sentuh START atau hujung garisan biru untuk drag."
-            );
-
-            return;
-        }
-
-        this.activePointer=p.id;
-
-        this.last={
-            x:p.x,
-            y:p.y
-        };
-
-        this.message(
-            "Ikut lorong terbuka. Tarik balik untuk undo."
-        );
-    }
-
-/* =====================================================
-   GERAK SATU PETAK / UNDO
-===================================================== */
-
-    move(id){
-
-        const current=
-            this.path[this.path.length-1];
-
-        if(id===current)return;
-
-        this.previewPoint=null;
-
-        const dx=
-            id%this.cols-
-            current%this.cols;
-
-        const dy=
-            Math.floor(id/this.cols)-
-            Math.floor(current/this.cols);
-
-        if(
-            Math.abs(dx)+Math.abs(dy)!==1
-        ){
-            return;
-        }
-
-        const d=
-            dx===1?1:
-            dx===-1?3:
-            dy===1?2:0;
-
-        /* Dinding tidak reset laluan */
-        if(this.cells[current][d]){
-
-            if(
-                !this.wallAt||
-                this.time.now-this.wallAt>140
-            ){
-
-                audio.tone(
-                    165,.045,.018
-                );
-
-                this.wallAt=this.time.now;
-            }
-
-            return;
-        }
-
-        const old=
-            this.path.indexOf(id);
-
-        if(old>=0){
-
-            /*
-               Undo:
-               semua petak selepas petak ini dibuang.
-            */
-
-            this.path.length=old+1;
-
-            audio.tone(
-                440,.035,.012
-            );
-        }
-
-        else{
-
-            this.path.push(id);
-
-            audio.tone(
-                660,.035,.012
-            );
-        }
-
-        this.drawPath();
-
-        if(
-            old<0&&
-            this.answers.has(id)
-        ){
-
-            this.answer(
-                this.answers.get(id)
-            );
-        }
-    }
-
-/* =====================================================
-   DRAG
-===================================================== */
-
-    drag(p){
-
-        if(
-            this.locked||
-            !this.last
-        ){
-            return;
-        }
-
-        const from=this.last;
-
-        const steps=Math.ceil(
-
-            Math.hypot(
-                p.x-from.x,
-                p.y-from.y
-            )/
-
-            Math.max(
-                2,
-                this.size*.12
-            )
-        );
-
-        for(
-            let i=1;
-            i<=steps&&!this.locked;
-            i++
-        ){
-
-            const t=i/steps;
-
-            const id=this.cellAt(
-
-                from.x+
-                (p.x-from.x)*t,
-
-                from.y+
-                (p.y-from.y)*t
-            );
-
-            if(id!==null){
-                this.move(id);
-            }
-        }
-
-        if(this.activePointer!==null){
-
-            this.last={
-                x:p.x,
-                y:p.y
-            };
-
-            this.updatePreview(p);
-
-            this.drawPath();
-        }
-    }
-
-/* =====================================================
-   SEMAK JAWAPAN
-===================================================== */
-
-    answer(a){
-
-        this.locked=true;
-
-        this.stop();
-
-        $("reset").disabled=true;
-
-        const correct=
-            a===QUESTIONS[this.index][3];
-
-        this.score=Math.max(
-            0,
-            this.score+
-            (correct?100:-20)
-        );
-
-        $("score").textContent=
-            `Skor ${this.score}`;
-
-        this.drawPath(
-            correct
-            ?0x32aa77
-            :0xdd5966
-        );
-
-        this.message(
-
-            correct
-            ?"BETUL! +100 · Bersedia untuk maze seterusnya."
-            :"Jawapan salah. Cuba lagi dari START. −20",
-
-            correct
-            ?"#208256"
-            :"#be3e4e"
-        );
-
-        if(correct){
-            audio.correct();
-        }else{
-            audio.wrong();
-        }
-
-        this.time.delayedCall(
-
-            correct?900:750,
-
-            ()=>{
-
-                if(correct){
-
-                    this.index++;
-
-                    if(
-                        this.index===QUESTIONS.length
-                    ){
-
-                        this.finish();
-
-                        return;
-                    }
-
-                    this.loadQuestion();
-                }
-
-                else{
-
-                    this.resetPath();
-
-                    this.locked=false;
-
-                    $("reset").disabled=false;
-
-                    this.message(
-                        "Maze kekal. Cari laluan ke jawapan lain."
-                    );
-                }
-            }
-        );
-    }
-
-/* =====================================================
-   TAMAT
-===================================================== */
-
-    finish(){
-
-        this.clearPath();
-
-        $("bar").style.width="100%";
-
-        const seconds=Math.floor(
-            (
-                Date.now()-
-                this.startedAt
-            )/1000
-        );
-
-        const minutes=Math.floor(
-            seconds/60
-        );
-
-        const remaining=String(
-            seconds%60
-        ).padStart(2,"0");
-
-        $("result").textContent=
-
-            "25 / 25 soalan selesai\n"+
-
-            `Skor: ${this.score}\n`+
-
-            `Masa: ${minutes}:${remaining}`;
-
-        $("win").hidden=false;
-
-        $("again").focus();
+        this.unlock();
 
         [
             523,
             659,
             784,
             1046
-        ]
-        .forEach((f,i)=>{
+        ].forEach(
+            (n,i)=>{
 
-            setTimeout(()=>{
+                setTimeout(()=>{
 
-                audio.tone(
-                    f,
-                    .25,
-                    .06,
-                    "triangle"
-                );
+                    this.tone(
+                        n,
+                        .16,
+                        .055,
+                        "triangle"
+                    );
 
-            },i*130);
-        });
+                },i*90);
+
+            }
+        );
+
     }
+
+    wrong(){
+
+        this.unlock();
+
+        this.tone(
+            180,
+            .16,
+            .055,
+            "sawtooth"
+        );
+
+        setTimeout(()=>{
+
+            this.tone(
+                145,
+                .19,
+                .045,
+                "sawtooth"
+            );
+
+        },100);
+
+    }
+
+    win(){
+
+        this.unlock();
+
+        [
+            523,
+            659,
+            784,
+            1046,
+            1318
+        ].forEach(
+            (n,i)=>{
+
+                setTimeout(()=>{
+
+                    this.tone(
+                        n,
+                        .25,
+                        .065,
+                        "triangle"
+                    );
+
+                },i*120);
+
+            }
+        );
+
+    }
+
 }
 
-/* =====================================================
+const audio =
+new GameAudio();
+
+
+/* =========================================================
+   SOUND BUTTON
+========================================================= */
+
+const soundBtn =
+document.getElementById("soundBtn");
+
+soundBtn
+.addEventListener(
+    "click",
+    ()=>{
+
+        soundEnabled =
+            !soundEnabled;
+
+        soundBtn.textContent =
+            soundEnabled
+            ? "♫"
+            : "♪̸";
+
+        if(soundEnabled){
+
+            audio.unlock();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   AUDIO UNLOCK
+========================================================= */
+
+document.addEventListener(
+    "pointerdown",
+    ()=>audio.unlock(),
+    {once:true}
+);
+
+document.addEventListener(
+    "keydown",
+    ()=>audio.unlock(),
+    {once:true}
+);
+
+
+/* =========================================================
+   UTILITY
+========================================================= */
+
+function shuffle(array){
+
+    const a =
+        [...array];
+
+    for(
+        let i =
+            a.length - 1;
+        i > 0;
+        i--
+    ){
+
+        const j =
+            Math.floor(
+                Math.random() *
+                (i + 1)
+            );
+
+        [
+            a[i],
+            a[j]
+        ] = [
+            a[j],
+            a[i]
+        ];
+
+    }
+
+    return a;
+
+}
+
+
+/* =========================================================
+   PHASER SCENE
+========================================================= */
+
+class LetterArena
+extends Phaser.Scene{
+
+    constructor(){
+
+        super(
+            "LetterArena"
+        );
+
+        this.player = null;
+
+        this.cards = [];
+
+        this.cardOrder = [];
+
+        this.keys = null;
+
+        this.speed = 220;
+
+        this.autoTarget = null;
+
+        this.joyVector =
+            new Phaser.Math.Vector2(
+                0,
+                0
+            );
+
+        this.joyPointer =
+            null;
+
+        this.joyRadius =
+            42;
+
+        this.canMove = true;
+
+    }
+
+
+/* =========================================================
+   CREATE
+========================================================= */
+
+create(){
+
+    sceneRef = this;
+
+    this.floor =
+        this.add.graphics();
+
+    this.decoration =
+        this.add.graphics();
+
+    this.cardLayer =
+        this.add.container(
+            0,
+            0
+        );
+
+    this.createPlayer();
+
+    this.createControls();
+
+    this.keys =
+        this.input.keyboard.addKeys({
+
+            up:
+                Phaser.Input.Keyboard
+                .KeyCodes.UP,
+
+            down:
+                Phaser.Input.Keyboard
+                .KeyCodes.DOWN,
+
+            left:
+                Phaser.Input.Keyboard
+                .KeyCodes.LEFT,
+
+            right:
+                Phaser.Input.Keyboard
+                .KeyCodes.RIGHT,
+
+            w:
+                Phaser.Input.Keyboard
+                .KeyCodes.W,
+
+            a:
+                Phaser.Input.Keyboard
+                .KeyCodes.A,
+
+            s:
+                Phaser.Input.Keyboard
+                .KeyCodes.S,
+
+            d:
+                Phaser.Input.Keyboard
+                .KeyCodes.D,
+
+            space:
+                Phaser.Input.Keyboard
+                .KeyCodes.SPACE,
+
+            e:
+                Phaser.Input.Keyboard
+                .KeyCodes.E
+
+        });
+
+    this.input.keyboard.on(
+        "keydown-SPACE",
+        ()=>{
+
+            this.pickNearest();
+
+        }
+    );
+
+    this.input.keyboard.on(
+        "keydown-E",
+        ()=>{
+
+            this.pickNearest();
+
+        }
+    );
+
+    this.cardOrder =
+        shuffle(
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            .split("")
+        );
+
+    this.layout(
+        this.scale.width,
+        this.scale.height
+    );
+
+    this.scale.on(
+        "resize",
+        gameSize=>{
+
+            this.layout(
+                gameSize.width,
+                gameSize.height
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   PREPARE QUESTION
+========================================================= */
+
+prepareQuestion(){
+
+    this.autoTarget = null;
+
+    this.cardOrder =
+        shuffle(
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            .split("")
+        );
+
+    this.buildCards();
+
+    const w =
+        this.scale.width;
+
+    const h =
+        this.scale.height;
+
+    if(this.player){
+
+        this.player.x =
+            w / 2;
+
+        this.player.y =
+            Math.max(
+                190,
+                h - 115
+            );
+
+    }
+
+}
+
+
+/* =========================================================
+   DRAW FLOOR
+========================================================= */
+
+drawFloor(w,h){
+
+    this.cameras.main
+    .setBackgroundColor(
+        "#dff6ff"
+    );
+
+    this.floor.clear();
+
+    /* main floor */
+
+    this.floor.fillStyle(
+        0xdaf2f7,
+        1
+    );
+
+    this.floor.fillRect(
+        0,
+        0,
+        w,
+        h
+    );
+
+    /* tiles */
+
+    const tile =
+        w < 550
+        ? 40
+        : 52;
+
+    for(
+        let y=0;
+        y<h-90;
+        y+=tile
+    ){
+
+        for(
+            let x=0;
+            x<w;
+            x+=tile
+        ){
+
+            const even =
+                (
+                    x/tile +
+                    y/tile
+                ) % 2 === 0;
+
+            this.floor.fillStyle(
+                even
+                ? 0xe8f8fb
+                : 0xd9f0f4,
+                1
+            );
+
+            this.floor.fillRect(
+                x,
+                y,
+                tile,
+                tile
+            );
+
+        }
+
+    }
+
+    /* bottom control deck */
+
+    this.floor.fillStyle(
+        0x173b57,
+        1
+    );
+
+    this.floor.fillRoundedRect(
+        8,
+        h - 93,
+        w - 16,
+        84,
+        19
+    );
+
+    this.floor.lineStyle(
+        3,
+        0xffffff,
+        .25
+    );
+
+    this.floor.strokeRoundedRect(
+        8,
+        h - 93,
+        w - 16,
+        84,
+        19
+    );
+
+    /* magnetic field decoration */
+
+    this.decoration.clear();
+
+    this.decoration.lineStyle(
+        2,
+        0x5a9dba,
+        .18
+    );
+
+    for(
+        let i=0;
+        i<5;
+        i++
+    ){
+
+        const radius =
+            35 + i*16;
+
+        this.decoration.strokeCircle(
+            w/2,
+            h/2,
+            radius
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   PLAYER
+========================================================= */
+
+createPlayer(){
+
+    const shadow =
+        this.add.ellipse(
+            0,
+            17,
+            30,
+            12,
+            0x163247,
+            .22
+        );
+
+    const body =
+        this.add.graphics();
+
+    /* legs */
+
+    body.fillStyle(
+        0x25415b,
+        1
+    );
+
+    body.fillRoundedRect(
+        -11,
+        9,
+        9,
+        15,
+        4
+    );
+
+    body.fillRoundedRect(
+        2,
+        9,
+        9,
+        15,
+        4
+    );
+
+    /* shirt */
+
+    body.fillStyle(
+        0x39a8df,
+        1
+    );
+
+    body.fillRoundedRect(
+        -16,
+        -10,
+        32,
+        27,
+        8
+    );
+
+    /* backpack */
+
+    body.fillStyle(
+        0xe6bc4f,
+        1
+    );
+
+    body.fillRoundedRect(
+        10,
+        -5,
+        10,
+        18,
+        4
+    );
+
+    /* head */
+
+    body.fillStyle(
+        0xf1bd8a,
+        1
+    );
+
+    body.fillCircle(
+        0,
+        -23,
+        14
+    );
+
+    /* hair */
+
+    body.fillStyle(
+        0x263b47,
+        1
+    );
+
+    body.fillCircle(
+        0,
+        -29,
+        13
+    );
+
+    body.fillStyle(
+        0xf1bd8a,
+        1
+    );
+
+    body.fillCircle(
+        0,
+        -23,
+        11
+    );
+
+    /* eyes */
+
+    body.fillStyle(
+        0x162e3c,
+        1
+    );
+
+    body.fillCircle(
+        -4,
+        -23,
+        1.5
+    );
+
+    body.fillCircle(
+        4,
+        -23,
+        1.5
+    );
+
+    /* magnet badge */
+
+    body.fillStyle(
+        0xffffff,
+        1
+    );
+
+    body.fillCircle(
+        0,
+        1,
+        7
+    );
+
+    const badge =
+        this.add.text(
+            0,
+            1,
+            "U",
+            {
+                fontFamily:
+                    "Arial",
+                fontSize:
+                    "8px",
+                fontStyle:
+                    "bold",
+                color:
+                    "#e23d4b"
+            }
+        )
+        .setOrigin(.5);
+
+    this.player =
+        this.add.container(
+            200,
+            250,
+            [
+                shadow,
+                body,
+                badge
+            ]
+        );
+
+    this.player.setDepth(
+        20
+    );
+
+}
+
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+createControls(){
+
+    /* JOYSTICK */
+
+    this.joyBase =
+        this.add.circle(
+            70,
+            300,
+            43,
+            0xffffff,
+            .15
+        )
+        .setStrokeStyle(
+            3,
+            0xffffff,
+            .55
+        )
+        .setDepth(50);
+
+    this.joyKnob =
+        this.add.circle(
+            70,
+            300,
+            20,
+            0xffffff,
+            .82
+        )
+        .setDepth(51);
+
+    this.joyZone =
+        this.add.zone(
+            70,
+            300,
+            115,
+            100
+        )
+        .setInteractive()
+        .setDepth(52);
+
+    this.joyZone.on(
+        "pointerdown",
+        pointer=>{
+
+            audio.unlock();
+
+            this.autoTarget = null;
+
+            this.joyPointer =
+                pointer.id;
+
+            this.updateJoystick(
+                pointer
+            );
+
+        }
+    );
+
+    this.input.on(
+        "pointermove",
+        pointer=>{
+
+            if(
+                pointer.id ===
+                this.joyPointer &&
+                pointer.isDown
+            ){
+
+                this.updateJoystick(
+                    pointer
+                );
+
+            }
+
+        }
+    );
+
+    this.input.on(
+        "pointerup",
+        pointer=>{
+
+            if(
+                pointer.id ===
+                this.joyPointer
+            ){
+
+                this.resetJoystick();
+
+            }
+
+        }
+    );
+
+    this.input.on(
+        "pointerupoutside",
+        pointer=>{
+
+            if(
+                pointer.id ===
+                this.joyPointer
+            ){
+
+                this.resetJoystick();
+
+            }
+
+        }
+    );
+
+
+    /* PICK BUTTON */
+
+    this.pickButton =
+        this.add.circle(
+            300,
+            300,
+            38,
+            0xf3c544,
+            1
+        )
+        .setStrokeStyle(
+            4,
+            0xffffff,
+            .85
+        )
+        .setInteractive({
+            useHandCursor:true
+        })
+        .setDepth(50);
+
+    this.pickText =
+        this.add.text(
+            300,
+            300,
+            "AMBIL",
+            {
+                fontFamily:
+                    "Arial",
+                fontSize:
+                    "12px",
+                fontStyle:
+                    "bold",
+                color:
+                    "#173653",
+                align:
+                    "center"
+            }
+        )
+        .setOrigin(.5)
+        .setDepth(51);
+
+    this.pickButton.on(
+        "pointerdown",
+        ()=>{
+
+            audio.unlock();
+
+            this.pickButton.setScale(
+                .9
+            );
+
+            this.pickNearest();
+
+        }
+    );
+
+    this.pickButton.on(
+        "pointerup",
+        ()=>{
+
+            this.pickButton.setScale(
+                1
+            );
+
+        }
+    );
+
+    this.pickButton.on(
+        "pointerout",
+        ()=>{
+
+            this.pickButton.setScale(
+                1
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   JOYSTICK
+========================================================= */
+
+updateJoystick(pointer){
+
+    const dx =
+        pointer.x -
+        this.joyBase.x;
+
+    const dy =
+        pointer.y -
+        this.joyBase.y;
+
+    const len =
+        Math.sqrt(
+            dx*dx +
+            dy*dy
+        );
+
+    if(len === 0)
+        return;
+
+    const max =
+        this.joyRadius;
+
+    const dist =
+        Math.min(
+            len,
+            max
+        );
+
+    const nx =
+        dx / len;
+
+    const ny =
+        dy / len;
+
+    this.joyKnob.x =
+        this.joyBase.x +
+        nx * dist;
+
+    this.joyKnob.y =
+        this.joyBase.y +
+        ny * dist;
+
+    this.joyVector.set(
+        nx * (
+            dist / max
+        ),
+        ny * (
+            dist / max
+        )
+    );
+
+}
+
+resetJoystick(){
+
+    this.joyPointer =
+        null;
+
+    this.joyVector.set(
+        0,
+        0
+    );
+
+    this.joyKnob.setPosition(
+        this.joyBase.x,
+        this.joyBase.y
+    );
+
+}
+
+
+/* =========================================================
+   BUILD LETTER CARDS
+========================================================= */
+
+buildCards(){
+
+    this.cards.forEach(
+        card=>{
+
+            card.container.destroy(
+                true
+            );
+
+        }
+    );
+
+    this.cards = [];
+
+    const w =
+        this.scale.width;
+
+    const h =
+        this.scale.height;
+
+    const mobile =
+        w < 560;
+
+    const tablet =
+        w >= 560 &&
+        w < 800;
+
+    let cols;
+
+    if(mobile){
+
+        cols = 7;
+
+    }
+    else if(tablet){
+
+        cols = 9;
+
+    }
+    else{
+
+        cols = 13;
+
+    }
+
+    const rows =
+        Math.ceil(
+            26 / cols
+        );
+
+    const sidePad =
+        mobile
+        ? 10
+        : 16;
+
+    const gap =
+        mobile
+        ? 5
+        : 7;
+
+    const usableWidth =
+        w -
+        sidePad*2 -
+        gap*(cols-1);
+
+    let cardW =
+        usableWidth /
+        cols;
+
+    cardW =
+        Phaser.Math.Clamp(
+            cardW,
+            36,
+            62
+        );
+
+    let cardH =
+        mobile
+        ? 43
+        : 48;
+
+    const top =
+        mobile
+        ? 18
+        : 20;
+
+    const rowGap =
+        mobile
+        ? 6
+        : 8;
+
+    const entireW =
+        cardW * cols +
+        gap * (cols-1);
+
+    const startX =
+        (
+            w -
+            entireW
+        ) / 2 +
+        cardW/2;
+
+    this.cardOrder.forEach(
+        (letter,index)=>{
+
+            const col =
+                index % cols;
+
+            const row =
+                Math.floor(
+                    index / cols
+                );
+
+            const x =
+                startX +
+                col *
+                (
+                    cardW +
+                    gap
+                );
+
+            const y =
+                top +
+                row *
+                (
+                    cardH +
+                    rowGap
+                ) +
+                cardH/2;
+
+            const shadow =
+                this.add.rectangle(
+                    2,
+                    4,
+                    cardW,
+                    cardH,
+                    0x142f42,
+                    .18
+                )
+                .setOrigin(.5);
+
+            const bg =
+                this.add.rectangle(
+                    0,
+                    0,
+                    cardW,
+                    cardH,
+                    0xffffff,
+                    1
+                )
+                .setStrokeStyle(
+                    2,
+                    0x356b87,
+                    1
+                )
+                .setOrigin(.5)
+                .setInteractive({
+                    useHandCursor:true
+                });
+
+            /* red magnet corner */
+
+            const pole1 =
+                this.add.rectangle(
+                    -cardW/2+5,
+                    0,
+                    8,
+                    cardH-8,
+                    0xe74b52,
+                    1
+                );
+
+            /* blue magnet corner */
+
+            const pole2 =
+                this.add.rectangle(
+                    cardW/2-5,
+                    0,
+                    8,
+                    cardH-8,
+                    0x428bd7,
+                    1
+                );
+
+            const text =
+                this.add.text(
+                    0,
+                    0,
+                    letter,
+                    {
+                        fontFamily:
+                            "Arial",
+                        fontSize:
+                            mobile
+                            ? "18px"
+                            : "21px",
+                        fontStyle:
+                            "bold",
+                        color:
+                            "#183f5b"
+                    }
+                )
+                .setOrigin(.5);
+
+            const container =
+                this.add.container(
+                    x,
+                    y,
+                    [
+                        shadow,
+                        bg,
+                        pole1,
+                        pole2,
+                        text
+                    ]
+                );
+
+            container.setDepth(
+                10
+            );
+
+            const card = {
+
+                letter:
+                    letter,
+
+                container:
+                    container,
+
+                bg:
+                    bg,
+
+                baseX:
+                    x,
+
+                baseY:
+                    y,
+
+                phase:
+                    Math.random() *
+                    Math.PI * 2
+
+            };
+
+            bg.on(
+                "pointerdown",
+                ()=>{
+
+                    if(locked)
+                        return;
+
+                    audio.unlock();
+
+                    this.goToCard(
+                        card
+                    );
+
+                }
+            );
+
+            this.cards.push(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   GO TO CARD
+========================================================= */
+
+goToCard(card){
+
+    this.autoTarget =
+        card;
+
+    this.resetJoystick();
+
+}
+
+
+/* =========================================================
+   PICK NEAREST CARD
+========================================================= */
+
+pickNearest(){
+
+    if(locked)
+        return;
+
+    let closest =
+        null;
+
+    let closestDistance =
+        Infinity;
+
+    this.cards.forEach(
+        card=>{
+
+            const d =
+                Phaser.Math.Distance.Between(
+                    this.player.x,
+                    this.player.y,
+                    card.baseX,
+                    card.baseY
+                );
+
+            if(
+                d <
+                closestDistance
+            ){
+
+                closestDistance =
+                    d;
+
+                closest =
+                    card;
+
+            }
+
+        }
+    );
+
+    const radius =
+        this.scale.width < 560
+        ? 53
+        : 62;
+
+    if(
+        closest &&
+        closestDistance <= radius
+    ){
+
+        this.collectCard(
+            closest
+        );
+
+    }
+    else{
+
+        this.showHintText(
+            "Dekati kad huruf dahulu"
+        );
+
+        audio.wrong();
+
+    }
+
+}
+
+
+/* =========================================================
+   COLLECT LETTER
+========================================================= */
+
+collectCard(card){
+
+    if(
+        locked ||
+        !card
+    ) return;
+
+    addLetter(
+        card.letter
+    );
+
+    this.tweens.killTweensOf(
+        card.container
+    );
+
+    this.tweens.add({
+
+        targets:
+            card.container,
+
+        scaleX:
+            1.24,
+
+        scaleY:
+            1.24,
+
+        duration:
+            90,
+
+        yoyo:
+            true,
+
+        ease:
+            "Quad.easeOut"
+
+    });
+
+    this.createSpark(
+        card.baseX,
+        card.baseY
+    );
+
+}
+
+
+/* =========================================================
+   SPARK
+========================================================= */
+
+createSpark(x,y){
+
+    for(
+        let i=0;
+        i<6;
+        i++
+    ){
+
+        const dot =
+            this.add.circle(
+                x,
+                y,
+                Phaser.Math.Between(
+                    2,
+                    4
+                ),
+                i%2===0
+                ? 0xe94e58
+                : 0x3a8edb
+            )
+            .setDepth(40);
+
+        const angle =
+            Phaser.Math.FloatBetween(
+                0,
+                Math.PI*2
+            );
+
+        const distance =
+            Phaser.Math.Between(
+                15,
+                32
+            );
+
+        this.tweens.add({
+
+            targets:
+                dot,
+
+            x:
+                x +
+                Math.cos(angle) *
+                distance,
+
+            y:
+                y +
+                Math.sin(angle) *
+                distance,
+
+            alpha:
+                0,
+
+            scale:
+                .2,
+
+            duration:
+                300,
+
+            onComplete:
+                ()=>dot.destroy()
+
+        });
+
+    }
+
+}
+
+
+/* =========================================================
+   HINT TEXT
+========================================================= */
+
+showHintText(text){
+
+    if(this.hintText){
+
+        this.hintText.destroy();
+
+    }
+
+    this.hintText =
+        this.add.text(
+            this.scale.width/2,
+            this.scale.height-105,
+            text,
+            {
+                fontFamily:
+                    "Arial",
+                fontSize:
+                    this.scale.width < 500
+                    ? "11px"
+                    : "13px",
+                fontStyle:
+                    "bold",
+                color:
+                    "#173653",
+                backgroundColor:
+                    "#ffffff",
+                padding:{
+                    x:8,
+                    y:5
+                }
+            }
+        )
+        .setOrigin(.5)
+        .setDepth(80);
+
+    this.tweens.add({
+
+        targets:
+            this.hintText,
+
+        alpha:
+            0,
+
+        y:
+            this.hintText.y -
+            15,
+
+        delay:
+            500,
+
+        duration:
+            350,
+
+        onComplete:
+            ()=>{
+
+                if(this.hintText){
+
+                    this.hintText.destroy();
+
+                    this.hintText =
+                        null;
+
+                }
+
+            }
+
+    });
+
+}
+
+
+/* =========================================================
+   CORRECT EFFECT
+========================================================= */
+
+correctEffect(){
+
+    const w =
+        this.scale.width;
+
+    const h =
+        this.scale.height;
+
+    for(
+        let i=0;
+        i<22;
+        i++
+    ){
+
+        const star =
+            this.add.rectangle(
+                Phaser.Math.Between(
+                    10,
+                    w-10
+                ),
+                Phaser.Math.Between(
+                    20,
+                    h-100
+                ),
+                Phaser.Math.Between(
+                    4,
+                    9
+                ),
+                Phaser.Math.Between(
+                    4,
+                    9
+                ),
+                Phaser.Display.Color
+                .RandomRGB()
+                .color,
+                1
+            )
+            .setDepth(100);
+
+        this.tweens.add({
+
+            targets:
+                star,
+
+            y:
+                star.y +
+                Phaser.Math.Between(
+                    25,
+                    70
+                ),
+
+            rotation:
+                Phaser.Math.FloatBetween(
+                    -2,
+                    2
+                ),
+
+            alpha:
+                0,
+
+            duration:
+                Phaser.Math.Between(
+                    500,
+                    850
+                ),
+
+            onComplete:
+                ()=>star.destroy()
+
+        });
+
+    }
+
+}
+
+
+/* =========================================================
+   WRONG EFFECT
+========================================================= */
+
+wrongEffect(){
+
+    this.cameras.main.shake(
+        130,
+        .006
+    );
+
+}
+
+
+/* =========================================================
+   LAYOUT
+========================================================= */
+
+layout(w,h){
+
+    if(
+        !w ||
+        !h
+    ) return;
+
+    this.drawFloor(
+        w,
+        h
+    );
+
+    /* joystick */
+
+    const controlY =
+        h - 50;
+
+    this.joyBase.setPosition(
+        67,
+        controlY
+    );
+
+    this.joyKnob.setPosition(
+        67,
+        controlY
+    );
+
+    this.joyZone.setPosition(
+        67,
+        controlY
+    );
+
+    /* pick */
+
+    this.pickButton.setPosition(
+        w - 65,
+        controlY
+    );
+
+    this.pickText.setPosition(
+        w - 65,
+        controlY
+    );
+
+    /* player */
+
+    if(this.player){
+
+        this.player.x =
+            Phaser.Math.Clamp(
+                this.player.x,
+                25,
+                w-25
+            );
+
+        this.player.y =
+            Phaser.Math.Clamp(
+                this.player.y,
+                50,
+                h-105
+            );
+
+    }
+
+    this.buildCards();
+
+}
+
+
+/* =========================================================
+   UPDATE
+========================================================= */
+
+update(time,delta){
+
+    if(
+        !this.player
+    ) return;
+
+    const dt =
+        delta /
+        1000;
+
+    let moveX = 0;
+    let moveY = 0;
+
+    /* keyboard */
+
+    if(
+        this.keys.left.isDown ||
+        this.keys.a.isDown
+    ){
+
+        moveX -= 1;
+
+    }
+
+    if(
+        this.keys.right.isDown ||
+        this.keys.d.isDown
+    ){
+
+        moveX += 1;
+
+    }
+
+    if(
+        this.keys.up.isDown ||
+        this.keys.w.isDown
+    ){
+
+        moveY -= 1;
+
+    }
+
+    if(
+        this.keys.down.isDown ||
+        this.keys.s.isDown
+    ){
+
+        moveY += 1;
+
+    }
+
+
+    /* joystick */
+
+    if(
+        Math.abs(
+            this.joyVector.x
+        ) > .05 ||
+        Math.abs(
+            this.joyVector.y
+        ) > .05
+    ){
+
+        moveX =
+            this.joyVector.x;
+
+        moveY =
+            this.joyVector.y;
+
+        this.autoTarget = null;
+
+    }
+
+
+    /* keyboard cancels auto walk */
+
+    if(
+        Math.abs(moveX) +
+        Math.abs(moveY) >
+        .01
+    ){
+
+        this.autoTarget =
+            null;
+
+        const len =
+            Math.sqrt(
+                moveX*moveX +
+                moveY*moveY
+            );
+
+        if(len > 1){
+
+            moveX /= len;
+            moveY /= len;
+
+        }
+
+        this.player.x +=
+            moveX *
+            this.speed *
+            dt;
+
+        this.player.y +=
+            moveY *
+            this.speed *
+            dt;
+
+    }
+
+
+    /* Auto move after tapping letter */
+
+    if(
+        this.autoTarget &&
+        !locked
+    ){
+
+        const target =
+            this.autoTarget;
+
+        const dx =
+            target.baseX -
+            this.player.x;
+
+        const dy =
+            target.baseY -
+            this.player.y;
+
+        const dist =
+            Math.sqrt(
+                dx*dx +
+                dy*dy
+            );
+
+        if(
+            dist >
+            32
+        ){
+
+            this.player.x +=
+                dx/dist *
+                this.speed *
+                .9 *
+                dt;
+
+            this.player.y +=
+                dy/dist *
+                this.speed *
+                .9 *
+                dt;
+
+        }
+        else{
+
+            const collected =
+                this.autoTarget;
+
+            this.autoTarget =
+                null;
+
+            this.collectCard(
+                collected
+            );
+
+        }
+
+    }
+
+
+    /* bounds */
+
+    this.player.x =
+        Phaser.Math.Clamp(
+            this.player.x,
+            20,
+            this.scale.width -
+            20
+        );
+
+    this.player.y =
+        Phaser.Math.Clamp(
+            this.player.y,
+            48,
+            this.scale.height -
+            102
+        );
+
+
+    /* player walking animation */
+
+    const moving =
+        (
+            Math.abs(moveX) +
+            Math.abs(moveY) >
+            .02
+        ) ||
+        this.autoTarget;
+
+    if(moving){
+
+        this.player.rotation =
+            Math.sin(
+                time*.016
+            ) * .035;
+
+    }
+    else{
+
+        this.player.rotation *=
+            .8;
+
+    }
+
+
+    /* card floating animation */
+
+    this.cards.forEach(
+        card=>{
+
+            card.container.y =
+                card.baseY +
+                Math.sin(
+                    time*.0028 +
+                    card.phase
+                ) * 2;
+
+        }
+    );
+
+}
+
+}
+
+
+/* =========================================================
    PHASER CONFIG
-===================================================== */
+========================================================= */
 
-new Phaser.Game({
+const gameParent =
+document.getElementById(
+    "phaser-game"
+);
 
-    type:Phaser.CANVAS,
+const config = {
 
-    parent:"game",
+    type:
+        Phaser.AUTO,
 
-    width:W,
-    height:H,
+    parent:
+        "phaser-game",
 
-    backgroundColor:"#244a5b",
+    width:
+        gameParent.clientWidth,
+
+    height:
+        gameParent.clientHeight,
+
+    backgroundColor:
+        "#dff6ff",
 
     render:{
         antialias:true,
+        pixelArt:false,
         roundPixels:false
     },
 
     scale:{
-        mode:Phaser.Scale.NONE
+
+        mode:
+            Phaser.Scale.RESIZE,
+
+        autoCenter:
+            Phaser.Scale.CENTER_BOTH
+
     },
 
-    scene:MazeScene
-});
+    scene:[
+        LetterArena
+    ]
 
-})();
+};
+
+
+/* =========================================================
+   START PHASER
+========================================================= */
+
+const game =
+new Phaser.Game(
+    config
+);
+
+
+/* =========================================================
+   INITIAL QUESTION
+========================================================= */
+
+showQuestion();
+
 </script>
 
 </body>
