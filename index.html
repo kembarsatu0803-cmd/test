@@ -25,12 +25,7 @@ html,
 body{
     margin:0;
     padding:0;
-    background:
-        linear-gradient(
-            180deg,
-            #dceaf1,
-            #eef5f8
-        );
+    background:#dde9ef;
     font-family:Arial,Helvetica,sans-serif;
 }
 
@@ -45,43 +40,51 @@ body{
 .game-shell{
     width:min(100%,1000px);
     background:#ffffff;
-    border-radius:18px;
     padding:6px;
+    border-radius:18px;
+
     box-shadow:
-        0 8px 28px
-        rgba(23,55,72,.14);
+        0 10px 30px
+        rgba(30,65,85,.14);
 }
 
 #game{
     width:100%;
     overflow:hidden;
     border-radius:14px;
-    background:#dceaf1;
+    background:#e2edf3;
 }
 
 #game canvas{
     display:block;
     margin:auto;
+
     max-width:100%!important;
     height:auto!important;
+
     touch-action:none;
 }
 
 .note{
     padding:7px 5px 3px;
+
     text-align:center;
+
     font-size:11px;
-    line-height:1.35;
-    color:#597181;
+    line-height:1.4;
+
+    color:#587181;
 }
 
 #errorBox{
     display:none;
+
     padding:20px;
+
     text-align:center;
-    background:#fff0f0;
-    color:#942828;
-    border-radius:10px;
+
+    color:#922929;
+    background:#fff1f1;
 }
 
 @media(max-width:700px){
@@ -96,7 +99,7 @@ body{
     }
 
     #game{
-        border-radius:10px;
+        border-radius:9px;
     }
 
     .note{
@@ -120,7 +123,7 @@ body{
     </div>
 
     <div class="note">
-        Tekan START dan lukis laluan. Garisan boleh dipatah balik dengan menarik semula mengikut laluan yang sama.
+        Tekan START dan drag melalui maze. Tarik semula ke petak sebelumnya untuk undo laluan.
     </div>
 
 </div>
@@ -138,14 +141,11 @@ body{
 
 if(typeof Phaser === "undefined"){
 
-    const box =
-    document.getElementById(
-        "errorBox"
-    );
+    const e =
+    document.getElementById("errorBox");
 
-    if(box){
-        box.style.display =
-        "block";
+    if(e){
+        e.style.display = "block";
     }
 
     return;
@@ -153,7 +153,7 @@ if(typeof Phaser === "undefined"){
 
 
 /* =========================================================
-   SCREEN
+   RESPONSIVE GAME SIZE
 ========================================================= */
 
 const PORTRAIT =
@@ -167,10 +167,16 @@ PORTRAIT
 : 960;
 
 
+/*
+   GAME DIPANJANGKAN
+   SUPAYA SEMUA TEKS + MAZE
+   ADA RUANG YANG CUKUP
+*/
+
 const GAME_H =
 PORTRAIT
-? 1080
-: 720;
+? 1300
+: 820;
 
 
 const LETTERS = [
@@ -498,17 +504,19 @@ class AudioSystem{
 
 constructor(){
 
-    this.ctx = null;
+    this.ctx =
+    null;
 
-    this.master = null;
+    this.master =
+    null;
 
-    this.musicTimer =
+    this.timer =
     null;
 
     this.musicOn =
     true;
 
-    this.index =
+    this.noteIndex =
     0;
 
     this.notes = [
@@ -615,7 +623,7 @@ endFreq=null
                 endFreq
             ),
 
-            now +
+            now+
             duration
 
         );
@@ -632,23 +640,29 @@ endFreq=null
     gain.gain
     .exponentialRampToValueAtTime(
         .0001,
-        now +
+        now+
         duration
     );
 
 
-    osc.connect(gain);
+    osc.connect(
+        gain
+    );
+
 
     gain.connect(
         this.master
     );
 
 
-    osc.start(now);
+    osc.start(
+        now
+    );
+
 
     osc.stop(
-        now +
-        duration +
+        now+
+        duration+
         .02
     );
 }
@@ -656,14 +670,14 @@ endFreq=null
 
 startMusic(){
 
-    if(this.musicTimer){
+    if(this.timer){
         return;
     }
 
 
-    this.musicTimer =
+    this.timer =
     setInterval(
-        () => {
+        ()=>{
 
             if(
                 !this.ctx ||
@@ -678,24 +692,47 @@ startMusic(){
             this.tone(
 
                 this.notes[
-                    this.index %
+                    this.noteIndex %
                     this.notes.length
                 ],
 
-                .18,
+                .19,
 
                 "sine",
 
-                .021
+                .020
 
             );
 
 
-            this.index++;
+            this.noteIndex++;
 
         },
 
-        460
+        470
+    );
+}
+
+
+step(){
+
+    this.tone(
+        650,
+        .025,
+        "sine",
+        .012
+    );
+}
+
+
+undo(){
+
+    this.tone(
+        470,
+        .025,
+        "sine",
+        .012,
+        400
     );
 }
 
@@ -703,11 +740,11 @@ startMusic(){
 wall(){
 
     this.tone(
-        190,
-        .045,
+        180,
+        .04,
         "square",
-        .022,
-        150
+        .018,
+        145
     );
 }
 
@@ -718,19 +755,19 @@ correct(){
         520,
         .09,
         "triangle",
-        .14,
-        700
+        .13,
+        690
     );
 
 
     setTimeout(
-        () => {
+        ()=>{
 
             this.tone(
                 760,
                 .14,
                 "triangle",
-                .12,
+                .11,
                 920
             );
 
@@ -746,7 +783,7 @@ wrong(){
         180,
         .18,
         "sawtooth",
-        .08,
+        .075,
         110
     );
 }
@@ -755,10 +792,10 @@ wrong(){
 newMaze(){
 
     this.tone(
-        360,
-        .06,
+        350,
+        .07,
         "triangle",
-        .06,
+        .05,
         480
     );
 }
@@ -773,20 +810,20 @@ win(){
         1046
     ]
     .forEach(
-        (note,i) => {
+        (note,i)=>{
 
             setTimeout(
-                () => {
+                ()=>{
 
                     this.tone(
                         note,
                         .24,
                         "triangle",
-                        .13
+                        .12
                     );
 
                 },
-                i * 120
+                i*120
             );
         }
     );
@@ -797,6 +834,7 @@ toggle(){
 
     this.musicOn =
     !this.musicOn;
+
 
     return this.musicOn;
 }
@@ -844,10 +882,14 @@ create(){
     this.isDrawing =
     false;
 
-    this.tracePoints =
-    [];
+    /*
+       PATH SEKARANG SIMPAN CELL.
 
-    this.wallRects =
+       INI MEMBOLEHKAN UNDO
+       DENGAN SEMPURNA.
+    */
+
+    this.pathCells =
     [];
 
     this.answerZones =
@@ -856,14 +898,17 @@ create(){
     this.floorObjects =
     [];
 
-    this.optionCards =
-    [];
+    this.wallGraphics =
+    null;
 
     this.lastMazeSignature =
     "";
 
     this.wallSoundReady =
     true;
+
+    this.lastPointerPosition =
+    null;
 
 
     this.createBackground();
@@ -874,13 +919,13 @@ create(){
 
     this.createMazeArea();
 
-    this.createTraceGraphics();
+    this.createPathGraphics();
 
-    this.createButtons();
+    this.createBottomBar();
 
     this.createInput();
 
-    this.showStart();
+    this.showStartWindow();
 }
 
 
@@ -892,21 +937,21 @@ createBackground(){
 
     this.cameras.main
     .setBackgroundColor(
-        "#e2edf3"
+        "#e3eef4"
     );
 
 
-    const bg =
+    const g =
     this.add.graphics();
 
 
-    bg.fillStyle(
+    g.fillStyle(
         0xe3eef4,
         1
     );
 
 
-    bg.fillRect(
+    g.fillRect(
         0,
         0,
         GAME_W,
@@ -914,25 +959,25 @@ createBackground(){
     );
 
 
-    bg.fillStyle(
-        0xbdd6e2,
+    g.fillStyle(
+        0xbdd7e3,
         .18
     );
 
 
     for(
         let i=0;
-        i<40;
+        i<48;
         i++
     ){
 
-        bg.fillCircle(
+        g.fillCircle(
 
-            (i*157)%GAME_W,
+            (i*151)%GAME_W,
 
             (i*97)%GAME_H,
 
-            12
+            11
 
         );
     }
@@ -945,37 +990,52 @@ createBackground(){
 
 createHeader(){
 
+    /*
+       SHADOW
+    */
+
+    this.add.rectangle(
+        GAME_W/2+2,
+        31,
+        GAME_W-14,
+        54,
+        0x78909c,
+        .18
+    );
+
+
+    /*
+       HEADER
+    */
+
     this.add.rectangle(
         GAME_W/2,
-        30,
-        GAME_W-12,
-        52,
-        0x183f57
+        28,
+        GAME_W-14,
+        54,
+        0x173f57
     )
     .setStrokeStyle(
         2,
-        0x0f3042
+        0x0d3043
     );
 
 
     this.add.text(
-        24,
-        19,
+        25,
+        18,
         "DRAW MAZE",
         {
-            fontFamily:
-            "Arial",
+            fontFamily:"Arial",
 
             fontSize:
             PORTRAIT
             ? "20px"
             : "21px",
 
-            fontStyle:
-            "bold",
+            fontStyle:"bold",
 
-            color:
-            "#ffffff"
+            color:"#ffffff"
         }
     );
 
@@ -983,31 +1043,43 @@ createHeader(){
     this.progressText =
     this.add.text(
         GAME_W/2,
-        20,
+        19,
         "1 / 25",
         {
             fontFamily:"Arial",
+
             fontSize:"17px",
+
             fontStyle:"bold",
-            color:"#dff4ff"
+
+            color:"#e1f6ff"
         }
     )
-    .setOrigin(.5,0);
+    .setOrigin(
+        .5,
+        0
+    );
 
 
     this.scoreText =
     this.add.text(
-        GAME_W-24,
-        20,
+        GAME_W-25,
+        19,
         "Skor 0",
         {
             fontFamily:"Arial",
+
             fontSize:"15px",
+
             fontStyle:"bold",
+
             color:"#ffffff"
         }
     )
-    .setOrigin(1,0);
+    .setOrigin(
+        1,
+        0
+    );
 }
 
 
@@ -1018,17 +1090,22 @@ createHeader(){
 createQuestionPanel(){
 
     this.panelY =
-    68;
+    70;
 
+
+    /*
+       PANEL DIPANJANGKAN
+       SUPAYA TEKS TAK BERTINDIH
+    */
 
     this.panelH =
     PORTRAIT
-    ? 270
-    : 170;
+    ? 360
+    : 210;
 
 
     this.panelBottom =
-    this.panelY +
+    this.panelY+
     this.panelH;
 
 
@@ -1038,95 +1115,96 @@ createQuestionPanel(){
 
     this.add.rectangle(
 
-        GAME_W/2 + 3,
+        GAME_W/2+3,
 
-        this.panelY +
-        this.panelH/2 +
+        this.panelY+
+        this.panelH/2+
         4,
 
-        GAME_W-24,
+        GAME_W-28,
 
         this.panelH,
 
-        0x8da7b3,
+        0x607b89,
 
-        .18
+        .14
 
     );
 
 
     /*
-       CARD
+       WHITE PANEL
     */
 
     this.add.rectangle(
 
         GAME_W/2,
 
-        this.panelY +
+        this.panelY+
         this.panelH/2,
 
-        GAME_W-24,
+        GAME_W-28,
 
         this.panelH,
 
-        0xffffff,
-
-        1
+        0xffffff
 
     )
     .setStrokeStyle(
         2,
-        0xa9bfca
+        0xaac0ca
     );
 
 
+    /*
+       SECTION
+    */
+
     this.sectionText =
     this.add.text(
-        27,
-        this.panelY+11,
+        28,
+        this.panelY+13,
         "",
         {
-            fontFamily:
-            "Arial",
+            fontFamily:"Arial",
 
-            fontSize:
-            "12px",
+            fontSize:"12px",
 
-            fontStyle:
-            "bold",
+            fontStyle:"bold",
 
-            color:
-            "#2f7e9e"
+            color:"#2c7898"
         }
     );
 
 
+    /*
+       QUESTION
+    */
+
     this.questionText =
     this.add.text(
-        27,
-        this.panelY+33,
+        28,
+        this.panelY+39,
         "",
         {
-            fontFamily:
-            "Arial",
+            fontFamily:"Arial",
 
             fontSize:
             PORTRAIT
             ? "17px"
             : "18px",
 
-            fontStyle:
-            "bold",
+            fontStyle:"bold",
 
-            color:
-            "#17394c",
+            color:"#17394c",
 
-            lineSpacing:2,
+            lineSpacing:3,
+
+            maxLines:3,
 
             wordWrap:{
                 width:
-                GAME_W-54,
+                GAME_W-56,
 
                 useAdvancedWrap:
                 true
@@ -1140,24 +1218,37 @@ createQuestionPanel(){
 
 
 /* =========================================================
-   OPTION CARDS
+   OPTIONS
 ========================================================= */
 
 createOptionCards(){
 
+    this.optionCards =
+    [];
+
+
     const colors = [
-        0xe45b5f,
-        0x4b8ae3,
-        0xf0a93d,
-        0x43a96d
+        0xe65b60,
+        0x4b89df,
+        0xefa83c,
+        0x42a86b
     ];
 
+
+    /*
+       PHONE / PORTRAIT
+       4 ROWS
+    */
 
     if(PORTRAIT){
 
         const startY =
-        this.panelY +
-        120;
+        this.panelY+
+        166;
+
+
+        const gap =
+        43;
 
 
         for(
@@ -1166,9 +1257,27 @@ createOptionCards(){
             i++
         ){
 
-            const y =
-            startY +
-            i*34;
+            const centerY =
+            startY+
+            i*gap;
+
+
+            const shadow =
+            this.add.rectangle(
+
+                GAME_W/2+2,
+
+                centerY+2,
+
+                GAME_W-58,
+
+                37,
+
+                0x78909c,
+
+                .10
+
+            );
 
 
             const card =
@@ -1176,47 +1285,43 @@ createOptionCards(){
 
                 GAME_W/2,
 
-                y+11,
+                centerY,
 
-                GAME_W-52,
+                GAME_W-58,
 
-                29,
+                37,
 
-                0xf7fafc
+                0xf7fafb
 
             )
             .setStrokeStyle(
                 1,
-                0xd5e1e7
+                0xd3e0e6
             );
 
 
             const badge =
             this.add.circle(
-                42,
-                y+11,
-                11,
+                48,
+                centerY,
+                13,
                 colors[i]
             );
 
 
             const letter =
             this.add.text(
-                42,
-                y+11,
+                48,
+                centerY,
                 LETTERS[i],
                 {
-                    fontFamily:
-                    "Arial",
+                    fontFamily:"Arial",
 
-                    fontSize:
-                    "12px",
+                    fontSize:"12px",
 
-                    fontStyle:
-                    "bold",
+                    fontStyle:"bold",
 
-                    color:
-                    "#ffffff"
+                    color:"#ffffff"
                 }
             )
             .setOrigin(.5);
@@ -1224,31 +1329,32 @@ createOptionCards(){
 
             const text =
             this.add.text(
-                62,
-                y+3,
+                70,
+                centerY,
                 "",
                 {
-                    fontFamily:
-                    "Arial",
+                    fontFamily:"Arial",
 
-                    fontSize:
-                    "13px",
+                    fontSize:"13px",
 
-                    color:
-                    "#294b5e",
+                    color:"#294b5e",
 
                     wordWrap:{
                         width:
-                        GAME_W-92,
+                        GAME_W-105,
 
-                        useAdvancedWrap:
-                        true
+                        useAdvancedWrap:true
                     }
                 }
+            )
+            .setOrigin(
+                0,
+                .5
             );
 
 
             this.optionCards.push({
+                shadow,
                 card,
                 badge,
                 letter,
@@ -1257,10 +1363,16 @@ createOptionCards(){
         }
     }
 
+
+    /*
+       LAPTOP
+       2 × 2
+    */
+
     else{
 
-        const colW =
-        (GAME_W-64)/2;
+        const columnWidth =
+        (GAME_W-70)/2;
 
 
         for(
@@ -1274,68 +1386,92 @@ createOptionCards(){
 
 
             const row =
-            Math.floor(i/2);
+            Math.floor(
+                i/2
+            );
 
 
-            const x =
-            24 +
-            col*colW;
+            const left =
+            28+
+            col*columnWidth;
 
 
-            const y =
-            this.panelY +
-            108 +
-            row*30;
+            const centerX =
+            left+
+            columnWidth/2-
+            4;
+
+
+            const centerY =
+            this.panelY+
+            132+
+            row*43;
+
+
+            const shadow =
+            this.add.rectangle(
+
+                centerX+2,
+
+                centerY+2,
+
+                columnWidth-14,
+
+                37,
+
+                0x78909c,
+
+                .10
+
+            );
 
 
             const card =
             this.add.rectangle(
 
-                x +
-                colW/2 -
-                4,
+                centerX,
 
-                y+10,
+                centerY,
 
-                colW-12,
+                columnWidth-14,
 
-                28,
+                37,
 
-                0xf7fafc
+                0xf7fafb
 
             )
             .setStrokeStyle(
                 1,
-                0xd5e1e7
+                0xd3e0e6
             );
+
+
+            const badgeX =
+            left+16;
 
 
             const badge =
             this.add.circle(
-                x+15,
-                y+10,
-                10,
+                badgeX,
+                centerY,
+                12,
                 colors[i]
             );
 
 
             const letter =
             this.add.text(
-                x+15,
-                y+10,
+                badgeX,
+                centerY,
                 LETTERS[i],
                 {
-                    fontFamily:
-                    "Arial",
+                    fontFamily:"Arial",
 
-                    fontSize:
-                    "11px",
+                    fontSize:"11px",
 
-                    fontStyle:
-                    "bold",
+                    fontStyle:"bold",
 
-                    color:
-                    "#ffffff"
+                    color:"#ffffff"
                 }
             )
             .setOrigin(.5);
@@ -1343,31 +1479,32 @@ createOptionCards(){
 
             const text =
             this.add.text(
-                x+33,
-                y+2,
+                left+36,
+                centerY,
                 "",
                 {
-                    fontFamily:
-                    "Arial",
+                    fontFamily:"Arial",
 
-                    fontSize:
-                    "13px",
+                    fontSize:"12px",
 
-                    color:
-                    "#294b5e",
+                    color:"#294b5e",
 
                     wordWrap:{
                         width:
-                        colW-55,
+                        columnWidth-58,
 
-                        useAdvancedWrap:
-                        true
+                        useAdvancedWrap:true
                     }
                 }
+            )
+            .setOrigin(
+                0,
+                .5
             );
 
 
             this.optionCards.push({
+                shadow,
                 card,
                 badge,
                 letter,
@@ -1386,8 +1523,8 @@ createMazeArea(){
 
     const bottomSpace =
     PORTRAIT
-    ? 82
-    : 64;
+    ? 90
+    : 72;
 
 
     this.mazeArea = {
@@ -1396,7 +1533,7 @@ createMazeArea(){
 
         y:
         this.panelBottom+
-        14,
+        16,
 
         w:
         GAME_W-36,
@@ -1405,14 +1542,15 @@ createMazeArea(){
         GAME_H-
         (
             this.panelBottom+
-            14
+            16
         )-
         bottomSpace
+
     };
 
 
     /*
-       MAZE SHADOW
+       SHADOW
     */
 
     this.add.rectangle(
@@ -1429,15 +1567,15 @@ createMazeArea(){
 
         this.mazeArea.h,
 
-        0x6b8592,
+        0x526b78,
 
-        .20
+        .18
 
     );
 
 
     /*
-       OUTER PANEL
+       MAZE CONTAINER
     */
 
     this.add.rectangle(
@@ -1452,61 +1590,56 @@ createMazeArea(){
 
         this.mazeArea.h,
 
-        0x294b5a
+        0x294a59
 
     )
     .setStrokeStyle(
         3,
-        0x173747
+        0x173746
     );
 
 
     /*
-       SMALL TITLE
+       MAZE TOP TITLE
     */
 
-    this.mazeTitleBg =
     this.add.rectangle(
 
         GAME_W/2,
 
-        this.mazeArea.y+18,
+        this.mazeArea.y+19,
 
         PORTRAIT
-        ? 330
-        : 360,
+        ? 370
+        : 400,
 
         29,
 
-        0x173e54,
-
-        .94
+        0x183f56
 
     )
     .setDepth(70);
 
 
-    this.mazeTitle =
     this.add.text(
 
         GAME_W/2,
 
-        this.mazeArea.y+18,
+        this.mazeArea.y+19,
 
-        "LUKIS DARI START KE JAWAPAN",
+        "DRAG DARI START • TARIK BALIK UNTUK UNDO",
 
         {
-            fontFamily:
-            "Arial",
+            fontFamily:"Arial",
 
             fontSize:
-            "11px",
+            PORTRAIT
+            ? "10px"
+            : "11px",
 
-            fontStyle:
-            "bold",
+            fontStyle:"bold",
 
-            color:
-            "#ffffff"
+            color:"#ffffff"
         }
 
     )
@@ -1514,13 +1647,18 @@ createMazeArea(){
     .setDepth(71);
 
 
+    /*
+       LEBIH BANYAK RUANG
+       UNTUK MAZE
+    */
+
     if(PORTRAIT){
 
         this.cols =
-        13;
+        15;
 
         this.rows =
-        15;
+        17;
     }
 
     else{
@@ -1533,14 +1671,14 @@ createMazeArea(){
     }
 
 
-    const titleGap =
-    36;
+    const topGap =
+    42;
 
 
-    const usableHeight =
+    const usableH =
     this.mazeArea.h-
-    titleGap-
-    8;
+    topGap-
+    10;
 
 
     this.cellSize =
@@ -1548,11 +1686,12 @@ createMazeArea(){
         Math.min(
 
             (
-                this.mazeArea.w-10
+                this.mazeArea.w-
+                12
             )/
             this.cols,
 
-            usableHeight/
+            usableH/
             this.rows
 
         )
@@ -1576,77 +1715,85 @@ createMazeArea(){
 
     this.mazeY =
     this.mazeArea.y+
-    titleGap+
+    topGap+
     (
-        usableHeight-
+        usableH-
         this.mazePixelH
     )/2;
 }
 
 
 /* =========================================================
-   TRACE
+   PATH GRAPHIC
 ========================================================= */
 
-createTraceGraphics(){
+createPathGraphics(){
 
-    this.traceGraphics =
+    this.pathGraphics =
     this.add.graphics()
-    .setDepth(100);
+    .setDepth(110);
 
 
-    this.tipOuter =
+    /*
+       CURRENT TIP
+    */
+
+    this.pathTipOuter =
     this.add.circle(
         -100,
         -100,
         PORTRAIT
         ? 10
-        : 8,
-        0xffffff,
-        .95
+        : 9,
+        0xffffff
     )
     .setStrokeStyle(
         3,
-        0x1d91c4
+        0x159bd4
     )
-    .setDepth(102)
+    .setDepth(112)
     .setVisible(false);
 
 
-    this.tipInner =
+    this.pathTipInner =
     this.add.circle(
         -100,
         -100,
         PORTRAIT
         ? 4
         : 3,
-        0x1d91c4
+        0x159bd4
     )
-    .setDepth(103)
+    .setDepth(113)
     .setVisible(false);
 }
 
 
 /* =========================================================
-   MAZE CELL
+   CELL
 ========================================================= */
 
 createCell(x,y){
 
     return{
 
-        x,
-        y,
+        x:x,
+
+        y:y,
 
         visited:false,
 
         walls:{
-            top:true,
-            right:true,
-            bottom:true,
-            left:true
-        }
 
+            top:true,
+
+            right:true,
+
+            bottom:true,
+
+            left:true
+
+        }
     };
 }
 
@@ -1709,7 +1856,7 @@ direction
 
 
 /* =========================================================
-   RANDOM PERFECT MAZE
+   GENERATE REAL MAZE
 ========================================================= */
 
 generateMaze(){
@@ -1736,7 +1883,8 @@ generateMaze(){
             y++
         ){
 
-            const row = [];
+            const row =
+            [];
 
 
             for(
@@ -1754,31 +1902,38 @@ generateMaze(){
             }
 
 
-            maze.push(row);
+            maze.push(
+                row
+            );
         }
 
 
-        const sx =
+        const startX =
         Math.floor(
             this.cols/2
         );
 
 
-        const sy =
+        const startY =
         Math.floor(
             this.rows/2
         );
 
 
         let current =
-        maze[sy][sx];
+        maze[
+            startY
+        ][
+            startX
+        ];
 
 
         current.visited =
         true;
 
 
-        const stack = [];
+        const stack =
+        [];
 
 
         let visited =
@@ -1795,7 +1950,8 @@ generateMaze(){
             total
         ){
 
-            const choices = [];
+            const options =
+            [];
 
 
             const x =
@@ -1811,42 +1967,47 @@ generateMaze(){
                 !maze[y-1][x].visited
             ){
 
-                choices.push({
+                options.push({
+
                     cell:
                     maze[y-1][x],
 
-                    dir:
-                    "top"
+                    dir:"top"
+
                 });
             }
 
 
             if(
-                x<this.cols-1 &&
+                x<
+                this.cols-1 &&
                 !maze[y][x+1].visited
             ){
 
-                choices.push({
+                options.push({
+
                     cell:
                     maze[y][x+1],
 
-                    dir:
-                    "right"
+                    dir:"right"
+
                 });
             }
 
 
             if(
-                y<this.rows-1 &&
+                y<
+                this.rows-1 &&
                 !maze[y+1][x].visited
             ){
 
-                choices.push({
+                options.push({
+
                     cell:
                     maze[y+1][x],
 
-                    dir:
-                    "bottom"
+                    dir:"bottom"
+
                 });
             }
 
@@ -1856,28 +2017,29 @@ generateMaze(){
                 !maze[y][x-1].visited
             ){
 
-                choices.push({
+                options.push({
+
                     cell:
                     maze[y][x-1],
 
-                    dir:
-                    "left"
+                    dir:"left"
+
                 });
             }
 
 
             if(
-                choices.length
+                options.length
             ){
 
                 Phaser.Utils.Array
                 .Shuffle(
-                    choices
+                    options
                 );
 
 
                 const next =
-                choices[0];
+                options[0];
 
 
                 stack.push(
@@ -1921,6 +2083,7 @@ generateMaze(){
         );
 
     }
+
     while(
         signature===
         this.lastMazeSignature &&
@@ -1942,7 +2105,8 @@ generateMaze(){
 
 mazeSignature(maze){
 
-    let result = "";
+    let text =
+    "";
 
 
     for(
@@ -1958,30 +2122,31 @@ mazeSignature(maze){
         ){
 
             const w =
-            maze[y][x].walls;
+            maze[y][x]
+            .walls;
 
 
-            result +=
+            text +=
             w.top ? "1":"0";
 
-            result +=
+            text +=
             w.right ? "1":"0";
 
-            result +=
+            text +=
             w.bottom ? "1":"0";
 
-            result +=
+            text +=
             w.left ? "1":"0";
         }
     }
 
 
-    return result;
+    return text;
 }
 
 
 /* =========================================================
-   CELL POSITION
+   CELL CENTER
 ========================================================= */
 
 cellPosition(x,y){
@@ -2003,6 +2168,95 @@ cellPosition(x,y){
 
 
 /* =========================================================
+   POINT -> CELL
+========================================================= */
+
+pointToCell(
+px,
+py
+){
+
+    if(
+
+        px<
+        this.mazeX ||
+
+        py<
+        this.mazeY ||
+
+        px>=
+        this.mazeX+
+        this.mazePixelW ||
+
+        py>=
+        this.mazeY+
+        this.mazePixelH
+
+    ){
+
+        return null;
+    }
+
+
+    const x =
+    Math.floor(
+        (
+            px-
+            this.mazeX
+        )/
+        this.cellSize
+    );
+
+
+    const y =
+    Math.floor(
+        (
+            py-
+            this.mazeY
+        )/
+        this.cellSize
+    );
+
+
+    if(
+
+        x<0 ||
+
+        y<0 ||
+
+        x>=this.cols ||
+
+        y>=this.rows
+
+    ){
+
+        return null;
+    }
+
+
+    return{
+        x:x,
+        y:y
+    };
+}
+
+
+/* =========================================================
+   SAME CELL
+========================================================= */
+
+sameCell(a,b){
+
+    return(
+        a &&
+        b &&
+        a.x===b.x &&
+        a.y===b.y
+    );
+}
+
+
+/* =========================================================
    CLEAR MAZE
 ========================================================= */
 
@@ -2010,34 +2264,38 @@ clearMaze(){
 
     this.floorObjects
     .forEach(
-        o=>o.destroy()
+        object=>{
+
+            object.destroy();
+        }
     );
 
 
-    this.floorObjects = [];
+    this.floorObjects =
+    [];
 
 
-    this.wallRects = [];
+    if(
+        this.wallGraphics
+    ){
 
-
-    if(this.mazeGraphics){
-
-        this.mazeGraphics
+        this.wallGraphics
         .destroy();
 
-        this.mazeGraphics =
+
+        this.wallGraphics =
         null;
     }
 
 
     this.clearAnswers();
 
-    this.clearTrace();
+    this.clearPath();
 }
 
 
 /* =========================================================
-   BUILD MAZE
+   BUILD NEW MAZE
 ========================================================= */
 
 buildNewMaze(){
@@ -2045,7 +2303,7 @@ buildNewMaze(){
     this.clearMaze();
 
 
-    let valid =
+    let ready =
     false;
 
 
@@ -2054,7 +2312,7 @@ buildNewMaze(){
 
 
     while(
-        !valid &&
+        !ready &&
         tries<30
     ){
 
@@ -2080,18 +2338,22 @@ buildNewMaze(){
         };
 
 
-        const ends =
+        const cells =
         this.findAnswerCells();
 
 
         if(
-            ends.length>=4
+            cells.length>=4
         ){
 
             this.endCells =
-            ends.slice(0,4);
+            cells.slice(
+                0,
+                4
+            );
 
-            valid =
+
+            ready =
             true;
         }
     }
@@ -2099,9 +2361,10 @@ buildNewMaze(){
 
     this.drawMaze();
 
-    this.createStart();
+    this.createStartMarker();
 
     this.createAnswers();
+
 
     AUDIO.newMaze();
 }
@@ -2113,22 +2376,8 @@ buildNewMaze(){
 
 drawMaze(){
 
-    this.mazeGraphics =
-    this.add.graphics()
-    .setDepth(20);
-
-
-    const thickness =
-    Math.max(
-        5,
-        Math.floor(
-            this.cellSize*.11
-        )
-    );
-
-
     /*
-       FLOOR
+       FLOORS
     */
 
     for(
@@ -2154,14 +2403,16 @@ drawMaze(){
             this.add.rectangle(
 
                 p.x,
+
                 p.y,
 
                 this.cellSize,
+
                 this.cellSize,
 
                 (x+y)%2===0
-                ? 0xf4ead0
-                : 0xeee1c1
+                ? 0xf4ead2
+                : 0xeee2c5
 
             )
             .setDepth(5);
@@ -2176,79 +2427,78 @@ drawMaze(){
 
 
     /*
-       SUBTLE GRID
+       SUBTLE FLOOR DOT
     */
-
-    const grid =
-    this.add.graphics()
-    .setDepth(6);
-
-
-    grid.lineStyle(
-        1,
-        0xd5c7a6,
-        .18
-    );
-
-
-    for(
-        let x=0;
-        x<=this.cols;
-        x++
-    ){
-
-        grid.lineBetween(
-
-            this.mazeX+
-            x*this.cellSize,
-
-            this.mazeY,
-
-            this.mazeX+
-            x*this.cellSize,
-
-            this.mazeY+
-            this.mazePixelH
-
-        );
-    }
-
 
     for(
         let y=0;
-        y<=this.rows;
+        y<this.rows;
         y++
     ){
 
-        grid.lineBetween(
+        for(
+            let x=0;
+            x<this.cols;
+            x++
+        ){
 
-            this.mazeX,
+            const p =
+            this.cellPosition(
+                x,
+                y
+            );
 
-            this.mazeY+
-            y*this.cellSize,
 
-            this.mazeX+
-            this.mazePixelW,
+            if(
+                (x+y)%3===0
+            ){
 
-            this.mazeY+
-            y*this.cellSize
+                const dot =
+                this.add.circle(
 
-        );
+                    p.x,
+
+                    p.y,
+
+                    2,
+
+                    0xcdbf9e,
+
+                    .25
+
+                )
+                .setDepth(6);
+
+
+                this.floorObjects
+                .push(dot);
+            }
+        }
     }
 
 
-    this.floorObjects.push(
-        grid
+    /*
+       WALL
+    */
+
+    this.wallGraphics =
+    this.add.graphics()
+    .setDepth(20);
+
+
+    const thickness =
+    Math.max(
+        4,
+        Math.floor(
+            this.cellSize*.10
+        )
     );
 
 
-    /*
-       WALLS
-    */
-
-    this.mazeGraphics
-    .fillStyle(
-        0x315b70,
+    this.wallGraphics
+    .lineStyle(
+        thickness,
+        0x315d72,
         1
     );
 
@@ -2269,29 +2519,36 @@ drawMaze(){
             this.maze[y][x];
 
 
-            const p =
-            this.cellPosition(
-                x,
-                y
-            );
+            const left =
+            this.mazeX+
+            x*this.cellSize;
+
+
+            const top =
+            this.mazeY+
+            y*this.cellSize;
+
+
+            const right =
+            left+
+            this.cellSize;
+
+
+            const bottom =
+            top+
+            this.cellSize;
 
 
             if(
                 cell.walls.top
             ){
 
-                this.addWallRect(
-
-                    p.x,
-
-                    p.y-
-                    this.cellSize/2,
-
-                    this.cellSize+
-                    thickness,
-
-                    thickness
-
+                this.wallGraphics
+                .lineBetween(
+                    left,
+                    top,
+                    right,
+                    top
                 );
             }
 
@@ -2300,60 +2557,44 @@ drawMaze(){
                 cell.walls.left
             ){
 
-                this.addWallRect(
-
-                    p.x-
-                    this.cellSize/2,
-
-                    p.y,
-
-                    thickness,
-
-                    this.cellSize+
-                    thickness
-
+                this.wallGraphics
+                .lineBetween(
+                    left,
+                    top,
+                    left,
+                    bottom
                 );
             }
 
 
             if(
-                x===this.cols-1 &&
+                x===
+                this.cols-1 &&
                 cell.walls.right
             ){
 
-                this.addWallRect(
-
-                    p.x+
-                    this.cellSize/2,
-
-                    p.y,
-
-                    thickness,
-
-                    this.cellSize+
-                    thickness
-
+                this.wallGraphics
+                .lineBetween(
+                    right,
+                    top,
+                    right,
+                    bottom
                 );
             }
 
 
             if(
-                y===this.rows-1 &&
+                y===
+                this.rows-1 &&
                 cell.walls.bottom
             ){
 
-                this.addWallRect(
-
-                    p.x,
-
-                    p.y+
-                    this.cellSize/2,
-
-                    this.cellSize+
-                    thickness,
-
-                    thickness
-
+                this.wallGraphics
+                .lineBetween(
+                    left,
+                    bottom,
+                    right,
+                    bottom
                 );
             }
         }
@@ -2362,48 +2603,10 @@ drawMaze(){
 
 
 /* =========================================================
-   WALL RECT
+   START MARKER
 ========================================================= */
 
-addWallRect(
-x,
-y,
-w,
-h
-){
-
-    this.mazeGraphics
-    .fillRect(
-
-        x-w/2,
-
-        y-h/2,
-
-        w,
-        h
-
-    );
-
-
-    this.wallRects.push({
-
-        x:x-w/2,
-
-        y:y-h/2,
-
-        w,
-
-        h
-
-    });
-}
-
-
-/* =========================================================
-   START
-========================================================= */
-
-createStart(){
+createStartMarker(){
 
     const p =
     this.cellPosition(
@@ -2415,12 +2618,6 @@ createStart(){
     );
 
 
-    this.startPos = {
-        x:p.x,
-        y:p.y
-    };
-
-
     this.startGlow =
     this.add.circle(
 
@@ -2429,12 +2626,12 @@ createStart(){
 
         this.cellSize*.40,
 
-        0x31b86b,
+        0x38b86e,
 
         .18
 
     )
-    .setDepth(40);
+    .setDepth(42);
 
 
     this.startCircle =
@@ -2452,19 +2649,20 @@ createStart(){
 
         Math.max(
             3,
-            this.cellSize*.07
+            this.cellSize*.065
         ),
 
-        0x239154
+        0x269457
 
     )
-    .setDepth(41);
+    .setDepth(43);
 
 
-    this.startText =
+    this.startLabel =
     this.add.text(
 
         p.x,
+
         p.y,
 
         "START",
@@ -2485,7 +2683,7 @@ createStart(){
 
     )
     .setOrigin(.5)
-    .setDepth(42);
+    .setDepth(44);
 
 
     this.tweens.add({
@@ -2493,15 +2691,15 @@ createStart(){
         targets:
         this.startGlow,
 
-        scale:1.16,
+        scale:1.18,
 
-        alpha:.08,
+        alpha:.06,
 
-        duration:700,
+        duration:750,
 
-        yoyo:true,
+        repeat:-1,
 
-        repeat:-1
+        yoyo:true
 
     });
 }
@@ -2513,22 +2711,33 @@ createStart(){
 
 openingCount(cell){
 
-    let count = 0;
+    let count=0;
 
 
-    if(!cell.walls.top){
+    if(
+        !cell.walls.top
+    ){
         count++;
     }
 
-    if(!cell.walls.right){
+
+    if(
+        !cell.walls.right
+    ){
         count++;
     }
 
-    if(!cell.walls.bottom){
+
+    if(
+        !cell.walls.bottom
+    ){
         count++;
     }
 
-    if(!cell.walls.left){
+
+    if(
+        !cell.walls.left
+    ){
         count++;
     }
 
@@ -2538,91 +2747,85 @@ openingCount(cell){
 
 
 /* =========================================================
-   DISTANCES
+   DISTANCE MAP
 ========================================================= */
 
 getDistances(){
 
-    const distance =
+    const distances =
     Array.from(
         {
             length:
             this.rows
         },
-        ()=>
-        Array(
+        ()=>Array(
             this.cols
         ).fill(-1)
     );
 
 
-    const queue = [];
+    const queue =
+    [];
 
 
-    const sx =
-    this.startCell.x;
-
-
-    const sy =
-    this.startCell.y;
-
-
-    distance[sy][sx] =
-    0;
+    distances[
+        this.startCell.y
+    ][
+        this.startCell.x
+    ]=0;
 
 
     queue.push({
-        x:sx,
-        y:sy
+
+        x:
+        this.startCell.x,
+
+        y:
+        this.startCell.y
+
     });
 
 
-    let head = 0;
+    let index=0;
 
 
     while(
-        head<queue.length
+        index<
+        queue.length
     ){
 
         const current =
-        queue[head++];
-
-
-        const x =
-        current.x;
-
-
-        const y =
-        current.y;
+        queue[index++];
 
 
         const cell =
-        this.maze[y][x];
+        this.maze[
+            current.y
+        ][
+            current.x
+        ];
 
 
-        const nd =
-        distance[y][x]+1;
+        const distance =
+        distances[
+            current.y
+        ][
+            current.x
+        ]+1;
+
+
+        const possible =
+        [];
 
 
         if(
             !cell.walls.top
         ){
 
-            const nx=x;
-            const ny=y-1;
-
-
-            if(
-                distance[ny][nx]===-1
-            ){
-
-                distance[ny][nx]=nd;
-
-                queue.push({
-                    x:nx,
-                    y:ny
-                });
-            }
+            possible.push({
+                x:current.x,
+                y:current.y-1
+            });
         }
 
 
@@ -2630,21 +2833,10 @@ getDistances(){
             !cell.walls.right
         ){
 
-            const nx=x+1;
-            const ny=y;
-
-
-            if(
-                distance[ny][nx]===-1
-            ){
-
-                distance[ny][nx]=nd;
-
-                queue.push({
-                    x:nx,
-                    y:ny
-                });
-            }
+            possible.push({
+                x:current.x+1,
+                y:current.y
+            });
         }
 
 
@@ -2652,21 +2844,10 @@ getDistances(){
             !cell.walls.bottom
         ){
 
-            const nx=x;
-            const ny=y+1;
-
-
-            if(
-                distance[ny][nx]===-1
-            ){
-
-                distance[ny][nx]=nd;
-
-                queue.push({
-                    x:nx,
-                    y:ny
-                });
-            }
+            possible.push({
+                x:current.x,
+                y:current.y+1
+            });
         }
 
 
@@ -2674,26 +2855,61 @@ getDistances(){
             !cell.walls.left
         ){
 
-            const nx=x-1;
-            const ny=y;
+            possible.push({
+                x:current.x-1,
+                y:current.y
+            });
+        }
+
+
+        for(
+            const next of
+            possible
+        ){
+
+            if(
+
+                next.x<0 ||
+
+                next.y<0 ||
+
+                next.x>=
+                this.cols ||
+
+                next.y>=
+                this.rows
+
+            ){
+
+                continue;
+            }
 
 
             if(
-                distance[ny][nx]===-1
+                distances[
+                    next.y
+                ][
+                    next.x
+                ]===-1
             ){
 
-                distance[ny][nx]=nd;
+                distances[
+                    next.y
+                ][
+                    next.x
+                ]=
+                distance;
 
-                queue.push({
-                    x:nx,
-                    y:ny
-                });
+
+                queue.push(
+                    next
+                );
             }
         }
     }
 
 
-    return distance;
+    return distances;
 }
 
 
@@ -2707,10 +2923,12 @@ findAnswerCells(){
     this.getDistances();
 
 
-    const deadEnds = [];
+    const deadEnds =
+    [];
 
 
-    const everyCell = [];
+    const all =
+    [];
 
 
     for(
@@ -2726,8 +2944,10 @@ findAnswerCells(){
         ){
 
             if(
-                x===this.startCell.x &&
-                y===this.startCell.y
+                x===
+                this.startCell.x &&
+                y===
+                this.startCell.y
             ){
 
                 continue;
@@ -2736,8 +2956,9 @@ findAnswerCells(){
 
             const item = {
 
-                x,
-                y,
+                x:x,
+
+                y:y,
 
                 distance:
                 distances[y][x]
@@ -2745,7 +2966,7 @@ findAnswerCells(){
             };
 
 
-            everyCell.push(
+            all.push(
                 item
             );
 
@@ -2771,19 +2992,19 @@ findAnswerCells(){
     );
 
 
-    everyCell.sort(
+    all.sort(
         (a,b)=>
         b.distance-
         a.distance
     );
 
 
-    const selected = [];
+    const chosen =
+    [];
 
 
     /*
-       FIRST:
-       DEAD ENDS WITH SPACING
+       FAR APART DEAD ENDS
     */
 
     for(
@@ -2791,30 +3012,32 @@ findAnswerCells(){
         deadEnds
     ){
 
-        let close =
+        let tooNear =
         false;
 
 
         for(
-            const chosen of
-            selected
+            const current of
+            chosen
         ){
 
-            const d =
+            const distance =
             Math.abs(
                 candidate.x-
-                chosen.x
+                current.x
             )
             +
             Math.abs(
                 candidate.y-
-                chosen.y
+                current.y
             );
 
 
-            if(d<3){
+            if(
+                distance<4
+            ){
 
-                close =
+                tooNear=
                 true;
 
                 break;
@@ -2822,16 +3045,16 @@ findAnswerCells(){
         }
 
 
-        if(!close){
+        if(!tooNear){
 
-            selected.push(
+            chosen.push(
                 candidate
             );
         }
 
 
         if(
-            selected.length===4
+            chosen.length===4
         ){
 
             break;
@@ -2840,11 +3063,11 @@ findAnswerCells(){
 
 
     /*
-       FILL WITH OTHER DEAD ENDS
+       FILL REMAINING DEAD ENDS
     */
 
     if(
-        selected.length<4
+        chosen.length<4
     ){
 
         for(
@@ -2852,24 +3075,24 @@ findAnswerCells(){
             deadEnds
         ){
 
-            const exists =
-            selected.some(
-                s=>
-                s.x===candidate.x &&
-                s.y===candidate.y
+            const found =
+            chosen.some(
+                c=>
+                c.x===candidate.x &&
+                c.y===candidate.y
             );
 
 
-            if(!exists){
+            if(!found){
 
-                selected.push(
+                chosen.push(
                     candidate
                 );
             }
 
 
             if(
-                selected.length===4
+                chosen.length===4
             ){
 
                 break;
@@ -2883,32 +3106,32 @@ findAnswerCells(){
     */
 
     if(
-        selected.length<4
+        chosen.length<4
     ){
 
         for(
             const candidate of
-            everyCell
+            all
         ){
 
-            const exists =
-            selected.some(
-                s=>
-                s.x===candidate.x &&
-                s.y===candidate.y
+            const found =
+            chosen.some(
+                c=>
+                c.x===candidate.x &&
+                c.y===candidate.y
             );
 
 
-            if(!exists){
+            if(!found){
 
-                selected.push(
+                chosen.push(
                     candidate
                 );
             }
 
 
             if(
-                selected.length===4
+                chosen.length===4
             ){
 
                 break;
@@ -2917,7 +3140,7 @@ findAnswerCells(){
     }
 
 
-    return selected.slice(
+    return chosen.slice(
         0,
         4
     );
@@ -2925,7 +3148,7 @@ findAnswerCells(){
 
 
 /* =========================================================
-   ANSWERS
+   ANSWER MARKERS
 ========================================================= */
 
 createAnswers(){
@@ -2938,15 +3161,15 @@ createAnswers(){
 
 
     const colors = [
-        0xe65a5f,
-        0x4d8ae4,
-        0xeeaa3d,
-        0x43a96c
+        0xe45a60,
+        0x4a88df,
+        0xefa83d,
+        0x42a76b
     ];
 
 
     const size =
-    this.cellSize*.66;
+    this.cellSize*.65;
 
 
     for(
@@ -2975,7 +3198,7 @@ createAnswers(){
             p.x,
             p.y
         )
-        .setDepth(55);
+        .setDepth(56);
 
 
         const glow =
@@ -2984,18 +3207,34 @@ createAnswers(){
             0,
             0,
 
-            size*.61,
+            size*.62,
 
             colors[
                 answerIndex
             ],
 
-            .18
+            .17
 
         );
 
 
-        const box =
+        const shadow =
+        this.add.rectangle(
+
+            2,
+            3,
+
+            size,
+            size,
+
+            0x617782,
+
+            .16
+
+        );
+
+
+        const card =
         this.add.rectangle(
 
             0,
@@ -3011,7 +3250,7 @@ createAnswers(){
 
             Math.max(
                 3,
-                this.cellSize*.07
+                this.cellSize*.065
             ),
 
             colors[
@@ -3021,7 +3260,7 @@ createAnswers(){
         );
 
 
-        const letter =
+        const text =
         this.add.text(
 
             0,
@@ -3032,20 +3271,17 @@ createAnswers(){
             ],
 
             {
-                fontFamily:
-                "Arial",
+                fontFamily:"Arial",
 
                 fontSize:
                 `${Math.max(
                     17,
-                    this.cellSize*.45
+                    this.cellSize*.43
                 )}px`,
 
-                fontStyle:
-                "bold",
+                fontStyle:"bold",
 
-                color:
-                "#173b4e"
+                color:"#173b4e"
             }
 
         )
@@ -3054,15 +3290,23 @@ createAnswers(){
 
         container.add([
             glow,
-            box,
-            letter
+            shadow,
+            card,
+            text
         ]);
 
 
         this.answerZones.push({
 
+            container:
             container,
 
+            cell:{
+                x:cell.x,
+                y:cell.y
+            },
+
+            answerIndex:
             answerIndex,
 
             x:p.x,
@@ -3079,17 +3323,17 @@ createAnswers(){
 
             scale:1.18,
 
-            alpha:.06,
+            alpha:.05,
 
             duration:
-            700+i*90,
+            700+
+            i*80,
 
             yoyo:true,
 
             repeat:-1,
 
-            ease:
-            "Sine.easeInOut"
+            ease:"Sine.easeInOut"
 
         });
     }
@@ -3110,12 +3354,6 @@ clearAnswers(){
                 zone.container
             ){
 
-                this.tweens
-                .killTweensOf(
-                    zone.container
-                );
-
-
                 zone.container
                 .destroy(true);
             }
@@ -3123,7 +3361,8 @@ clearAnswers(){
     );
 
 
-    this.answerZones = [];
+    this.answerZones =
+    [];
 
 
     if(this.startGlow){
@@ -3134,11 +3373,16 @@ clearAnswers(){
         );
 
 
-        this.startGlow.destroy();
+        this.startGlow
+        .destroy();
 
-        this.startCircle.destroy();
 
-        this.startText.destroy();
+        this.startCircle
+        .destroy();
+
+
+        this.startLabel
+        .destroy();
 
 
         this.startGlow =
@@ -3149,308 +3393,347 @@ clearAnswers(){
         null;
 
 
-        this.startText =
+        this.startLabel =
         null;
     }
 }
 
 
 /* =========================================================
-   CLEAR TRACE
+   PATH RESET
 ========================================================= */
 
-clearTrace(){
+clearPath(){
 
     this.isDrawing =
     false;
 
 
-    this.tracePoints =
+    this.pathCells =
     [];
 
 
+    this.lastPointerPosition =
+    null;
+
+
     if(
-        this.traceGraphics
+        this.pathGraphics
     ){
 
-        this.traceGraphics.clear();
+        this.pathGraphics
+        .clear();
     }
 
 
-    if(this.tipOuter){
+    if(
+        this.pathTipOuter
+    ){
 
-        this.tipOuter
+        this.pathTipOuter
         .setVisible(false);
 
 
-        this.tipInner
+        this.pathTipInner
         .setVisible(false);
     }
 }
 
 
 /* =========================================================
-   DRAW TRACE
+   DRAW CURRENT PATH
+
+   PATH DILUKIS DARIPADA
+   CENTER CELL KE CENTER CELL.
+
+   BILA ARRAY DIBUANG,
+   GARISAN MEMANG HILANG.
 ========================================================= */
 
-drawTrace(
-color=0x24a5df
+drawCurrentPath(
+color=0x1b9ed5
 ){
 
-    this.traceGraphics.clear();
+    this.pathGraphics
+    .clear();
 
 
     if(
-        this.tracePoints.length<
-        2
+        this.pathCells.length===0
     ){
+
+        this.pathTipOuter
+        .setVisible(false);
+
+
+        this.pathTipInner
+        .setVisible(false);
+
 
         return;
     }
 
 
-    /*
-       WHITE BORDER
-    */
-
-    this.traceGraphics
-    .lineStyle(
-
-        PORTRAIT
-        ? 15
-        : 12,
-
-        0xffffff,
-
-        .76
-
-    );
-
-
-    this.traceGraphics
-    .beginPath();
-
-
-    this.traceGraphics
-    .moveTo(
-
-        this.tracePoints[0].x,
-
-        this.tracePoints[0].y
-
-    );
-
-
-    for(
-        let i=1;
-        i<this.tracePoints.length;
-        i++
-    ){
-
-        this.traceGraphics
-        .lineTo(
-
-            this.tracePoints[i].x,
-
-            this.tracePoints[i].y
-
-        );
-    }
-
-
-    this.traceGraphics
-    .strokePath();
-
-
-    /*
-       BLUE CENTER
-    */
-
-    this.traceGraphics
-    .lineStyle(
-
-        PORTRAIT
-        ? 9
-        : 7,
-
-        color,
-
-        .96
-
-    );
-
-
-    this.traceGraphics
-    .beginPath();
-
-
-    this.traceGraphics
-    .moveTo(
-
-        this.tracePoints[0].x,
-
-        this.tracePoints[0].y
-
-    );
-
-
-    for(
-        let i=1;
-        i<this.tracePoints.length;
-        i++
-    ){
-
-        this.traceGraphics
-        .lineTo(
-
-            this.tracePoints[i].x,
-
-            this.tracePoints[i].y
-
-        );
-    }
-
-
-    this.traceGraphics
-    .strokePath();
-
-
-    const last =
-    this.tracePoints[
-        this.tracePoints.length-1
-    ];
-
-
-    this.tipOuter
-    .setPosition(
-        last.x,
-        last.y
-    )
-    .setVisible(true);
-
-
-    this.tipInner
-    .setPosition(
-        last.x,
-        last.y
-    )
-    .setVisible(true);
-}
-
-
-/* =========================================================
-   WALL COLLISION
-========================================================= */
-
-pointHitsWall(x,y){
-
-    const margin =
-    PORTRAIT
-    ? 3
-    : 2;
-
-
-    for(
-        const wall of
-        this.wallRects
-    ){
-
-        if(
-
-            x>=wall.x-margin &&
-
-            x<=
-            wall.x+
-            wall.w+
-            margin &&
-
-            y>=wall.y-margin &&
-
-            y<=
-            wall.y+
-            wall.h+
-            margin
-
-        ){
-
-            return true;
-        }
-    }
-
-
-    return false;
-}
-
-
-/* =========================================================
-   SEGMENT HIT WALL
-========================================================= */
-
-segmentHitsWall(
-x1,
-y1,
-x2,
-y2
-){
-
-    const distance =
-    Phaser.Math.Distance
-    .Between(
-        x1,
-        y1,
-        x2,
-        y2
-    );
-
-
-    const steps =
-    Math.max(
-        1,
-        Math.ceil(
-            distance/3
+    const points =
+    this.pathCells.map(
+        cell=>
+        this.cellPosition(
+            cell.x,
+            cell.y
         )
     );
 
 
-    for(
-        let i=1;
-        i<=steps;
-        i++
+    /*
+       OUTER WHITE LINE
+    */
+
+    if(
+        points.length>=2
     ){
 
-        const t =
-        i/steps;
+        this.pathGraphics
+        .lineStyle(
 
+            PORTRAIT
+            ? 16
+            : 14,
 
-        const x =
-        Phaser.Math.Linear(
-            x1,
-            x2,
-            t
+            0xffffff,
+
+            .78
+
         );
 
 
-        const y =
-        Phaser.Math.Linear(
-            y1,
-            y2,
-            t
+        this.pathGraphics
+        .beginPath();
+
+
+        this.pathGraphics
+        .moveTo(
+            points[0].x,
+            points[0].y
         );
 
 
-        if(
-            this.pointHitsWall(
-                x,
-                y
-            )
+        for(
+            let i=1;
+            i<points.length;
+            i++
         ){
 
-            return true;
+            this.pathGraphics
+            .lineTo(
+                points[i].x,
+                points[i].y
+            );
+        }
+
+
+        this.pathGraphics
+        .strokePath();
+
+
+        /*
+           MAIN BLUE LINE
+        */
+
+        this.pathGraphics
+        .lineStyle(
+
+            PORTRAIT
+            ? 9
+            : 8,
+
+            color,
+
+            1
+
+        );
+
+
+        this.pathGraphics
+        .beginPath();
+
+
+        this.pathGraphics
+        .moveTo(
+            points[0].x,
+            points[0].y
+        );
+
+
+        for(
+            let i=1;
+            i<points.length;
+            i++
+        ){
+
+            this.pathGraphics
+            .lineTo(
+                points[i].x,
+                points[i].y
+            );
+        }
+
+
+        this.pathGraphics
+        .strokePath();
+
+
+        /*
+           ROUNDED POINTS
+        */
+
+        this.pathGraphics
+        .fillStyle(
+            color,
+            1
+        );
+
+
+        for(
+            const p of
+            points
+        ){
+
+            this.pathGraphics
+            .fillCircle(
+                p.x,
+                p.y,
+                PORTRAIT
+                ? 4.6
+                : 4
+            );
         }
     }
 
 
+    const last =
+    points[
+        points.length-1
+    ];
+
+
+    this.pathTipOuter
+    .setPosition(
+        last.x,
+        last.y
+    )
+    .setVisible(true);
+
+
+    this.pathTipInner
+    .setPosition(
+        last.x,
+        last.y
+    )
+    .setVisible(true);
+}
+
+
+/* =========================================================
+   CHECK OPEN PASSAGE
+========================================================= */
+
+canMoveBetween(
+from,
+to
+){
+
+    const dx =
+    to.x-
+    from.x;
+
+
+    const dy =
+    to.y-
+    from.y;
+
+
+    /*
+       MUST BE ADJACENT
+    */
+
+    if(
+        Math.abs(dx)+
+        Math.abs(dy)!==1
+    ){
+
+        return false;
+    }
+
+
+    const cell =
+    this.maze[
+        from.y
+    ][
+        from.x
+    ];
+
+
+    if(dx===1){
+
+        return(
+            !cell.walls.right
+        );
+    }
+
+
+    if(dx===-1){
+
+        return(
+            !cell.walls.left
+        );
+    }
+
+
+    if(dy===1){
+
+        return(
+            !cell.walls.bottom
+        );
+    }
+
+
+    if(dy===-1){
+
+        return(
+            !cell.walls.top
+        );
+    }
+
+
     return false;
+}
+
+
+/* =========================================================
+   ANSWER BY CELL
+========================================================= */
+
+getAnswerAtCell(cell){
+
+    for(
+        const zone of
+        this.answerZones
+    ){
+
+        if(
+            zone.cell.x===
+            cell.x
+            &&
+            zone.cell.y===
+            cell.y
+        ){
+
+            return zone;
+        }
+    }
+
+
+    return null;
 }
 
 
@@ -3470,49 +3753,57 @@ beginDraw(pointer){
 
 
     /*
-       FIRST DRAW MUST START
-       FROM START
+       HANYA INPUT DALAM
+       KAWASAN MAZE
+    */
+
+    const pointerCell =
+    this.pointToCell(
+        pointer.x,
+        pointer.y
+    );
+
+
+    if(!pointerCell){
+
+        return;
+    }
+
+
+    /*
+       PATH BELUM WUJUD:
+       MESTI START.
     */
 
     if(
-        this.tracePoints.length===0
+        this.pathCells.length===0
     ){
 
-        const distance =
-        Phaser.Math.Distance
-        .Between(
-
-            pointer.x,
-            pointer.y,
-
-            this.startPos.x,
-            this.startPos.y
-
-        );
-
-
         if(
-            distance>
-            this.cellSize*.52
+            !this.sameCell(
+                pointerCell,
+                this.startCell
+            )
         ){
 
             this.showMessage(
                 "MULA DARI START",
-                0xd18a25
+                0xd08825
             );
+
 
             return;
         }
 
 
-        this.tracePoints = [
+        this.pathCells = [
 
             {
                 x:
-                this.startPos.x,
+                this.startCell.x,
 
                 y:
-                this.startPos.y
+                this.startCell.y
             }
 
         ];
@@ -3522,20 +3813,16 @@ beginDraw(pointer){
         true;
 
 
-        this.tipOuter
-        .setPosition(
-            this.startPos.x,
-            this.startPos.y
-        )
-        .setVisible(true);
+        this.lastPointerPosition = {
+
+            x:pointer.x,
+
+            y:pointer.y
+
+        };
 
 
-        this.tipInner
-        .setPosition(
-            this.startPos.x,
-            this.startPos.y
-        )
-        .setVisible(true);
+        this.drawCurrentPath();
 
 
         return;
@@ -3543,347 +3830,175 @@ beginDraw(pointer){
 
 
     /*
-       AFTER RELEASE:
-       CONTINUE FROM TRACE TIP
+       SAMBUNG SEMULA
+       DARI CELL TERAKHIR
     */
 
-    const last =
-    this.tracePoints[
-        this.tracePoints.length-1
+    const lastCell =
+    this.pathCells[
+        this.pathCells.length-1
     ];
 
 
-    const distance =
-    Phaser.Math.Distance
-    .Between(
-
-        pointer.x,
-        pointer.y,
-
-        last.x,
-        last.y
-
-    );
-
-
     if(
-        distance<=
-        this.cellSize*.62
+        this.sameCell(
+            pointerCell,
+            lastCell
+        )
     ){
 
         this.isDrawing =
         true;
+
+
+        this.lastPointerPosition = {
+
+            x:pointer.x,
+
+            y:pointer.y
+
+        };
+
+
+        return;
     }
 
-    else{
 
-        this.showMessage(
-            "SAMBUNG DARI HUJUNG GARISAN",
-            0xd18a25
-        );
-    }
+    this.showMessage(
+        "SAMBUNG DARI HUJUNG GARISAN",
+        0xd08825
+    );
 }
 
 
 /* =========================================================
-   BACKTRACK CHECK
+   PROCESS CELL MOVEMENT
 
-   Bila pointer bergerak arah bertentangan
-   dengan segmen terakhir dan kembali dekat
-   titik lama, trace akan dipotong kembali.
+   INILAH SISTEM UNDO SEBENAR.
+
+   Contoh:
+   path = A B C D
+
+   player tarik dari D ke C
+
+   result = A B C
+
+   D DIBUANG TERUS DARIPADA ARRAY.
+   JADI GARIS D → C TAK TINGGAL.
 ========================================================= */
 
-tryBacktrack(
-pointerX,
-pointerY
-){
+processCell(nextCell){
 
-    const count =
-    this.tracePoints.length;
+    if(
+        this.pathCells.length===0
+    ){
 
-
-    if(count<3){
-
-        return false;
+        return;
     }
 
 
-    const last =
-    this.tracePoints[
-        count-1
+    const lastIndex =
+    this.pathCells.length-1;
+
+
+    const current =
+    this.pathCells[
+        lastIndex
     ];
 
 
-    const previous =
-    this.tracePoints[
-        count-2
-    ];
+    /*
+       SAME CELL
+    */
+
+    if(
+        this.sameCell(
+            nextCell,
+            current
+        )
+    ){
+
+        return;
+    }
 
 
-    const oldX =
-    last.x-
-    previous.x;
+    /*
+       NOT ADJACENT
+    */
 
-
-    const oldY =
-    last.y-
-    previous.y;
-
-
-    const moveX =
-    pointerX-
-    last.x;
-
-
-    const moveY =
-    pointerY-
-    last.y;
-
-
-    const oldLength =
-    Math.hypot(
-        oldX,
-        oldY
-    );
-
-
-    const moveLength =
-    Math.hypot(
-        moveX,
-        moveY
+    const manhattan =
+    Math.abs(
+        nextCell.x-
+        current.x
+    )
+    +
+    Math.abs(
+        nextCell.y-
+        current.y
     );
 
 
     if(
-        oldLength<.01 ||
-        moveLength<.01
+        manhattan!==1
     ){
 
-        return false;
+        return;
     }
 
 
-    const dot =
-    (
-        oldX*moveX+
-        oldY*moveY
-    )
-    /
-    (
-        oldLength*
-        moveLength
-    );
-
-
     /*
-       HANYA BACKTRACK
-       JIKA GERAKAN MEMANG
-       MENUJU KE BELAKANG
+       ================================
+       UNDO / BACKTRACK
+       ================================
+
+       Kalau masuk kembali ke cell
+       SEBELUM current:
+
+       POP CURRENT.
+
+       Garisan belakang benar-benar
+       hilang. Bukan contengan.
     */
 
-    if(dot>-0.12){
-
-        return false;
-    }
-
-
-    const radius =
-    Math.max(
-        8,
-        this.cellSize*.22
-    );
-
-
-    let foundIndex =
-    -1;
-
-
-    /*
-       SEARCH FROM RECENT
-       POINT BACKWARDS
-    */
-
-    for(
-        let i=count-2;
-        i>=0;
-        i--
+    if(
+        this.pathCells.length>=2
     ){
 
-        const p =
-        this.tracePoints[i];
-
-
-        const distance =
-        Phaser.Math.Distance
-        .Between(
-
-            pointerX,
-            pointerY,
-
-            p.x,
-            p.y
-
-        );
+        const previous =
+        this.pathCells[
+            this.pathCells.length-2
+        ];
 
 
         if(
-            distance<=radius
+            this.sameCell(
+                nextCell,
+                previous
+            )
         ){
 
-            foundIndex =
-            i;
+            this.pathCells.pop();
 
-            break;
+
+            AUDIO.undo();
+
+
+            this.drawCurrentPath();
+
+
+            return;
         }
     }
 
 
-    if(
-        foundIndex<0
-    ){
-
-        return false;
-    }
-
-
     /*
-       TRIM TRACE
-    */
-
-    this.tracePoints =
-    this.tracePoints.slice(
-        0,
-        foundIndex+1
-    );
-
-
-    const newLast =
-    this.tracePoints[
-        this.tracePoints.length-1
-    ];
-
-
-    /*
-       FOLLOW POINTER SLIGHTLY
-       AFTER THE TRIM
+       TAK BOLEH TEMBUS DINDING
     */
 
     if(
-        !this.segmentHitsWall(
-
-            newLast.x,
-            newLast.y,
-
-            pointerX,
-            pointerY
-
-        )
-    ){
-
-        const d =
-        Phaser.Math.Distance
-        .Between(
-
-            newLast.x,
-            newLast.y,
-
-            pointerX,
-            pointerY
-
-        );
-
-
-        if(d>2){
-
-            this.tracePoints.push({
-
-                x:pointerX,
-                y:pointerY
-
-            });
-        }
-    }
-
-
-    this.drawTrace();
-
-
-    return true;
-}
-
-
-/* =========================================================
-   CONTINUE DRAW
-========================================================= */
-
-continueDraw(pointer){
-
-    if(
-        !this.isDrawing ||
-        this.locked
-    ){
-
-        return;
-    }
-
-
-    const last =
-    this.tracePoints[
-        this.tracePoints.length-1
-    ];
-
-
-    const distance =
-    Phaser.Math.Distance
-    .Between(
-
-        last.x,
-        last.y,
-
-        pointer.x,
-        pointer.y
-
-    );
-
-
-    if(distance<3){
-
-        return;
-    }
-
-
-    /*
-       1. TRY BACKTRACK
-    */
-
-    if(
-        this.tryBacktrack(
-            pointer.x,
-            pointer.y
-        )
-    ){
-
-        return;
-    }
-
-
-    /*
-       2. WALL CHECK
-
-       WALL TAK RESET.
-       WALL TAK PADAM GARIS.
-       DRAWING KEKAL AKTIF.
-    */
-
-    if(
-        this.segmentHitsWall(
-
-            last.x,
-            last.y,
-
-            pointer.x,
-            pointer.y
-
+        !this.canMoveBetween(
+            current,
+            nextCell
         )
     ){
 
@@ -3899,7 +4014,7 @@ continueDraw(pointer){
 
 
             this.time.delayedCall(
-                110,
+                100,
                 ()=>{
 
                     this.wallSoundReady =
@@ -3914,42 +4029,210 @@ continueDraw(pointer){
 
 
     /*
-       3. NORMAL FORWARD DRAW
+       PREVENT DRAWING OVER
+       OLD PATH.
+
+       Perfect maze tiada cycle,
+       tetapi ini buat path lebih kemas.
     */
 
-    this.tracePoints.push({
+    const existingIndex =
+    this.pathCells
+    .findIndex(
+        cell=>
+        this.sameCell(
+            cell,
+            nextCell
+        )
+    );
+
+
+    if(
+        existingIndex>=0
+    ){
+
+        /*
+           UNDO TERUS SAMPAI
+           KE CELL TERSEBUT.
+        */
+
+        this.pathCells =
+        this.pathCells.slice(
+            0,
+            existingIndex+1
+        );
+
+
+        AUDIO.undo();
+
+
+        this.drawCurrentPath();
+
+
+        return;
+    }
+
+
+    /*
+       NORMAL FORWARD
+    */
+
+    this.pathCells.push({
+
+        x:nextCell.x,
+
+        y:nextCell.y
+
+    });
+
+
+    AUDIO.step();
+
+
+    this.drawCurrentPath();
+
+
+    /*
+       CHECK ANSWER
+    */
+
+    const answer =
+    this.getAnswerAtCell(
+        nextCell
+    );
+
+
+    if(answer){
+
+        this.finishAnswer(
+            answer
+        );
+    }
+}
+
+
+/* =========================================================
+   POINTER MOVE
+
+   SAMPLE GERAKAN SUPAYA
+   DRAG LAJU PUN TAK LOMPAT CELL.
+========================================================= */
+
+continueDraw(pointer){
+
+    if(
+        !this.isDrawing ||
+        this.locked
+    ){
+
+        return;
+    }
+
+
+    if(
+        !this.lastPointerPosition
+    ){
+
+        this.lastPointerPosition = {
+
+            x:pointer.x,
+
+            y:pointer.y
+
+        };
+    }
+
+
+    const from =
+    this.lastPointerPosition;
+
+
+    const distance =
+    Phaser.Math.Distance.Between(
+
+        from.x,
+        from.y,
+
+        pointer.x,
+        pointer.y
+
+    );
+
+
+    const sampleDistance =
+    Math.max(
+        4,
+        this.cellSize*.14
+    );
+
+
+    const steps =
+    Math.max(
+        1,
+        Math.ceil(
+            distance/
+            sampleDistance
+        )
+    );
+
+
+    for(
+        let i=1;
+        i<=steps;
+        i++
+    ){
+
+        if(this.locked){
+            break;
+        }
+
+
+        const t =
+        i/steps;
+
+
+        const x =
+        Phaser.Math.Linear(
+            from.x,
+            pointer.x,
+            t
+        );
+
+
+        const y =
+        Phaser.Math.Linear(
+            from.y,
+            pointer.y,
+            t
+        );
+
+
+        const cell =
+        this.pointToCell(
+            x,
+            y
+        );
+
+
+        if(!cell){
+
+            continue;
+        }
+
+
+        this.processCell(
+            cell
+        );
+    }
+
+
+    this.lastPointerPosition = {
 
         x:pointer.x,
 
         y:pointer.y
 
-    });
-
-
-    /*
-       LIMIT TOTAL TRACE POINTS
-       FOR PERFORMANCE
-    */
-
-    if(
-        this.tracePoints.length>
-        2500
-    ){
-
-        this.tracePoints.splice(
-            1,
-            1
-        );
-    }
-
-
-    this.drawTrace();
-
-
-    this.checkAnswer(
-        pointer.x,
-        pointer.y
-    );
+    };
 }
 
 
@@ -3959,64 +4242,12 @@ continueDraw(pointer){
 
 endDraw(){
 
-    if(
-        !this.isDrawing
-    ){
-
-        return;
-    }
-
-
-    /*
-       TRACE KEKAL.
-       PLAYER BOLEH SAMBUNG
-       KEMUDIAN.
-    */
-
     this.isDrawing =
     false;
-}
 
 
-/* =========================================================
-   CHECK ANSWER
-========================================================= */
-
-checkAnswer(x,y){
-
-    const trigger =
-    this.cellSize*.43;
-
-
-    for(
-        const zone of
-        this.answerZones
-    ){
-
-        const distance =
-        Phaser.Math.Distance
-        .Between(
-
-            x,
-            y,
-
-            zone.x,
-            zone.y
-
-        );
-
-
-        if(
-            distance<trigger
-        ){
-
-            this.finishAnswer(
-                zone
-            );
-
-            return;
-        }
-    }
+    this.lastPointerPosition =
+    null;
 }
 
 
@@ -4065,8 +4296,8 @@ finishAnswer(zone){
         );
 
 
-        this.drawTrace(
-            0x34b96c
+        this.drawCurrentPath(
+            0x34b96d
         );
 
 
@@ -4075,18 +4306,18 @@ finishAnswer(zone){
 
         this.showMessage(
             "BETUL! +100",
-            0x29945a
+            0x2c955a
         );
 
 
-        this.flashAnswer(
+        this.answerPulse(
             zone,
-            0x34b96c
+            0x35ba6e
         );
 
 
         this.time.delayedCall(
-            850,
+            900,
             ()=>{
 
                 this.questionIndex++;
@@ -4116,8 +4347,8 @@ finishAnswer(zone){
         );
 
 
-        this.drawTrace(
-            0xe04d54
+        this.drawCurrentPath(
+            0xe15158
         );
 
 
@@ -4125,29 +4356,30 @@ finishAnswer(zone){
 
 
         this.showMessage(
-            "SALAH — CUBA LAGI",
-            0xc7474d
+            "SALAH — CUBA JAWAPAN LAIN",
+            0xc8494f
         );
 
 
-        this.flashAnswer(
+        this.answerPulse(
             zone,
-            0xe04d54
+            0xe15158
         );
 
 
         /*
            MAZE KEKAL.
-           TIADA NYAWA.
-           TRACE SAHAJA DIKOSONGKAN
-           SELEPAS PILIH JAWAPAN SALAH.
+
+           SELEPAS JAWAPAN SALAH,
+           LALUAN DIKOSONGKAN UNTUK
+           CUBA JAWAPAN LAIN.
         */
 
         this.time.delayedCall(
-            700,
+            750,
             ()=>{
 
-                this.clearTrace();
+                this.clearPath();
 
                 this.locked =
                 false;
@@ -4158,45 +4390,44 @@ finishAnswer(zone){
 
 
 /* =========================================================
-   FLASH ANSWER
+   ANSWER EFFECT
 ========================================================= */
 
-flashAnswer(
+answerPulse(
 zone,
 color
 ){
 
-    const circle =
+    const ring =
     this.add.circle(
 
         zone.x,
         zone.y,
 
-        this.cellSize*.40,
+        this.cellSize*.38,
 
         color,
 
-        .35
+        .33
 
     )
-    .setDepth(160);
+    .setDepth(170);
 
 
     this.tweens.add({
 
-        targets:
-        circle,
+        targets:ring,
 
-        scale:1.8,
+        scale:1.9,
 
         alpha:0,
 
-        duration:450,
+        duration:470,
 
         onComplete:
         ()=>{
 
-            circle.destroy();
+            ring.destroy();
         }
 
     });
@@ -4259,36 +4490,44 @@ createInput(){
 
 
 /* =========================================================
-   BOTTOM BUTTONS
+   BOTTOM BAR
 ========================================================= */
 
-createButtons(){
+createBottomBar(){
 
     const y =
     GAME_H-
     (
         PORTRAIT
-        ? 37
-        : 32
+        ? 38
+        : 34
     );
 
 
     /*
-       INSTRUCTION
+       PHONE HINT
     */
 
     if(PORTRAIT){
 
         this.add.text(
+
             GAME_W/2,
-            y-27,
-            "Tarik semula pada garisan untuk patah balik",
+
+            y-30,
+
+            "Tarik ke belakang = undo garisan",
+
             {
                 fontFamily:"Arial",
+
                 fontSize:"11px",
+
                 fontStyle:"bold",
-                color:"#557282"
+
+                color:"#587383"
             }
+
         )
         .setOrigin(.5);
     }
@@ -4299,25 +4538,24 @@ createButtons(){
     */
 
     this.resetButton =
-    this.makeButton(
+    this.createButton(
 
         PORTRAIT
-        ? 78
-        : 74,
+        ? 82
+        : 78,
 
         y,
 
-        118,
+        126,
 
-        40,
+        42,
 
         "RESET GARIS",
 
         ()=>{
 
-            this.clearTrace();
+            this.clearPath();
         }
-
     );
 
 
@@ -4326,20 +4564,20 @@ createButtons(){
     */
 
     this.homeButton =
-    this.makeButton(
+    this.createButton(
 
         GAME_W-
         (
             PORTRAIT
-            ? 174
-            : 169
+            ? 179
+            : 177
         ),
 
         y,
 
-        116,
+        118,
 
-        40,
+        42,
 
         "HOME",
 
@@ -4348,7 +4586,6 @@ createButtons(){
             window.location.href =
             "index.html";
         }
-
     );
 
 
@@ -4357,37 +4594,39 @@ createButtons(){
     */
 
     this.musicButton =
-    this.makeButton(
+    this.createButton(
 
         GAME_W-
         (
             PORTRAIT
-            ? 59
-            : 57
+            ? 60
+            : 61
         ),
 
         y,
 
-        84,
+        88,
 
-        40,
+        42,
 
         "♪ ON",
 
         ()=>{
 
-            const on =
+            const enabled =
             AUDIO.toggle();
 
 
-            this.musicButton.label
+            this.musicButton
+            .label
             .setText(
-                on
+
+                enabled
                 ? "♪ ON"
                 : "♪ OFF"
+
             );
         }
-
     );
 
 
@@ -4395,17 +4634,20 @@ createButtons(){
 
         this.add.text(
 
-            150,
+            160,
 
             y,
 
-            "START → lukis → patah balik jika tersalah lorong",
+            "START → drag • tarik balik untuk undo",
 
             {
                 fontFamily:"Arial",
+
                 fontSize:"12px",
+
                 fontStyle:"bold",
-                color:"#557282"
+
+                color:"#587383"
             }
 
         )
@@ -4421,33 +4663,42 @@ createButtons(){
    BUTTON
 ========================================================= */
 
-makeButton(
+createButton(
 x,
 y,
-w,
-h,
-text,
+width,
+height,
+labelText,
 callback
 ){
 
     const shadow =
     this.add.rectangle(
+
         x+2,
         y+3,
-        w,
-        h,
-        0x6d8390,
-        .18
+
+        width,
+        height,
+
+        0x617986,
+
+        .17
+
     );
 
 
     const box =
     this.add.rectangle(
+
         x,
         y,
-        w,
-        h,
+
+        width,
+        height,
+
         0xffffff
+
     )
     .setStrokeStyle(
         2,
@@ -4462,11 +4713,14 @@ callback
     this.add.text(
         x,
         y,
-        text,
+        labelText,
         {
             fontFamily:"Arial",
+
             fontSize:"11px",
+
             fontStyle:"bold",
+
             color:"#274e63"
         }
     )
@@ -4475,17 +4729,7 @@ callback
 
     box.on(
         "pointerdown",
-        pointer=>{
-
-            if(
-                pointer.event &&
-                pointer.event.stopPropagation
-            ){
-
-                pointer.event
-                .stopPropagation();
-            }
-
+        ()=>{
 
             AUDIO.unlock();
 
@@ -4506,7 +4750,7 @@ callback
    START WINDOW
 ========================================================= */
 
-showStart(){
+showStartWindow(){
 
     const shade =
     this.add.rectangle(
@@ -4521,7 +4765,7 @@ showStart(){
 
         0x0b2938,
 
-        .84
+        .86
 
     )
     .setDepth(300);
@@ -4529,22 +4773,22 @@ showStart(){
 
     const width =
     PORTRAIT
-    ? GAME_W-56
-    : 550;
+    ? GAME_W-58
+    : 560;
 
 
     const height =
     PORTRAIT
-    ? 430
-    : 340;
+    ? 470
+    : 370;
 
 
     const shadow =
     this.add.rectangle(
 
-        GAME_W/2+4,
+        GAME_W/2+5,
 
-        GAME_H/2+5,
+        GAME_H/2+6,
 
         width,
 
@@ -4552,7 +4796,7 @@ showStart(){
 
         0x000000,
 
-        .16
+        .15
 
     )
     .setDepth(301);
@@ -4574,10 +4818,14 @@ showStart(){
     )
     .setStrokeStyle(
         3,
-        0x5d8da4
+        0x5b8ba3
     )
     .setDepth(302);
 
+
+    /*
+       BADGE
+    */
 
     const badge =
     this.add.rectangle(
@@ -4586,18 +4834,18 @@ showStart(){
 
         GAME_H/2-
         height/2+
-        40,
+        42,
 
         190,
 
-        33,
+        34,
 
-        0xe8f4f8
+        0xeaf5f9
 
     )
     .setStrokeStyle(
         1,
-        0xb7d5e3
+        0xb8d6e3
     )
     .setDepth(303);
 
@@ -4609,15 +4857,18 @@ showStart(){
 
         GAME_H/2-
         height/2+
-        40,
+        42,
 
-        "25 MAZE • 25 SOALAN",
+        "25 SOALAN • 25 MAZE",
 
         {
             fontFamily:"Arial",
+
             fontSize:"12px",
+
             fontStyle:"bold",
-            color:"#2d718e"
+
+            color:"#2b728f"
         }
 
     )
@@ -4632,7 +4883,7 @@ showStart(){
 
         GAME_H/2-
         height/2+
-        82,
+        89,
 
         "DRAW MAZE",
 
@@ -4641,12 +4892,12 @@ showStart(){
 
             fontSize:
             PORTRAIT
-            ? "31px"
-            : "29px",
+            ? "32px"
+            : "30px",
 
             fontStyle:"bold",
 
-            color:"#173e55"
+            color:"#173f56"
         }
 
     )
@@ -4654,19 +4905,43 @@ showStart(){
     .setDepth(304);
 
 
-    const info =
+    const subtitle =
     this.add.text(
 
         GAME_W/2,
 
-        GAME_H/2+2,
+        GAME_H/2-
+        height/2+
+        124,
 
-        "1. Tekan pada START dan mula melukis.\n\n"+
-        "2. Garisan tidak boleh menembusi dinding.\n\n"+
-        "3. Jika tersalah lorong, tarik semula jari\n"+
-        "   mengikut garisan untuk patah balik.\n\n"+
-        "4. Cari A, B, C atau D yang betul.\n\n"+
-        "Maze akan berubah untuk setiap soalan.",
+        "Cari laluan ke jawapan yang betul",
+
+        {
+            fontFamily:"Arial",
+
+            fontSize:"14px",
+
+            color:"#5b7887"
+        }
+
+    )
+    .setOrigin(.5)
+    .setDepth(304);
+
+
+    const instructions =
+    this.add.text(
+
+        GAME_W/2,
+
+        GAME_H/2+10,
+
+        "Tekan START di dalam maze dan drag.\n\n"+
+        "Garisan hanya bergerak melalui lorong maze.\n\n"+
+        "Kalau tersalah masuk lorong, tarik jari semula\n"+
+        "ke petak sebelumnya.\n\n"+
+        "Bahagian garisan itu akan UNDO dan hilang.\n\n"+
+        "Kemudian pilih simpang yang lain.",
 
         {
             fontFamily:"Arial",
@@ -4678,7 +4953,9 @@ showStart(){
 
             color:"#31586c",
 
-            lineSpacing:4,
+            align:"center",
+
+            lineSpacing:5,
 
             wordWrap:{
                 width:
@@ -4698,12 +4975,12 @@ showStart(){
 
         GAME_H/2+
         height/2-
-        57+
+        60+
         3,
 
         220,
 
-        54,
+        55,
 
         0x17683e,
 
@@ -4720,11 +4997,11 @@ showStart(){
 
         GAME_H/2+
         height/2-
-        57,
+        60,
 
         220,
 
-        54,
+        55,
 
         0x2f925c
 
@@ -4746,14 +5023,17 @@ showStart(){
 
         GAME_H/2+
         height/2-
-        57,
+        60,
 
         "MULA GAME",
 
         {
             fontFamily:"Arial",
+
             fontSize:"18px",
+
             fontStyle:"bold",
+
             color:"#ffffff"
         }
 
@@ -4764,17 +5044,7 @@ showStart(){
 
     button.on(
         "pointerdown",
-        pointer=>{
-
-            if(
-                pointer.event &&
-                pointer.event.stopPropagation
-            ){
-
-                pointer.event
-                .stopPropagation();
-            }
-
+        ()=>{
 
             AUDIO.unlock();
 
@@ -4786,13 +5056,17 @@ showStart(){
                 badge,
                 badgeText,
                 title,
-                info,
+                subtitle,
+                instructions,
                 buttonShadow,
                 button,
                 buttonText
             ]
             .forEach(
-                o=>o.destroy()
+                object=>{
+
+                    object.destroy();
+                }
             );
 
 
@@ -4839,9 +5113,7 @@ loadQuestion(){
 
     this.progressText
     .setText(
-
         `${this.questionIndex+1} / ${QUESTIONS.length}`
-
     );
 
 
@@ -4891,7 +5163,7 @@ loadQuestion(){
 
 
     this.time.delayedCall(
-        400,
+        420,
         ()=>{
 
             this.locked =
@@ -4912,13 +5184,13 @@ color
 
     const y =
     this.mazeArea.y+
-    18;
+    19;
 
 
     const width =
     PORTRAIT
-    ? 310
-    : 340;
+    ? 320
+    : 350;
 
 
     const bg =
@@ -4930,14 +5202,14 @@ color
 
         width,
 
-        33,
+        31,
 
         color,
 
-        .97
+        .98
 
     )
-    .setDepth(200);
+    .setDepth(210);
 
 
     const label =
@@ -4964,7 +5236,7 @@ color
 
     )
     .setOrigin(.5)
-    .setDepth(201);
+    .setDepth(211);
 
 
     bg.setScale(.82);
@@ -4989,7 +5261,7 @@ color
 
 
     this.time.delayedCall(
-        580,
+        600,
         ()=>{
 
             bg.destroy();
@@ -5010,7 +5282,7 @@ showWin(){
     true;
 
 
-    this.clearTrace();
+    this.clearPath();
 
 
     AUDIO.win();
@@ -5018,20 +5290,22 @@ showWin(){
 
     const total =
     Math.round(
+
         (
             Date.now()-
             this.startTime
         )/1000
+
     );
 
 
-    const min =
+    const minutes =
     Math.floor(
         total/60
     );
 
 
-    const sec =
+    const seconds =
     String(
         total%60
     )
@@ -5054,7 +5328,7 @@ showWin(){
 
         0x092535,
 
-        .86
+        .87
 
     )
     .setDepth(400);
@@ -5062,33 +5336,14 @@ showWin(){
 
     const width =
     PORTRAIT
-    ? GAME_W-56
-    : 510;
+    ? GAME_W-58
+    : 520;
 
 
     const height =
     PORTRAIT
-    ? 350
-    : 300;
-
-
-    const shadow =
-    this.add.rectangle(
-
-        GAME_W/2+4,
-
-        GAME_H/2+5,
-
-        width,
-
-        height,
-
-        0x000000,
-
-        .15
-
-    )
-    .setDepth(401);
+    ? 360
+    : 310;
 
 
     const card =
@@ -5118,7 +5373,7 @@ showWin(){
 
         GAME_H/2-
         height/2+
-        53,
+        55,
 
         "SEMUA MAZE SELESAI!",
 
@@ -5146,7 +5401,7 @@ showWin(){
 
         GAME_H/2-10,
 
-        `25 / 25 soalan selesai\n\nSkor: ${this.score}\nMasa: ${min}:${sec}`,
+        `25 / 25 soalan selesai\n\nSkor: ${this.score}\nMasa: ${minutes}:${seconds}`,
 
         {
             fontFamily:"Arial",
@@ -5157,7 +5412,7 @@ showWin(){
 
             align:"center",
 
-            lineSpacing:7
+            lineSpacing:8
         }
 
     )
@@ -5172,11 +5427,11 @@ showWin(){
 
         GAME_H/2+
         height/2-
-        59,
+        61,
 
-        205,
+        210,
 
-        52,
+        54,
 
         0x2f8e59
 
@@ -5193,14 +5448,17 @@ showWin(){
 
         GAME_H/2+
         height/2-
-        59,
+        61,
 
         "MAIN SEMULA",
 
         {
             fontFamily:"Arial",
+
             fontSize:"17px",
+
             fontStyle:"bold",
+
             color:"#ffffff"
         }
 
@@ -5211,17 +5469,7 @@ showWin(){
 
     restart.on(
         "pointerdown",
-        pointer=>{
-
-            if(
-                pointer.event &&
-                pointer.event.stopPropagation
-            ){
-
-                pointer.event
-                .stopPropagation();
-            }
-
+        ()=>{
 
             this.scene.restart();
         }
