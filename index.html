@@ -2,46 +2,28 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width,
-initial-scale=1,
-maximum-scale=1,
-user-scalable=no,
-viewport-fit=cover">
-
-<title>Magnet One Trail — Set 6</title>
-
-<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Magnet One Trail - Set 6</title>
 
 <style>
-
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
 }
 
-html,
-body{
+html,body{
     margin:0;
     padding:0;
     width:100%;
     min-height:100%;
-
-    font-family:
-    "Trebuchet MS",
-    Arial,
-    sans-serif;
-
     background:
     linear-gradient(
         135deg,
-        #d8f3ff,
+        #d9f3ff,
         #f7fcff,
-        #dceaff
+        #dcecff
     );
-
+    font-family:"Trebuchet MS",Arial,sans-serif;
     touch-action:none;
     overscroll-behavior:none;
 }
@@ -61,6 +43,7 @@ body{
 }
 
 #game-shell{
+    position:relative;
 
     width:min(
         98vw,
@@ -70,11 +53,11 @@ body{
 
     aspect-ratio:5/6.35;
 
-    border-radius:22px;
-
     overflow:hidden;
 
-    border:3px solid #ffffff;
+    border-radius:22px;
+
+    border:3px solid #fff;
 
     background:#dff5ff;
 
@@ -84,21 +67,57 @@ body{
 }
 
 #game{
+    position:absolute;
+    inset:0;
+
     width:100%;
     height:100%;
 }
 
 #game canvas{
+    display:block;
 
     width:100%!important;
     height:100%!important;
-
-    display:block;
 
     touch-action:none;
 
     user-select:none;
     -webkit-user-select:none;
+}
+
+#loading,
+#fatal{
+    position:absolute;
+    inset:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+
+    padding:30px;
+
+    z-index:20;
+
+    font-weight:800;
+
+    color:#244b5d;
+
+    background:#dff5ff;
+
+    font-size:clamp(18px,3vw,28px);
+}
+
+#fatal{
+    display:none;
+
+    color:#9d2f36;
+
+    background:#fff1f1;
+
+    white-space:pre-line;
 }
 
 @media(max-width:540px){
@@ -108,7 +127,6 @@ body{
     }
 
     #game-shell{
-
         width:99vw;
 
         border-radius:15px;
@@ -116,20 +134,368 @@ body{
         border-width:2px;
     }
 }
-
 </style>
 </head>
 
 <body>
 
 <div id="game-shell">
+
     <div id="game"></div>
+
+    <div id="loading">
+        MEMUATKAN GAME...
+    </div>
+
+    <div id="fatal"></div>
+
 </div>
 
 <script>
 
-const GAME_W = 900;
-const GAME_H = 1140;
+(function(){
+
+const loading =
+document.getElementById("loading");
+
+const fatal =
+document.getElementById("fatal");
+
+
+function showFatal(message){
+
+    loading.style.display =
+    "none";
+
+    fatal.style.display =
+    "flex";
+
+    fatal.textContent =
+    "GAME ERROR\n" +
+    String(
+        message ||
+        "Unknown error"
+    );
+}
+
+
+window.addEventListener(
+    "error",
+    function(e){
+
+        if(
+            e &&
+            e.error
+        ){
+
+            showFatal(
+                e.message ||
+                e.error.message
+            );
+        }
+    }
+);
+
+
+/* =========================================================
+   PHASER FALLBACK
+   ========================================================= */
+
+const PHASER_URLS = [
+
+"https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js",
+
+"https://unpkg.com/phaser@3.80.1/dist/phaser.min.js",
+
+"https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js"
+
+];
+
+
+function loadPhaser(index){
+
+    if(window.Phaser){
+
+        loading.style.display =
+        "none";
+
+        bootGame();
+
+        return;
+    }
+
+
+    if(
+        index >=
+        PHASER_URLS.length
+    ){
+
+        showFatal(
+            "Phaser 3 gagal dimuatkan. Semak sambungan internet dan refresh."
+        );
+
+        return;
+    }
+
+
+    const script =
+    document.createElement(
+        "script"
+    );
+
+
+    script.src =
+    PHASER_URLS[index];
+
+
+    script.onload =
+    function(){
+
+        if(window.Phaser){
+
+            loading.style.display =
+            "none";
+
+            bootGame();
+
+        }else{
+
+            loadPhaser(
+                index + 1
+            );
+        }
+    };
+
+
+    script.onerror =
+    function(){
+
+        loadPhaser(
+            index + 1
+        );
+    };
+
+
+    document.head.appendChild(
+        script
+    );
+}
+
+
+loadPhaser(0);
+
+
+/* =========================================================
+   GAME
+   ========================================================= */
+
+function bootGame(){
+
+"use strict";
+
+
+const W = 900;
+const H = 1140;
+
+
+/* =========================================================
+   25 PUZZLE YANG DAH SIAP DISEMAK
+
+   r = rows
+   c = columns
+   s = start cell
+   d = arah penyelesaian
+
+   U = atas
+   D = bawah
+   L = kiri
+   R = kanan
+
+   Petak yang tidak termasuk dalam laluan automatik
+   menjadi BLOCK.
+
+   Jadi setiap stage memang ada satu laluan sah yang
+   melalui SEMUA petak kosong tepat sekali.
+   ========================================================= */
+
+const STAGES = [
+
+{
+r:5,
+c:5,
+s:[0,0],
+d:"RRRDRDDDLULUULDLDDRU"
+},
+
+{
+r:5,
+c:5,
+s:[0,0],
+d:"DRRURRDLDLLLDRDRRURD"
+},
+
+{
+r:5,
+c:5,
+s:[4,0],
+d:"UURDRDRRULURULULDLUL"
+},
+
+{
+r:5,
+c:5,
+s:[1,4],
+d:"DDLDLLURURUULDLULDDD"
+},
+
+{
+r:5,
+c:5,
+s:[4,4],
+d:"LLLULUUURDRDDRURULUR"
+},
+
+{
+r:5,
+c:6,
+s:[4,0],
+d:"URULURURDRURDRDDDLLLURUR"
+},
+
+{
+r:5,
+c:6,
+s:[0,5],
+d:"DDDLDLLUURRULULLLDRDDDLU"
+},
+
+{
+r:5,
+c:6,
+s:[0,2],
+d:"LLDRRRRURDDDLDLLLLURURRD"
+},
+
+{
+r:5,
+c:6,
+s:[4,1],
+d:"RRRRULURULULDDLDLLUURRUL"
+},
+
+{
+r:5,
+c:6,
+s:[0,5],
+d:"DLULDLLULDDDRDRRRRULULLD"
+},
+
+{
+r:6,
+c:6,
+s:[0,0],
+d:"DRDLDDRDRUUUUURRRDLDLDRRDLDL"
+},
+
+{
+r:6,
+c:6,
+s:[5,5],
+d:"LLLLULUUURURDDRURURDDDLDLULL"
+},
+
+{
+r:6,
+c:6,
+s:[1,5],
+d:"ULLDLULDLDRDLDDRRUURURRDDLDL"
+},
+
+{
+r:6,
+c:6,
+s:[0,5],
+d:"DLDRDDLDLUUUUULLLDRDRDLLDRDR"
+},
+
+{
+r:6,
+c:6,
+s:[1,3],
+d:"DLDLLDDRRURDRURULURUULLLLDLD"
+},
+
+{
+r:6,
+c:7,
+s:[5,1],
+d:"RURDRRURULLULLDLDLUUURURDRURRDRD"
+},
+
+{
+r:6,
+c:7,
+s:[0,6],
+d:"LDLULLDDRDRRURDDLDLLULDLULURUULU"
+},
+
+{
+r:6,
+c:7,
+s:[5,4],
+d:"RURULLURRULULLDLULDLDDDRDRRUULUL"
+},
+
+{
+r:6,
+c:7,
+s:[5,4],
+d:"RURUUULDDLLDLDLULURULUURRDDRURUR"
+},
+
+{
+r:6,
+c:7,
+s:[5,0],
+d:"URURULLURURRDRURDRDDDLDLLLURURUR"
+},
+
+{
+r:7,
+c:7,
+s:[4,6],
+d:"DLDLLULLDLUUURRDRRURURULULDLDLLLURURR"
+},
+
+{
+r:7,
+c:7,
+s:[3,5],
+d:"LDLLULULURURDRDRUURDRDDDDLDLLULDLULUU"
+},
+
+{
+r:7,
+c:7,
+s:[6,4],
+d:"RURUULURULULDLDLUULDLDRDRRRDLDLDLUULD"
+},
+
+{
+r:7,
+c:7,
+s:[6,2],
+d:"LULUURRDRDRDRRUULLURRUULULDDLULULDLDR"
+},
+
+{
+r:7,
+c:7,
+s:[0,6],
+d:"LLDRDRDDDLDLULDLLULURRULULURURDRDDRDR"
+}
+
+];
 
 
 /* =========================================================
@@ -139,7 +505,7 @@ const GAME_H = 1140;
 const QUESTIONS = [
 
 {
-topic:"Apakah Gunanya Magnet?",
+t:"Apakah Gunanya Magnet?",
 q:"Seorang murid mahu menghasilkan pin bermagnet seperti aktiviti dalam buku. Magnet apakah yang digunakan?",
 a:[
 "Dua magnet bar",
@@ -147,11 +513,11 @@ a:[
 "Dua magnet ladam",
 "Dua magnet silinder"
 ],
-correct:1
+k:1
 },
 
 {
-topic:"Apakah Gunanya Magnet?",
+t:"Apakah Gunanya Magnet?",
 q:"Antara situasi berikut, yang manakah menunjukkan kegunaan magnet dalam kehidupan seharian?",
 a:[
 "Mengukur panjang meja",
@@ -159,11 +525,11 @@ a:[
 "Memadam tulisan pensel",
 "Menutup pintu peti sejuk dengan rapat"
 ],
-correct:3
+k:3
 },
 
 {
-topic:"Apakah Gunanya Magnet?",
+t:"Apakah Gunanya Magnet?",
 q:"Apakah alat yang boleh memegang skru supaya tidak mudah jatuh?",
 a:[
 "Pembaris plastik",
@@ -171,11 +537,11 @@ a:[
 "Pemadam",
 "Guli"
 ],
-correct:1
+k:1
 },
 
 {
-topic:"Apakah Gunanya Magnet?",
+t:"Apakah Gunanya Magnet?",
 q:"Tanda nama cikgu boleh melekat tanpa pin kerana mengandungi ____.",
 a:[
 "Kayu",
@@ -183,11 +549,11 @@ a:[
 "Magnet",
 "Plastik"
 ],
-correct:2
+k:2
 },
 
 {
-topic:"Apakah Gunanya Magnet?",
+t:"Apakah Gunanya Magnet?",
 q:"Siti mahu kotak penselnya boleh ditutup rapat seperti contoh dalam buku. Penutup itu perlu mempunyai ____.",
 a:[
 "Magnet",
@@ -195,11 +561,11 @@ a:[
 "Guli",
 "Kayu aiskrim"
 ],
-correct:0
+k:0
 },
 
 {
-topic:"Bentuk Magnet",
+t:"Bentuk Magnet",
 q:"Yang manakah nama magnet yang berbentuk seperti butang?",
 a:[
 "Magnet buku",
@@ -207,11 +573,11 @@ a:[
 "Magnet butang",
 "Magnet pensel"
 ],
-correct:2
+k:2
 },
 
 {
-topic:"Bentuk Magnet",
+t:"Bentuk Magnet",
 q:"Apakah nama magnet yang berbentuk seperti ladam kuda?",
 a:[
 "Magnet cincin",
@@ -219,11 +585,11 @@ a:[
 "Magnet butang",
 "Magnet bar"
 ],
-correct:1
+k:1
 },
 
 {
-topic:"Bentuk Magnet",
+t:"Bentuk Magnet",
 q:"Pasangan manakah terdiri daripada magnet ladam dan satu lagi bentuk magnet yang betul?",
 a:[
 "Magnet bunga dan magnet akar",
@@ -231,11 +597,11 @@ a:[
 "Magnet air dan magnet pasir",
 "Magnet ladam dan magnet bentuk U"
 ],
-correct:3
+k:3
 },
 
 {
-topic:"Bentuk Magnet",
+t:"Bentuk Magnet",
 q:"Apakah perbezaan yang dinyatakan antara magnet ladam dengan magnet bentuk U?",
 a:[
 "Kutub magnet ladam lebih rapat",
@@ -243,11 +609,11 @@ a:[
 "Magnet U diperbuat daripada kayu",
 "Magnet ladam tidak mempunyai kutub"
 ],
-correct:0
+k:0
 },
 
 {
-topic:"Bentuk Magnet",
+t:"Bentuk Magnet",
 q:"Yang manakah nama magnet yang berbentuk silinder?",
 a:[
 "Magnet akar",
@@ -255,11 +621,11 @@ a:[
 "Magnet bunga",
 "Magnet silinder"
 ],
-correct:3
+k:3
 },
 
 {
-topic:"Hebatnya Magnet",
+t:"Hebatnya Magnet",
 q:"Jika objek bergerak ke arah magnet apabila magnet didekatkan, tindakan itu disebut ____.",
 a:[
 "Memadam",
@@ -267,11 +633,11 @@ a:[
 "Menarik",
 "Menolak"
 ],
-correct:2
+k:2
 },
 
 {
-topic:"Hebatnya Magnet",
+t:"Hebatnya Magnet",
 q:"Objek plastik berbentuk pembaris manakah yang tidak dapat ditarik magnet?",
 a:[
 "Pembaris plastik",
@@ -279,11 +645,11 @@ a:[
 "Paku",
 "Skru"
 ],
-correct:0
+k:0
 },
 
 {
-topic:"Hebatnya Magnet",
+t:"Hebatnya Magnet",
 q:"Yang manakah pasangan objek yang kedua-duanya tidak dapat ditarik magnet?",
 a:[
 "Pin baju dan skru",
@@ -291,11 +657,11 @@ a:[
 "Klip kertas dan paku",
 "Skru dan paku"
 ],
-correct:1
+k:1
 },
 
 {
-topic:"Hebatnya Magnet",
+t:"Hebatnya Magnet",
 q:"Yang manakah pasangan objek yang menunjukkan satu boleh ditarik dan satu tidak boleh ditarik?",
 a:[
 "Skru dan guli",
@@ -303,11 +669,11 @@ a:[
 "Paku dan skru",
 "Pin baju dan klip kertas"
 ],
-correct:0
+k:0
 },
 
 {
-topic:"Hebatnya Magnet",
+t:"Hebatnya Magnet",
 q:"Objek yang digunakan untuk memadam tulisan manakah yang tidak dapat ditarik magnet?",
 a:[
 "Skru",
@@ -315,11 +681,11 @@ a:[
 "Paku",
 "Pemadam"
 ],
-correct:3
+k:3
 },
 
 {
-topic:"Tarikan dan Tolakan Magnet",
+t:"Tarikan dan Tolakan Magnet",
 q:"Jika U berhadapan dengan U, tindakan yang betul ialah ____.",
 a:[
 "Tarikan",
@@ -327,11 +693,11 @@ a:[
 "Tiada tindakan",
 "Pemanasan"
 ],
-correct:1
+k:1
 },
 
 {
-topic:"Tarikan dan Tolakan Magnet",
+t:"Tarikan dan Tolakan Magnet",
 q:"Apabila magnet saling menjauh kerana kutub yang sama, tindakan itu ialah ____.",
 a:[
 "Pengukuran",
@@ -339,11 +705,11 @@ a:[
 "Tolakan",
 "Tarikan"
 ],
-correct:2
+k:2
 },
 
 {
-topic:"Tarikan dan Tolakan Magnet",
+t:"Tarikan dan Tolakan Magnet",
 q:"Kutub Utara didekatkan dengan kutub Utara. Apakah yang berlaku?",
 a:[
 "Melekat pada plastik",
@@ -351,11 +717,11 @@ a:[
 "Mencair",
 "Menarik"
 ],
-correct:1
+k:1
 },
 
 {
-topic:"Tarikan dan Tolakan Magnet",
+t:"Tarikan dan Tolakan Magnet",
 q:"Jika S berhadapan dengan U, tindakan yang betul ialah ____.",
 a:[
 "Tolakan",
@@ -363,11 +729,11 @@ a:[
 "Pemanasan",
 "Tarikan"
 ],
-correct:3
+k:3
 },
 
 {
-topic:"Tarikan dan Tolakan Magnet",
+t:"Tarikan dan Tolakan Magnet",
 q:"Dua magnet bar digunakan dalam aktiviti untuk mengkaji ____.",
 a:[
 "Tarikan dan tolakan",
@@ -375,11 +741,11 @@ a:[
 "Warna magnet",
 "Rasa magnet"
 ],
-correct:0
+k:0
 },
 
 {
-topic:"Kekuatan Magnet",
+t:"Kekuatan Magnet",
 q:"Magnet digerakkan mendekati klip kertas sehingga klip kertas ____.",
 a:[
 "Hilang",
@@ -387,11 +753,11 @@ a:[
 "Ditarik",
 "Bertukar warna"
 ],
-correct:2
+k:2
 },
 
 {
-topic:"Kekuatan Magnet",
+t:"Kekuatan Magnet",
 q:"Dua magnet diuji dengan jenis klip kertas yang sama. Magnet R menarik lebih banyak klip. Apakah kesimpulan paling sesuai?",
 a:[
 "Klip kertas bukan objek tarikan",
@@ -399,11 +765,11 @@ a:[
 "Kedua-duanya sama",
 "Magnet R lebih kuat"
 ],
-correct:3
+k:3
 },
 
 {
-topic:"Kekuatan Magnet",
+t:"Kekuatan Magnet",
 q:"Dalam aktiviti kekuatan magnet, klip kertas disusun di sisi ____.",
 a:[
 "Tingkap",
@@ -411,11 +777,11 @@ a:[
 "Buku",
 "Pintu"
 ],
-correct:1
+k:1
 },
 
 {
-topic:"Kekuatan Magnet",
+t:"Kekuatan Magnet",
 q:"Untuk membandingkan kekuatan magnet dengan adil, klip kertas perlu disusun dan jarak diperhatikan menggunakan ____.",
 a:[
 "Pembaris",
@@ -423,11 +789,11 @@ a:[
 "Pemadam",
 "Kayu aiskrim"
 ],
-correct:0
+k:0
 },
 
 {
-topic:"Kekuatan Magnet",
+t:"Kekuatan Magnet",
 q:"Kekuatan magnet boleh dibandingkan dengan melihat bilangan klip kertas yang ____.",
 a:[
 "Dipotong",
@@ -435,29 +801,114 @@ a:[
 "Ditarik",
 "Dipadam"
 ],
-correct:2
+k:2
 }
 
 ];
 
 
 /* =========================================================
-   AUDIO
+   DECODE STAGE
    ========================================================= */
 
-class AudioBox{
+function decodeStage(data){
+
+    const path = [
+        {
+            r:data.s[0],
+            c:data.s[1]
+        }
+    ];
+
+
+    let r =
+    data.s[0];
+
+
+    let c =
+    data.s[1];
+
+
+    for(
+        let i = 0;
+        i < data.d.length;
+        i++
+    ){
+
+        const direction =
+        data.d.charAt(i);
+
+
+        if(
+            direction === "U"
+        ){
+            r--;
+        }
+
+
+        if(
+            direction === "D"
+        ){
+            r++;
+        }
+
+
+        if(
+            direction === "L"
+        ){
+            c--;
+        }
+
+
+        if(
+            direction === "R"
+        ){
+            c++;
+        }
+
+
+        path.push({
+            r:r,
+            c:c
+        });
+    }
+
+
+    return{
+
+        rows:data.r,
+
+        cols:data.c,
+
+        path:path
+    };
+}
+
+
+function cellKey(
+    r,
+    c
+){
+
+    return(
+        r +
+        "," +
+        c
+    );
+}
+
+
+/* =========================================================
+   SOUND
+   ========================================================= */
+
+class GameAudio{
 
     constructor(){
 
         this.ctx = null;
 
         this.master = null;
-
-        this.started = false;
-
-        this.idx = 0;
-
-        this.timer = null;
     }
 
 
@@ -500,22 +951,14 @@ class AudioBox{
 
             this.ctx.resume();
         }
-
-
-        if(!this.started){
-
-            this.started = true;
-
-            this.music();
-        }
     }
 
 
     tone(
         frequency,
-        duration = .07,
-        type = "sine",
-        volume = .05
+        duration,
+        type,
+        volume
     ){
 
         if(!this.ctx){
@@ -527,7 +970,7 @@ class AudioBox{
         this.ctx.currentTime;
 
 
-        const oscillator =
+        const osc =
         this.ctx.createOscillator();
 
 
@@ -535,11 +978,12 @@ class AudioBox{
         this.ctx.createGain();
 
 
-        oscillator.type =
-        type;
+        osc.type =
+        type ||
+        "sine";
 
 
-        oscillator.frequency.value =
+        osc.frequency.value =
         frequency;
 
 
@@ -550,7 +994,7 @@ class AudioBox{
 
 
         gain.gain.exponentialRampToValueAtTime(
-            volume,
+            volume || .05,
             now + .01
         );
 
@@ -561,7 +1005,7 @@ class AudioBox{
         );
 
 
-        oscillator.connect(
+        osc.connect(
             gain
         );
 
@@ -571,12 +1015,12 @@ class AudioBox{
         );
 
 
-        oscillator.start(
+        osc.start(
             now
         );
 
 
-        oscillator.stop(
+        osc.stop(
             now +
             duration +
             .03
@@ -647,7 +1091,7 @@ class AudioBox{
 
                 this.tone(
                     659,
-                    .10,
+                    .1,
                     "sine",
                     .1
                 );
@@ -671,68 +1115,15 @@ class AudioBox{
             180
         );
     }
-
-
-    music(){
-
-        const melody = [
-
-            261.63,
-            329.63,
-            392,
-            329.63,
-
-            293.66,
-            349.23,
-            440,
-            349.23,
-
-            329.63,
-            392,
-            493.88,
-            440,
-
-            392,
-            329.63
-
-        ];
-
-
-        this.timer =
-        setInterval(
-            ()=>{
-
-                if(!this.ctx){
-                    return;
-                }
-
-
-                this.tone(
-                    melody[
-                        this.idx %
-                        melody.length
-                    ],
-                    .17,
-                    "sine",
-                    .014
-                );
-
-
-                this.idx++;
-
-            },
-            470
-        );
-    }
 }
 
 
 const AUDIO =
-new AudioBox();
+new GameAudio();
 
 
 /* =========================================================
-   MAIN GAME
+   MAIN SCENE
    ========================================================= */
 
 class MagnetGame
@@ -748,7 +1139,7 @@ extends Phaser.Scene{
 
     create(){
 
-        this.stageIndex =
+        this.stage =
         0;
 
 
@@ -824,9 +1215,6 @@ extends Phaser.Scene{
 
     drawBackground(){
 
-        this.bg.clear();
-
-
         this.bg.fillStyle(
             0xdff4ff,
             1
@@ -836,8 +1224,8 @@ extends Phaser.Scene{
         this.bg.fillRect(
             0,
             0,
-            GAME_W,
-            GAME_H
+            W,
+            H
         );
 
 
@@ -849,13 +1237,13 @@ extends Phaser.Scene{
 
         for(
             let y = -80;
-            y < GAME_H + 80;
+            y < H + 80;
             y += 115
         ){
 
             for(
                 let x = -90;
-                x < GAME_W + 90;
+                x < W + 90;
                 x += 150
             ){
 
@@ -874,9 +1262,11 @@ extends Phaser.Scene{
                 this.bg.fillRoundedRect(
 
                     x + offset,
+
                     y,
 
                     92,
+
                     48,
 
                     22
@@ -908,7 +1298,7 @@ extends Phaser.Scene{
 
         this.add.text(
             72,
-            35,
+            34,
             "MAGNET ONE TRAIL",
             {
                 fontFamily:
@@ -933,7 +1323,7 @@ extends Phaser.Scene{
         this.stageText =
         this.add.text(
             72,
-            76,
+            75,
             "STAGE 1 / 25",
             {
                 fontFamily:
@@ -958,7 +1348,7 @@ extends Phaser.Scene{
         this.statusText =
         this.add.text(
             72,
-            112,
+            110,
             "Seret jari. Lalui semua petak sekali sahaja.",
             {
                 fontFamily:
@@ -980,7 +1370,7 @@ extends Phaser.Scene{
         this.progressBack =
         this.add.rectangle(
             72,
-            143,
+            142,
             560,
             12,
             0xd8e6eb
@@ -994,7 +1384,7 @@ extends Phaser.Scene{
         this.progressFill =
         this.add.rectangle(
             72,
-            143,
+            142,
             1,
             12,
             0xffbd42
@@ -1008,7 +1398,7 @@ extends Phaser.Scene{
         this.progressText =
         this.add.text(
             650,
-            143,
+            142,
             "",
             {
                 fontFamily:
@@ -1033,13 +1423,13 @@ extends Phaser.Scene{
         this.add.text(
             790,
             83,
-            "SERET\nJARI",
+            "DRAG\nTO MOVE",
             {
                 fontFamily:
                 "Trebuchet MS, Arial",
 
                 fontSize:
-                "16px",
+                "14px",
 
                 fontStyle:
                 "bold",
@@ -1070,7 +1460,7 @@ extends Phaser.Scene{
         );
 
 
-        this.portalGlow =
+        const glow =
         this.add.circle(
             0,
             0,
@@ -1080,7 +1470,7 @@ extends Phaser.Scene{
         );
 
 
-        this.portalOuter =
+        const outer =
         this.add.circle(
             0,
             0,
@@ -1094,7 +1484,7 @@ extends Phaser.Scene{
         );
 
 
-        this.portalMid =
+        const middle =
         this.add.circle(
             0,
             0,
@@ -1108,7 +1498,7 @@ extends Phaser.Scene{
         );
 
 
-        this.portalCore =
+        const core =
         this.add.circle(
             0,
             0,
@@ -1122,7 +1512,7 @@ extends Phaser.Scene{
         );
 
 
-        this.portalDot =
+        const dot =
         this.add.circle(
             0,
             0,
@@ -1134,11 +1524,11 @@ extends Phaser.Scene{
 
         this.portal.add([
 
-            this.portalGlow,
-            this.portalOuter,
-            this.portalMid,
-            this.portalCore,
-            this.portalDot
+            glow,
+            outer,
+            middle,
+            core,
+            dot
 
         ]);
 
@@ -1151,7 +1541,7 @@ extends Phaser.Scene{
         this.tweens.add({
 
             targets:
-            this.portalMid,
+            middle,
 
             scaleX:{
                 from:.82,
@@ -1260,7 +1650,7 @@ extends Phaser.Scene{
         );
 
 
-        /* HUJUNG BESI */
+        /* BESI */
 
         g.fillStyle(
             0xf6f8f9,
@@ -1315,13 +1705,16 @@ extends Phaser.Scene{
         this.add.text(
             0,
             14,
-            "✦",
+            "*",
             {
                 fontFamily:
                 "Arial",
 
                 fontSize:
-                "15px",
+                "18px",
+
+                fontStyle:
+                "bold",
 
                 color:
                 "#ffffff"
@@ -1348,590 +1741,6 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   STAGE SIZE
-   ========================================================= */
-
-    settings(){
-
-        const i =
-        this.stageIndex;
-
-
-        if(i < 5){
-
-            return{
-                rows:5,
-                cols:5,
-                blocks:4
-            };
-        }
-
-
-        if(i < 10){
-
-            return{
-                rows:5,
-                cols:6,
-                blocks:5
-            };
-        }
-
-
-        if(i < 15){
-
-            return{
-                rows:6,
-                cols:6,
-                blocks:7
-            };
-        }
-
-
-        if(i < 20){
-
-            return{
-                rows:6,
-                cols:7,
-                blocks:9
-            };
-        }
-
-
-        return{
-            rows:7,
-            cols:7,
-            blocks:11
-        };
-    }
-
-
-/* =========================================================
-   PATTERN 1 — SPIRAL
-   ========================================================= */
-
-    spiral(
-        rows,
-        cols
-    ){
-
-        const output = [];
-
-
-        let top = 0;
-        let left = 0;
-
-        let bottom =
-        rows - 1;
-
-        let right =
-        cols - 1;
-
-
-        while(
-            top <= bottom &&
-            left <= right
-        ){
-
-            for(
-                let c = left;
-                c <= right;
-                c++
-            ){
-
-                output.push({
-                    r:top,
-                    c
-                });
-            }
-
-
-            top++;
-
-
-            for(
-                let r = top;
-                r <= bottom;
-                r++
-            ){
-
-                output.push({
-                    r,
-                    c:right
-                });
-            }
-
-
-            right--;
-
-
-            if(
-                top <= bottom
-            ){
-
-                for(
-                    let c = right;
-                    c >= left;
-                    c--
-                ){
-
-                    output.push({
-                        r:bottom,
-                        c
-                    });
-                }
-
-
-                bottom--;
-            }
-
-
-            if(
-                left <= right
-            ){
-
-                for(
-                    let r = bottom;
-                    r >= top;
-                    r--
-                ){
-
-                    output.push({
-                        r,
-                        c:left
-                    });
-                }
-
-
-                left++;
-            }
-        }
-
-
-        return output;
-    }
-
-
-/* =========================================================
-   PATTERN 2
-   ========================================================= */
-
-    horizontalSnake(
-        rows,
-        cols
-    ){
-
-        const output = [];
-
-
-        for(
-            let r = 0;
-            r < rows;
-            r++
-        ){
-
-            if(
-                r % 2 === 0
-            ){
-
-                for(
-                    let c = 0;
-                    c < cols;
-                    c++
-                ){
-
-                    output.push({
-                        r,
-                        c
-                    });
-                }
-
-            }else{
-
-                for(
-                    let c = cols - 1;
-                    c >= 0;
-                    c--
-                ){
-
-                    output.push({
-                        r,
-                        c
-                    });
-                }
-            }
-        }
-
-
-        return output;
-    }
-
-
-/* =========================================================
-   PATTERN 3
-   ========================================================= */
-
-    verticalSnake(
-        rows,
-        cols
-    ){
-
-        const output = [];
-
-
-        for(
-            let c = 0;
-            c < cols;
-            c++
-        ){
-
-            if(
-                c % 2 === 0
-            ){
-
-                for(
-                    let r = 0;
-                    r < rows;
-                    r++
-                ){
-
-                    output.push({
-                        r,
-                        c
-                    });
-                }
-
-            }else{
-
-                for(
-                    let r = rows - 1;
-                    r >= 0;
-                    r--
-                ){
-
-                    output.push({
-                        r,
-                        c
-                    });
-                }
-            }
-        }
-
-
-        return output;
-    }
-
-
-/* =========================================================
-   FLIP PATTERN
-   ========================================================= */
-
-    transformOrder(
-        order,
-        rows,
-        cols,
-        mode
-    ){
-
-        let result =
-        order.map(
-            p=>({
-                r:p.r,
-                c:p.c
-            })
-        );
-
-
-        /* MIRROR KIRI / KANAN */
-
-        if(
-            mode & 1
-        ){
-
-            result =
-            result.map(
-                p=>({
-
-                    r:p.r,
-
-                    c:
-                    cols -
-                    1 -
-                    p.c
-
-                })
-            );
-        }
-
-
-        /* MIRROR ATAS / BAWAH */
-
-        if(
-            mode & 2
-        ){
-
-            result =
-            result.map(
-                p=>({
-
-                    r:
-                    rows -
-                    1 -
-                    p.r,
-
-                    c:p.c
-
-                })
-            );
-        }
-
-
-        /* REVERSE */
-
-        if(
-            mode & 4
-        ){
-
-            result.reverse();
-        }
-
-
-        return result;
-    }
-
-
-/* =========================================================
-   BUILD PUZZLE
-
-   TIADA RECURSION.
-   TIADA HEAVY GENERATOR.
-
-   Laluan siap dibina secara deterministic.
-
-   Semua petak dalam solution = perlu dilalui.
-   Semua petak lain = BLOCK.
-
-   ========================================================= */
-
-    buildPuzzle(){
-
-        const setting =
-        this.settings();
-
-
-        this.rows =
-        setting.rows;
-
-
-        this.cols =
-        setting.cols;
-
-
-        const total =
-        this.rows *
-        this.cols;
-
-
-        const target =
-        total -
-        setting.blocks;
-
-
-        let base;
-
-
-        const style =
-        this.stageIndex %
-        3;
-
-
-        if(style === 0){
-
-            base =
-            this.spiral(
-                this.rows,
-                this.cols
-            );
-
-        }else if(style === 1){
-
-            base =
-            this.horizontalSnake(
-                this.rows,
-                this.cols
-            );
-
-        }else{
-
-            base =
-            this.verticalSnake(
-                this.rows,
-                this.cols
-            );
-        }
-
-
-        base =
-        this.transformOrder(
-
-            base,
-
-            this.rows,
-
-            this.cols,
-
-            this.stageIndex %
-            8
-        );
-
-
-        /*
-        Kadang block berada di penghujung pattern,
-        kadang block berada di permulaan.
-        */
-
-        if(
-            this.stageIndex %
-            4 === 1
-        ){
-
-            this.solution =
-            base.slice(
-                setting.blocks
-            );
-
-        }else{
-
-            this.solution =
-            base.slice(
-                0,
-                target
-            );
-        }
-
-
-        /*
-        SAFETY
-        */
-
-        if(
-            this.solution.length !==
-            target
-        ){
-
-            this.solution =
-            base.slice(
-                0,
-                target
-            );
-        }
-
-
-        this.walkable =
-        new Set(
-            this.solution.map(
-                p=>
-                this.key(
-                    p.r,
-                    p.c
-                )
-            )
-        );
-
-
-        this.blocks =
-        new Set();
-
-
-        for(
-            let r = 0;
-            r < this.rows;
-            r++
-        ){
-
-            for(
-                let c = 0;
-                c < this.cols;
-                c++
-            ){
-
-                const key =
-                this.key(
-                    r,
-                    c
-                );
-
-
-                if(
-                    !this.walkable.has(
-                        key
-                    )
-                ){
-
-                    this.blocks.add(
-                        key
-                    );
-                }
-            }
-        }
-
-
-        this.startCell = {
-
-            ...this.solution[0]
-
-        };
-
-
-        this.portalCell = {
-
-            ...this.solution[
-                this.solution.length -
-                1
-            ]
-
-        };
-
-
-        this.currentCell = {
-
-            ...this.startCell
-
-        };
-
-
-        this.visited =
-        new Set([
-            this.key(
-                this.startCell.r,
-                this.startCell.c
-            )
-        ]);
-
-
-        this.history = [
-
-            {
-                ...this.startCell
-            }
-
-        ];
-    }
-
-
-    key(
-        r,
-        c
-    ){
-
-        return(
-            r +
-            "," +
-            c
-        );
-    }
-
-
-/* =========================================================
    START STAGE
    ========================================================= */
 
@@ -1939,7 +1748,7 @@ extends Phaser.Scene{
         index
     ){
 
-        this.stageIndex =
+        this.stage =
         index;
 
 
@@ -1959,7 +1768,105 @@ extends Phaser.Scene{
         false;
 
 
-        this.buildPuzzle();
+        const stageData =
+        decodeStage(
+            STAGES[index]
+        );
+
+
+        this.rows =
+        stageData.rows;
+
+
+        this.cols =
+        stageData.cols;
+
+
+        this.solution =
+        stageData.path;
+
+
+        this.walkable =
+        new Set();
+
+
+        for(
+            let i = 0;
+            i < this.solution.length;
+            i++
+        ){
+
+            this.walkable.add(
+                cellKey(
+                    this.solution[i].r,
+                    this.solution[i].c
+                )
+            );
+        }
+
+
+        this.blocks =
+        new Set();
+
+
+        for(
+            let r = 0;
+            r < this.rows;
+            r++
+        ){
+
+            for(
+                let c = 0;
+                c < this.cols;
+                c++
+            ){
+
+                if(
+                    !this.walkable.has(
+                        cellKey(
+                            r,
+                            c
+                        )
+                    )
+                ){
+
+                    this.blocks.add(
+                        cellKey(
+                            r,
+                            c
+                        )
+                    );
+                }
+            }
+        }
+
+
+        this.current = {
+
+            r:this.solution[0].r,
+
+            c:this.solution[0].c
+
+        };
+
+
+        this.history = [
+
+            {
+                r:this.current.r,
+                c:this.current.c
+            }
+
+        ];
+
+
+        this.visited =
+        new Set([
+            cellKey(
+                this.current.r,
+                this.current.c
+            )
+        ]);
 
 
         this.calcBoard();
@@ -1987,8 +1894,8 @@ extends Phaser.Scene{
 
         const position =
         this.center(
-            this.startCell.r,
-            this.startCell.c
+            this.current.r,
+            this.current.c
         );
 
 
@@ -2025,22 +1932,14 @@ extends Phaser.Scene{
 
     calcBoard(){
 
-        const maxWidth =
-        770;
-
-
-        const maxHeight =
-        805;
-
-
         this.cell =
         Math.floor(
             Math.min(
 
-                maxWidth /
+                770 /
                 this.cols,
 
-                maxHeight /
+                805 /
                 this.rows,
 
                 116
@@ -2060,7 +1959,7 @@ extends Phaser.Scene{
 
         this.boardX =
         (
-            GAME_W -
+            W -
             this.boardW
         ) /
         2;
@@ -2080,7 +1979,7 @@ extends Phaser.Scene{
 
         this.dragThreshold =
         Math.max(
-            25,
+            26,
             this.cell *
             .28
         );
@@ -2108,7 +2007,6 @@ extends Phaser.Scene{
             this.cell +
             this.cell /
             2
-
         };
     }
 
@@ -2151,16 +2049,18 @@ extends Phaser.Scene{
             10,
 
             this.boardW +
-            pad * 2,
+            pad *
+            2,
 
             this.boardH +
-            pad * 2,
+            pad *
+            2,
 
             28
         );
 
 
-        /* WHITE FRAME */
+        /* FRAME */
 
         this.frameG.fillStyle(
             0xffffff,
@@ -2177,10 +2077,12 @@ extends Phaser.Scene{
             pad,
 
             this.boardW +
-            pad * 2,
+            pad *
+            2,
 
             this.boardH +
-            pad * 2,
+            pad *
+            2,
 
             28
         );
@@ -2202,18 +2104,18 @@ extends Phaser.Scene{
             pad,
 
             this.boardW +
-            pad * 2,
+            pad *
+            2,
 
             this.boardH +
-            pad * 2,
+            pad *
+            2,
 
             28
         );
 
 
-        /* ============================
-           SEMUA GRID
-           ============================ */
+        /* GRID */
 
         for(
             let r = 0;
@@ -2239,22 +2141,22 @@ extends Phaser.Scene{
                 this.cell;
 
 
-                const key =
-                this.key(
+                const k =
+                cellKey(
                     r,
                     c
                 );
 
 
-                const visited =
+                const seen =
                 this.visited.has(
-                    key
+                    k
                 );
 
 
                 this.tileG.fillStyle(
 
-                    visited
+                    seen
                     ? 0xffca46
                     : 0xd7eff8,
 
@@ -2278,7 +2180,7 @@ extends Phaser.Scene{
 
                     2,
 
-                    visited
+                    seen
                     ? 0xe4a323
                     : 0x93b8c7,
 
@@ -2300,8 +2202,8 @@ extends Phaser.Scene{
 
                 this.tileG.fillStyle(
                     0xffffff,
-                    visited
-                    ? .20
+                    seen
+                    ? .2
                     : .38
                 );
 
@@ -2328,9 +2230,7 @@ extends Phaser.Scene{
         }
 
 
-        /* ============================
-           LALUAN YANG SUDAH DILALUI
-           ============================ */
+        /* LALUAN */
 
         if(
             this.history.length >
@@ -2354,37 +2254,36 @@ extends Phaser.Scene{
             this.pathG.beginPath();
 
 
-            this.history.forEach(
-                (
-                    cell,
-                    index
-                )=>{
+            for(
+                let i = 0;
+                i < this.history.length;
+                i++
+            ){
 
-                    const position =
-                    this.center(
-                        cell.r,
-                        cell.c
+                const point =
+                this.center(
+                    this.history[i].r,
+                    this.history[i].c
+                );
+
+
+                if(
+                    i === 0
+                ){
+
+                    this.pathG.moveTo(
+                        point.x,
+                        point.y
                     );
 
+                }else{
 
-                    if(
-                        index === 0
-                    ){
-
-                        this.pathG.moveTo(
-                            position.x,
-                            position.y
-                        );
-
-                    }else{
-
-                        this.pathG.lineTo(
-                            position.x,
-                            position.y
-                        );
-                    }
+                    this.pathG.lineTo(
+                        point.x,
+                        point.y
+                    );
                 }
-            );
+            }
 
 
             this.pathG.strokePath();
@@ -2394,38 +2293,47 @@ extends Phaser.Scene{
         /* BLOCK */
 
         for(
-            const key
+            const blockKey
             of this.blocks
         ){
 
             const parts =
-            key
-            .split(",")
-            .map(
-                Number
-            );
+            blockKey.split(",");
 
 
             this.drawBlock(
-                parts[0],
-                parts[1]
+
+                Number(
+                    parts[0]
+                ),
+
+                Number(
+                    parts[1]
+                )
             );
         }
 
 
         /* PORTAL */
 
-        const portalPosition =
+        const end =
+        this.solution[
+            this.solution.length -
+            1
+        ];
+
+
+        const portalPos =
         this.center(
-            this.portalCell.r,
-            this.portalCell.c
+            end.r,
+            end.c
         );
 
 
         this.portal
         .setPosition(
-            portalPosition.x,
-            portalPosition.y
+            portalPos.x,
+            portalPos.y
         )
         .setScale(
             Math.min(
@@ -2544,7 +2452,7 @@ extends Phaser.Scene{
         );
 
 
-        /* METAL LIGHT */
+        /* HIGHLIGHT */
 
         this.blockG.fillStyle(
             0x7d8a91,
@@ -2569,7 +2477,7 @@ extends Phaser.Scene{
         );
 
 
-        /* WARNING STRIPE */
+        /* STRIPE */
 
         const warningY =
         by +
@@ -2594,9 +2502,11 @@ extends Phaser.Scene{
         this.blockG.fillRect(
 
             bx + 8,
+
             warningY,
 
             bw - 16,
+
             warningH
         );
 
@@ -2615,13 +2525,13 @@ extends Phaser.Scene{
             stripeX <
             bx + bw + 12;
 
-            stripeX +=
-            24
+            stripeX += 24
         ){
 
             this.blockG.lineBetween(
 
                 stripeX,
+
                 warningY +
                 warningH,
 
@@ -2635,13 +2545,13 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   TOUCHSCREEN FULL AREA
+   TOUCHSCREEN CONTROL
 
-   TIADA D-PAD.
-   TIADA ANALOG.
-   TIADA MOVEMENT BUTTON.
+   TIADA D-PAD
+   TIADA ANALOG
+   TIADA BUTTON MOVEMENT
 
-   DRAG / SWIPE TERUS.
+   SERET JARI TERUS
    ========================================================= */
 
     setupTouch(){
@@ -2686,122 +2596,102 @@ extends Phaser.Scene{
                 }
 
 
-                const dx =
-                pointer.x -
-                this.lastX;
+                let guard =
+                0;
 
 
-                const dy =
-                pointer.y -
-                this.lastY;
-
-
-                if(
-                    Math.abs(dx) <
-                    this.dragThreshold &&
-
-                    Math.abs(dy) <
-                    this.dragThreshold
+                while(
+                    guard <
+                    5
                 ){
 
-                    return;
-                }
+                    const dx =
+                    pointer.x -
+                    this.lastX;
 
 
-                if(
-                    Math.abs(dx) >
-                    Math.abs(dy)
-                ){
-
-                    this.tryMove(
-                        0,
-                        dx > 0
-                        ? 1
-                        : -1
-                    );
-
-                }else{
-
-                    this.tryMove(
-                        dy > 0
-                        ? 1
-                        : -1,
-                        0
-                    );
-                }
+                    const dy =
+                    pointer.y -
+                    this.lastY;
 
 
-                this.lastX =
-                pointer.x;
+                    if(
+                        Math.abs(dx) <
+                        this.dragThreshold &&
+
+                        Math.abs(dy) <
+                        this.dragThreshold
+                    ){
+
+                        break;
+                    }
 
 
-                this.lastY =
-                pointer.y;
-            }
-        );
+                    let dr =
+                    0;
 
 
-        this.input.on(
-            "pointerup",
-            pointer=>{
+                    let dc =
+                    0;
 
-                if(
-                    !this.dragging
-                ){
-                    return;
-                }
-
-
-                const dx =
-                pointer.x -
-                this.lastX;
-
-
-                const dy =
-                pointer.y -
-                this.lastY;
-
-
-                /*
-                Swipe cepat.
-                */
-
-                if(
-                    !this.locked &&
-                    !this.questionOpen &&
-
-                    (
-                        Math.abs(dx) >
-                        22 ||
-
-                        Math.abs(dy) >
-                        22
-                    )
-                ){
 
                     if(
                         Math.abs(dx) >
                         Math.abs(dy)
                     ){
 
-                        this.tryMove(
-                            0,
-                            dx > 0
-                            ? 1
-                            : -1
-                        );
+                        dc =
+                        dx > 0
+                        ? 1
+                        : -1;
+
+
+                        this.lastX +=
+                        dc *
+                        this.dragThreshold;
 
                     }else{
 
-                        this.tryMove(
-                            dy > 0
-                            ? 1
-                            : -1,
-                            0
-                        );
-                    }
-                }
+                        dr =
+                        dy > 0
+                        ? 1
+                        : -1;
 
+
+                        this.lastY +=
+                        dr *
+                        this.dragThreshold;
+                    }
+
+
+                    if(
+                        !this.tryMove(
+                            dr,
+                            dc
+                        )
+                    ){
+
+                        this.lastX =
+                        pointer.x;
+
+
+                        this.lastY =
+                        pointer.y;
+
+
+                        break;
+                    }
+
+
+                    guard++;
+                }
+            }
+        );
+
+
+        this.input.on(
+            "pointerup",
+            ()=>{
 
                 this.dragging =
                 false;
@@ -2833,17 +2723,18 @@ extends Phaser.Scene{
             this.locked ||
             this.questionOpen
         ){
+
             return false;
         }
 
 
         const nr =
-        this.currentCell.r +
+        this.current.r +
         dr;
 
 
         const nc =
-        this.currentCell.c +
+        this.current.c +
         dc;
 
 
@@ -2865,20 +2756,18 @@ extends Phaser.Scene{
         }
 
 
-        const key =
-        this.key(
+        const k =
+        cellKey(
             nr,
             nc
         );
 
 
-        /* ==========================
-           BLOCK
-           ========================== */
+        /* BLOCK */
 
         if(
             this.blocks.has(
-                key
+                k
             )
         ){
 
@@ -2898,19 +2787,16 @@ extends Phaser.Scene{
         }
 
 
-        /* ==========================
-           DAH LALU = TAK BOLEH
-           LALU LAGI
-           ========================== */
+        /* DAH LALU */
 
         if(
             this.visited.has(
-                key
+                k
             )
         ){
 
             this.reject(
-                "Petak itu sudah dilalui. Tak boleh lalu semula."
+                "Petak ini sudah dilalui. Tak boleh lalu semula."
             );
 
 
@@ -2925,33 +2811,35 @@ extends Phaser.Scene{
         }
 
 
-        /* ==========================
-           SEMAK LALUAN SELAMAT
+        /* =================================================
+           GAME SEMAK ARAH BETUL
 
-           Jika arah yang user pilih
-           akan menyebabkan puzzle
-           buntu, magnet tak bergerak.
+           Kalau pemain cuba arah yang menyebabkan
+           keseluruhan puzzle tak boleh diselesaikan,
+           magnet tidak dibenarkan bergerak.
 
-           Jadi puzzle SENTIASA
-           masih boleh diselesaikan.
-           ========================== */
+           Jadi pemain sentiasa masih ada laluan
+           sehingga portal.
+           ================================================= */
 
-        const next =
+        const expected =
         this.solution[
             this.history.length
         ];
 
 
         if(
-            !next ||
+            !expected ||
 
-            next.r !== nr ||
+            expected.r !==
+            nr ||
 
-            next.c !== nc
+            expected.c !==
+            nc
         ){
 
             this.reject(
-                "Laluan itu akan buat puzzle buntu. Cuba arah lain."
+                "Arah itu akan buat laluan buntu. Cuba arah lain."
             );
 
 
@@ -2966,11 +2854,9 @@ extends Phaser.Scene{
         }
 
 
-        /* ==========================
-           VALID MOVE
-           ========================== */
+        /* MOVE VALID */
 
-        this.currentCell = {
+        this.current = {
 
             r:nr,
             c:nc
@@ -2979,13 +2865,14 @@ extends Phaser.Scene{
 
 
         this.visited.add(
-            key
+            k
         );
 
 
         this.history.push({
 
-            ...this.currentCell
+            r:nr,
+            c:nc
 
         ]);
 
@@ -3044,6 +2931,7 @@ extends Phaser.Scene{
             y:
             position.y,
 
+            angle:
             angle,
 
             duration:
@@ -3074,7 +2962,7 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   WRONG MOVE EFFECT
+   WRONG MOVE
    ========================================================= */
 
     reject(
@@ -3131,12 +3019,14 @@ extends Phaser.Scene{
         this.add.circle(
 
             position.x,
+
             position.y,
 
             this.cell *
             .28,
 
             color,
+
             .15
         )
         .setStrokeStyle(
@@ -3180,7 +3070,7 @@ extends Phaser.Scene{
 
     updateProgress(){
 
-        const completed =
+        const done =
         this.history.length;
 
 
@@ -3188,9 +3078,9 @@ extends Phaser.Scene{
         this.solution.length;
 
 
-        const ratio =
-        completed /
-        total;
+        const left =
+        total -
+        done;
 
 
         this.progressFill
@@ -3198,36 +3088,35 @@ extends Phaser.Scene{
         Math.max(
             4,
             560 *
-            ratio
+            (
+                done /
+                total
+            )
         );
 
 
         this.progressText
         .setText(
-            completed +
+            done +
             " / " +
             total
         );
 
 
-        const remaining =
-        total -
-        completed;
-
-
         if(
-            remaining >
+            left >
             1
         ){
 
             this.statusText
             .setText(
-                remaining +
-                " petak lagi. Setiap petak hanya sekali."
+                left +
+                " petak lagi. Petak kuning tak boleh dipijak semula."
             );
 
         }else if(
-            remaining === 1
+            left ===
+            1
         ){
 
             this.statusText
@@ -3239,7 +3128,7 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   COMPLETE
+   COMPLETE STAGE
    ========================================================= */
 
     completeStage(){
@@ -3342,11 +3231,11 @@ extends Phaser.Scene{
 
         const question =
         QUESTIONS[
-            this.stageIndex
+            this.stage
         ];
 
 
-        this.questionLayer =
+        this.qLayer =
         this.add.container(
             0,
             0
@@ -3383,7 +3272,7 @@ extends Phaser.Scene{
         );
 
 
-        this.questionLayer.add([
+        this.qLayer.add([
 
             dark,
             panel
@@ -3397,7 +3286,7 @@ extends Phaser.Scene{
             175,
             "SOALAN " +
             (
-                this.stageIndex +
+                this.stage +
                 1
             ) +
             " / 25",
@@ -3432,7 +3321,7 @@ extends Phaser.Scene{
         this.add.text(
             450,
             230,
-            question.topic,
+            question.t,
             {
                 fontFamily:
                 "Trebuchet MS, Arial",
@@ -3490,7 +3379,7 @@ extends Phaser.Scene{
         );
 
 
-        this.questionLayer.add([
+        this.qLayer.add([
 
             badge,
             topic,
@@ -3509,123 +3398,122 @@ extends Phaser.Scene{
         ];
 
 
-        question.a.forEach(
-            (
-                answer,
-                index
-            )=>{
+        for(
+            let i = 0;
+            i < 4;
+            i++
+        ){
 
-                const button =
-                this.add.rectangle(
-                    450,
-                    ys[index],
-                    665,
-                    92,
-                    0xf1f7fa,
-                    1
-                )
-                .setStrokeStyle(
-                    3,
-                    0xb8cfd9
-                )
-                .setInteractive({
-                    useHandCursor:true
-                });
-
-
-                const circle =
-                this.add.circle(
-                    165,
-                    ys[index],
-                    28,
-                    0x40798f,
-                    1
-                );
+            const button =
+            this.add.rectangle(
+                450,
+                ys[i],
+                665,
+                92,
+                0xf1f7fa,
+                1
+            )
+            .setStrokeStyle(
+                3,
+                0xb8cfd9
+            )
+            .setInteractive({
+                useHandCursor:true
+            });
 
 
-                const letter =
-                this.add.text(
-                    165,
-                    ys[index],
-                    String.fromCharCode(
-                        65 + index
-                    ),
-                    {
-                        fontFamily:
-                        "Arial",
+            const circle =
+            this.add.circle(
+                165,
+                ys[i],
+                28,
+                0x40798f,
+                1
+            );
 
-                        fontSize:
-                        "24px",
 
-                        fontStyle:
-                        "bold",
+            const letter =
+            this.add.text(
+                165,
+                ys[i],
+                String.fromCharCode(
+                    65 + i
+                ),
+                {
+                    fontFamily:
+                    "Arial",
 
-                        color:
-                        "#ffffff"
+                    fontSize:
+                    "24px",
+
+                    fontStyle:
+                    "bold",
+
+                    color:
+                    "#ffffff"
+                }
+            )
+            .setOrigin(
+                .5
+            );
+
+
+            const answerText =
+            this.add.text(
+                210,
+                ys[i],
+                question.a[i],
+                {
+                    fontFamily:
+                    "Trebuchet MS, Arial",
+
+                    fontSize:
+                    "22px",
+
+                    fontStyle:
+                    "bold",
+
+                    color:
+                    "#244653",
+
+                    wordWrap:{
+                        width:510,
+                        useAdvancedWrap:true
                     }
-                )
-                .setOrigin(
-                    .5
-                );
+                }
+            )
+            .setOrigin(
+                0,
+                .5
+            );
 
 
-                const answerText =
-                this.add.text(
-                    210,
-                    ys[index],
-                    answer,
-                    {
-                        fontFamily:
-                        "Trebuchet MS, Arial",
+            this.qLayer.add([
 
-                        fontSize:
-                        "22px",
+                button,
+                circle,
+                letter,
+                answerText
 
-                        fontStyle:
-                        "bold",
-
-                        color:
-                        "#244653",
-
-                        wordWrap:{
-                            width:510,
-                            useAdvancedWrap:true
-                        }
-                    }
-                )
-                .setOrigin(
-                    0,
-                    .5
-                );
+            ]);
 
 
-                this.questionLayer.add([
+            button.on(
+                "pointerdown",
+                ()=>{
 
-                    button,
-                    circle,
-                    letter,
-                    answerText
-
-                ]);
-
-
-                button.on(
-                    "pointerdown",
-                    ()=>{
-
-                        this.checkAnswer(
-                            index,
-                            question.correct,
-                            button,
-                            circle
-                        );
-                    }
-                );
-            }
-        );
+                    this.checkAnswer(
+                        i,
+                        question.k,
+                        button,
+                        circle
+                    );
+                }
+            );
+        }
 
 
-        this.questionLayer
+        this.qLayer
         .setAlpha(
             0
         )
@@ -3637,7 +3525,7 @@ extends Phaser.Scene{
         this.tweens.add({
 
             targets:
-            this.questionLayer,
+            this.qLayer,
 
             alpha:
             1,
@@ -3671,6 +3559,7 @@ extends Phaser.Scene{
         if(
             this.answerLocked
         ){
+
             return;
         }
 
@@ -3715,7 +3604,7 @@ extends Phaser.Scene{
                 650,
                 ()=>{
 
-                    this.questionLayer
+                    this.qLayer
                     .destroy();
 
 
@@ -3728,7 +3617,7 @@ extends Phaser.Scene{
 
 
                     if(
-                        this.stageIndex >=
+                        this.stage >=
                         24
                     ){
 
@@ -3737,7 +3626,7 @@ extends Phaser.Scene{
                     }else{
 
                         this.startStage(
-                            this.stageIndex +
+                            this.stage +
                             1
                         );
                     }
@@ -3854,32 +3743,25 @@ extends Phaser.Scene{
         );
 
 
-        const magnet =
-        this.add.text(
-            450,
-            335,
-            "🧲",
-            {
-                fontSize:
-                "108px"
-            }
-        )
-        .setOrigin(
-            .5
-        );
+        layer.add([
+
+            dark,
+            panel
+
+        ]);
 
 
         const title =
         this.add.text(
             450,
-            445,
+            400,
             "MISI SELESAI!",
             {
                 fontFamily:
                 "Trebuchet MS, Arial",
 
                 fontSize:
-                "38px",
+                "42px",
 
                 fontStyle:
                 "bold",
@@ -3896,7 +3778,7 @@ extends Phaser.Scene{
         const description =
         this.add.text(
             450,
-            515,
+            485,
             "25 puzzle dan 25 soalan telah diselesaikan.",
             {
                 fontFamily:
@@ -3924,7 +3806,7 @@ extends Phaser.Scene{
         const score =
         this.add.text(
             450,
-            625,
+            575,
             "Betul cubaan pertama: " +
             this.firstTry +
             " / 25",
@@ -3950,7 +3832,7 @@ extends Phaser.Scene{
         const replay =
         this.add.rectangle(
             450,
-            755,
+            700,
             410,
             78,
             0x3e839b,
@@ -3968,7 +3850,7 @@ extends Phaser.Scene{
         const replayText =
         this.add.text(
             450,
-            755,
+            700,
             "MAIN SEMULA",
             {
                 fontFamily:
@@ -3991,9 +3873,6 @@ extends Phaser.Scene{
 
         layer.add([
 
-            dark,
-            panel,
-            magnet,
             title,
             description,
             score,
@@ -4019,106 +3898,90 @@ extends Phaser.Scene{
                 );
             }
         );
-
-
-        layer
-        .setAlpha(
-            0
-        )
-        .setScale(
-            .9
-        );
-
-
-        this.tweens.add({
-
-            targets:
-            layer,
-
-            alpha:
-            1,
-
-            scaleX:
-            1,
-
-            scaleY:
-            1,
-
-            duration:
-            300,
-
-            ease:
-            "Back.Out"
-        });
     }
 
 }
 
 
 /* =========================================================
-   PHASER
+   START PHASER
+
+   GUNA CANVAS SUPAYA LEBIH STABIL DEKAT
+   IPAD / SAFARI
    ========================================================= */
 
-const config = {
+try{
 
-    type:
-    Phaser.AUTO,
+    new Phaser.Game({
 
-    parent:
-    "game",
+        type:
+        Phaser.CANVAS,
 
-    width:
-    GAME_W,
-
-    height:
-    GAME_H,
-
-    backgroundColor:
-    "#dff4ff",
-
-    render:{
-
-        antialias:
-        true,
-
-        pixelArt:
-        false,
-
-        roundPixels:
-        false
-    },
-
-    scale:{
-
-        mode:
-        Phaser.Scale.FIT,
-
-        autoCenter:
-        Phaser.Scale.CENTER_BOTH,
+        parent:
+        "game",
 
         width:
-        GAME_W,
+        W,
 
         height:
-        GAME_H
-    },
+        H,
 
-    input:{
+        backgroundColor:
+        "#dff4ff",
 
-        activePointers:
-        3
-    },
+        render:{
 
-    scene:[
-        MagnetGame
-    ]
-};
+            antialias:
+            true,
 
+            roundPixels:
+            false
+        },
 
-new Phaser.Game(
-    config
-);
+        scale:{
+
+            mode:
+            Phaser.Scale.FIT,
+
+            autoCenter:
+            Phaser.Scale.CENTER_BOTH,
+
+            width:
+            W,
+
+            height:
+            H
+        },
+
+        input:{
+
+            activePointers:
+            3
+        },
+
+        scene:[
+
+            MagnetGame
+
+        ]
+
+    });
+
+}catch(error){
+
+    showFatal(
+        error &&
+        error.message
+        ? error.message
+        : error
+    );
+}
+
+}
+
+})();
 
 </script>
+
 </body>
 </html>
