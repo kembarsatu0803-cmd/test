@@ -5,15 +5,14 @@
 
 <meta
 name="viewport"
-content="
-width=device-width,
+content="width=device-width,
 initial-scale=1,
 maximum-scale=1,
 user-scalable=no,
-viewport-fit=cover
-">
+viewport-fit=cover"
+>
 
-<title>Maze Puzzle — Set 4</title>
+<title>Draw Maze Puzzle — Set 4</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
@@ -64,8 +63,8 @@ body{
 }
 
 .note{
-    text-align:center;
     padding:6px 3px 2px;
+    text-align:center;
     font-size:11px;
     color:#587181;
 }
@@ -76,7 +75,6 @@ body{
     background:#fff1f1;
     color:#8b2222;
     text-align:center;
-    border-radius:10px;
 }
 
 @media(max-width:700px){
@@ -92,10 +90,6 @@ body{
 
     #game{
         border-radius:9px;
-    }
-
-    .note{
-        font-size:10px;
     }
 
 }
@@ -117,7 +111,7 @@ body{
     </div>
 
     <div class="note">
-        Telefon / iPad: gunakan analog • Laptop: Arrow atau WASD
+        Tekan START dan lukis laluan dengan jari atau mouse hingga ke jawapan.
     </div>
 
 </div>
@@ -136,11 +130,11 @@ body{
 
 if(typeof Phaser === "undefined"){
 
-    const box =
+    const e =
     document.getElementById("errorBox");
 
-    if(box){
-        box.style.display = "block";
+    if(e){
+        e.style.display = "block";
     }
 
     return;
@@ -152,21 +146,17 @@ if(typeof Phaser === "undefined"){
 ========================================================= */
 
 const PORTRAIT =
-window.innerHeight >=
-window.innerWidth;
-
+window.innerHeight >= window.innerWidth;
 
 const GAME_W =
 PORTRAIT
 ? 720
 : 960;
 
-
 const GAME_H =
 PORTRAIT
 ? 1080
 : 720;
-
 
 const LETTERS = [
     "A",
@@ -495,8 +485,11 @@ constructor(){
 
     this.ctx = null;
     this.master = null;
+
     this.musicTimer = null;
+
     this.musicOn = true;
+
     this.musicIndex = 0;
 
     this.notes = [
@@ -509,7 +502,6 @@ constructor(){
         440,
         392
     ];
-
 }
 
 
@@ -525,14 +517,18 @@ unlock(){
             return;
         }
 
+
         this.ctx =
         new AC();
+
 
         this.master =
         this.ctx.createGain();
 
+
         this.master.gain.value =
-        0.15;
+        .15;
+
 
         this.master.connect(
             this.ctx.destination
@@ -554,11 +550,11 @@ unlock(){
 
 
 tone(
-frequency,
-duration = 0.1,
+freq,
+duration = .1,
 type = "sine",
-volume = 0.08,
-endFrequency = null
+volume = .08,
+endFreq = null
 ){
 
     if(!this.ctx){
@@ -584,24 +580,20 @@ endFrequency = null
 
     osc.frequency
     .setValueAtTime(
-        frequency,
+        freq,
         now
     );
 
 
-    if(endFrequency){
+    if(endFreq){
 
         osc.frequency
         .exponentialRampToValueAtTime(
-
             Math.max(
                 40,
-                endFrequency
+                endFreq
             ),
-
-            now +
-            duration
-
+            now + duration
         );
     }
 
@@ -615,12 +607,15 @@ endFrequency = null
 
     gain.gain
     .exponentialRampToValueAtTime(
-        0.0001,
+        .0001,
         now + duration
     );
 
 
-    osc.connect(gain);
+    osc.connect(
+        gain
+    );
+
 
     gain.connect(
         this.master
@@ -629,10 +624,11 @@ endFrequency = null
 
     osc.start(now);
 
+
     osc.stop(
         now +
         duration +
-        0.02
+        .02
     );
 }
 
@@ -653,7 +649,6 @@ startMusic(){
                 !this.musicOn ||
                 document.hidden
             ){
-
                 return;
             }
 
@@ -665,11 +660,11 @@ startMusic(){
                     this.notes.length
                 ],
 
-                0.18,
+                .18,
 
                 "sine",
 
-                0.022
+                .022
 
             );
 
@@ -683,13 +678,36 @@ startMusic(){
 }
 
 
+draw(){
+
+    this.tone(
+        600,
+        .035,
+        "sine",
+        .02
+    );
+}
+
+
+wall(){
+
+    this.tone(
+        160,
+        .15,
+        "square",
+        .08,
+        90
+    );
+}
+
+
 correct(){
 
     this.tone(
         520,
-        0.09,
+        .09,
         "triangle",
-        0.14,
+        .14,
         700
     );
 
@@ -699,9 +717,9 @@ correct(){
 
             this.tone(
                 760,
-                0.14,
+                .14,
                 "triangle",
-                0.12,
+                .12,
                 920
             );
 
@@ -715,9 +733,9 @@ wrong(){
 
     this.tone(
         180,
-        0.20,
+        .2,
         "sawtooth",
-        0.09,
+        .09,
         100
     );
 }
@@ -727,9 +745,9 @@ newMaze(){
 
     this.tone(
         360,
-        0.06,
+        .06,
         "triangle",
-        0.06,
+        .06,
         480
     );
 }
@@ -751,13 +769,12 @@ win(){
 
                     this.tone(
                         note,
-                        0.25,
+                        .25,
                         "triangle",
-                        0.13
+                        .13
                     );
 
                 },
-
                 i * 120
             );
         }
@@ -781,7 +798,7 @@ new AudioSystem();
 
 
 /* =========================================================
-   MAZE SCENE
+   SCENE
 ========================================================= */
 
 class MazeScene
@@ -809,23 +826,18 @@ create(){
 
     this.locked = true;
 
+    this.isDrawing = false;
+
+    this.tracePoints = [];
+
+    this.wallRects = [];
+
     this.answerZones = [];
 
     this.floorObjects = [];
 
-    this.joyActive = false;
-
     this.lastMazeSignature = "";
 
-
-    this.joyVector =
-    new Phaser.Math.Vector2(
-        0,
-        0
-    );
-
-
-    this.createTextures();
 
     this.createBackground();
 
@@ -835,154 +847,13 @@ create(){
 
     this.createMazeArea();
 
+    this.createTraceGraphics();
 
-    this.wallGroup =
-    this.physics.add.staticGroup();
-
-
-    this.createPlayer();
-
-    this.createControls();
+    this.createButtons();
 
     this.createInput();
 
-
-    this.physics.add.collider(
-        this.player,
-        this.wallGroup
-    );
-
-
     this.showStart();
-}
-
-
-/* =========================================================
-   TEXTURES
-========================================================= */
-
-createTextures(){
-
-    const g =
-    this.make.graphics({
-        add:false
-    });
-
-
-    /* =====================================================
-       SYMBOLIC PLAYER
-
-       BUKAN BENTUK MAGNET.
-       HANYA TOKEN BULAT "M".
-    ===================================================== */
-
-
-    /* SHADOW */
-
-    g.fillStyle(
-        0x17394a,
-        0.20
-    );
-
-    g.fillEllipse(
-        32,
-        55,
-        46,
-        12
-    );
-
-
-    /* OUTER CIRCLE */
-
-    g.fillStyle(
-        0xffffff,
-        1
-    );
-
-    g.fillCircle(
-        32,
-        30,
-        27
-    );
-
-
-    g.lineStyle(
-        4,
-        0x173e55,
-        1
-    );
-
-    g.strokeCircle(
-        32,
-        30,
-        27
-    );
-
-
-    /* LEFT ACCENT */
-
-    g.fillStyle(
-        0xe45457,
-        1
-    );
-
-    g.fillRoundedRect(
-        10,
-        20,
-        7,
-        20,
-        3
-    );
-
-
-    /* RIGHT ACCENT */
-
-    g.fillStyle(
-        0x4387df,
-        1
-    );
-
-    g.fillRoundedRect(
-        47,
-        20,
-        7,
-        20,
-        3
-    );
-
-
-    g.generateTexture(
-        "playerToken",
-        64,
-        64
-    );
-
-
-    g.clear();
-
-
-    /* PARTICLE */
-
-    g.fillStyle(
-        0xffffff,
-        1
-    );
-
-    g.fillCircle(
-        5,
-        5,
-        5
-    );
-
-
-    g.generateTexture(
-        "spark",
-        10,
-        10
-    );
-
-
-    g.destroy();
 }
 
 
@@ -1018,7 +889,7 @@ createBackground(){
 
     g.fillStyle(
         0xb8d4e0,
-        0.24
+        .24
     );
 
 
@@ -1061,7 +932,7 @@ createHeader(){
     this.add.text(
         18,
         15,
-        "MAZE PUZZLE",
+        "DRAW MAZE",
         {
             fontFamily:"Arial",
 
@@ -1090,7 +961,7 @@ createHeader(){
         }
     )
     .setOrigin(
-        0.5,
+        .5,
         0
     );
 
@@ -1148,7 +1019,7 @@ createQuestionPanel(){
 
         0xffffff,
 
-        0.98
+        .98
 
     )
     .setStrokeStyle(
@@ -1211,39 +1082,42 @@ createQuestionPanel(){
             i++
         ){
 
-            const text =
-            this.add.text(
-                26,
-                this.panelY +
-                118 +
-                i * 35,
-                "",
-                {
-                    fontFamily:"Arial",
-
-                    fontSize:"14px",
-
-                    color:"#294b5f",
-
-                    wordWrap:{
-                        width:
-                        GAME_W - 52,
-
-                        useAdvancedWrap:true
-                    }
-                }
-            );
-
-
             this.optionTexts.push(
-                text
+
+                this.add.text(
+
+                    26,
+
+                    this.panelY +
+                    118 +
+                    i * 35,
+
+                    "",
+
+                    {
+                        fontFamily:"Arial",
+
+                        fontSize:"14px",
+
+                        color:"#294b5f",
+
+                        wordWrap:{
+                            width:
+                            GAME_W - 52,
+
+                            useAdvancedWrap:true
+                        }
+                    }
+
+                )
+
             );
         }
     }
 
     else{
 
-        const colWidth =
+        const colW =
         (GAME_W - 54) / 2;
 
 
@@ -1263,36 +1137,36 @@ createQuestionPanel(){
             );
 
 
-            const text =
-            this.add.text(
-                26 +
-                col * colWidth,
-
-                this.panelY +
-                108 +
-                row * 31,
-
-                "",
-
-                {
-                    fontFamily:"Arial",
-
-                    fontSize:"14px",
-
-                    color:"#294b5f",
-
-                    wordWrap:{
-                        width:
-                        colWidth - 18,
-
-                        useAdvancedWrap:true
-                    }
-                }
-            );
-
-
             this.optionTexts.push(
-                text
+
+                this.add.text(
+
+                    26 +
+                    col * colW,
+
+                    this.panelY +
+                    108 +
+                    row * 31,
+
+                    "",
+
+                    {
+                        fontFamily:"Arial",
+
+                        fontSize:"14px",
+
+                        color:"#294b5f",
+
+                        wordWrap:{
+                            width:
+                            colW - 18,
+
+                            useAdvancedWrap:true
+                        }
+                    }
+
+                )
+
             );
         }
     }
@@ -1305,10 +1179,10 @@ createQuestionPanel(){
 
 createMazeArea(){
 
-    const controlSpace =
+    const bottomSpace =
     PORTRAIT
-    ? 150
-    : 82;
+    ? 82
+    : 65;
 
 
     this.mazeArea = {
@@ -1329,7 +1203,7 @@ createMazeArea(){
             this.panelBottom +
             12
         ) -
-        controlSpace
+        bottomSpace
     };
 
 
@@ -1345,7 +1219,7 @@ createMazeArea(){
 
         this.mazeArea.h,
 
-        0x334e5a
+        0x334f5b
 
     )
     .setStrokeStyle(
@@ -1412,69 +1286,19 @@ createMazeArea(){
 
 
 /* =========================================================
-   PLAYER
+   TRACE GRAPHICS
 ========================================================= */
 
-createPlayer(){
+createTraceGraphics(){
 
-    this.player =
-    this.physics.add.sprite(
-        -100,
-        -100,
-        "playerToken"
-    );
-
-
-    const size =
-    this.cellSize *
-    0.57;
-
-
-    this.player
-    .setDisplaySize(
-        size,
-        size
-    )
-    .setDepth(80);
-
-
-    this.player.body
-    .setCircle(
-        21,
-        11,
-        9
-    );
-
-
-    /*
-        SIMBOL M
-    */
-
-    this.playerLetter =
-    this.add.text(
-        -100,
-        -100,
-        "M",
-        {
-            fontFamily:"Arial",
-            fontSize:
-            `${Math.max(
-                18,
-                size * .46
-            )}px`,
-
-            fontStyle:"bold",
-
-            color:"#173e55"
-        }
-    )
-    .setOrigin(.5)
-    .setDepth(81);
+    this.traceGraphics =
+    this.add.graphics()
+    .setDepth(100);
 }
 
 
 /* =========================================================
-   CREATE MAZE CELL
+   MAZE CELL
 ========================================================= */
 
 createCell(
@@ -1564,7 +1388,7 @@ direction
 
 
 /* =========================================================
-   GENERATE PERFECT RANDOM MAZE
+   GENERATE PERFECT MAZE
 ========================================================= */
 
 generateMaze(){
@@ -1615,20 +1439,20 @@ generateMaze(){
         }
 
 
-        const startX =
+        const sx =
         Math.floor(
             this.cols / 2
         );
 
 
-        const startY =
+        const sy =
         Math.floor(
             this.rows / 2
         );
 
 
         let current =
-        maze[startY][startX];
+        maze[sy][sx];
 
 
         current.visited =
@@ -1652,7 +1476,7 @@ generateMaze(){
             total
         ){
 
-            const neighbours = [];
+            const options = [];
 
 
             const x =
@@ -1668,11 +1492,11 @@ generateMaze(){
                 !maze[y - 1][x].visited
             ){
 
-                neighbours.push({
+                options.push({
                     cell:
                     maze[y - 1][x],
 
-                    direction:
+                    dir:
                     "top"
                 });
             }
@@ -1684,11 +1508,11 @@ generateMaze(){
                 !maze[y][x + 1].visited
             ){
 
-                neighbours.push({
+                options.push({
                     cell:
                     maze[y][x + 1],
 
-                    direction:
+                    dir:
                     "right"
                 });
             }
@@ -1700,11 +1524,11 @@ generateMaze(){
                 !maze[y + 1][x].visited
             ){
 
-                neighbours.push({
+                options.push({
                     cell:
                     maze[y + 1][x],
 
-                    direction:
+                    dir:
                     "bottom"
                 });
             }
@@ -1715,28 +1539,28 @@ generateMaze(){
                 !maze[y][x - 1].visited
             ){
 
-                neighbours.push({
+                options.push({
                     cell:
                     maze[y][x - 1],
 
-                    direction:
+                    dir:
                     "left"
                 });
             }
 
 
             if(
-                neighbours.length
+                options.length
             ){
 
                 Phaser.Utils.Array
                 .Shuffle(
-                    neighbours
+                    options
                 );
 
 
                 const next =
-                neighbours[0];
+                options[0];
 
 
                 stack.push(
@@ -1750,7 +1574,7 @@ generateMaze(){
 
                     next.cell,
 
-                    next.direction
+                    next.dir
 
                 );
 
@@ -1775,15 +1599,16 @@ generateMaze(){
 
 
         signature =
-        this.getMazeSignature(
+        this.mazeSignature(
             maze
         );
 
     }
+
     while(
         signature ===
         this.lastMazeSignature &&
-        attempts < 10
+        attempts < 12
     );
 
 
@@ -1799,11 +1624,11 @@ generateMaze(){
    SIGNATURE
 ========================================================= */
 
-getMazeSignature(
+mazeSignature(
 maze
 ){
 
-    let result =
+    let output =
     "";
 
 
@@ -1819,26 +1644,26 @@ maze
             x++
         ){
 
-            const walls =
+            const w =
             maze[y][x].walls;
 
 
-            result +=
-            walls.top ? "1" : "0";
+            output +=
+            w.top ? "1" : "0";
 
-            result +=
-            walls.right ? "1" : "0";
+            output +=
+            w.right ? "1" : "0";
 
-            result +=
-            walls.bottom ? "1" : "0";
+            output +=
+            w.bottom ? "1" : "0";
 
-            result +=
-            walls.left ? "1" : "0";
+            output +=
+            w.left ? "1" : "0";
         }
     }
 
 
-    return result;
+    return output;
 }
 
 
@@ -1873,12 +1698,6 @@ y
 
 clearMaze(){
 
-    this.wallGroup.clear(
-        true,
-        true
-    );
-
-
     this.floorObjects
     .forEach(
         object =>
@@ -1889,7 +1708,19 @@ clearMaze(){
     this.floorObjects = [];
 
 
+    this.wallRects = [];
+
+
+    if(this.mazeGraphics){
+
+        this.mazeGraphics
+        .destroy();
+    }
+
+
     this.clearAnswers();
+
+    this.clearTrace();
 }
 
 
@@ -1902,35 +1733,66 @@ buildNewMaze(){
     this.clearMaze();
 
 
-    this.maze =
-    this.generateMaze();
+    let validMaze =
+    false;
 
 
-    this.startCell = {
+    let attempts =
+    0;
 
-        x:
-        Math.floor(
-            this.cols / 2
-        ),
 
-        y:
-        Math.floor(
-            this.rows / 2
-        )
-    };
+    while(
+        !validMaze &&
+        attempts < 25
+    ){
+
+        attempts++;
+
+
+        this.maze =
+        this.generateMaze();
+
+
+        this.startCell = {
+
+            x:
+            Math.floor(
+                this.cols / 2
+            ),
+
+            y:
+            Math.floor(
+                this.rows / 2
+            )
+        };
+
+
+        const answers =
+        this.findAnswerCells();
+
+
+        if(
+            answers.length >= 4
+        ){
+
+            this.endCells =
+            answers.slice(
+                0,
+                4
+            );
+
+
+            validMaze =
+            true;
+        }
+    }
 
 
     this.drawMaze();
 
-
-    this.endCells =
-    this.findAnswerCells();
-
+    this.createStart();
 
     this.createAnswers();
-
-
-    this.resetPlayer();
 
 
     AUDIO.newMaze();
@@ -1943,13 +1805,73 @@ buildNewMaze(){
 
 drawMaze(){
 
-    const thickness =
+    this.mazeGraphics =
+    this.add.graphics()
+    .setDepth(20);
+
+
+    const wallThickness =
     Math.max(
-        4,
+        5,
         Math.floor(
             this.cellSize *
-            0.11
+            .12
         )
+    );
+
+
+    /* FLOOR */
+
+    for(
+        let y = 0;
+        y < this.rows;
+        y++
+    ){
+
+        for(
+            let x = 0;
+            x < this.cols;
+            x++
+        ){
+
+            const p =
+            this.cellPosition(
+                x,
+                y
+            );
+
+
+            const floor =
+            this.add.rectangle(
+
+                p.x,
+
+                p.y,
+
+                this.cellSize,
+
+                this.cellSize,
+
+                (x + y) % 2 === 0
+                ? 0xf4e7c7
+                : 0xebdcba
+
+            )
+            .setDepth(5);
+
+
+            this.floorObjects
+            .push(
+                floor
+            );
+        }
+    }
+
+
+    this.mazeGraphics
+    .fillStyle(
+        0x31586b,
+        1
     );
 
 
@@ -1976,33 +1898,13 @@ drawMaze(){
             );
 
 
-            const floor =
-            this.add.rectangle(
-
-                p.x,
-                p.y,
-
-                this.cellSize,
-                this.cellSize,
-
-                (x + y) % 2 === 0
-                ? 0xf4e8c9
-                : 0xecddba
-
-            )
-            .setDepth(10);
-
-
-            this.floorObjects.push(
-                floor
-            );
-
+            /* TOP */
 
             if(
                 cell.walls.top
             ){
 
-                this.createWall(
+                this.addWallRect(
 
                     p.x,
 
@@ -2010,33 +1912,37 @@ drawMaze(){
                     this.cellSize / 2,
 
                     this.cellSize +
-                    thickness,
+                    wallThickness,
 
-                    thickness
+                    wallThickness
 
                 );
             }
 
 
+            /* LEFT */
+
             if(
                 cell.walls.left
             ){
 
-                this.createWall(
+                this.addWallRect(
 
                     p.x -
                     this.cellSize / 2,
 
                     p.y,
 
-                    thickness,
+                    wallThickness,
 
                     this.cellSize +
-                    thickness
+                    wallThickness
 
                 );
             }
 
+
+            /* RIGHT OUTER */
 
             if(
                 x ===
@@ -2044,21 +1950,23 @@ drawMaze(){
                 cell.walls.right
             ){
 
-                this.createWall(
+                this.addWallRect(
 
                     p.x +
                     this.cellSize / 2,
 
                     p.y,
 
-                    thickness,
+                    wallThickness,
 
                     this.cellSize +
-                    thickness
+                    wallThickness
 
                 );
             }
 
+
+            /* BOTTOM OUTER */
 
             if(
                 y ===
@@ -2066,7 +1974,7 @@ drawMaze(){
                 cell.walls.bottom
             ){
 
-                this.createWall(
+                this.addWallRect(
 
                     p.x,
 
@@ -2074,9 +1982,9 @@ drawMaze(){
                     this.cellSize / 2,
 
                     this.cellSize +
-                    thickness,
+                    wallThickness,
 
-                    thickness
+                    wallThickness
 
                 );
             }
@@ -2086,60 +1994,150 @@ drawMaze(){
 
 
 /* =========================================================
-   WALL
+   ADD WALL RECT
 ========================================================= */
 
-createWall(
+addWallRect(
 x,
 y,
-width,
-height
+w,
+h
 ){
 
-    const wall =
-    this.add.rectangle(
+    this.mazeGraphics
+    .fillRect(
 
-        x,
-        y,
+        x - w / 2,
 
-        width,
-        height,
+        y - h / 2,
 
-        0x355d70
+        w,
+        h
 
-    )
-    .setStrokeStyle(
-        1,
-        0x203d4b
-    )
-    .setDepth(30);
-
-
-    this.wallGroup.add(
-        wall
     );
 
 
-    wall.body.setSize(
-        width,
-        height
-    );
+    this.wallRects.push({
 
+        x:
+        x - w / 2,
 
-    wall.body
-    .updateFromGameObject();
+        y:
+        y - h / 2,
+
+        w:w,
+
+        h:h
+
+    });
 }
 
 
 /* =========================================================
-   OPENING COUNT
+   START MARKER
+========================================================= */
+
+createStart(){
+
+    const p =
+    this.cellPosition(
+
+        this.startCell.x,
+
+        this.startCell.y
+
+    );
+
+
+    this.startPos =
+    {
+        x:p.x,
+        y:p.y
+    };
+
+
+    this.startGlow =
+    this.add.circle(
+
+        p.x,
+        p.y,
+
+        this.cellSize *
+        .38,
+
+        0x34b56d,
+
+        .20
+
+    )
+    .setDepth(40);
+
+
+    this.startCircle =
+    this.add.circle(
+
+        p.x,
+        p.y,
+
+        this.cellSize *
+        .28,
+
+        0xffffff,
+
+        1
+
+    )
+    .setStrokeStyle(
+
+        Math.max(
+            3,
+            this.cellSize * .07
+        ),
+
+        0x2a9a5b
+
+    )
+    .setDepth(41);
+
+
+    this.startText =
+    this.add.text(
+
+        p.x,
+        p.y,
+
+        "START",
+
+        {
+            fontFamily:"Arial",
+
+            fontSize:
+            `${Math.max(
+                8,
+                this.cellSize * .18
+            )}px`,
+
+            fontStyle:"bold",
+
+            color:"#237747"
+        }
+
+    )
+    .setOrigin(.5)
+    .setDepth(42);
+}
+
+
+/* =========================================================
+   OPEN COUNT
 ========================================================= */
 
 openingCount(
 cell
 ){
 
-    let count = 0;
+    let count =
+    0;
 
 
     if(!cell.walls.top){
@@ -2164,7 +2162,7 @@ cell
 
 
 /* =========================================================
-   GET DISTANCES
+   DISTANCES FROM START
 ========================================================= */
 
 getDistances(){
@@ -2186,21 +2184,21 @@ getDistances(){
     const queue = [];
 
 
-    const startX =
+    const sx =
     this.startCell.x;
 
 
-    const startY =
+    const sy =
     this.startCell.y;
 
 
-    distances[startY][startX] =
+    distances[sy][sx] =
     0;
 
 
     queue.push({
-        x:startX,
-        y:startY
+        x:sx,
+        y:sy
     });
 
 
@@ -2229,7 +2227,7 @@ getDistances(){
         this.maze[y][x];
 
 
-        const nextDistance =
+        const d =
         distances[y][x] + 1;
 
 
@@ -2245,9 +2243,7 @@ getDistances(){
                 distances[ny][nx] === -1
             ){
 
-                distances[ny][nx] =
-                nextDistance;
-
+                distances[ny][nx] = d;
 
                 queue.push({
                     x:nx,
@@ -2269,9 +2265,7 @@ getDistances(){
                 distances[ny][nx] === -1
             ){
 
-                distances[ny][nx] =
-                nextDistance;
-
+                distances[ny][nx] = d;
 
                 queue.push({
                     x:nx,
@@ -2293,9 +2287,7 @@ getDistances(){
                 distances[ny][nx] === -1
             ){
 
-                distances[ny][nx] =
-                nextDistance;
-
+                distances[ny][nx] = d;
 
                 queue.push({
                     x:nx,
@@ -2317,9 +2309,7 @@ getDistances(){
                 distances[ny][nx] === -1
             ){
 
-                distances[ny][nx] =
-                nextDistance;
-
+                distances[ny][nx] = d;
 
                 queue.push({
                     x:nx,
@@ -2335,7 +2325,7 @@ getDistances(){
 
 
 /* =========================================================
-   FIND ANSWER DEAD-ENDS
+   ANSWER DEAD ENDS
 ========================================================= */
 
 findAnswerCells(){
@@ -2383,6 +2373,7 @@ findAnswerCells(){
                 deadEnds.push({
 
                     x:x,
+
                     y:y,
 
                     distance:
@@ -2418,7 +2409,7 @@ findAnswerCells(){
             selected
         ){
 
-            const distance =
+            const d =
             Math.abs(
                 candidate.x -
                 existing.x
@@ -2431,7 +2422,7 @@ findAnswerCells(){
 
 
             if(
-                distance < 3
+                d < 3
             ){
 
                 tooClose =
@@ -2470,9 +2461,9 @@ findAnswerCells(){
 
             const exists =
             selected.some(
-                item =>
-                item.x === candidate.x &&
-                item.y === candidate.y
+                a =>
+                a.x === candidate.x &&
+                a.y === candidate.y
             );
 
 
@@ -2494,10 +2485,7 @@ findAnswerCells(){
     }
 
 
-    return selected.slice(
-        0,
-        4
-    );
+    return selected;
 }
 
 
@@ -2523,7 +2511,7 @@ createAnswers(){
 
     const size =
     this.cellSize *
-    0.68;
+    .65;
 
 
     for(
@@ -2552,7 +2540,7 @@ createAnswers(){
             p.x,
             p.y
         )
-        .setDepth(65);
+        .setDepth(50);
 
 
         const glow =
@@ -2561,13 +2549,13 @@ createAnswers(){
             0,
             0,
 
-            size * 0.58,
+            size * .60,
 
             colors[
                 answerIndex
             ],
 
-            0.20
+            .18
 
         );
 
@@ -2588,7 +2576,7 @@ createAnswers(){
 
             Math.max(
                 3,
-                this.cellSize * 0.07
+                this.cellSize * .07
             ),
 
             colors[
@@ -2598,7 +2586,7 @@ createAnswers(){
         );
 
 
-        const letter =
+        const text =
         this.add.text(
 
             0,
@@ -2614,7 +2602,7 @@ createAnswers(){
                 fontSize:
                 `${Math.max(
                     17,
-                    this.cellSize * .48
+                    this.cellSize * .45
                 )}px`,
 
                 fontStyle:"bold",
@@ -2629,7 +2617,7 @@ createAnswers(){
         container.add([
             glow,
             box,
-            letter
+            text
         ]);
 
 
@@ -2656,11 +2644,11 @@ createAnswers(){
             container,
 
             scale:
-            1.07,
+            1.06,
 
             duration:
-            650 +
-            i * 100,
+            700 +
+            i * 90,
 
             yoyo:true,
 
@@ -2702,244 +2690,707 @@ clearAnswers(){
 
 
     this.answerZones = [];
+
+
+    if(this.startGlow){
+
+        this.startGlow.destroy();
+
+        this.startCircle.destroy();
+
+        this.startText.destroy();
+
+
+        this.startGlow = null;
+
+        this.startCircle = null;
+
+        this.startText = null;
+    }
 }
 
 
 /* =========================================================
-   RESET PLAYER
+   TRACE
 ========================================================= */
 
-resetPlayer(){
+clearTrace(){
 
-    const p =
-    this.cellPosition(
-
-        this.startCell.x,
-
-        this.startCell.y
-
-    );
+    this.isDrawing =
+    false;
 
 
-    this.player
-    .setVelocity(
-        0,
-        0
-    );
+    this.tracePoints = [];
 
 
-    this.player
-    .setPosition(
-        p.x,
-        p.y
-    );
+    if(this.traceGraphics){
 
-
-    this.player.body
-    .reset(
-        p.x,
-        p.y
-    );
-
-
-    this.playerLetter
-    .setPosition(
-        p.x,
-        p.y - 2
-    );
-
-
-    this.resetJoystick();
+        this.traceGraphics.clear();
+    }
 }
 
 
 /* =========================================================
-   CONTROLS
+   DRAW TRACE
 ========================================================= */
 
-createControls(){
+drawTrace(
+color = 0x28a4dc
+){
 
-    this.controlY =
-    this.mazeArea.y +
-    this.mazeArea.h +
+    this.traceGraphics.clear();
+
+
+    if(
+        this.tracePoints.length <
+        2
+    ){
+
+        return;
+    }
+
+
+    this.traceGraphics
+    .lineStyle(
+
+        PORTRAIT
+        ? 11
+        : 9,
+
+        color,
+
+        .90
+
+    );
+
+
+    this.traceGraphics
+    .beginPath();
+
+
+    this.traceGraphics
+    .moveTo(
+
+        this.tracePoints[0].x,
+
+        this.tracePoints[0].y
+
+    );
+
+
+    for(
+        let i = 1;
+        i <
+        this.tracePoints.length;
+        i++
+    ){
+
+        this.traceGraphics
+        .lineTo(
+
+            this.tracePoints[i].x,
+
+            this.tracePoints[i].y
+
+        );
+    }
+
+
+    this.traceGraphics
+    .strokePath();
+}
+
+
+/* =========================================================
+   POINT HIT WALL
+========================================================= */
+
+pointHitsWall(
+x,
+y
+){
+
+    const margin =
+    PORTRAIT
+    ? 5
+    : 4;
+
+
+    for(
+        const wall of
+        this.wallRects
+    ){
+
+        if(
+
+            x >=
+            wall.x - margin
+
+            &&
+
+            x <=
+            wall.x +
+            wall.w +
+            margin
+
+            &&
+
+            y >=
+            wall.y - margin
+
+            &&
+
+            y <=
+            wall.y +
+            wall.h +
+            margin
+
+        ){
+
+            return true;
+        }
+    }
+
+
+    return false;
+}
+
+
+/* =========================================================
+   SEGMENT HIT WALL
+========================================================= */
+
+segmentHitsWall(
+x1,
+y1,
+x2,
+y2
+){
+
+    const distance =
+    Phaser.Math.Distance.Between(
+        x1,
+        y1,
+        x2,
+        y2
+    );
+
+
+    const steps =
+    Math.max(
+        1,
+        Math.ceil(
+            distance / 4
+        )
+    );
+
+
+    for(
+        let i = 1;
+        i <= steps;
+        i++
+    ){
+
+        const t =
+        i / steps;
+
+
+        const x =
+        Phaser.Math.Linear(
+            x1,
+            x2,
+            t
+        );
+
+
+        const y =
+        Phaser.Math.Linear(
+            y1,
+            y2,
+            t
+        );
+
+
+        if(
+            this.pointHitsWall(
+                x,
+                y
+            )
+        ){
+
+            return true;
+        }
+    }
+
+
+    return false;
+}
+
+
+/* =========================================================
+   START DRAW
+========================================================= */
+
+beginDraw(
+pointer
+){
+
+    if(
+        !this.started ||
+        this.locked
+    ){
+
+        return;
+    }
+
+
+    const distance =
+    Phaser.Math.Distance.Between(
+
+        pointer.x,
+        pointer.y,
+
+        this.startPos.x,
+        this.startPos.y
+
+    );
+
+
+    if(
+        distance >
+        this.cellSize * .48
+    ){
+
+        this.showMiniMessage(
+            "MULA DARI START",
+            0xd38424
+        );
+
+        return;
+    }
+
+
+    this.clearTrace();
+
+
+    this.isDrawing =
+    true;
+
+
+    this.tracePoints = [
+
+        {
+            x:
+            this.startPos.x,
+
+            y:
+            this.startPos.y
+        }
+
+    ];
+
+
+    this.tracePoints.push({
+
+        x:
+        pointer.x,
+
+        y:
+        pointer.y
+
+    });
+
+
+    this.drawTrace();
+}
+
+
+/* =========================================================
+   CONTINUE DRAW
+========================================================= */
+
+continueDraw(
+pointer
+){
+
+    if(
+        !this.isDrawing ||
+        this.locked
+    ){
+
+        return;
+    }
+
+
+    const last =
+    this.tracePoints[
+        this.tracePoints.length - 1
+    ];
+
+
+    const distance =
+    Phaser.Math.Distance.Between(
+
+        last.x,
+        last.y,
+
+        pointer.x,
+        pointer.y
+
+    );
+
+
+    if(
+        distance < 2
+    ){
+
+        return;
+    }
+
+
+    if(
+        this.segmentHitsWall(
+
+            last.x,
+            last.y,
+
+            pointer.x,
+            pointer.y
+
+        )
+    ){
+
+        this.tracePoints.push({
+
+            x:
+            pointer.x,
+
+            y:
+            pointer.y
+
+        });
+
+
+        this.drawTrace(
+            0xe14d4d
+        );
+
+
+        AUDIO.wall();
+
+
+        this.isDrawing =
+        false;
+
+
+        this.showMiniMessage(
+            "TERKENA DINDING!",
+            0xc84444
+        );
+
+
+        this.time.delayedCall(
+            450,
+            () => {
+
+                this.clearTrace();
+            }
+        );
+
+
+        return;
+    }
+
+
+    this.tracePoints.push({
+
+        x:
+        pointer.x,
+
+        y:
+        pointer.y
+
+    });
+
+
+    this.drawTrace();
+
+
+    this.checkDrawAnswer(
+        pointer.x,
+        pointer.y
+    );
+}
+
+
+/* =========================================================
+   CHECK ANSWER WHILE DRAWING
+========================================================= */
+
+checkDrawAnswer(
+x,
+y
+){
+
+    const trigger =
+    this.cellSize *
+    .42;
+
+
+    for(
+        const zone of
+        this.answerZones
+    ){
+
+        const distance =
+        Phaser.Math.Distance.Between(
+
+            x,
+            y,
+
+            zone.x,
+            zone.y
+
+        );
+
+
+        if(
+            distance <
+            trigger
+        ){
+
+            this.finishAnswer(
+                zone
+            );
+
+            return;
+        }
+    }
+}
+
+
+/* =========================================================
+   POINTER RELEASE
+========================================================= */
+
+endDraw(){
+
+    if(
+        !this.isDrawing
+    ){
+
+        return;
+    }
+
+
+    this.isDrawing =
+    false;
+
+
+    this.showMiniMessage(
+        "BELUM SAMPAI JAWAPAN",
+        0xd38424
+    );
+
+
+    this.time.delayedCall(
+        400,
+        () => {
+
+            this.clearTrace();
+        }
+    );
+}
+
+
+/* =========================================================
+   FINISH ANSWER
+========================================================= */
+
+finishAnswer(
+zone
+){
+
+    if(this.locked){
+        return;
+    }
+
+
+    this.locked =
+    true;
+
+
+    this.isDrawing =
+    false;
+
+
+    const data =
+    QUESTIONS[
+        this.questionIndex
+    ];
+
+
+    if(
+        zone.answerIndex ===
+        data.a
+    ){
+
+        this.score +=
+        100;
+
+
+        this.scoreText
+        .setText(
+            `Skor ${this.score}`
+        );
+
+
+        this.drawTrace(
+            0x35b96f
+        );
+
+
+        AUDIO.correct();
+
+
+        this.showMiniMessage(
+            "BETUL! +100",
+            0x2e9259
+        );
+
+
+        this.time.delayedCall(
+            850,
+            () => {
+
+                this.questionIndex++;
+
+                this.loadQuestion();
+            }
+        );
+    }
+
+    else{
+
+        this.score =
+        Math.max(
+            0,
+            this.score - 20
+        );
+
+
+        this.scoreText
+        .setText(
+            `Skor ${this.score}`
+        );
+
+
+        this.drawTrace(
+            0xe14d4d
+        );
+
+
+        AUDIO.wrong();
+
+
+        this.showMiniMessage(
+            "SALAH — CUBA JAWAPAN LAIN",
+            0xc84949
+        );
+
+
+        this.time.delayedCall(
+            750,
+            () => {
+
+                this.clearTrace();
+
+                this.locked =
+                false;
+            }
+        );
+    }
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+createInput(){
+
+    this.input.on(
+        "pointerdown",
+        pointer => {
+
+            AUDIO.unlock();
+
+            this.beginDraw(
+                pointer
+            );
+        }
+    );
+
+
+    this.input.on(
+        "pointermove",
+        pointer => {
+
+            if(
+                pointer.isDown
+            ){
+
+                this.continueDraw(
+                    pointer
+                );
+            }
+        }
+    );
+
+
+    this.input.on(
+        "pointerup",
+        () => {
+
+            this.endDraw();
+        }
+    );
+
+
+    this.input.on(
+        "pointerupoutside",
+        () => {
+
+            this.endDraw();
+        }
+    );
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+createButtons(){
+
+    const y =
+    GAME_H -
     (
         PORTRAIT
-        ? 76
-        : 41
+        ? 37
+        : 32
     );
 
-
-    /*
-        ANALOG BESAR
-    */
-
-    this.joyRadius =
-    PORTRAIT
-    ? 70
-    : 55;
-
-
-    this.joyCenter =
-    new Phaser.Math.Vector2(
-
-        PORTRAIT
-        ? 108
-        : 96,
-
-        this.controlY
-
-    );
-
-
-    this.joyBase =
-    this.add.circle(
-
-        this.joyCenter.x,
-
-        this.joyCenter.y,
-
-        this.joyRadius,
-
-        0x153d55,
-
-        0.17
-
-    )
-    .setStrokeStyle(
-        4,
-        0x153d55,
-        0.46
-    )
-    .setDepth(100);
-
-
-    /*
-        DIRECTION MARKS
-    */
-
-    this.add.text(
-        this.joyCenter.x,
-        this.joyCenter.y -
-        this.joyRadius +
-        13,
-        "▲",
-        {
-            fontSize:"16px",
-            color:"#173e55"
-        }
-    )
-    .setOrigin(.5)
-    .setDepth(101);
-
-
-    this.add.text(
-        this.joyCenter.x,
-        this.joyCenter.y +
-        this.joyRadius -
-        13,
-        "▼",
-        {
-            fontSize:"16px",
-            color:"#173e55"
-        }
-    )
-    .setOrigin(.5)
-    .setDepth(101);
-
-
-    this.add.text(
-        this.joyCenter.x -
-        this.joyRadius +
-        13,
-        this.joyCenter.y,
-        "◀",
-        {
-            fontSize:"16px",
-            color:"#173e55"
-        }
-    )
-    .setOrigin(.5)
-    .setDepth(101);
-
-
-    this.add.text(
-        this.joyCenter.x +
-        this.joyRadius -
-        13,
-        this.joyCenter.y,
-        "▶",
-        {
-            fontSize:"16px",
-            color:"#173e55"
-        }
-    )
-    .setOrigin(.5)
-    .setDepth(101);
-
-
-    this.joyKnob =
-    this.add.circle(
-
-        this.joyCenter.x,
-
-        this.joyCenter.y,
-
-        PORTRAIT
-        ? 34
-        : 27,
-
-        0x173e55,
-
-        0.68
-
-    )
-    .setStrokeStyle(
-        3,
-        0xffffff,
-        0.4
-    )
-    .setDepth(102);
-
-
-    this.add.text(
-
-        this.joyCenter.x,
-
-        this.joyCenter.y -
-        this.joyRadius -
-        15,
-
-        "GERAK",
-
-        {
-            fontFamily:"Arial",
-            fontSize:"11px",
-            fontStyle:"bold",
-            color:"#486d80"
-        }
-
-    )
-    .setOrigin(.5)
-    .setDepth(100);
-
-
-    /* HOME */
 
     this.homeButton =
-    this.createButton(
+    this.makeButton(
 
         GAME_W -
-        (
-            PORTRAIT
-            ? 180
-            : 170
-        ),
+        175,
 
-        this.controlY,
+        y,
 
-        PORTRAIT
-        ? 120
-        : 115,
+        120,
 
         42,
 
@@ -2950,26 +3401,19 @@ createControls(){
             window.location.href =
             "index.html";
         }
+
     );
 
 
-    /* MUSIC */
-
     this.musicButton =
-    this.createButton(
+    this.makeButton(
 
         GAME_W -
-        (
-            PORTRAIT
-            ? 62
-            : 58
-        ),
+        61,
 
-        this.controlY,
+        y,
 
-        PORTRAIT
-        ? 88
-        : 82,
+        88,
 
         42,
 
@@ -2977,20 +3421,48 @@ createControls(){
 
         () => {
 
-            AUDIO.unlock();
-
-
             const on =
             AUDIO.toggle();
 
 
             this.musicButton.label
             .setText(
+
                 on
                 ? "♪ ON"
                 : "♪ OFF"
+
             );
         }
+
+    );
+
+
+    this.add.text(
+
+        18,
+
+        y,
+
+        "Tekan START → drag hingga jawapan",
+
+        {
+            fontFamily:"Arial",
+
+            fontSize:
+            PORTRAIT
+            ? "12px"
+            : "13px",
+
+            fontStyle:"bold",
+
+            color:"#4c6c7d"
+        }
+
+    )
+    .setOrigin(
+        0,
+        .5
     );
 }
 
@@ -2999,11 +3471,11 @@ createControls(){
    BUTTON
 ========================================================= */
 
-createButton(
+makeButton(
 x,
 y,
-width,
-height,
+w,
+h,
 text,
 callback
 ){
@@ -3012,8 +3484,8 @@ callback
     this.add.rectangle(
         x,
         y,
-        width,
-        height,
+        w,
+        h,
         0xffffff
     )
     .setStrokeStyle(
@@ -3022,8 +3494,7 @@ callback
     )
     .setInteractive({
         useHandCursor:true
-    })
-    .setDepth(100);
+    });
 
 
     const label =
@@ -3038,13 +3509,14 @@ callback
             color:"#244e63"
         }
     )
-    .setOrigin(.5)
-    .setDepth(101);
+    .setOrigin(.5);
 
 
     box.on(
         "pointerdown",
-        () => {
+        pointer => {
+
+            pointer.event.stopPropagation();
 
             AUDIO.unlock();
 
@@ -3061,228 +3533,7 @@ callback
 
 
 /* =========================================================
-   INPUT
-========================================================= */
-
-createInput(){
-
-    this.cursors =
-    this.input.keyboard
-    .createCursorKeys();
-
-
-    this.keys =
-    this.input.keyboard
-    .addKeys({
-
-        W:
-        Phaser.Input.Keyboard.KeyCodes.W,
-
-        A:
-        Phaser.Input.Keyboard.KeyCodes.A,
-
-        S:
-        Phaser.Input.Keyboard.KeyCodes.S,
-
-        D:
-        Phaser.Input.Keyboard.KeyCodes.D
-
-    });
-
-
-    this.input.on(
-        "pointerdown",
-        pointer => {
-
-            AUDIO.unlock();
-
-
-            const distance =
-            Phaser.Math.Distance.Between(
-
-                pointer.x,
-                pointer.y,
-
-                this.joyCenter.x,
-                this.joyCenter.y
-
-            );
-
-
-            if(
-                distance <=
-                this.joyRadius +
-                45
-            ){
-
-                this.joyActive =
-                true;
-
-
-                this.updateJoystick(
-                    pointer.x,
-                    pointer.y
-                );
-            }
-        }
-    );
-
-
-    this.input.on(
-        "pointermove",
-        pointer => {
-
-            if(
-                this.joyActive &&
-                pointer.isDown
-            ){
-
-                this.updateJoystick(
-                    pointer.x,
-                    pointer.y
-                );
-            }
-        }
-    );
-
-
-    this.input.on(
-        "pointerup",
-        () => {
-
-            this.resetJoystick();
-        }
-    );
-
-
-    this.input.on(
-        "pointerupoutside",
-        () => {
-
-            this.resetJoystick();
-        }
-    );
-}
-
-
-/* =========================================================
-   JOYSTICK
-========================================================= */
-
-updateJoystick(
-pointerX,
-pointerY
-){
-
-    const dx =
-    pointerX -
-    this.joyCenter.x;
-
-
-    const dy =
-    pointerY -
-    this.joyCenter.y;
-
-
-    const distance =
-    Math.hypot(
-        dx,
-        dy
-    );
-
-
-    if(
-        distance === 0
-    ){
-
-        this.joyVector
-        .set(
-            0,
-            0
-        );
-
-        return;
-    }
-
-
-    const nx =
-    dx /
-    distance;
-
-
-    const ny =
-    dy /
-    distance;
-
-
-    const amount =
-    Math.min(
-        distance,
-        this.joyRadius
-    );
-
-
-    const strength =
-    amount /
-    this.joyRadius;
-
-
-    this.joyKnob
-    .setPosition(
-
-        this.joyCenter.x +
-        nx * amount,
-
-        this.joyCenter.y +
-        ny * amount
-
-    );
-
-
-    this.joyVector
-    .set(
-
-        nx * strength,
-
-        ny * strength
-
-    );
-}
-
-
-/* =========================================================
-   RESET JOYSTICK
-========================================================= */
-
-resetJoystick(){
-
-    this.joyActive =
-    false;
-
-
-    this.joyVector
-    .set(
-        0,
-        0
-    );
-
-
-    if(this.joyKnob){
-
-        this.joyKnob
-        .setPosition(
-
-            this.joyCenter.x,
-
-            this.joyCenter.y
-
-        );
-    }
-}
-
-
-/* =========================================================
-   START
+   START WINDOW
 ========================================================= */
 
 showStart(){
@@ -3306,15 +3557,15 @@ showStart(){
     .setDepth(300);
 
 
-    const width =
+    const w =
     PORTRAIT
     ? GAME_W - 52
     : 540;
 
 
-    const height =
+    const h =
     PORTRAIT
-    ? 425
+    ? 420
     : 330;
 
 
@@ -3325,9 +3576,9 @@ showStart(){
 
         GAME_H / 2,
 
-        width,
+        w,
 
-        height,
+        h,
 
         0xffffff
 
@@ -3345,17 +3596,17 @@ showStart(){
         GAME_W / 2,
 
         GAME_H / 2 -
-        height / 2 +
+        h / 2 +
         52,
 
-        "MAZE PUZZLE",
+        "DRAW MAZE",
 
         {
             fontFamily:"Arial",
 
             fontSize:
             PORTRAIT
-            ? "30px"
+            ? "31px"
             : "29px",
 
             fontStyle:"bold",
@@ -3374,19 +3625,19 @@ showStart(){
         GAME_W / 2,
 
         GAME_H / 2 -
-        12,
+        10,
 
-        "Token M ialah simbol pemain sahaja.\n\n" +
+        "Tiada character dan tiada analog.\n\n" +
 
-        "Cari jalan di dalam maze sebenar.\n" +
+        "Tekan pada START dan jangan lepaskan jari.\n" +
 
-        "Maze mempunyai simpang dan jalan mati.\n\n" +
+        "Lukis laluan melalui maze hingga A, B, C atau D.\n\n" +
 
-        "Cari A, B, C atau D yang betul.\n\n" +
+        "Jika garisan terkena dinding,\n" +
 
-        "Setiap soalan akan menghasilkan\n" +
+        "anda perlu mula semula dari START.\n\n" +
 
-        "maze baru yang berbeza.",
+        "Setiap soalan mempunyai maze baru.",
 
         {
             fontFamily:"Arial",
@@ -3404,7 +3655,7 @@ showStart(){
 
             wordWrap:{
                 width:
-                width - 60
+                w - 60
             }
         }
 
@@ -3413,13 +3664,13 @@ showStart(){
     .setDepth(302);
 
 
-    const start =
+    const button =
     this.add.rectangle(
 
         GAME_W / 2,
 
         GAME_H / 2 +
-        height / 2 -
+        h / 2 -
         60,
 
         220,
@@ -3429,23 +3680,19 @@ showStart(){
         0x2e8d59
 
     )
-    .setStrokeStyle(
-        2,
-        0x17683e
-    )
     .setInteractive({
         useHandCursor:true
     })
     .setDepth(302);
 
 
-    const startText =
+    const buttonText =
     this.add.text(
 
         GAME_W / 2,
 
         GAME_H / 2 +
-        height / 2 -
+        h / 2 -
         60,
 
         "MULA GAME",
@@ -3462,9 +3709,11 @@ showStart(){
     .setDepth(303);
 
 
-    start.on(
+    button.on(
         "pointerdown",
-        () => {
+        pointer => {
+
+            pointer.event.stopPropagation();
 
             AUDIO.unlock();
 
@@ -3474,8 +3723,8 @@ showStart(){
                 card,
                 title,
                 info,
-                start,
-                startText
+                button,
+                buttonText
             ]
             .forEach(
                 object =>
@@ -3568,17 +3817,20 @@ loadQuestion(){
 
 
     /*
-        MAZE BARU SETIAP SOALAN
+       ROMBAK MAZE SETIAP SOALAN
     */
 
     this.buildNewMaze();
 
 
-    this.showMazeNumber();
+    this.showMiniMessage(
+        `MAZE ${this.questionIndex + 1}`,
+        0x173e54
+    );
 
 
     this.time.delayedCall(
-        350,
+        400,
         () => {
 
             this.locked =
@@ -3589,10 +3841,13 @@ loadQuestion(){
 
 
 /* =========================================================
-   MAZE NUMBER
+   MESSAGE
 ========================================================= */
 
-showMazeNumber(){
+showMiniMessage(
+text,
+color
+){
 
     const y =
     this.mazeArea.y +
@@ -3606,410 +3861,18 @@ showMazeNumber(){
 
         y,
 
-        225,
-
-        38,
-
-        0x173e54,
-
-        .94
-
-    )
-    .setDepth(150);
-
-
-    const text =
-    this.add.text(
-
-        GAME_W / 2,
-
-        y,
-
-        `MAZE ${this.questionIndex + 1}`,
-
-        {
-            fontFamily:"Arial",
-            fontSize:"14px",
-            fontStyle:"bold",
-            color:"#ffffff"
-        }
-
-    )
-    .setOrigin(.5)
-    .setDepth(151);
-
-
-    bg.setScale(.75);
-
-    text.setScale(.75);
-
-
-    this.tweens.add({
-
-        targets:[
-            bg,
-            text
-        ],
-
-        scale:1,
-
-        duration:150,
-
-        ease:"Back.Out"
-
-    });
-
-
-    this.time.delayedCall(
-        550,
-        () => {
-
-            bg.destroy();
-            text.destroy();
-        }
-    );
-}
-
-
-/* =========================================================
-   UPDATE
-========================================================= */
-
-update(){
-
-    if(
-        !this.started ||
-        !this.player
-    ){
-
-        return;
-    }
-
-
-    let x = 0;
-    let y = 0;
-
-
-    /* KEYBOARD */
-
-    if(
-        this.cursors.left.isDown ||
-        this.keys.A.isDown
-    ){
-        x -= 1;
-    }
-
-
-    if(
-        this.cursors.right.isDown ||
-        this.keys.D.isDown
-    ){
-        x += 1;
-    }
-
-
-    if(
-        this.cursors.up.isDown ||
-        this.keys.W.isDown
-    ){
-        y -= 1;
-    }
-
-
-    if(
-        this.cursors.down.isDown ||
-        this.keys.S.isDown
-    ){
-        y += 1;
-    }
-
-
-    /* ANALOG */
-
-    x +=
-    this.joyVector.x;
-
-
-    y +=
-    this.joyVector.y;
-
-
-    const length =
-    Math.hypot(
-        x,
-        y
-    );
-
-
-    if(
-        length > 1
-    ){
-
-        x /=
-        length;
-
-        y /=
-        length;
-    }
-
-
-    const speed =
-    PORTRAIT
-    ? 138
-    : 152;
-
-
-    if(
-        this.locked
-    ){
-
-        this.player
-        .setVelocity(
-            0,
-            0
-        );
-    }
-
-    else{
-
-        this.player
-        .setVelocity(
-
-            x * speed,
-
-            y * speed
-
-        );
-    }
-
-
-    /*
-        TOKEN TIDAK BERPUTAR.
-        HANYA SYMBOLIC.
-    */
-
-    this.player
-    .setRotation(0);
-
-
-    /*
-        HURUF M IKUT PLAYER
-    */
-
-    this.playerLetter
-    .setPosition(
-
-        this.player.x,
-
-        this.player.y - 2
-
-    );
-
-
-    if(
-        !this.locked
-    ){
-
-        this.checkAnswer();
-    }
-}
-
-
-/* =========================================================
-   CHECK ANSWER
-========================================================= */
-
-checkAnswer(){
-
-    const triggerDistance =
-    this.cellSize *
-    .40;
-
-
-    for(
-        const zone of
-        this.answerZones
-    ){
-
-        const distance =
-        Phaser.Math.Distance.Between(
-
-            this.player.x,
-            this.player.y,
-
-            zone.x,
-            zone.y
-
-        );
-
-
-        if(
-            distance <
-            triggerDistance
-        ){
-
-            this.chooseAnswer(
-                zone
-            );
-
-            return;
-        }
-    }
-}
-
-
-/* =========================================================
-   SELECT ANSWER
-========================================================= */
-
-chooseAnswer(
-zone
-){
-
-    if(
-        this.locked
-    ){
-
-        return;
-    }
-
-
-    this.locked =
-    true;
-
-
-    this.player
-    .setVelocity(
-        0,
-        0
-    );
-
-
-    const data =
-    QUESTIONS[
-        this.questionIndex
-    ];
-
-
-    if(
-        zone.answerIndex ===
-        data.a
-    ){
-
-        this.score +=
-        100;
-
-
-        this.scoreText
-        .setText(
-            `Skor ${this.score}`
-        );
-
-
-        AUDIO.correct();
-
-
-        this.showMessage(
-            "BETUL! MAZE BARU",
-            0x2e9259
-        );
-
-
-        this.createParticles(
-            zone.x,
-            zone.y
-        );
-
-
-        this.time.delayedCall(
-            850,
-            () => {
-
-                this.questionIndex++;
-
-                this.loadQuestion();
-            }
-        );
-    }
-
-    else{
-
-        this.score =
-        Math.max(
-            0,
-            this.score - 20
-        );
-
-
-        this.scoreText
-        .setText(
-            `Skor ${this.score}`
-        );
-
-
-        AUDIO.wrong();
-
-
-        this.showMessage(
-            "SALAH — KEMBALI KE START",
-            0xc84949
-        );
-
-
-        this.cameras.main
-        .shake(
-            140,
-            .005
-        );
-
-
-        this.time.delayedCall(
-            700,
-            () => {
-
-                this.resetPlayer();
-
-                this.locked =
-                false;
-            }
-        );
-    }
-}
-
-
-/* =========================================================
-   MESSAGE
-========================================================= */
-
-showMessage(
-text,
-color
-){
-
-    const y =
-    this.mazeArea.y +
-    27;
-
-
-    const bg =
-    this.add.rectangle(
-
-        GAME_W / 2,
-
-        y,
-
         PORTRAIT
-        ? 360
-        : 380,
+        ? 330
+        : 360,
 
-        42,
+        40,
 
         color,
 
-        .97
+        .96
 
     )
-    .setDepth(180);
+    .setDepth(200);
 
 
     const label =
@@ -4036,7 +3899,7 @@ color
 
     )
     .setOrigin(.5)
-    .setDepth(181);
+    .setDepth(201);
 
 
     bg.setScale(.8);
@@ -4053,7 +3916,7 @@ color
 
         scale:1,
 
-        duration:150,
+        duration:140,
 
         ease:"Back.Out"
 
@@ -4061,7 +3924,7 @@ color
 
 
     this.time.delayedCall(
-        570,
+        600,
         () => {
 
             bg.destroy();
@@ -4069,92 +3932,6 @@ color
             label.destroy();
         }
     );
-}
-
-
-/* =========================================================
-   PARTICLES
-========================================================= */
-
-createParticles(
-x,
-y
-){
-
-    const colors = [
-        0xffd55a,
-        0x54c983,
-        0x56a8e8,
-        0xff7070
-    ];
-
-
-    for(
-        let i = 0;
-        i < 15;
-        i++
-    ){
-
-        const particle =
-        this.add.image(
-            x,
-            y,
-            "spark"
-        )
-        .setTint(
-            Phaser.Utils.Array.GetRandom(
-                colors
-            )
-        )
-        .setDepth(190);
-
-
-        const angle =
-        Math.random() *
-        Math.PI *
-        2;
-
-
-        const distance =
-        Phaser.Math.Between(
-            30,
-            82
-        );
-
-
-        this.tweens.add({
-
-            targets:
-            particle,
-
-            x:
-            x +
-            Math.cos(angle) *
-            distance,
-
-            y:
-            y +
-            Math.sin(angle) *
-            distance,
-
-            alpha:0,
-
-            scale:0,
-
-            duration:
-            Phaser.Math.Between(
-                350,
-                650
-            ),
-
-            onComplete:
-            () => {
-
-                particle.destroy();
-            }
-
-        });
-    }
 }
 
 
@@ -4168,11 +3945,7 @@ showWin(){
     true;
 
 
-    this.player
-    .setVelocity(
-        0,
-        0
-    );
+    this.clearTrace();
 
 
     AUDIO.win();
@@ -4188,13 +3961,13 @@ showWin(){
     );
 
 
-    const minutes =
+    const min =
     Math.floor(
         total / 60
     );
 
 
-    const seconds =
+    const sec =
     String(
         total % 60
     )
@@ -4217,19 +3990,19 @@ showWin(){
 
         0x092535,
 
-        .85
+        .86
 
     )
     .setDepth(400);
 
 
-    const width =
+    const w =
     PORTRAIT
     ? GAME_W - 52
     : 510;
 
 
-    const height =
+    const h =
     PORTRAIT
     ? 350
     : 300;
@@ -4242,9 +4015,9 @@ showWin(){
 
         GAME_H / 2,
 
-        width,
+        w,
 
-        height,
+        h,
 
         0xffffff
 
@@ -4261,7 +4034,7 @@ showWin(){
         GAME_W / 2,
 
         GAME_H / 2 -
-        height / 2 +
+        h / 2 +
         52,
 
         "SEMUA MAZE SELESAI!",
@@ -4288,9 +4061,10 @@ showWin(){
 
         GAME_W / 2,
 
-        GAME_H / 2 - 15,
+        GAME_H / 2 -
+        15,
 
-        `25 / 25 soalan selesai\n\nSkor: ${this.score}\nMasa: ${minutes}:${seconds}`,
+        `25 / 25 soalan selesai\n\nSkor: ${this.score}\nMasa: ${min}:${sec}`,
 
         {
             fontFamily:"Arial",
@@ -4311,7 +4085,7 @@ showWin(){
         GAME_W / 2,
 
         GAME_H / 2 +
-        height / 2 -
+        h / 2 -
         60,
 
         205,
@@ -4332,7 +4106,7 @@ showWin(){
         GAME_W / 2,
 
         GAME_H / 2 +
-        height / 2 -
+        h / 2 -
         60,
 
         "MAIN SEMULA",
@@ -4351,7 +4125,9 @@ showWin(){
 
     restart.on(
         "pointerdown",
-        () => {
+        pointer => {
+
+            pointer.event.stopPropagation();
 
             this.scene.restart();
         }
@@ -4362,7 +4138,7 @@ showWin(){
 
 
 /* =========================================================
-   CONFIG
+   PHASER CONFIG
 ========================================================= */
 
 const config = {
@@ -4381,22 +4157,6 @@ const config = {
 
     backgroundColor:
     "#dceaf1",
-
-    physics:{
-
-        default:
-        "arcade",
-
-        arcade:{
-
-            gravity:{
-                x:0,
-                y:0
-            },
-
-            debug:false
-        }
-    },
 
     render:{
 
@@ -4423,6 +4183,7 @@ const config = {
     scene:[
         MazeScene
     ]
+
 };
 
 
