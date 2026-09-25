@@ -25,44 +25,71 @@ html,
 body{
     margin:0;
     padding:0;
-    background:#dde9ef;
-    font-family:Arial,Helvetica,sans-serif;
+
+    background:
+        linear-gradient(
+            180deg,
+            #dceaf1,
+            #f1f7fa
+        );
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
 }
 
 body{
     min-height:100vh;
+
     display:flex;
     justify-content:center;
     align-items:flex-start;
-    padding:6px;
+
+    padding:5px;
 }
 
 .game-shell{
     width:min(100%,1000px);
+
     background:#ffffff;
-    padding:6px;
+
     border-radius:18px;
 
+    padding:5px;
+
     box-shadow:
-        0 10px 30px
-        rgba(30,65,85,.14);
+        0 10px 32px
+        rgba(27,62,82,.14);
 }
 
 #game{
     width:100%;
+
     overflow:hidden;
+
     border-radius:14px;
-    background:#e2edf3;
+
+    background:#e3eef4;
 }
 
 #game canvas{
     display:block;
+
     margin:auto;
 
     max-width:100%!important;
+
     height:auto!important;
 
     touch-action:none;
+
+    image-rendering:auto;
 }
 
 .note{
@@ -70,21 +97,31 @@ body{
 
     text-align:center;
 
-    font-size:11px;
+    font-size:12px;
+    font-weight:600;
+
     line-height:1.4;
 
-    color:#587181;
+    color:#4f6979;
 }
 
 #errorBox{
     display:none;
 
+    margin:8px;
+
     padding:20px;
+
+    background:#fff1f1;
+
+    color:#912a2a;
 
     text-align:center;
 
-    color:#922929;
-    background:#fff1f1;
+    border-radius:10px;
+
+    font-size:15px;
+    font-weight:700;
 }
 
 @media(max-width:700px){
@@ -95,6 +132,7 @@ body{
 
     .game-shell{
         padding:3px;
+
         border-radius:12px;
     }
 
@@ -103,11 +141,12 @@ body{
     }
 
     .note{
-        font-size:10px;
+        font-size:11px;
     }
 }
 </style>
 </head>
+
 
 <body>
 
@@ -123,7 +162,7 @@ body{
     </div>
 
     <div class="note">
-        Tekan START dan drag melalui maze. Tarik semula ke petak sebelumnya untuk undo laluan.
+        Tekan START dan drag melalui maze. Tarik semula ke petak sebelumnya untuk undo garisan.
     </div>
 
 </div>
@@ -141,11 +180,14 @@ body{
 
 if(typeof Phaser === "undefined"){
 
-    const e =
-    document.getElementById("errorBox");
+    const box =
+    document.getElementById(
+        "errorBox"
+    );
 
-    if(e){
-        e.style.display = "block";
+    if(box){
+        box.style.display =
+        "block";
     }
 
     return;
@@ -153,7 +195,7 @@ if(typeof Phaser === "undefined"){
 
 
 /* =========================================================
-   RESPONSIVE GAME SIZE
+   DISPLAY
 ========================================================= */
 
 const PORTRAIT =
@@ -161,22 +203,41 @@ window.innerHeight >=
 window.innerWidth;
 
 
+/*
+   Lebar portrait dikecilkan sedikit
+   supaya text nampak lebih besar
+   bila canvas fit pada phone.
+*/
+
 const GAME_W =
 PORTRAIT
-? 720
+? 680
 : 960;
 
 
 /*
-   GAME DIPANJANGKAN
-   SUPAYA SEMUA TEKS + MAZE
-   ADA RUANG YANG CUKUP
+   Canvas dipanjangkan lagi.
 */
 
 const GAME_H =
 PORTRAIT
-? 1300
-: 820;
+? 1380
+: 880;
+
+
+/*
+   High-resolution text rendering.
+*/
+
+const TEXT_RESOLUTION =
+Math.min(
+    window.devicePixelRatio || 1,
+    2
+);
+
+
+const FONT =
+'-apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif';
 
 
 const LETTERS = [
@@ -655,9 +716,7 @@ endFreq=null
     );
 
 
-    osc.start(
-        now
-    );
+    osc.start(now);
 
 
     osc.stop(
@@ -823,6 +882,7 @@ win(){
                     );
 
                 },
+
                 i*120
             );
         }
@@ -847,17 +907,58 @@ new AudioSystem();
 
 
 /* =========================================================
-   GAME SCENE
+   SCENE
 ========================================================= */
 
 class MazeScene
 extends Phaser.Scene{
+
 
 constructor(){
 
     super(
         "MazeScene"
     );
+}
+
+
+/* =========================================================
+   SHARP TEXT HELPER
+========================================================= */
+
+sharpText(
+x,
+y,
+text,
+style={}
+){
+
+    const object =
+    this.add.text(
+        x,
+        y,
+        text,
+        {
+            fontFamily:
+            FONT,
+
+            ...style
+        }
+    );
+
+
+    if(
+        typeof object.setResolution ===
+        "function"
+    ){
+
+        object.setResolution(
+            TEXT_RESOLUTION
+        );
+    }
+
+
+    return object;
 }
 
 
@@ -870,42 +971,46 @@ create(){
     this.questionIndex =
     0;
 
+
     this.score =
     0;
+
 
     this.started =
     false;
 
+
     this.locked =
     true;
+
 
     this.isDrawing =
     false;
 
-    /*
-       PATH SEKARANG SIMPAN CELL.
-
-       INI MEMBOLEHKAN UNDO
-       DENGAN SEMPURNA.
-    */
 
     this.pathCells =
     [];
 
+
     this.answerZones =
     [];
+
 
     this.floorObjects =
     [];
 
+
     this.wallGraphics =
     null;
+
 
     this.lastMazeSignature =
     "";
 
+
     this.wallSoundReady =
     true;
+
 
     this.lastPointerPosition =
     null;
@@ -937,7 +1042,7 @@ createBackground(){
 
     this.cameras.main
     .setBackgroundColor(
-        "#e3eef4"
+        "#e4eff4"
     );
 
 
@@ -946,7 +1051,7 @@ createBackground(){
 
 
     g.fillStyle(
-        0xe3eef4,
+        0xe4eff4,
         1
     );
 
@@ -961,13 +1066,13 @@ createBackground(){
 
     g.fillStyle(
         0xbdd7e3,
-        .18
+        .17
     );
 
 
     for(
         let i=0;
-        i<48;
+        i<55;
         i++
     ){
 
@@ -990,48 +1095,38 @@ createBackground(){
 
 createHeader(){
 
-    /*
-       SHADOW
-    */
-
     this.add.rectangle(
         GAME_W/2+2,
-        31,
+        33,
         GAME_W-14,
-        54,
-        0x78909c,
-        .18
+        58,
+        0x6e8794,
+        .17
     );
 
 
-    /*
-       HEADER
-    */
-
     this.add.rectangle(
         GAME_W/2,
-        28,
+        30,
         GAME_W-14,
-        54,
+        58,
         0x173f57
     )
     .setStrokeStyle(
         2,
-        0x0d3043
+        0x0e3043
     );
 
 
-    this.add.text(
-        25,
-        18,
+    this.sharpText(
+        24,
+        17,
         "DRAW MAZE",
         {
-            fontFamily:"Arial",
-
             fontSize:
             PORTRAIT
-            ? "20px"
-            : "21px",
+            ? "25px"
+            : "24px",
 
             fontStyle:"bold",
 
@@ -1041,18 +1136,19 @@ createHeader(){
 
 
     this.progressText =
-    this.add.text(
+    this.sharpText(
         GAME_W/2,
         19,
         "1 / 25",
         {
-            fontFamily:"Arial",
-
-            fontSize:"17px",
+            fontSize:
+            PORTRAIT
+            ? "22px"
+            : "20px",
 
             fontStyle:"bold",
 
-            color:"#e1f6ff"
+            color:"#e3f7ff"
         }
     )
     .setOrigin(
@@ -1062,14 +1158,15 @@ createHeader(){
 
 
     this.scoreText =
-    this.add.text(
-        GAME_W-25,
-        19,
+    this.sharpText(
+        GAME_W-24,
+        21,
         "Skor 0",
         {
-            fontFamily:"Arial",
-
-            fontSize:"15px",
+            fontSize:
+            PORTRAIT
+            ? "19px"
+            : "18px",
 
             fontStyle:"bold",
 
@@ -1090,28 +1187,23 @@ createHeader(){
 createQuestionPanel(){
 
     this.panelY =
-    70;
+    74;
 
 
     /*
-       PANEL DIPANJANGKAN
-       SUPAYA TEKS TAK BERTINDIH
+       Lebihkan ruang untuk font besar.
     */
 
     this.panelH =
     PORTRAIT
-    ? 360
-    : 210;
+    ? 430
+    : 235;
 
 
     this.panelBottom =
     this.panelY+
     this.panelH;
 
-
-    /*
-       SHADOW
-    */
 
     this.add.rectangle(
 
@@ -1127,14 +1219,10 @@ createQuestionPanel(){
 
         0x607b89,
 
-        .14
+        .13
 
     );
 
-
-    /*
-       WHITE PANEL
-    */
 
     this.add.rectangle(
 
@@ -1152,7 +1240,7 @@ createQuestionPanel(){
     )
     .setStrokeStyle(
         2,
-        0xaac0ca
+        0xaac1cc
     );
 
 
@@ -1161,18 +1249,19 @@ createQuestionPanel(){
     */
 
     this.sectionText =
-    this.add.text(
+    this.sharpText(
         28,
-        this.panelY+13,
+        this.panelY+15,
         "",
         {
-            fontFamily:"Arial",
-
-            fontSize:"12px",
+            fontSize:
+            PORTRAIT
+            ? "17px"
+            : "15px",
 
             fontStyle:"bold",
 
-            color:"#2c7898"
+            color:"#287897"
         }
     );
 
@@ -1182,25 +1271,24 @@ createQuestionPanel(){
     */
 
     this.questionText =
-    this.add.text(
+    this.sharpText(
         28,
-        this.panelY+39,
+        this.panelY+46,
         "",
         {
-            fontFamily:"Arial",
-
             fontSize:
             PORTRAIT
-            ? "17px"
-            : "18px",
+            ? "24px"
+            : "20px",
 
             fontStyle:"bold",
 
-            color:"#17394c",
+            color:"#15384b",
 
-            lineSpacing:3,
-
-            maxLines:3,
+            lineSpacing:
+            PORTRAIT
+            ? 6
+            : 4,
 
             wordWrap:{
                 width:
@@ -1218,7 +1306,7 @@ createQuestionPanel(){
 
 
 /* =========================================================
-   OPTIONS
+   OPTION CARDS
 ========================================================= */
 
 createOptionCards(){
@@ -1228,27 +1316,26 @@ createOptionCards(){
 
 
     const colors = [
-        0xe65b60,
-        0x4b89df,
-        0xefa83c,
-        0x42a86b
+        0xe65960,
+        0x4789e2,
+        0xeda63a,
+        0x3fa86a
     ];
 
 
     /*
-       PHONE / PORTRAIT
-       4 ROWS
+       PORTRAIT / PHONE
     */
 
     if(PORTRAIT){
 
         const startY =
         this.panelY+
-        166;
+        205;
 
 
         const gap =
-        43;
+        53;
 
 
         for(
@@ -1267,13 +1354,13 @@ createOptionCards(){
 
                 GAME_W/2+2,
 
-                centerY+2,
+                centerY+3,
 
                 GAME_W-58,
 
-                37,
+                45,
 
-                0x78909c,
+                0x708895,
 
                 .10
 
@@ -1289,35 +1376,33 @@ createOptionCards(){
 
                 GAME_W-58,
 
-                37,
+                45,
 
-                0xf7fafb
+                0xf8fbfc
 
             )
             .setStrokeStyle(
                 1,
-                0xd3e0e6
+                0xd2e1e7
             );
 
 
             const badge =
             this.add.circle(
-                48,
+                47,
                 centerY,
-                13,
+                16,
                 colors[i]
             );
 
 
             const letter =
-            this.add.text(
-                48,
+            this.sharpText(
+                47,
                 centerY,
                 LETTERS[i],
                 {
-                    fontFamily:"Arial",
-
-                    fontSize:"12px",
+                    fontSize:"16px",
 
                     fontStyle:"bold",
 
@@ -1328,20 +1413,20 @@ createOptionCards(){
 
 
             const text =
-            this.add.text(
-                70,
+            this.sharpText(
+                75,
                 centerY,
                 "",
                 {
-                    fontFamily:"Arial",
+                    fontSize:"18px",
 
-                    fontSize:"13px",
+                    fontStyle:"600",
 
                     color:"#294b5e",
 
                     wordWrap:{
                         width:
-                        GAME_W-105,
+                        GAME_W-115,
 
                         useAdvancedWrap:true
                     }
@@ -1365,13 +1450,12 @@ createOptionCards(){
 
 
     /*
-       LAPTOP
-       2 × 2
+       LANDSCAPE / LAPTOP
     */
 
     else{
 
-        const columnWidth =
+        const colW =
         (GAME_W-70)/2;
 
 
@@ -1393,19 +1477,19 @@ createOptionCards(){
 
             const left =
             28+
-            col*columnWidth;
+            col*colW;
 
 
             const centerX =
             left+
-            columnWidth/2-
+            colW/2-
             4;
 
 
             const centerY =
             this.panelY+
-            132+
-            row*43;
+            151+
+            row*47;
 
 
             const shadow =
@@ -1415,11 +1499,11 @@ createOptionCards(){
 
                 centerY+2,
 
-                columnWidth-14,
+                colW-14,
 
-                37,
+                41,
 
-                0x78909c,
+                0x708895,
 
                 .10
 
@@ -1433,41 +1517,39 @@ createOptionCards(){
 
                 centerY,
 
-                columnWidth-14,
+                colW-14,
 
-                37,
+                41,
 
-                0xf7fafb
+                0xf8fbfc
 
             )
             .setStrokeStyle(
                 1,
-                0xd3e0e6
+                0xd2e1e7
             );
 
 
             const badgeX =
-            left+16;
+            left+18;
 
 
             const badge =
             this.add.circle(
                 badgeX,
                 centerY,
-                12,
+                14,
                 colors[i]
             );
 
 
             const letter =
-            this.add.text(
+            this.sharpText(
                 badgeX,
                 centerY,
                 LETTERS[i],
                 {
-                    fontFamily:"Arial",
-
-                    fontSize:"11px",
+                    fontSize:"14px",
 
                     fontStyle:"bold",
 
@@ -1478,20 +1560,20 @@ createOptionCards(){
 
 
             const text =
-            this.add.text(
-                left+36,
+            this.sharpText(
+                left+43,
                 centerY,
                 "",
                 {
-                    fontFamily:"Arial",
+                    fontSize:"15px",
 
-                    fontSize:"12px",
+                    fontStyle:"600",
 
                     color:"#294b5e",
 
                     wordWrap:{
                         width:
-                        columnWidth-58,
+                        colW-65,
 
                         useAdvancedWrap:true
                     }
@@ -1523,8 +1605,8 @@ createMazeArea(){
 
     const bottomSpace =
     PORTRAIT
-    ? 90
-    : 72;
+    ? 105
+    : 76;
 
 
     this.mazeArea = {
@@ -1533,7 +1615,7 @@ createMazeArea(){
 
         y:
         this.panelBottom+
-        16,
+        18,
 
         w:
         GAME_W-36,
@@ -1542,16 +1624,12 @@ createMazeArea(){
         GAME_H-
         (
             this.panelBottom+
-            16
+            18
         )-
         bottomSpace
 
     };
 
-
-    /*
-       SHADOW
-    */
 
     this.add.rectangle(
 
@@ -1567,16 +1645,12 @@ createMazeArea(){
 
         this.mazeArea.h,
 
-        0x526b78,
+        0x536e7c,
 
         .18
 
     );
 
-
-    /*
-       MAZE CONTAINER
-    */
 
     this.add.rectangle(
 
@@ -1590,30 +1664,30 @@ createMazeArea(){
 
         this.mazeArea.h,
 
-        0x294a59
+        0x294b5a
 
     )
     .setStrokeStyle(
         3,
-        0x173746
+        0x153747
     );
 
 
     /*
-       MAZE TOP TITLE
+       MAZE TITLE
     */
 
     this.add.rectangle(
 
         GAME_W/2,
 
-        this.mazeArea.y+19,
+        this.mazeArea.y+21,
 
         PORTRAIT
-        ? 370
-        : 400,
+        ? 455
+        : 430,
 
-        29,
+        34,
 
         0x183f56
 
@@ -1621,21 +1695,19 @@ createMazeArea(){
     .setDepth(70);
 
 
-    this.add.text(
+    this.sharpText(
 
         GAME_W/2,
 
-        this.mazeArea.y+19,
+        this.mazeArea.y+21,
 
-        "DRAG DARI START • TARIK BALIK UNTUK UNDO",
+        "START → DRAG • TARIK BALIK UNTUK UNDO",
 
         {
-            fontFamily:"Arial",
-
             fontSize:
             PORTRAIT
-            ? "10px"
-            : "11px",
+            ? "15px"
+            : "13px",
 
             fontStyle:"bold",
 
@@ -1646,11 +1718,6 @@ createMazeArea(){
     .setOrigin(.5)
     .setDepth(71);
 
-
-    /*
-       LEBIH BANYAK RUANG
-       UNTUK MAZE
-    */
 
     if(PORTRAIT){
 
@@ -1672,7 +1739,7 @@ createMazeArea(){
 
 
     const topGap =
-    42;
+    47;
 
 
     const usableH =
@@ -1724,7 +1791,7 @@ createMazeArea(){
 
 
 /* =========================================================
-   PATH GRAPHIC
+   PATH GRAPHICS
 ========================================================= */
 
 createPathGraphics(){
@@ -1734,18 +1801,18 @@ createPathGraphics(){
     .setDepth(110);
 
 
-    /*
-       CURRENT TIP
-    */
-
     this.pathTipOuter =
     this.add.circle(
+
         -100,
         -100,
+
         PORTRAIT
-        ? 10
+        ? 11
         : 9,
+
         0xffffff
+
     )
     .setStrokeStyle(
         3,
@@ -1757,12 +1824,16 @@ createPathGraphics(){
 
     this.pathTipInner =
     this.add.circle(
+
         -100,
         -100,
+
         PORTRAIT
-        ? 4
-        : 3,
+        ? 5
+        : 4,
+
         0x159bd4
+
     )
     .setDepth(113)
     .setVisible(false);
@@ -1770,10 +1841,13 @@ createPathGraphics(){
 
 
 /* =========================================================
-   CELL
+   CREATE CELL
 ========================================================= */
 
-createCell(x,y){
+createCell(
+x,
+y
+){
 
     return{
 
@@ -1784,15 +1858,10 @@ createCell(x,y){
         visited:false,
 
         walls:{
-
             top:true,
-
             right:true,
-
             bottom:true,
-
             left:true
-
         }
     };
 }
@@ -1808,7 +1877,9 @@ next,
 direction
 ){
 
-    if(direction==="top"){
+    if(
+        direction==="top"
+    ){
 
         current.walls.top =
         false;
@@ -1856,7 +1927,7 @@ direction
 
 
 /* =========================================================
-   GENERATE REAL MAZE
+   GENERATE MAZE
 ========================================================= */
 
 generateMaze(){
@@ -1874,7 +1945,8 @@ generateMaze(){
         attempts++;
 
 
-        maze = [];
+        maze =
+        [];
 
 
         for(
@@ -1908,24 +1980,20 @@ generateMaze(){
         }
 
 
-        const startX =
+        const sx =
         Math.floor(
             this.cols/2
         );
 
 
-        const startY =
+        const sy =
         Math.floor(
             this.rows/2
         );
 
 
         let current =
-        maze[
-            startY
-        ][
-            startX
-        ];
+        maze[sy][sx];
 
 
         current.visited =
@@ -1950,7 +2018,7 @@ generateMaze(){
             total
         ){
 
-            const options =
+            const choices =
             [];
 
 
@@ -1967,13 +2035,11 @@ generateMaze(){
                 !maze[y-1][x].visited
             ){
 
-                options.push({
-
+                choices.push({
                     cell:
                     maze[y-1][x],
 
                     dir:"top"
-
                 });
             }
 
@@ -1984,13 +2050,11 @@ generateMaze(){
                 !maze[y][x+1].visited
             ){
 
-                options.push({
-
+                choices.push({
                     cell:
                     maze[y][x+1],
 
                     dir:"right"
-
                 });
             }
 
@@ -2001,13 +2065,11 @@ generateMaze(){
                 !maze[y+1][x].visited
             ){
 
-                options.push({
-
+                choices.push({
                     cell:
                     maze[y+1][x],
 
                     dir:"bottom"
-
                 });
             }
 
@@ -2017,29 +2079,27 @@ generateMaze(){
                 !maze[y][x-1].visited
             ){
 
-                options.push({
-
+                choices.push({
                     cell:
                     maze[y][x-1],
 
                     dir:"left"
-
                 });
             }
 
 
             if(
-                options.length
+                choices.length
             ){
 
                 Phaser.Utils.Array
                 .Shuffle(
-                    options
+                    choices
                 );
 
 
                 const next =
-                options[0];
+                choices[0];
 
 
                 stack.push(
@@ -2103,9 +2163,11 @@ generateMaze(){
    SIGNATURE
 ========================================================= */
 
-mazeSignature(maze){
+mazeSignature(
+maze
+){
 
-    let text =
+    let output =
     "";
 
 
@@ -2126,30 +2188,33 @@ mazeSignature(maze){
             .walls;
 
 
-            text +=
+            output +=
             w.top ? "1":"0";
 
-            text +=
+            output +=
             w.right ? "1":"0";
 
-            text +=
+            output +=
             w.bottom ? "1":"0";
 
-            text +=
+            output +=
             w.left ? "1":"0";
         }
     }
 
 
-    return text;
+    return output;
 }
 
 
 /* =========================================================
-   CELL CENTER
+   CELL POSITION
 ========================================================= */
 
-cellPosition(x,y){
+cellPosition(
+x,
+y
+){
 
     return{
 
@@ -2245,7 +2310,10 @@ py
    SAME CELL
 ========================================================= */
 
-sameCell(a,b){
+sameCell(
+a,
+b
+){
 
     return(
         a &&
@@ -2307,16 +2375,16 @@ buildNewMaze(){
     false;
 
 
-    let tries =
+    let attempts =
     0;
 
 
     while(
         !ready &&
-        tries<30
+        attempts<30
     ){
 
-        tries++;
+        attempts++;
 
 
         this.maze =
@@ -2377,7 +2445,7 @@ buildNewMaze(){
 drawMaze(){
 
     /*
-       FLOORS
+       FLOOR
     */
 
     for(
@@ -2403,16 +2471,14 @@ drawMaze(){
             this.add.rectangle(
 
                 p.x,
-
                 p.y,
 
                 this.cellSize,
-
                 this.cellSize,
 
                 (x+y)%2===0
-                ? 0xf4ead2
-                : 0xeee2c5
+                ? 0xf4ead1
+                : 0xeee2c3
 
             )
             .setDepth(5);
@@ -2421,31 +2487,6 @@ drawMaze(){
             this.floorObjects
             .push(
                 floor
-            );
-        }
-    }
-
-
-    /*
-       SUBTLE FLOOR DOT
-    */
-
-    for(
-        let y=0;
-        y<this.rows;
-        y++
-    ){
-
-        for(
-            let x=0;
-            x<this.cols;
-            x++
-        ){
-
-            const p =
-            this.cellPosition(
-                x,
-                y
             );
 
 
@@ -2457,21 +2498,22 @@ drawMaze(){
                 this.add.circle(
 
                     p.x,
-
                     p.y,
 
                     2,
 
-                    0xcdbf9e,
+                    0xcdbd97,
 
-                    .25
+                    .22
 
                 )
                 .setDepth(6);
 
 
                 this.floorObjects
-                .push(dot);
+                .push(
+                    dot
+                );
             }
         }
     }
@@ -2488,9 +2530,9 @@ drawMaze(){
 
     const thickness =
     Math.max(
-        4,
+        5,
         Math.floor(
-            this.cellSize*.10
+            this.cellSize*.11
         )
     );
 
@@ -2624,9 +2666,9 @@ createStartMarker(){
         p.x,
         p.y,
 
-        this.cellSize*.40,
+        this.cellSize*.41,
 
-        0x38b86e,
+        0x37b86e,
 
         .18
 
@@ -2640,7 +2682,7 @@ createStartMarker(){
         p.x,
         p.y,
 
-        this.cellSize*.29,
+        this.cellSize*.31,
 
         0xffffff
 
@@ -2649,7 +2691,7 @@ createStartMarker(){
 
         Math.max(
             3,
-            this.cellSize*.065
+            this.cellSize*.07
         ),
 
         0x269457
@@ -2659,21 +2701,18 @@ createStartMarker(){
 
 
     this.startLabel =
-    this.add.text(
+    this.sharpText(
 
         p.x,
-
         p.y,
 
         "START",
 
         {
-            fontFamily:"Arial",
-
             fontSize:
             `${Math.max(
-                8,
-                this.cellSize*.17
+                11,
+                this.cellSize*.21
             )}px`,
 
             fontStyle:"bold",
@@ -2709,9 +2748,12 @@ createStartMarker(){
    OPENING COUNT
 ========================================================= */
 
-openingCount(cell){
+openingCount(
+cell
+){
 
-    let count=0;
+    let count =
+    0;
 
 
     if(
@@ -2747,7 +2789,7 @@ openingCount(cell){
 
 
 /* =========================================================
-   DISTANCE MAP
+   DISTANCES
 ========================================================= */
 
 getDistances(){
@@ -2758,9 +2800,11 @@ getDistances(){
             length:
             this.rows
         },
-        ()=>Array(
+        ()=>
+        Array(
             this.cols
-        ).fill(-1)
+        )
+        .fill(-1)
     );
 
 
@@ -2786,7 +2830,8 @@ getDistances(){
     });
 
 
-    let index=0;
+    let index =
+    0;
 
 
     while(
@@ -2806,7 +2851,7 @@ getDistances(){
         ];
 
 
-        const distance =
+        const nextDistance =
         distances[
             current.y
         ][
@@ -2814,7 +2859,7 @@ getDistances(){
         ]+1;
 
 
-        const possible =
+        const nextCells =
         [];
 
 
@@ -2822,7 +2867,7 @@ getDistances(){
             !cell.walls.top
         ){
 
-            possible.push({
+            nextCells.push({
                 x:current.x,
                 y:current.y-1
             });
@@ -2833,7 +2878,7 @@ getDistances(){
             !cell.walls.right
         ){
 
-            possible.push({
+            nextCells.push({
                 x:current.x+1,
                 y:current.y
             });
@@ -2844,7 +2889,7 @@ getDistances(){
             !cell.walls.bottom
         ){
 
-            possible.push({
+            nextCells.push({
                 x:current.x,
                 y:current.y+1
             });
@@ -2855,7 +2900,7 @@ getDistances(){
             !cell.walls.left
         ){
 
-            possible.push({
+            nextCells.push({
                 x:current.x-1,
                 y:current.y
             });
@@ -2864,7 +2909,7 @@ getDistances(){
 
         for(
             const next of
-            possible
+            nextCells
         ){
 
             if(
@@ -2898,7 +2943,7 @@ getDistances(){
                 ][
                     next.x
                 ]=
-                distance;
+                nextDistance;
 
 
                 queue.push(
@@ -2914,7 +2959,7 @@ getDistances(){
 
 
 /* =========================================================
-   ANSWER CELLS
+   FIND ANSWERS
 ========================================================= */
 
 findAnswerCells(){
@@ -3003,41 +3048,37 @@ findAnswerCells(){
     [];
 
 
-    /*
-       FAR APART DEAD ENDS
-    */
-
     for(
         const candidate of
         deadEnds
     ){
 
-        let tooNear =
+        let tooClose =
         false;
 
 
         for(
-            const current of
+            const existing of
             chosen
         ){
 
-            const distance =
+            const d =
             Math.abs(
                 candidate.x-
-                current.x
+                existing.x
             )
             +
             Math.abs(
                 candidate.y-
-                current.y
+                existing.y
             );
 
 
             if(
-                distance<4
+                d<4
             ){
 
-                tooNear=
+                tooClose =
                 true;
 
                 break;
@@ -3045,7 +3086,7 @@ findAnswerCells(){
         }
 
 
-        if(!tooNear){
+        if(!tooClose){
 
             chosen.push(
                 candidate
@@ -3062,10 +3103,6 @@ findAnswerCells(){
     }
 
 
-    /*
-       FILL REMAINING DEAD ENDS
-    */
-
     if(
         chosen.length<4
     ){
@@ -3075,7 +3112,7 @@ findAnswerCells(){
             deadEnds
         ){
 
-            const found =
+            const exists =
             chosen.some(
                 c=>
                 c.x===candidate.x &&
@@ -3083,7 +3120,7 @@ findAnswerCells(){
             );
 
 
-            if(!found){
+            if(!exists){
 
                 chosen.push(
                     candidate
@@ -3101,10 +3138,6 @@ findAnswerCells(){
     }
 
 
-    /*
-       GUARANTEED FALLBACK
-    */
-
     if(
         chosen.length<4
     ){
@@ -3114,7 +3147,7 @@ findAnswerCells(){
             all
         ){
 
-            const found =
+            const exists =
             chosen.some(
                 c=>
                 c.x===candidate.x &&
@@ -3122,7 +3155,7 @@ findAnswerCells(){
             );
 
 
-            if(!found){
+            if(!exists){
 
                 chosen.push(
                     candidate
@@ -3148,7 +3181,7 @@ findAnswerCells(){
 
 
 /* =========================================================
-   ANSWER MARKERS
+   ANSWERS IN MAZE
 ========================================================= */
 
 createAnswers(){
@@ -3161,15 +3194,15 @@ createAnswers(){
 
 
     const colors = [
-        0xe45a60,
-        0x4a88df,
-        0xefa83d,
-        0x42a76b
+        0xe45960,
+        0x4789e2,
+        0xeda63a,
+        0x3fa86a
     ];
 
 
     const size =
-    this.cellSize*.65;
+    this.cellSize*.68;
 
 
     for(
@@ -3207,7 +3240,7 @@ createAnswers(){
             0,
             0,
 
-            size*.62,
+            size*.63,
 
             colors[
                 answerIndex
@@ -3250,7 +3283,7 @@ createAnswers(){
 
             Math.max(
                 3,
-                this.cellSize*.065
+                this.cellSize*.07
             ),
 
             colors[
@@ -3261,7 +3294,7 @@ createAnswers(){
 
 
         const text =
-        this.add.text(
+        this.sharpText(
 
             0,
             0,
@@ -3271,12 +3304,10 @@ createAnswers(){
             ],
 
             {
-                fontFamily:"Arial",
-
                 fontSize:
                 `${Math.max(
-                    17,
-                    this.cellSize*.43
+                    22,
+                    this.cellSize*.48
                 )}px`,
 
                 fontStyle:"bold",
@@ -3333,7 +3364,8 @@ createAnswers(){
 
             repeat:-1,
 
-            ease:"Sine.easeInOut"
+            ease:
+            "Sine.easeInOut"
 
         });
     }
@@ -3365,7 +3397,9 @@ clearAnswers(){
     [];
 
 
-    if(this.startGlow){
+    if(
+        this.startGlow
+    ){
 
         this.tweens
         .killTweensOf(
@@ -3400,7 +3434,7 @@ clearAnswers(){
 
 
 /* =========================================================
-   PATH RESET
+   CLEAR PATH
 ========================================================= */
 
 clearPath(){
@@ -3442,16 +3476,10 @@ clearPath(){
 
 /* =========================================================
    DRAW CURRENT PATH
-
-   PATH DILUKIS DARIPADA
-   CENTER CELL KE CENTER CELL.
-
-   BILA ARRAY DIBUANG,
-   GARISAN MEMANG HILANG.
 ========================================================= */
 
 drawCurrentPath(
-color=0x1b9ed5
+color=0x159fd8
 ){
 
     this.pathGraphics
@@ -3484,13 +3512,13 @@ color=0x1b9ed5
     );
 
 
-    /*
-       OUTER WHITE LINE
-    */
-
     if(
         points.length>=2
     ){
+
+        /*
+           WHITE BORDER
+        */
 
         this.pathGraphics
         .lineStyle(
@@ -3536,7 +3564,7 @@ color=0x1b9ed5
 
 
         /*
-           MAIN BLUE LINE
+           MAIN LINE
         */
 
         this.pathGraphics
@@ -3582,10 +3610,6 @@ color=0x1b9ed5
         .strokePath();
 
 
-        /*
-           ROUNDED POINTS
-        */
-
         this.pathGraphics
         .fillStyle(
             color,
@@ -3594,17 +3618,21 @@ color=0x1b9ed5
 
 
         for(
-            const p of
+            const point of
             points
         ){
 
             this.pathGraphics
             .fillCircle(
-                p.x,
-                p.y,
+
+                point.x,
+
+                point.y,
+
                 PORTRAIT
-                ? 4.6
+                ? 4.5
                 : 4
+
             );
         }
     }
@@ -3634,7 +3662,7 @@ color=0x1b9ed5
 
 
 /* =========================================================
-   CHECK OPEN PASSAGE
+   CAN MOVE?
 ========================================================= */
 
 canMoveBetween(
@@ -3651,10 +3679,6 @@ to
     to.y-
     from.y;
 
-
-    /*
-       MUST BE ADJACENT
-    */
 
     if(
         Math.abs(dx)+
@@ -3673,7 +3697,9 @@ to
     ];
 
 
-    if(dx===1){
+    if(
+        dx===1
+    ){
 
         return(
             !cell.walls.right
@@ -3681,7 +3707,9 @@ to
     }
 
 
-    if(dx===-1){
+    if(
+        dx===-1
+    ){
 
         return(
             !cell.walls.left
@@ -3689,7 +3717,9 @@ to
     }
 
 
-    if(dy===1){
+    if(
+        dy===1
+    ){
 
         return(
             !cell.walls.bottom
@@ -3697,7 +3727,9 @@ to
     }
 
 
-    if(dy===-1){
+    if(
+        dy===-1
+    ){
 
         return(
             !cell.walls.top
@@ -3710,10 +3742,12 @@ to
 
 
 /* =========================================================
-   ANSWER BY CELL
+   ANSWER AT CELL
 ========================================================= */
 
-getAnswerAtCell(cell){
+getAnswerAtCell(
+cell
+){
 
     for(
         const zone of
@@ -3741,7 +3775,9 @@ getAnswerAtCell(cell){
    BEGIN DRAW
 ========================================================= */
 
-beginDraw(pointer){
+beginDraw(
+pointer
+){
 
     if(
         !this.started ||
@@ -3752,11 +3788,6 @@ beginDraw(pointer){
     }
 
 
-    /*
-       HANYA INPUT DALAM
-       KAWASAN MAZE
-    */
-
     const pointerCell =
     this.pointToCell(
         pointer.x,
@@ -3764,15 +3795,16 @@ beginDraw(pointer){
     );
 
 
-    if(!pointerCell){
+    if(
+        !pointerCell
+    ){
 
         return;
     }
 
 
     /*
-       PATH BELUM WUJUD:
-       MESTI START.
+       FIRST TOUCH MUST BE START
     */
 
     if(
@@ -3788,7 +3820,7 @@ beginDraw(pointer){
 
             this.showMessage(
                 "MULA DARI START",
-                0xd08825
+                0xcf8725
             );
 
 
@@ -3830,8 +3862,7 @@ beginDraw(pointer){
 
 
     /*
-       SAMBUNG SEMULA
-       DARI CELL TERAKHIR
+       CONTINUE FROM END
     */
 
     const lastCell =
@@ -3866,28 +3897,27 @@ beginDraw(pointer){
 
     this.showMessage(
         "SAMBUNG DARI HUJUNG GARISAN",
-        0xd08825
+        0xcf8725
     );
 }
 
 
 /* =========================================================
-   PROCESS CELL MOVEMENT
+   PROCESS CELL
 
-   INILAH SISTEM UNDO SEBENAR.
+   UNDO SEBENAR:
+   A → B → C → D
 
-   Contoh:
-   path = A B C D
+   Tarik D kembali ke C:
+   D dipadam daripada array.
 
-   player tarik dari D ke C
-
-   result = A B C
-
-   D DIBUANG TERUS DARIPADA ARRAY.
-   JADI GARIS D → C TAK TINGGAL.
+   Path jadi:
+   A → B → C
 ========================================================= */
 
-processCell(nextCell){
+processCell(
+nextCell
+){
 
     if(
         this.pathCells.length===0
@@ -3897,19 +3927,11 @@ processCell(nextCell){
     }
 
 
-    const lastIndex =
-    this.pathCells.length-1;
-
-
     const current =
     this.pathCells[
-        lastIndex
+        this.pathCells.length-1
     ];
 
-
-    /*
-       SAME CELL
-    */
 
     if(
         this.sameCell(
@@ -3922,11 +3944,7 @@ processCell(nextCell){
     }
 
 
-    /*
-       NOT ADJACENT
-    */
-
-    const manhattan =
+    const distance =
     Math.abs(
         nextCell.x-
         current.x
@@ -3939,7 +3957,7 @@ processCell(nextCell){
 
 
     if(
-        manhattan!==1
+        distance!==1
     ){
 
         return;
@@ -3947,17 +3965,7 @@ processCell(nextCell){
 
 
     /*
-       ================================
-       UNDO / BACKTRACK
-       ================================
-
-       Kalau masuk kembali ke cell
-       SEBELUM current:
-
-       POP CURRENT.
-
-       Garisan belakang benar-benar
-       hilang. Bukan contengan.
+       BACKTRACK ONE CELL
     */
 
     if(
@@ -3977,7 +3985,8 @@ processCell(nextCell){
             )
         ){
 
-            this.pathCells.pop();
+            this.pathCells
+            .pop();
 
 
             AUDIO.undo();
@@ -3992,7 +4001,7 @@ processCell(nextCell){
 
 
     /*
-       TAK BOLEH TEMBUS DINDING
+       WALL
     */
 
     if(
@@ -4029,11 +4038,9 @@ processCell(nextCell){
 
 
     /*
-       PREVENT DRAWING OVER
-       OLD PATH.
-
-       Perfect maze tiada cycle,
-       tetapi ini buat path lebih kemas.
+       IF RETURNING TO ANY
+       PREVIOUS CELL,
+       UNDO EVERYTHING AFTER IT.
     */
 
     const existingIndex =
@@ -4050,11 +4057,6 @@ processCell(nextCell){
     if(
         existingIndex>=0
     ){
-
-        /*
-           UNDO TERUS SAMPAI
-           KE CELL TERSEBUT.
-        */
 
         this.pathCells =
         this.pathCells.slice(
@@ -4079,9 +4081,11 @@ processCell(nextCell){
 
     this.pathCells.push({
 
-        x:nextCell.x,
+        x:
+        nextCell.x,
 
-        y:nextCell.y
+        y:
+        nextCell.y
 
     });
 
@@ -4093,7 +4097,7 @@ processCell(nextCell){
 
 
     /*
-       CHECK ANSWER
+       ANSWER
     */
 
     const answer =
@@ -4102,7 +4106,9 @@ processCell(nextCell){
     );
 
 
-    if(answer){
+    if(
+        answer
+    ){
 
         this.finishAnswer(
             answer
@@ -4112,13 +4118,12 @@ processCell(nextCell){
 
 
 /* =========================================================
-   POINTER MOVE
-
-   SAMPLE GERAKAN SUPAYA
-   DRAG LAJU PUN TAK LOMPAT CELL.
+   CONTINUE DRAW
 ========================================================= */
 
-continueDraw(pointer){
+continueDraw(
+pointer
+){
 
     if(
         !this.isDrawing ||
@@ -4143,15 +4148,16 @@ continueDraw(pointer){
     }
 
 
-    const from =
+    const start =
     this.lastPointerPosition;
 
 
     const distance =
-    Phaser.Math.Distance.Between(
+    Phaser.Math.Distance
+    .Between(
 
-        from.x,
-        from.y,
+        start.x,
+        start.y,
 
         pointer.x,
         pointer.y
@@ -4159,10 +4165,15 @@ continueDraw(pointer){
     );
 
 
-    const sampleDistance =
+    /*
+       SAMPLE MOVEMENT SO
+       FAST SWIPES DON'T SKIP CELLS
+    */
+
+    const stepSize =
     Math.max(
-        4,
-        this.cellSize*.14
+        3,
+        this.cellSize*.12
     );
 
 
@@ -4171,7 +4182,7 @@ continueDraw(pointer){
         1,
         Math.ceil(
             distance/
-            sampleDistance
+            stepSize
         )
     );
 
@@ -4182,26 +4193,30 @@ continueDraw(pointer){
         i++
     ){
 
-        if(this.locked){
+        if(
+            this.locked
+        ){
+
             break;
         }
 
 
         const t =
-        i/steps;
+        i/
+        steps;
 
 
-        const x =
+        const sampleX =
         Phaser.Math.Linear(
-            from.x,
+            start.x,
             pointer.x,
             t
         );
 
 
-        const y =
+        const sampleY =
         Phaser.Math.Linear(
-            from.y,
+            start.y,
             pointer.y,
             t
         );
@@ -4209,12 +4224,14 @@ continueDraw(pointer){
 
         const cell =
         this.pointToCell(
-            x,
-            y
+            sampleX,
+            sampleY
         );
 
 
-        if(!cell){
+        if(
+            !cell
+        ){
 
             continue;
         }
@@ -4252,12 +4269,16 @@ endDraw(){
 
 
 /* =========================================================
-   FINISH ANSWER
+   ANSWER RESULT
 ========================================================= */
 
-finishAnswer(zone){
+finishAnswer(
+zone
+){
 
-    if(this.locked){
+    if(
+        this.locked
+    ){
 
         return;
     }
@@ -4366,14 +4387,6 @@ finishAnswer(zone){
             0xe15158
         );
 
-
-        /*
-           MAZE KEKAL.
-
-           SELEPAS JAWAPAN SALAH,
-           LALUAN DIKOSONGKAN UNTUK
-           CUBA JAWAPAN LAIN.
-        */
 
         this.time.delayedCall(
             750,
@@ -4499,8 +4512,8 @@ createBottomBar(){
     GAME_H-
     (
         PORTRAIT
-        ? 38
-        : 34
+        ? 42
+        : 36
     );
 
 
@@ -4508,24 +4521,24 @@ createBottomBar(){
        PHONE HINT
     */
 
-    if(PORTRAIT){
+    if(
+        PORTRAIT
+    ){
 
-        this.add.text(
+        this.sharpText(
 
             GAME_W/2,
 
-            y-30,
+            y-34,
 
-            "Tarik ke belakang = undo garisan",
+            "Tarik ke petak sebelumnya untuk UNDO garisan",
 
             {
-                fontFamily:"Arial",
-
-                fontSize:"11px",
+                fontSize:"15px",
 
                 fontStyle:"bold",
 
-                color:"#587383"
+                color:"#536f80"
             }
 
         )
@@ -4533,22 +4546,20 @@ createBottomBar(){
     }
 
 
-    /*
-       RESET
-    */
-
     this.resetButton =
     this.createButton(
 
         PORTRAIT
-        ? 82
-        : 78,
+        ? 85
+        : 80,
 
         y,
 
-        126,
+        PORTRAIT
+        ? 138
+        : 130,
 
-        42,
+        46,
 
         "RESET GARIS",
 
@@ -4559,25 +4570,21 @@ createBottomBar(){
     );
 
 
-    /*
-       HOME
-    */
-
     this.homeButton =
     this.createButton(
 
         GAME_W-
         (
             PORTRAIT
-            ? 179
-            : 177
+            ? 185
+            : 180
         ),
 
         y,
 
-        118,
+        124,
 
-        42,
+        46,
 
         "HOME",
 
@@ -4589,25 +4596,21 @@ createBottomBar(){
     );
 
 
-    /*
-       MUSIC
-    */
-
     this.musicButton =
     this.createButton(
 
         GAME_W-
         (
             PORTRAIT
-            ? 60
+            ? 62
             : 61
         ),
 
         y,
 
-        88,
+        91,
 
-        42,
+        46,
 
         "♪ ON",
 
@@ -4630,9 +4633,11 @@ createBottomBar(){
     );
 
 
-    if(!PORTRAIT){
+    if(
+        !PORTRAIT
+    ){
 
-        this.add.text(
+        this.sharpText(
 
             160,
 
@@ -4641,13 +4646,11 @@ createBottomBar(){
             "START → drag • tarik balik untuk undo",
 
             {
-                fontFamily:"Arial",
-
-                fontSize:"12px",
+                fontSize:"14px",
 
                 fontStyle:"bold",
 
-                color:"#587383"
+                color:"#536f80"
             }
 
         )
@@ -4668,7 +4671,7 @@ x,
 y,
 width,
 height,
-labelText,
+text,
 callback
 ){
 
@@ -4710,19 +4713,24 @@ callback
 
 
     const label =
-    this.add.text(
+    this.sharpText(
+
         x,
         y,
-        labelText,
-        {
-            fontFamily:"Arial",
 
-            fontSize:"11px",
+        text,
+
+        {
+            fontSize:
+            PORTRAIT
+            ? "14px"
+            : "13px",
 
             fontStyle:"bold",
 
             color:"#274e63"
         }
+
     )
     .setOrigin(.5);
 
@@ -4765,7 +4773,7 @@ showStartWindow(){
 
         0x0b2938,
 
-        .86
+        .87
 
     )
     .setDepth(300);
@@ -4773,14 +4781,14 @@ showStartWindow(){
 
     const width =
     PORTRAIT
-    ? GAME_W-58
-    : 560;
+    ? GAME_W-52
+    : 590;
 
 
     const height =
     PORTRAIT
-    ? 470
-    : 370;
+    ? 535
+    : 400;
 
 
     const shadow =
@@ -4823,10 +4831,6 @@ showStartWindow(){
     .setDepth(302);
 
 
-    /*
-       BADGE
-    */
-
     const badge =
     this.add.rectangle(
 
@@ -4834,11 +4838,11 @@ showStartWindow(){
 
         GAME_H/2-
         height/2+
-        42,
+        45,
 
-        190,
+        220,
 
-        34,
+        38,
 
         0xeaf5f9
 
@@ -4851,20 +4855,18 @@ showStartWindow(){
 
 
     const badgeText =
-    this.add.text(
+    this.sharpText(
 
         GAME_W/2,
 
         GAME_H/2-
         height/2+
-        42,
+        45,
 
         "25 SOALAN • 25 MAZE",
 
         {
-            fontFamily:"Arial",
-
-            fontSize:"12px",
+            fontSize:"15px",
 
             fontStyle:"bold",
 
@@ -4877,23 +4879,21 @@ showStartWindow(){
 
 
     const title =
-    this.add.text(
+    this.sharpText(
 
         GAME_W/2,
 
         GAME_H/2-
         height/2+
-        89,
+        101,
 
         "DRAW MAZE",
 
         {
-            fontFamily:"Arial",
-
             fontSize:
             PORTRAIT
-            ? "32px"
-            : "30px",
+            ? "38px"
+            : "34px",
 
             fontStyle:"bold",
 
@@ -4906,22 +4906,25 @@ showStartWindow(){
 
 
     const subtitle =
-    this.add.text(
+    this.sharpText(
 
         GAME_W/2,
 
         GAME_H/2-
         height/2+
-        124,
+        145,
 
         "Cari laluan ke jawapan yang betul",
 
         {
-            fontFamily:"Arial",
+            fontSize:
+            PORTRAIT
+            ? "19px"
+            : "17px",
 
-            fontSize:"14px",
+            fontStyle:"600",
 
-            color:"#5b7887"
+            color:"#597786"
         }
 
     )
@@ -4930,36 +4933,39 @@ showStartWindow(){
 
 
     const instructions =
-    this.add.text(
+    this.sharpText(
 
         GAME_W/2,
 
-        GAME_H/2+10,
+        GAME_H/2+20,
 
-        "Tekan START di dalam maze dan drag.\n\n"+
-        "Garisan hanya bergerak melalui lorong maze.\n\n"+
-        "Kalau tersalah masuk lorong, tarik jari semula\n"+
-        "ke petak sebelumnya.\n\n"+
-        "Bahagian garisan itu akan UNDO dan hilang.\n\n"+
-        "Kemudian pilih simpang yang lain.",
+        "1. Tekan START dan drag melalui maze.\n\n"+
+        "2. Garisan hanya boleh melalui lorong yang terbuka.\n\n"+
+        "3. Kalau tersalah lorong, tarik semula ke petak sebelumnya.\n\n"+
+        "4. Bahagian garisan itu akan UNDO dan hilang.\n\n"+
+        "5. Cari A, B, C atau D yang betul.",
 
         {
-            fontFamily:"Arial",
-
             fontSize:
             PORTRAIT
-            ? "16px"
-            : "15px",
+            ? "19px"
+            : "17px",
 
             color:"#31586c",
 
-            align:"center",
+            align:"left",
 
-            lineSpacing:5,
+            lineSpacing:
+            PORTRAIT
+            ? 7
+            : 5,
 
             wordWrap:{
                 width:
-                width-70
+                width-78,
+
+                useAdvancedWrap:
+                true
             }
         }
 
@@ -4975,12 +4981,12 @@ showStartWindow(){
 
         GAME_H/2+
         height/2-
-        60+
+        63+
         3,
 
-        220,
+        235,
 
-        55,
+        58,
 
         0x17683e,
 
@@ -4997,11 +5003,11 @@ showStartWindow(){
 
         GAME_H/2+
         height/2-
-        60,
+        63,
 
-        220,
+        235,
 
-        55,
+        58,
 
         0x2f925c
 
@@ -5017,20 +5023,18 @@ showStartWindow(){
 
 
     const buttonText =
-    this.add.text(
+    this.sharpText(
 
         GAME_W/2,
 
         GAME_H/2+
         height/2-
-        60,
+        63,
 
         "MULA GAME",
 
         {
-            fontFamily:"Arial",
-
-            fontSize:"18px",
+            fontSize:"21px",
 
             fontStyle:"bold",
 
@@ -5150,7 +5154,7 @@ loadQuestion(){
 
 
     /*
-       MAZE BARU SETIAP SOALAN
+       NEW MAZE EVERY QUESTION
     */
 
     this.buildNewMaze();
@@ -5184,13 +5188,13 @@ color
 
     const y =
     this.mazeArea.y+
-    19;
+    21;
 
 
     const width =
     PORTRAIT
-    ? 320
-    : 350;
+    ? 360
+    : 380;
 
 
     const bg =
@@ -5202,7 +5206,9 @@ color
 
         width,
 
-        31,
+        PORTRAIT
+        ? 39
+        : 35,
 
         color,
 
@@ -5213,7 +5219,7 @@ color
 
 
     const label =
-    this.add.text(
+    this.sharpText(
 
         GAME_W/2,
 
@@ -5222,12 +5228,10 @@ color
         text,
 
         {
-            fontFamily:"Arial",
-
             fontSize:
             PORTRAIT
-            ? "13px"
-            : "14px",
+            ? "17px"
+            : "15px",
 
             fontStyle:"bold",
 
@@ -5261,7 +5265,7 @@ color
 
 
     this.time.delayedCall(
-        600,
+        620,
         ()=>{
 
             bg.destroy();
@@ -5294,7 +5298,8 @@ showWin(){
         (
             Date.now()-
             this.startTime
-        )/1000
+        )/
+        1000
 
     );
 
@@ -5328,7 +5333,7 @@ showWin(){
 
         0x092535,
 
-        .87
+        .88
 
     )
     .setDepth(400);
@@ -5336,14 +5341,14 @@ showWin(){
 
     const width =
     PORTRAIT
-    ? GAME_W-58
-    : 520;
+    ? GAME_W-55
+    : 550;
 
 
     const height =
     PORTRAIT
-    ? 360
-    : 310;
+    ? 400
+    : 330;
 
 
     const card =
@@ -5367,22 +5372,20 @@ showWin(){
     .setDepth(402);
 
 
-    this.add.text(
+    this.sharpText(
 
         GAME_W/2,
 
         GAME_H/2-
         height/2+
-        55,
+        65,
 
         "SEMUA MAZE SELESAI!",
 
         {
-            fontFamily:"Arial",
-
             fontSize:
             PORTRAIT
-            ? "28px"
+            ? "32px"
             : "30px",
 
             fontStyle:"bold",
@@ -5395,24 +5398,27 @@ showWin(){
     .setDepth(403);
 
 
-    this.add.text(
+    this.sharpText(
 
         GAME_W/2,
 
-        GAME_H/2-10,
+        GAME_H/2-5,
 
         `25 / 25 soalan selesai\n\nSkor: ${this.score}\nMasa: ${minutes}:${seconds}`,
 
         {
-            fontFamily:"Arial",
+            fontSize:
+            PORTRAIT
+            ? "23px"
+            : "20px",
 
-            fontSize:"20px",
+            fontStyle:"600",
 
             color:"#294c5f",
 
             align:"center",
 
-            lineSpacing:8
+            lineSpacing:10
         }
 
     )
@@ -5427,11 +5433,11 @@ showWin(){
 
         GAME_H/2+
         height/2-
-        61,
+        67,
 
-        210,
+        225,
 
-        54,
+        58,
 
         0x2f8e59
 
@@ -5442,20 +5448,18 @@ showWin(){
     .setDepth(403);
 
 
-    this.add.text(
+    this.sharpText(
 
         GAME_W/2,
 
         GAME_H/2+
         height/2-
-        61,
+        67,
 
         "MAIN SEMULA",
 
         {
-            fontFamily:"Arial",
-
-            fontSize:"17px",
+            fontSize:"19px",
 
             fontStyle:"bold",
 
@@ -5497,14 +5501,25 @@ const config = {
     height:
     GAME_H,
 
+    /*
+       Higher renderer resolution makes
+       text and graphics much sharper
+       on Retina / iPad / phone.
+    */
+
+    resolution:
+    TEXT_RESOLUTION,
+
     backgroundColor:
-    "#e3eef4",
+    "#e4eff4",
 
     render:{
 
         antialias:true,
 
-        roundPixels:true
+        roundPixels:true,
+
+        pixelArt:false
     },
 
     scale:{
@@ -5525,7 +5540,6 @@ const config = {
     scene:[
         MazeScene
     ]
-
 };
 
 
