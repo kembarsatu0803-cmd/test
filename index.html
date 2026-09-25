@@ -10,8 +10,7 @@ width=device-width,
 initial-scale=1,
 maximum-scale=1,
 user-scalable=no,
-viewport-fit=cover
-">
+viewport-fit=cover">
 
 <title>Magnet Colour Trail — Set 6</title>
 
@@ -26,18 +25,17 @@ viewport-fit=cover
 html,body{
     margin:0;
     padding:0;
+    width:100%;
     min-height:100%;
+    font-family:"Trebuchet MS",Arial,sans-serif;
+
     background:
-        linear-gradient(
-            135deg,
-            #d8f4ff 0%,
-            #eefcff 50%,
-            #dbeaff 100%
-        );
-    font-family:
-        "Trebuchet MS",
-        Arial,
-        sans-serif;
+    linear-gradient(
+        135deg,
+        #d8f4ff,
+        #f7fcff,
+        #dbeaff
+    );
 }
 
 body{
@@ -49,40 +47,30 @@ body{
     align-items:flex-start;
 
     padding:
-        max(12px, env(safe-area-inset-top))
-        8px
-        max(12px, env(safe-area-inset-bottom));
+    max(8px,env(safe-area-inset-top))
+    5px
+    max(8px,env(safe-area-inset-bottom));
 }
 
-/* Bukan full website.
-   Game duduk dalam satu container sahaja. */
+/* GAME BUKAN FULL WEBSITE */
 #game-shell{
     width:min(
         96vw,
         820px,
-        calc(91vh * 0.833333)
+        calc(94svh * .79)
     );
 
-    width:min(
-        96vw,
-        820px,
-        calc(91svh * 0.833333)
-    );
-
-    aspect-ratio:5 / 6;
-
-    border-radius:26px;
-    overflow:hidden;
+    aspect-ratio:5/6.3;
 
     background:#dff5ff;
 
+    border-radius:25px;
+    overflow:hidden;
+
+    border:3px solid white;
+
     box-shadow:
-        0 12px 40px rgba(21,61,92,.20),
-        0 3px 8px rgba(21,61,92,.12);
-
-    border:4px solid rgba(255,255,255,.95);
-
-    position:relative;
+    0 12px 35px rgba(27,65,86,.18);
 }
 
 #game{
@@ -92,29 +80,31 @@ body{
 
 #game canvas{
     display:block;
-    width:100% !important;
-    height:100% !important;
+
+    width:100%!important;
+    height:100%!important;
 
     touch-action:none;
+
     user-select:none;
     -webkit-user-select:none;
 }
 
-@media(max-width:540px){
+@media(max-width:520px){
+
     body{
         padding:
-            max(5px, env(safe-area-inset-top))
-            3px
-            max(5px, env(safe-area-inset-bottom));
+        max(3px,env(safe-area-inset-top))
+        2px
+        max(3px,env(safe-area-inset-bottom));
     }
 
     #game-shell{
-        width:98vw;
-        border-radius:18px;
+        width:99vw;
+        border-radius:16px;
         border-width:2px;
     }
 }
-
 </style>
 </head>
 
@@ -124,672 +114,713 @@ body{
     <div id="game"></div>
 </div>
 
+
 <script>
-/* =========================================================
-   MAGNET COLOUR TRAIL — SET 6
-
-   Phaser 3
-   HTML + CSS + JavaScript
-   Semua dalam satu fail HTML.
-
-   Konsep:
-   - Gerakkan magnet dalam grid.
-   - Setiap petak perlu diisi.
-   - Tidak boleh melintasi laluan sendiri.
-   - Boleh undur ke petak sebelumnya untuk undo.
-   - Portal hanya boleh dimasuki sebagai petak terakhir.
-   - Selepas puzzle, jawab satu soalan.
-   - 25 puzzle = 25 soalan.
-   ========================================================= */
-
-const GAME_W = 900;
-const GAME_H = 1080;
-
 
 /* =========================================================
-   SOALAN SET 6
+   MAGNET COLOUR TRAIL
+   SET 6
+
+   - Phaser 3
+   - Satu fail HTML
+   - Phone / tablet / laptop
+   - Magnet merah + biru
+   - BLOCK HALANGAN
+   - Swipe + button + keyboard
+   - Undo dengan bergerak semula
+   - 25 stage
+   - 25 soalan
    ========================================================= */
 
-const QUESTIONS = [
+const W = 900;
+const H = 1134;
 
-{
-topic:"Apakah Gunanya Magnet?",
-q:"Seorang murid mahu menghasilkan pin bermagnet seperti aktiviti dalam buku. Magnet apakah yang digunakan?",
-a:[
+
+/* =========================================================
+   SOALAN
+   Format:
+   [TOPIK, SOALAN, A, B, C, D, INDEX JAWAPAN]
+   ========================================================= */
+
+const QUESTIONS=[
+
+[
+"Apakah Gunanya Magnet?",
+"Seorang murid mahu menghasilkan pin bermagnet seperti aktiviti dalam buku. Magnet apakah yang digunakan?",
 "Dua magnet bar",
 "Dua magnet butang",
 "Dua magnet ladam",
-"Dua magnet silinder"
+"Dua magnet silinder",
+1
 ],
-correct:1
-},
 
-{
-topic:"Apakah Gunanya Magnet?",
-q:"Antara situasi berikut, yang manakah menunjukkan kegunaan magnet dalam kehidupan seharian?",
-a:[
+[
+"Apakah Gunanya Magnet?",
+"Antara situasi berikut, yang manakah menunjukkan kegunaan magnet dalam kehidupan seharian?",
 "Mengukur panjang meja",
 "Mewarnakan gambar",
 "Memadam tulisan pensel",
-"Menutup pintu peti sejuk dengan rapat"
+"Menutup pintu peti sejuk dengan rapat",
+3
 ],
-correct:3
-},
 
-{
-topic:"Apakah Gunanya Magnet?",
-q:"Apakah alat yang boleh memegang skru supaya tidak mudah jatuh?",
-a:[
+[
+"Apakah Gunanya Magnet?",
+"Apakah alat yang boleh memegang skru supaya tidak mudah jatuh?",
 "Pembaris plastik",
 "Pemutar skru bermagnet",
 "Pemadam",
-"Guli"
+"Guli",
+1
 ],
-correct:1
-},
 
-{
-topic:"Apakah Gunanya Magnet?",
-q:"Tanda nama cikgu boleh melekat tanpa pin kerana mengandungi ____.",
-a:[
+[
+"Apakah Gunanya Magnet?",
+"Tanda nama cikgu boleh melekat tanpa pin kerana mengandungi ____.",
 "Kayu",
 "Kertas",
 "Magnet",
-"Plastik"
+"Plastik",
+2
 ],
-correct:2
-},
 
-{
-topic:"Apakah Gunanya Magnet?",
-q:"Siti mahu kotak penselnya boleh ditutup rapat seperti contoh dalam buku. Penutup itu perlu mempunyai ____.",
-a:[
+[
+"Apakah Gunanya Magnet?",
+"Siti mahu kotak penselnya boleh ditutup rapat seperti contoh dalam buku. Penutup itu perlu mempunyai ____.",
 "Magnet",
 "Pemadam",
 "Guli",
-"Kayu aiskrim"
+"Kayu aiskrim",
+0
 ],
-correct:0
-},
 
-{
-topic:"Bentuk Magnet",
-q:"Yang manakah nama magnet yang berbentuk seperti butang?",
-a:[
+[
+"Bentuk Magnet",
+"Yang manakah nama magnet yang berbentuk seperti butang?",
 "Magnet buku",
 "Magnet pemadam",
 "Magnet butang",
-"Magnet pensel"
+"Magnet pensel",
+2
 ],
-correct:2
-},
 
-{
-topic:"Bentuk Magnet",
-q:"Apakah nama magnet yang berbentuk seperti ladam kuda?",
-a:[
+[
+"Bentuk Magnet",
+"Apakah nama magnet yang berbentuk seperti ladam kuda?",
 "Magnet cincin",
 "Magnet ladam",
 "Magnet butang",
-"Magnet bar"
+"Magnet bar",
+1
 ],
-correct:1
-},
 
-{
-topic:"Bentuk Magnet",
-q:"Pasangan manakah terdiri daripada magnet ladam dan satu lagi bentuk magnet yang betul?",
-a:[
+[
+"Bentuk Magnet",
+"Pasangan manakah terdiri daripada magnet ladam dan satu lagi bentuk magnet yang betul?",
 "Magnet bunga dan magnet akar",
 "Magnet kertas dan magnet kayu",
 "Magnet air dan magnet pasir",
-"Magnet ladam dan magnet bentuk U"
+"Magnet ladam dan magnet bentuk U",
+3
 ],
-correct:3
-},
 
-{
-topic:"Bentuk Magnet",
-q:"Apakah perbezaan yang dinyatakan antara magnet ladam dengan magnet bentuk U?",
-a:[
+[
+"Bentuk Magnet",
+"Apakah perbezaan yang dinyatakan antara magnet ladam dengan magnet bentuk U?",
 "Kutub magnet ladam lebih rapat",
 "Magnet U tidak mempunyai kutub",
 "Magnet U diperbuat daripada kayu",
-"Magnet ladam tidak mempunyai kutub"
+"Magnet ladam tidak mempunyai kutub",
+0
 ],
-correct:0
-},
 
-{
-topic:"Bentuk Magnet",
-q:"Yang manakah nama magnet yang berbentuk silinder?",
-a:[
+[
+"Bentuk Magnet",
+"Yang manakah nama magnet yang berbentuk silinder?",
 "Magnet akar",
 "Magnet segitiga daun",
 "Magnet bunga",
-"Magnet silinder"
+"Magnet silinder",
+3
 ],
-correct:3
-},
 
-{
-topic:"Hebatnya Magnet",
-q:"Jika objek bergerak ke arah magnet apabila magnet didekatkan, tindakan itu disebut ____.",
-a:[
+[
+"Hebatnya Magnet",
+"Jika objek bergerak ke arah magnet apabila magnet didekatkan, tindakan itu disebut ____.",
 "Memadam",
 "Mengukur",
 "Menarik",
-"Menolak"
+"Menolak",
+2
 ],
-correct:2
-},
 
-{
-topic:"Hebatnya Magnet",
-q:"Objek plastik berbentuk pembaris manakah yang tidak dapat ditarik magnet?",
-a:[
+[
+"Hebatnya Magnet",
+"Objek plastik berbentuk pembaris manakah yang tidak dapat ditarik magnet?",
 "Pembaris plastik",
 "Klip kertas",
 "Paku",
-"Skru"
+"Skru",
+0
 ],
-correct:0
-},
 
-{
-topic:"Hebatnya Magnet",
-q:"Yang manakah pasangan objek yang kedua-duanya tidak dapat ditarik magnet?",
-a:[
+[
+"Hebatnya Magnet",
+"Yang manakah pasangan objek yang kedua-duanya tidak dapat ditarik magnet?",
 "Pin baju dan skru",
 "Guli dan pemadam",
 "Klip kertas dan paku",
-"Skru dan paku"
+"Skru dan paku",
+1
 ],
-correct:1
-},
 
-{
-topic:"Hebatnya Magnet",
-q:"Yang manakah pasangan objek yang menunjukkan satu boleh ditarik dan satu tidak boleh ditarik?",
-a:[
+[
+"Hebatnya Magnet",
+"Yang manakah pasangan objek yang menunjukkan satu boleh ditarik dan satu tidak boleh ditarik?",
 "Skru dan guli",
 "Guli dan pemadam",
 "Paku dan skru",
-"Pin baju dan klip kertas"
+"Pin baju dan klip kertas",
+0
 ],
-correct:0
-},
 
-{
-topic:"Hebatnya Magnet",
-q:"Objek yang digunakan untuk memadam tulisan manakah yang tidak dapat ditarik magnet?",
-a:[
+[
+"Hebatnya Magnet",
+"Objek yang digunakan untuk memadam tulisan manakah yang tidak dapat ditarik magnet?",
 "Skru",
 "Klip kertas",
 "Paku",
-"Pemadam"
+"Pemadam",
+3
 ],
-correct:3
-},
 
-{
-topic:"Tarikan dan Tolakan Magnet",
-q:"Jika U berhadapan dengan U, tindakan yang betul ialah ____.",
-a:[
+[
+"Tarikan dan Tolakan Magnet",
+"Jika U berhadapan dengan U, tindakan yang betul ialah ____.",
 "Tarikan",
 "Tolakan",
 "Tiada tindakan",
-"Pemanasan"
+"Pemanasan",
+1
 ],
-correct:1
-},
 
-{
-topic:"Tarikan dan Tolakan Magnet",
-q:"Apabila magnet saling menjauh kerana kutub yang sama, tindakan itu ialah ____.",
-a:[
+[
+"Tarikan dan Tolakan Magnet",
+"Apabila magnet saling menjauh kerana kutub yang sama, tindakan itu ialah ____.",
 "Pengukuran",
 "Pemadaman",
 "Tolakan",
-"Tarikan"
+"Tarikan",
+2
 ],
-correct:2
-},
 
-{
-topic:"Tarikan dan Tolakan Magnet",
-q:"Kutub Utara didekatkan dengan kutub Utara. Apakah yang berlaku?",
-a:[
+[
+"Tarikan dan Tolakan Magnet",
+"Kutub Utara didekatkan dengan kutub Utara. Apakah yang berlaku?",
 "Melekat pada plastik",
 "Menolak",
 "Mencair",
-"Menarik"
+"Menarik",
+1
 ],
-correct:1
-},
 
-{
-topic:"Tarikan dan Tolakan Magnet",
-q:"Jika S berhadapan dengan U, tindakan yang betul ialah ____.",
-a:[
+[
+"Tarikan dan Tolakan Magnet",
+"Jika S berhadapan dengan U, tindakan yang betul ialah ____.",
 "Tolakan",
 "Tiada tindakan",
 "Pemanasan",
-"Tarikan"
+"Tarikan",
+3
 ],
-correct:3
-},
 
-{
-topic:"Tarikan dan Tolakan Magnet",
-q:"Dua magnet bar digunakan dalam aktiviti untuk mengkaji ____.",
-a:[
+[
+"Tarikan dan Tolakan Magnet",
+"Dua magnet bar digunakan dalam aktiviti untuk mengkaji ____.",
 "Tarikan dan tolakan",
 "Bau magnet",
 "Warna magnet",
-"Rasa magnet"
+"Rasa magnet",
+0
 ],
-correct:0
-},
 
-{
-topic:"Kekuatan Magnet",
-q:"Magnet digerakkan mendekati klip kertas sehingga klip kertas ____.",
-a:[
+[
+"Kekuatan Magnet",
+"Magnet digerakkan mendekati klip kertas sehingga klip kertas ____.",
 "Hilang",
 "Mencair",
 "Ditarik",
-"Bertukar warna"
+"Bertukar warna",
+2
 ],
-correct:2
-},
 
-{
-topic:"Kekuatan Magnet",
-q:"Dua magnet diuji dengan jenis klip kertas yang sama. Magnet R menarik lebih banyak klip. Apakah kesimpulan paling sesuai?",
-a:[
+[
+"Kekuatan Magnet",
+"Dua magnet diuji dengan jenis klip kertas yang sama. Magnet R menarik lebih banyak klip. Apakah kesimpulan paling sesuai?",
 "Klip kertas bukan objek tarikan",
 "Magnet R lebih lemah",
 "Kedua-duanya sama",
-"Magnet R lebih kuat"
+"Magnet R lebih kuat",
+3
 ],
-correct:3
-},
 
-{
-topic:"Kekuatan Magnet",
-q:"Dalam aktiviti kekuatan magnet, klip kertas disusun di sisi ____.",
-a:[
+[
+"Kekuatan Magnet",
+"Dalam aktiviti kekuatan magnet, klip kertas disusun di sisi ____.",
 "Tingkap",
 "Pembaris",
 "Buku",
-"Pintu"
+"Pintu",
+1
 ],
-correct:1
-},
 
-{
-topic:"Kekuatan Magnet",
-q:"Untuk membandingkan kekuatan magnet dengan adil, klip kertas perlu disusun dan jarak diperhatikan menggunakan ____.",
-a:[
+[
+"Kekuatan Magnet",
+"Untuk membandingkan kekuatan magnet dengan adil, klip kertas perlu disusun dan jarak diperhatikan menggunakan ____.",
 "Pembaris",
 "Guli",
 "Pemadam",
-"Kayu aiskrim"
+"Kayu aiskrim",
+0
 ],
-correct:0
-},
 
-{
-topic:"Kekuatan Magnet",
-q:"Kekuatan magnet boleh dibandingkan dengan melihat bilangan klip kertas yang ____.",
-a:[
+[
+"Kekuatan Magnet",
+"Kekuatan magnet boleh dibandingkan dengan melihat bilangan klip kertas yang ____.",
 "Dipotong",
 "Diwarnakan",
 "Ditarik",
-"Dipadam"
-],
-correct:2
-}
+"Dipadam",
+2
+]
 
 ];
 
 
 /* =========================================================
-   WARNA
+   AUDIO
+   AUDIO DIHASILKAN DALAM BROWSER
+   TIADA FAIL AUDIO LUAR
    ========================================================= */
 
-const PALETTES = [
-    {
-        bg:0xdff4ff,
-        panel:0xffffff,
-        board:0xbfe2f2,
-        tile:0xdaf1f8,
-        painted:0xffd166,
-        trail:0xf5aa28
-    },
-    {
-        bg:0xe4f6f1,
-        panel:0xffffff,
-        board:0xb9e1da,
-        tile:0xd8f1ec,
-        painted:0xffcf78,
-        trail:0xef9d35
-    },
-    {
-        bg:0xf0ecff,
-        panel:0xffffff,
-        board:0xd7ccf5,
-        tile:0xeee9ff,
-        painted:0xffcf70,
-        trail:0xf1a637
-    },
-    {
-        bg:0xfff1df,
-        panel:0xffffff,
-        board:0xf0d4aa,
-        tile:0xffeed5,
-        painted:0x8ed7e8,
-        trail:0x48abc3
-    },
-    {
-        bg:0xe7f4df,
-        panel:0xffffff,
-        board:0xc7e2b8,
-        tile:0xe1f1d8,
-        painted:0xffcf69,
-        trail:0xf0a82e
-    }
-];
-
-
-/* =========================================================
-   AUDIO — TIDAK GUNA FAIL LUAR
-   ========================================================= */
-
-class GameAudio{
+class AudioSystem{
 
     constructor(){
-        this.ctx = null;
-        this.master = null;
 
-        this.enabled = true;
-        this.started = false;
+        this.ctx=null;
 
-        this.musicTimer = null;
-        this.musicIndex = 0;
+        this.master=null;
+
+        this.active=true;
+
+        this.musicStarted=false;
+
+        this.note=0;
     }
+
 
     unlock(){
 
-        if(!this.enabled) return;
+        if(!this.active)return;
 
         if(!this.ctx){
 
-            const AC =
-                window.AudioContext ||
-                window.webkitAudioContext;
+            const AC=
+            window.AudioContext ||
+            window.webkitAudioContext;
 
-            if(!AC) return;
+            if(!AC)return;
 
-            this.ctx = new AC();
+            this.ctx=new AC();
 
-            this.master =
-                this.ctx.createGain();
+            this.master=
+            this.ctx.createGain();
 
-            this.master.gain.value = 0.16;
+            this.master.gain.value=.15;
 
             this.master.connect(
                 this.ctx.destination
             );
         }
 
-        if(this.ctx.state === "suspended"){
+        if(
+            this.ctx.state==="suspended"
+        ){
             this.ctx.resume();
         }
 
-        if(!this.started){
-            this.started = true;
-            this.startMusic();
+        if(!this.musicStarted){
+
+            this.musicStarted=true;
+
+            this.music();
         }
     }
 
-    tone(
-        frequency = 440,
-        duration = .08,
-        type = "sine",
-        volume = .12
+
+    beep(
+        freq=400,
+        length=.08,
+        type="sine",
+        volume=.1
     ){
 
-        if(!this.enabled) return;
-        if(!this.ctx) return;
+        if(
+            !this.active ||
+            !this.ctx
+        )return;
 
-        const now =
-            this.ctx.currentTime;
 
-        const osc =
-            this.ctx.createOscillator();
+        const now=
+        this.ctx.currentTime;
 
-        const gain =
-            this.ctx.createGain();
 
-        osc.type = type;
-        osc.frequency.value = frequency;
+        const osc=
+        this.ctx.createOscillator();
+
+        const gain=
+        this.ctx.createGain();
+
+
+        osc.type=type;
+
+        osc.frequency.value=freq;
+
 
         gain.gain.setValueAtTime(
-            0.0001,
+            .0001,
             now
         );
 
         gain.gain.exponentialRampToValueAtTime(
             volume,
-            now + .015
+            now+.01
         );
 
         gain.gain.exponentialRampToValueAtTime(
-            0.0001,
-            now + duration
+            .0001,
+            now+length
         );
+
 
         osc.connect(gain);
-        gain.connect(this.master);
+
+        gain.connect(
+            this.master
+        );
+
 
         osc.start(now);
-        osc.stop(now + duration + .03);
+
+        osc.stop(
+            now+length+.03
+        );
     }
+
 
     move(){
-        this.tone(
-            290,
+
+        this.beep(
+            330,
             .045,
             "triangle",
-            .055
+            .04
         );
     }
 
-    back(){
-        this.tone(
-            210,
+
+    undo(){
+
+        this.beep(
+            230,
             .06,
             "triangle",
-            .065
+            .05
         );
     }
 
-    blocked(){
 
-        this.tone(
-            125,
-            .1,
+    block(){
+
+        this.beep(
+            130,
+            .10,
             "square",
-            .055
+            .05
         );
     }
 
-    complete(){
-
-        this.tone(523,.10,"sine",.12);
-
-        setTimeout(()=>{
-            this.tone(659,.12,"sine",.12);
-        },90);
-
-        setTimeout(()=>{
-            this.tone(784,.18,"sine",.12);
-        },180);
-    }
 
     correct(){
 
-        this.tone(
-            660,
-            .10,
+        this.beep(
+            600,
+            .09,
             "triangle",
-            .13
+            .11
         );
 
-        setTimeout(()=>{
-            this.tone(
-                880,
-                .16,
+        setTimeout(
+            ()=>this.beep(
+                820,
+                .14,
                 "triangle",
-                .13
-            );
-        },100);
+                .11
+            ),
+            90
+        );
     }
+
 
     wrong(){
 
-        this.tone(
-            180,
-            .16,
+        this.beep(
+            160,
+            .15,
             "sawtooth",
-            .08
+            .07
         );
     }
+
+
+    win(){
+
+        this.beep(
+            523,
+            .10,
+            "sine",
+            .11
+        );
+
+        setTimeout(
+            ()=>this.beep(
+                659,
+                .11,
+                "sine",
+                .11
+            ),
+            90
+        );
+
+        setTimeout(
+            ()=>this.beep(
+                784,
+                .18,
+                "sine",
+                .11
+            ),
+            180
+        );
+    }
+
 
     hint(){
 
-        this.tone(
+        this.beep(
             720,
-            .06,
+            .07,
             "sine",
-            .08
+            .07
         );
 
-        setTimeout(()=>{
-            this.tone(
-                920,
-                .09,
+        setTimeout(
+            ()=>this.beep(
+                900,
+                .08,
                 "sine",
-                .08
-            );
-        },65);
+                .07
+            ),
+            70
+        );
     }
 
-    startMusic(){
 
-        if(this.musicTimer) return;
+    music(){
 
-        const melody = [
+        const melody=[
             261.63,
             329.63,
-            392.00,
+            392,
             329.63,
+
             293.66,
             349.23,
-            440.00,
+            440,
             349.23,
+
             261.63,
             329.63,
-            392.00,
+            392,
             493.88,
-            440.00,
-            392.00,
+
+            440,
+            392,
             329.63,
             293.66
         ];
 
-        this.musicTimer =
-            setInterval(()=>{
 
-                if(
-                    !this.enabled ||
-                    !this.ctx
-                ) return;
+        setInterval(()=>{
 
-                const f =
-                    melody[
-                        this.musicIndex %
-                        melody.length
-                    ];
+            if(
+                !this.active ||
+                !this.ctx
+            )return;
 
-                this.musicIndex++;
 
-                this.tone(
-                    f,
-                    .20,
-                    "sine",
-                    .026
-                );
+            const f=
+            melody[
+                this.note%
+                melody.length
+            ];
 
-            },420);
+            this.note++;
+
+
+            this.beep(
+                f,
+                .20,
+                "sine",
+                .018
+            );
+
+        },440);
     }
+
 
     toggle(){
 
-        this.enabled = !this.enabled;
+        this.active=
+        !this.active;
 
-        if(this.enabled){
+        if(this.active){
             this.unlock();
         }
 
-        return this.enabled;
+        return this.active;
     }
-
 }
 
-const AUDIO = new GameAudio();
+
+const AUDIO=
+new AudioSystem();
 
 
 /* =========================================================
-   MAIN SCENE
+   RANDOM DETERMINISTIK
+   Supaya RESET tak ubah puzzle
    ========================================================= */
 
-class MagnetGame extends Phaser.Scene{
+function seededRandom(seed){
+
+    return function(){
+
+        seed +=
+        0x6D2B79F5;
+
+        let t=seed;
+
+        t=Math.imul(
+            t^(t>>>15),
+            t|1
+        );
+
+        t ^=
+        t+
+        Math.imul(
+            t^(t>>>7),
+            t|61
+        );
+
+        return (
+            (
+                t^(t>>>14)
+            )>>>0
+        ) / 4294967296;
+    };
+}
+
+
+function shuffleArray(
+    array,
+    random
+){
+
+    for(
+        let i=array.length-1;
+        i>0;
+        i--
+    ){
+
+        const j=
+        Math.floor(
+            random()*
+            (i+1)
+        );
+
+        [
+            array[i],
+            array[j]
+        ]=[
+            array[j],
+            array[i]
+        ];
+    }
+
+    return array;
+}
+
+
+/* =========================================================
+   SCENE
+   ========================================================= */
+
+class GameScene
+extends Phaser.Scene{
 
     constructor(){
-        super("MagnetGame");
+
+        super("Game");
     }
 
 
     create(){
 
-        this.stageIndex = 0;
+        this.stage=0;
 
-        this.firstTryCorrect = 0;
-        this.questionHadMistake = false;
+        this.correctFirstTry=0;
 
-        this.locked = false;
-        this.questionOpen = false;
+        this.questionMistake=false;
 
-        this.swipeStart = null;
+        this.locked=false;
+
+        this.questionOpen=false;
+
+        this.answerLocked=false;
+
+        this.swipeStart=null;
+
 
         this.createBackground();
+
         this.createHeader();
-        this.createBoardGraphics();
-        this.createControls();
+
+        this.createBoardLayer();
+
         this.createMagnet();
 
-        this.setupKeyboard();
-        this.setupSwipe();
+        this.createControls();
+
+        this.createKeyboard();
+
+        this.createSwipe();
+
 
         this.input.on(
             "pointerdown",
-            ()=>{
-                AUDIO.unlock();
-            }
+            ()=>AUDIO.unlock()
         );
+
 
         this.startStage(0);
     }
@@ -801,113 +832,97 @@ class MagnetGame extends Phaser.Scene{
 
     createBackground(){
 
-        this.bg =
-            this.add.graphics();
+        this.bg=
+        this.add.graphics();
 
-        this.decor =
-            this.add.graphics();
-
-        this.drawBackground();
-
-        for(let i=0;i<18;i++){
-
-            const x =
-                Phaser.Math.Between(
-                    20,
-                    GAME_W - 20
-                );
-
-            const y =
-                Phaser.Math.Between(
-                    180,
-                    GAME_H - 100
-                );
-
-            const circle =
-                this.add.circle(
-                    x,
-                    y,
-                    Phaser.Math.Between(
-                        3,
-                        8
-                    ),
-                    0xffffff,
-                    Phaser.Math.FloatBetween(
-                        .12,
-                        .35
-                    )
-                );
-
-            this.tweens.add({
-                targets:circle,
-                alpha:{
-                    from:.08,
-                    to:.4
-                },
-                duration:
-                    Phaser.Math.Between(
-                        1300,
-                        2600
-                    ),
-                yoyo:true,
-                repeat:-1,
-                delay:
-                    Phaser.Math.Between(
-                        0,
-                        1000
-                    )
-            });
-        }
-    }
-
-
-    drawBackground(){
-
-        this.bg.clear();
-
-        const p =
-            PALETTES[
-                this.stageIndex %
-                PALETTES.length
-            ];
 
         this.bg.fillStyle(
-            p.bg,
+            0xdff4ff,
             1
         );
 
         this.bg.fillRect(
             0,
             0,
-            GAME_W,
-            GAME_H
+            W,
+            H
         );
+
 
         this.bg.fillStyle(
             0xffffff,
-            .18
+            .24
         );
+
 
         for(
             let y=-100;
-            y<GAME_H+100;
-            y+=125
+            y<H+100;
+            y+=115
         ){
 
             for(
-                let x=-100;
-                x<GAME_W+100;
-                x+=150
+                let x=-80;
+                x<W+100;
+                x+=145
             ){
 
                 this.bg.fillRoundedRect(
-                    x + ((y/125)%2)*45,
+                    x+
+                    ((y/115)%2)*40,
                     y,
-                    95,
-                    52,
-                    24
+                    88,
+                    45,
+                    22
                 );
             }
+        }
+
+
+        for(let i=0;i<14;i++){
+
+            const dot=
+            this.add.circle(
+                Phaser.Math.Between(
+                    20,
+                    W-20
+                ),
+
+                Phaser.Math.Between(
+                    180,
+                    H-180
+                ),
+
+                Phaser.Math.Between(
+                    3,
+                    7
+                ),
+
+                0xffffff,
+
+                .2
+            );
+
+
+            this.tweens.add({
+
+                targets:dot,
+
+                alpha:{
+                    from:.06,
+                    to:.4
+                },
+
+                duration:
+                Phaser.Math.Between(
+                    1300,
+                    2600
+                ),
+
+                yoyo:true,
+
+                repeat:-1
+            });
         }
     }
 
@@ -918,158 +933,169 @@ class MagnetGame extends Phaser.Scene{
 
     createHeader(){
 
-        this.headerShadow =
-            this.add.rectangle(
-                450,
-                102,
-                820,
-                148,
-                0x17465f,
-                .10
-            )
-            .setOrigin(.5);
-
-        this.headerShadow
-            .setStrokeStyle(
-                0,
-                0,
-                0
-            );
-
-        this.headerPanel =
-            this.add.rectangle(
-                450,
-                94,
-                820,
-                148,
-                0xffffff,
-                .97
-            )
-            .setOrigin(.5);
-
-        this.headerPanel
-            .setStrokeStyle(
-                3,
-                0xffffff,
-                1
-            );
-
-
-        this.titleText =
-            this.add.text(
-                88,
-                42,
-                "MAGNET COLOUR TRAIL",
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"29px",
-                    fontStyle:"bold",
-                    color:"#173c50"
-                }
-            )
-            .setOrigin(0,.5);
-
-
-        this.stageText =
-            this.add.text(
-                88,
-                85,
-                "STAGE 1 / 25",
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"23px",
-                    fontStyle:"bold",
-                    color:"#e25353"
-                }
-            )
-            .setOrigin(0,.5);
-
-
-        this.statusText =
-            this.add.text(
-                88,
-                121,
-                "Isi semua petak sebelum masuk portal.",
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"21px",
-                    color:"#506876"
-                }
-            )
-            .setOrigin(0,.5);
-
-
-        this.progressBack =
-            this.add.rectangle(
-                89,
-                146,
-                505,
-                12,
-                0xd8e5eb,
-                1
-            )
-            .setOrigin(0,.5);
-
-
-        this.progressFill =
-            this.add.rectangle(
-                89,
-                146,
-                1,
-                12,
-                0xffbb3f,
-                1
-            )
-            .setOrigin(0,.5);
-
-
-        this.percentText =
-            this.add.text(
-                613,
-                146,
-                "0%",
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"18px",
-                    fontStyle:"bold",
-                    color:"#526976"
-                }
-            )
-            .setOrigin(0,.5);
-
-
-        this.makeTopButton(
-            695,
-            91,
-            "💡",
-            ()=>{
-                this.showHint();
-            }
+        this.add.rectangle(
+            450,
+            101,
+            820,
+            154,
+            0x244759,
+            .11
         );
 
 
-        this.soundButton =
-            this.makeTopButton(
-                774,
-                91,
-                "🔊",
-                ()=>{
+        this.add.rectangle(
+            450,
+            94,
+            820,
+            154,
+            0xffffff,
+            .97
+        )
+        .setStrokeStyle(
+            3,
+            0xc7dce5
+        );
 
-                    const active =
-                        AUDIO.toggle();
 
-                    this.soundButton.label
-                        .setText(
-                            active
-                            ? "🔊"
-                            : "🔇"
-                        );
-                }
-            );
+        this.add.text(
+            83,
+            39,
+            "MAGNET COLOUR TRAIL",
+            {
+                fontFamily:
+                "Trebuchet MS, Arial",
+
+                fontSize:"29px",
+
+                fontStyle:"bold",
+
+                color:"#173d50"
+            }
+        )
+        .setOrigin(
+            0,
+            .5
+        );
+
+
+        this.stageText=
+        this.add.text(
+            83,
+            81,
+            "STAGE 1 / 25",
+            {
+                fontFamily:
+                "Trebuchet MS, Arial",
+
+                fontSize:"22px",
+
+                fontStyle:"bold",
+
+                color:"#e14f52"
+            }
+        )
+        .setOrigin(
+            0,
+            .5
+        );
+
+
+        this.statusText=
+        this.add.text(
+            83,
+            117,
+            "Warnakan semua petak.",
+            {
+                fontFamily:
+                "Trebuchet MS, Arial",
+
+                fontSize:"19px",
+
+                color:"#55717d"
+            }
+        )
+        .setOrigin(
+            0,
+            .5
+        );
+
+
+        this.progressBack=
+        this.add.rectangle(
+            83,
+            148,
+            500,
+            12,
+            0xd8e6eb
+        )
+        .setOrigin(
+            0,
+            .5
+        );
+
+
+        this.progressFill=
+        this.add.rectangle(
+            83,
+            148,
+            1,
+            12,
+            0xffbd42
+        )
+        .setOrigin(
+            0,
+            .5
+        );
+
+
+        this.percentText=
+        this.add.text(
+            600,
+            148,
+            "0%",
+            {
+                fontFamily:"Arial",
+
+                fontSize:"17px",
+
+                fontStyle:"bold",
+
+                color:"#536d79"
+            }
+        )
+        .setOrigin(
+            0,
+            .5
+        );
+
+
+        this.makeTopButton(
+            697,
+            92,
+            "💡",
+            ()=>this.showHint()
+        );
+
+
+        this.soundButton=
+        this.makeTopButton(
+            780,
+            92,
+            "🔊",
+            ()=>{
+
+                const active=
+                AUDIO.toggle();
+
+                this.soundButton
+                .text
+                .setText(
+                    active
+                    ? "🔊"
+                    : "🔇"
+                );
+            }
+        );
     }
 
 
@@ -1080,47 +1106,43 @@ class MagnetGame extends Phaser.Scene{
         callback
     ){
 
-        const shadow =
-            this.add.rectangle(
-                x,
-                y+5,
-                64,
-                64,
-                0x20495c,
-                .15
-            )
-            .setOrigin(.5);
+        this.add.rectangle(
+            x,
+            y+5,
+            65,
+            65,
+            0x294a58,
+            .12
+        );
 
 
-        const box =
-            this.add.rectangle(
-                x,
-                y,
-                64,
-                64,
-                0xf8fcff,
-                1
-            )
-            .setOrigin(.5)
-            .setStrokeStyle(
-                2,
-                0xc8d9e1
-            )
-            .setInteractive({
-                useHandCursor:true
-            });
+        const box=
+        this.add.rectangle(
+            x,
+            y,
+            65,
+            65,
+            0xf9fdff
+        )
+        .setStrokeStyle(
+            2,
+            0xc5d8df
+        )
+        .setInteractive({
+            useHandCursor:true
+        });
 
 
-        const txt =
-            this.add.text(
-                x,
-                y,
-                label,
-                {
-                    fontSize:"29px"
-                }
-            )
-            .setOrigin(.5);
+        const text=
+        this.add.text(
+            x,
+            y,
+            label,
+            {
+                fontSize:"28px"
+            }
+        )
+        .setOrigin(.5);
 
 
         box.on(
@@ -1132,11 +1154,14 @@ class MagnetGame extends Phaser.Scene{
                 this.tweens.add({
                     targets:[
                         box,
-                        txt
+                        text
                     ],
-                    scaleX:.91,
-                    scaleY:.91,
+
+                    scaleX:.9,
+                    scaleY:.9,
+
                     duration:55,
+
                     yoyo:true
                 });
 
@@ -1145,126 +1170,134 @@ class MagnetGame extends Phaser.Scene{
         );
 
 
-        return {
-            box:box,
-            label:txt,
-            shadow:shadow
+        return{
+            box,
+            text
         };
     }
 
 
 /* =========================================================
-   BOARD GRAPHICS
+   BOARD LAYERS
    ========================================================= */
 
-    createBoardGraphics(){
+    createBoardLayer(){
 
-        this.boardShadow =
-            this.add.graphics();
+        this.boardShadow=
+        this.add.graphics();
 
-        this.boardBase =
-            this.add.graphics();
+        this.boardFrame=
+        this.add.graphics();
 
-        this.tilesGfx =
-            this.add.graphics();
+        this.tiles=
+        this.add.graphics();
 
-        this.trailGfx =
-            this.add.graphics();
+        this.trail=
+        this.add.graphics();
 
-        this.overlayGfx =
-            this.add.graphics();
-
-        this.hintGfx =
-            this.add.graphics();
+        this.hintGfx=
+        this.add.graphics();
 
 
-        this.portalContainer =
-            this.add.container(
-                0,
-                0
-            );
+        this.portal=
+        this.add.container();
 
 
-        this.portalOuter =
-            this.add.circle(
-                0,
-                0,
-                28,
-                0x111827,
-                1
-            )
-            .setStrokeStyle(
-                5,
-                0x334155
-            );
+        this.portalGlow=
+        this.add.circle(
+            0,
+            0,
+            32,
+            0x000000,
+            .12
+        );
 
 
-        this.portalMiddle =
-            this.add.circle(
-                0,
-                0,
-                19,
-                0x05070b,
-                1
-            )
-            .setStrokeStyle(
-                3,
-                0x718096
-            );
+        this.portalOuter=
+        this.add.circle(
+            0,
+            0,
+            27,
+            0x161b20
+        )
+        .setStrokeStyle(
+            5,
+            0x303941
+        );
 
 
-        this.portalCore =
-            this.add.circle(
-                0,
-                0,
-                8,
-                0x000000,
-                1
-            )
-            .setStrokeStyle(
-                2,
-                0xe5edf4
-            );
+        this.portalMid=
+        this.add.circle(
+            0,
+            0,
+            18,
+            0x080a0c
+        )
+        .setStrokeStyle(
+            3,
+            0x77838c
+        );
 
 
-        this.portalLock =
-            this.add.text(
-                0,
-                0,
-                "🔒",
-                {
-                    fontSize:"20px"
-                }
-            )
-            .setOrigin(.5);
+        this.portalCore=
+        this.add.circle(
+            0,
+            0,
+            7,
+            0x000000
+        )
+        .setStrokeStyle(
+            2,
+            0xe8eef1
+        );
 
 
-        this.portalContainer.add([
+        this.portalLock=
+        this.add.text(
+            0,
+            0,
+            "🔒",
+            {
+                fontSize:"18px"
+            }
+        )
+        .setOrigin(.5);
+
+
+        this.portal.add([
+            this.portalGlow,
             this.portalOuter,
-            this.portalMiddle,
+            this.portalMid,
             this.portalCore,
             this.portalLock
         ]);
 
 
         this.tweens.add({
+
             targets:
-                this.portalMiddle,
+            this.portalMid,
+
             scaleX:{
-                from:.82,
-                to:1.12
+                from:.8,
+                to:1.14
             },
+
             scaleY:{
-                from:.82,
-                to:1.12
+                from:.8,
+                to:1.14
             },
+
             alpha:{
-                from:.5,
+                from:.45,
                 to:1
             },
+
+            duration:650,
+
             yoyo:true,
-            repeat:-1,
-            duration:650
+
+            repeat:-1
         });
     }
 
@@ -1275,394 +1308,596 @@ class MagnetGame extends Phaser.Scene{
 
     createMagnet(){
 
-        this.magnet =
-            this.add.container(
-                0,
-                0
-            );
-
-        const shadow =
-            this.add.ellipse(
-                3,
-                25,
-                61,
-                19,
-                0x17303a,
-                .18
-            );
+        this.magnet=
+        this.add.container(
+            0,
+            0
+        );
 
 
-        const g =
-            this.add.graphics();
+        const shadow=
+        this.add.ellipse(
+            3,
+            25,
+            60,
+            18,
+            0x173846,
+            .2
+        );
 
 
-        // LEFT RED POLE
+        const g=
+        this.add.graphics();
+
+
+        /* LEFT RED */
         g.fillStyle(
-            0xf05252,
-            1
+            0xef4d55
         );
 
         g.fillRoundedRect(
-            -28,
             -29,
-            22,
-            50,
+            -30,
+            23,
+            53,
             8
         );
 
 
-        // RIGHT BLUE POLE
+        /* RIGHT BLUE */
         g.fillStyle(
-            0x4285d4,
-            1
+            0x3e85d4
         );
 
         g.fillRoundedRect(
             6,
-            -29,
-            22,
-            50,
+            -30,
+            23,
+            53,
             8
         );
 
 
-        // LOWER CONNECTOR
+        /* BOTTOM RED */
         g.fillStyle(
-            0xf05252,
-            1
+            0xef4d55
         );
 
         g.fillRoundedRect(
-            -28,
+            -29,
             4,
-            28,
-            23,
+            29,
+            25,
             8
         );
 
 
+        /* BOTTOM BLUE */
         g.fillStyle(
-            0x4285d4,
-            1
+            0x3e85d4
         );
 
         g.fillRoundedRect(
             0,
             4,
-            28,
-            23,
+            29,
+            25,
             8
         );
 
 
-        // WHITE MAGNET POLES
+        /* SILVER POLES */
         g.fillStyle(
-            0xfafcff,
-            1
+            0xf6f9fa
         );
 
         g.fillRoundedRect(
-            -28,
-            -32,
-            22,
-            13,
+            -29,
+            -33,
+            23,
+            14,
             5
         );
 
         g.fillRoundedRect(
             6,
-            -32,
-            22,
-            13,
+            -33,
+            23,
+            14,
             5
         );
 
 
-        // OUTLINE
         g.lineStyle(
             3,
-            0x263a47,
-            .7
+            0x263c48,
+            .75
         );
 
         g.strokeRoundedRect(
-            -28,
             -29,
-            22,
-            50,
+            -30,
+            23,
+            53,
             8
         );
 
         g.strokeRoundedRect(
             6,
-            -29,
-            22,
-            50,
+            -30,
+            23,
+            53,
             8
         );
 
 
-        const sparkle =
-            this.add.text(
-                0,
-                13,
-                "✦",
-                {
-                    fontFamily:"Arial",
-                    fontSize:"16px",
-                    fontStyle:"bold",
-                    color:"#ffffff"
-                }
-            )
-            .setOrigin(.5);
+        const shine=
+        this.add.text(
+            0,
+            14,
+            "✦",
+            {
+                fontFamily:"Arial",
+                fontSize:"15px",
+                color:"#ffffff"
+            }
+        )
+        .setOrigin(.5);
 
 
         this.magnet.add([
             shadow,
             g,
-            sparkle
+            shine
         ]);
 
-        this.magnet.setDepth(50);
+
+        this.magnet
+        .setDepth(70);
     }
 
 
 /* =========================================================
-   STAGE GENERATION
+   STAGE SIZE
    ========================================================= */
 
-    getStageSize(index){
+    getStageInfo(){
 
-        if(index < 3){
-            return {
+        const i=
+        this.stage;
+
+
+        if(i<5){
+
+            return{
                 rows:4,
-                cols:4
+                cols:4,
+                blocks:2
             };
         }
 
-        if(index < 6){
-            return {
+
+        if(i<10){
+
+            return{
                 rows:4,
-                cols:5
+                cols:5,
+                blocks:3
             };
         }
 
-        if(index < 10){
-            return {
+
+        if(i<15){
+
+            return{
                 rows:5,
-                cols:5
+                cols:5,
+                blocks:4
             };
         }
 
-        if(index < 15){
-            return {
+
+        if(i<20){
+
+            return{
                 rows:5,
-                cols:6
+                cols:6,
+                blocks:5
             };
         }
 
-        if(index < 20){
-            return {
-                rows:6,
-                cols:5
-            };
-        }
 
-        return {
+        return{
             rows:6,
-            cols:6
+            cols:6,
+            blocks:6
         };
     }
 
 
-    makeSolutionPath(
+/* =========================================================
+   GENERATE SOLVABLE PATH + BLOCK
+
+   Semua petak dalam solution ialah PETAK BOLEH LALU.
+   Petak yang tidak termasuk solution automatik jadi BLOCK.
+
+   Oleh kerana "solution" sendiri ialah satu laluan
+   berterusan, puzzle dijamin ada satu penyelesaian.
+   ========================================================= */
+
+    generatePuzzle(
         rows,
         cols,
-        mode
+        blockCount,
+        seed
     ){
 
-        let path = [];
+        const total=
+        rows*cols;
+
+        const target=
+        total-blockCount;
 
 
-        if(mode % 2 === 0){
-
-            // Horizontal snake
-            for(
-                let r=0;
-                r<rows;
-                r++
-            ){
-
-                if(r % 2 === 0){
-
-                    for(
-                        let c=0;
-                        c<cols;
-                        c++
-                    ){
-                        path.push({
-                            r:r,
-                            c:c
-                        });
-                    }
-
-                }else{
-
-                    for(
-                        let c=cols-1;
-                        c>=0;
-                        c--
-                    ){
-                        path.push({
-                            r:r,
-                            c:c
-                        });
-                    }
-                }
-            }
-
-        }else{
-
-            // Vertical snake
-            for(
-                let c=0;
-                c<cols;
-                c++
-            ){
-
-                if(c % 2 === 0){
-
-                    for(
-                        let r=0;
-                        r<rows;
-                        r++
-                    ){
-                        path.push({
-                            r:r,
-                            c:c
-                        });
-                    }
-
-                }else{
-
-                    for(
-                        let r=rows-1;
-                        r>=0;
-                        r--
-                    ){
-                        path.push({
-                            r:r,
-                            c:c
-                        });
-                    }
-                }
-            }
-        }
-
-
-        // Transform supaya stage tak semua bermula
-        // di sudut yang sama.
-
-        const transform =
-            mode % 8;
-
-
-        path = path.map(
-            p=>{
-
-                let r=p.r;
-                let c=p.c;
-
-                if(transform===2 ||
-                   transform===3){
-
-                    c =
-                        cols-1-c;
-                }
-
-                if(transform===4 ||
-                   transform===5){
-
-                    r =
-                        rows-1-r;
-                }
-
-                if(transform===6 ||
-                   transform===7){
-
-                    r =
-                        rows-1-r;
-
-                    c =
-                        cols-1-c;
-                }
-
-                return {
-                    r:r,
-                    c:c
-                };
-            }
-        );
-
-
-        if(
-            mode===3 ||
-            mode===5 ||
-            mode===7
+        for(
+            let attempt=0;
+            attempt<220;
+            attempt++
         ){
-            path.reverse();
-        }
 
-
-        return path;
-    }
-
-
-    startStage(index){
-
-        this.stageIndex =
-            index;
-
-        this.locked =
-            false;
-
-        this.questionOpen =
-            false;
-
-        this.questionHadMistake =
-            false;
-
-        this.drawBackground();
-
-
-        const size =
-            this.getStageSize(index);
-
-        this.rows =
-            size.rows;
-
-        this.cols =
-            size.cols;
-
-
-        this.solution =
-            this.makeSolutionPath(
-                this.rows,
-                this.cols,
-                index
+            const random=
+            seededRandom(
+                seed+
+                attempt*1777
             );
 
 
-        this.startCell =
-            this.solution[0];
+            const start={
+                r:
+                Math.floor(
+                    random()*rows
+                ),
 
-        this.portalCell =
-            this.solution[
-                this.solution.length-1
+                c:
+                Math.floor(
+                    random()*cols
+                )
+            };
+
+
+            const path=[
+                start
             ];
 
 
-        this.path = [
+            const used=
+            new Set([
+                start.r+","+start.c
+            ]);
+
+
+            let operations=0;
+
+
+            const search=()=>{
+
+                operations++;
+
+                if(
+                    operations>
+                    18000
+                ){
+                    return false;
+                }
+
+
+                if(
+                    path.length===
+                    target
+                ){
+                    return true;
+                }
+
+
+                const now=
+                path[
+                    path.length-1
+                ];
+
+
+                let options=[
+                    {
+                        r:now.r-1,
+                        c:now.c
+                    },
+
+                    {
+                        r:now.r+1,
+                        c:now.c
+                    },
+
+                    {
+                        r:now.r,
+                        c:now.c-1
+                    },
+
+                    {
+                        r:now.r,
+                        c:now.c+1
+                    }
+                ];
+
+
+                options=
+                options.filter(
+                    p=>
+                    p.r>=0 &&
+                    p.r<rows &&
+                    p.c>=0 &&
+                    p.c<cols &&
+                    !used.has(
+                        p.r+","+p.c
+                    )
+                );
+
+
+                shuffleArray(
+                    options,
+                    random
+                );
+
+
+                /*
+                Kira jumlah jiran kosong.
+
+                Sedikit keutamaan kepada petak
+                yang kurang pilihan supaya laluan
+                lebih berpusing dan block nampak
+                lebih menarik.
+                */
+
+                options.sort(
+                    (a,b)=>{
+
+                        const da=
+                        this.freeDegree(
+                            a,
+                            rows,
+                            cols,
+                            used
+                        );
+
+
+                        const db=
+                        this.freeDegree(
+                            b,
+                            rows,
+                            cols,
+                            used
+                        );
+
+
+                        return da-db;
+                    }
+                );
+
+
+                for(
+                    const next
+                    of options
+                ){
+
+                    const key=
+                    next.r+","+next.c;
+
+
+                    used.add(key);
+
+                    path.push(next);
+
+
+                    if(search()){
+                        return true;
+                    }
+
+
+                    path.pop();
+
+                    used.delete(key);
+                }
+
+
+                return false;
+            };
+
+
+            if(search()){
+
+                return path.map(
+                    p=>({
+                        r:p.r,
+                        c:p.c
+                    })
+                );
+            }
+        }
+
+
+        /*
+        FALLBACK
+        Kalau random generator gagal,
+        gunakan snake yang memang valid.
+        */
+
+        const snake=[];
+
+
+        for(
+            let r=0;
+            r<rows;
+            r++
+        ){
+
+            if(r%2===0){
+
+                for(
+                    let c=0;
+                    c<cols;
+                    c++
+                ){
+
+                    snake.push({
+                        r,
+                        c
+                    });
+                }
+
+            }else{
+
+                for(
+                    let c=cols-1;
+                    c>=0;
+                    c--
+                ){
+
+                    snake.push({
+                        r,
+                        c
+                    });
+                }
+            }
+        }
+
+
+        const offset=
+        seed%
+        Math.max(
+            1,
+            snake.length-target+1
+        );
+
+
+        return snake.slice(
+            offset,
+            offset+target
+        );
+    }
+
+
+    freeDegree(
+        cell,
+        rows,
+        cols,
+        used
+    ){
+
+        const around=[
+            [cell.r-1,cell.c],
+            [cell.r+1,cell.c],
+            [cell.r,cell.c-1],
+            [cell.r,cell.c+1]
+        ];
+
+
+        let n=0;
+
+
+        for(
+            const [r,c]
+            of around
+        ){
+
+            if(
+                r>=0 &&
+                r<rows &&
+                c>=0 &&
+                c<cols &&
+                !used.has(
+                    r+","+c
+                )
+            ){
+                n++;
+            }
+        }
+
+
+        return n;
+    }
+
+
+/* =========================================================
+   START STAGE
+   ========================================================= */
+
+    startStage(index){
+
+        this.stage=index;
+
+        this.locked=false;
+
+        this.questionOpen=false;
+
+        this.answerLocked=false;
+
+        this.questionMistake=false;
+
+
+        this.magnet
+        .setVisible(true)
+        .setAlpha(1)
+        .setAngle(0);
+
+
+        const info=
+        this.getStageInfo();
+
+
+        this.rows=
+        info.rows;
+
+        this.cols=
+        info.cols;
+
+        this.blockCount=
+        info.blocks;
+
+
+        this.solution=
+        this.generatePuzzle(
+            this.rows,
+            this.cols,
+            this.blockCount,
+            5000+
+            this.stage*813
+        );
+
+
+        this.walkable=
+        new Set();
+
+
+        for(
+            const p
+            of this.solution
+        ){
+
+            this.walkable.add(
+                p.r+","+p.c
+            );
+        }
+
+
+        this.startCell=
+        this.solution[0];
+
+
+        this.portalCell=
+        this.solution[
+            this.solution.length-1
+        ];
+
+
+        this.path=[
             {
                 r:this.startCell.r,
                 c:this.startCell.c
@@ -1670,48 +1905,51 @@ class MagnetGame extends Phaser.Scene{
         ];
 
 
-        this.totalTiles =
-            this.rows *
-            this.cols;
+        this.walkableCount=
+        this.solution.length;
 
 
         this.calculateBoard();
 
 
-        this.stageText.setText(
-            "STAGE " +
-            (index+1) +
+        this.stageText
+        .setText(
+            "STAGE "+
+            (this.stage+1)+
             " / 25"
         );
 
 
-        this.statusText.setText(
-            "Isi semua petak. Portal aktif pada petak terakhir."
+        this.statusText
+        .setText(
+            "Elak BLOCK dan warnakan semua petak."
         );
 
 
         this.clearHint();
 
-
         this.drawBoard();
 
 
-        const startPos =
-            this.cellCenter(
-                this.startCell.r,
-                this.startCell.c
-            );
-
-
-        this.magnet.setPosition(
-            startPos.x,
-            startPos.y
+        const start=
+        this.cellCenter(
+            this.startCell.r,
+            this.startCell.c
         );
 
-        this.magnet.setScale(
+
+        this.magnet
+        .setPosition(
+            start.x,
+            start.y
+        );
+
+
+        this.magnet
+        .setScale(
             Math.min(
                 1,
-                this.cellSize / 72
+                this.cellSize/78
             )
         );
 
@@ -1720,52 +1958,50 @@ class MagnetGame extends Phaser.Scene{
     }
 
 
+/* =========================================================
+   BOARD POSITION
+   ========================================================= */
+
     calculateBoard(){
 
-        const maxW =
-            710;
+        const maxW=730;
 
-        const maxH =
-            610;
+        const maxH=665;
 
 
-        this.cellSize =
-            Math.floor(
-                Math.min(
-                    maxW /
-                    this.cols,
-
-                    maxH /
-                    this.rows,
-
-                    105
-                )
-            );
+        this.cellSize=
+        Math.floor(
+            Math.min(
+                maxW/this.cols,
+                maxH/this.rows,
+                112
+            )
+        );
 
 
-        this.boardW =
-            this.cols *
-            this.cellSize;
-
-        this.boardH =
-            this.rows *
-            this.cellSize;
+        this.boardW=
+        this.cols*
+        this.cellSize;
 
 
-        this.boardX =
-            (GAME_W -
-            this.boardW) / 2;
+        this.boardH=
+        this.rows*
+        this.cellSize;
 
 
-        this.boardY =
-            205 +
-            Math.max(
-                0,
-                (
-                    615 -
-                    this.boardH
-                ) / 2
-            );
+        this.boardX=
+        (W-this.boardW)/2;
+
+
+        this.boardY=
+        205+
+        Math.max(
+            0,
+            (
+                660-
+                this.boardH
+            )/2
+        );
     }
 
 
@@ -1775,21 +2011,13 @@ class MagnetGame extends Phaser.Scene{
 
     drawBoard(){
 
-        const palette =
-            PALETTES[
-                this.stageIndex %
-                PALETTES.length
-            ];
-
-
-        const pad =
-            22;
+        const pad=22;
 
 
         this.boardShadow.clear();
 
         this.boardShadow.fillStyle(
-            0x143c4c,
+            0x173c4e,
             .14
         );
 
@@ -1798,42 +2026,40 @@ class MagnetGame extends Phaser.Scene{
             this.boardY-pad+11,
             this.boardW+pad*2,
             this.boardH+pad*2,
-            32
+            29
         );
 
 
-        this.boardBase.clear();
+        this.boardFrame.clear();
 
-        this.boardBase.fillStyle(
-            0xffffff,
-            1
+        this.boardFrame.fillStyle(
+            0xffffff
         );
 
-        this.boardBase.fillRoundedRect(
+        this.boardFrame.fillRoundedRect(
             this.boardX-pad,
             this.boardY-pad,
             this.boardW+pad*2,
             this.boardH+pad*2,
-            32
+            29
         );
 
 
-        this.boardBase.lineStyle(
+        this.boardFrame.lineStyle(
             5,
-            0xb8ced9,
-            1
+            0xb9ced8
         );
 
-        this.boardBase.strokeRoundedRect(
+        this.boardFrame.strokeRoundedRect(
             this.boardX-pad,
             this.boardY-pad,
             this.boardW+pad*2,
             this.boardH+pad*2,
-            32
+            29
         );
 
 
-        this.tilesGfx.clear();
+        this.tiles.clear();
 
 
         for(
@@ -1848,83 +2074,234 @@ class MagnetGame extends Phaser.Scene{
                 c++
             ){
 
-                const x =
-                    this.boardX +
-                    c*this.cellSize;
-
-                const y =
-                    this.boardY +
-                    r*this.cellSize;
+                const x=
+                this.boardX+
+                c*this.cellSize;
 
 
-                const visited =
-                    this.path.some(
-                        p=>
-                            p.r===r &&
-                            p.c===c
+                const y=
+                this.boardY+
+                r*this.cellSize;
+
+
+                const key=
+                r+","+c;
+
+
+                const canWalk=
+                this.walkable.has(key);
+
+
+                /* =========================
+                   BLOCK HALANGAN
+                   ========================= */
+
+                if(!canWalk){
+
+                    /* shadow */
+                    this.tiles.fillStyle(
+                        0x263741,
+                        .22
+                    );
+
+                    this.tiles.fillRoundedRect(
+                        x+9,
+                        y+11,
+                        this.cellSize-14,
+                        this.cellSize-14,
+                        14
                     );
 
 
-                this.tilesGfx.fillStyle(
-                    visited
-                    ? palette.painted
-                    : palette.tile,
-                    1
-                );
-
-
-                this.tilesGfx.fillRoundedRect(
-                    x+4,
-                    y+4,
-                    this.cellSize-8,
-                    this.cellSize-8,
-                    Math.min(
-                        17,
-                        this.cellSize*.18
-                    )
-                );
-
-
-                this.tilesGfx.lineStyle(
-                    2,
-                    visited
-                    ? 0xf0ab37
-                    : 0x91b7c7,
-                    visited
-                    ? .65
-                    : .55
-                );
-
-
-                this.tilesGfx.strokeRoundedRect(
-                    x+4,
-                    y+4,
-                    this.cellSize-8,
-                    this.cellSize-8,
-                    Math.min(
-                        17,
-                        this.cellSize*.18
-                    )
-                );
-
-
-                // small metal dot
-                if(!visited){
-
-                    this.tilesGfx.fillStyle(
-                        0xffffff,
-                        .35
+                    /* main block */
+                    this.tiles.fillStyle(
+                        0x53636d
                     );
 
-                    this.tilesGfx.fillCircle(
-                        x+this.cellSize*.28,
-                        y+this.cellSize*.27,
+                    this.tiles.fillRoundedRect(
+                        x+6,
+                        y+6,
+                        this.cellSize-14,
+                        this.cellSize-14,
+                        14
+                    );
+
+
+                    /* border */
+                    this.tiles.lineStyle(
+                        3,
+                        0x34444d,
+                        1
+                    );
+
+                    this.tiles.strokeRoundedRect(
+                        x+6,
+                        y+6,
+                        this.cellSize-14,
+                        this.cellSize-14,
+                        14
+                    );
+
+
+                    /* inner metal */
+                    this.tiles.lineStyle(
+                        2,
+                        0x87959d,
+                        .65
+                    );
+
+                    this.tiles.strokeRoundedRect(
+                        x+14,
+                        y+14,
+                        this.cellSize-30,
+                        this.cellSize-30,
+                        9
+                    );
+
+
+                    /* diagonal stripe */
+                    this.tiles.lineStyle(
                         Math.max(
-                            2,
+                            3,
+                            this.cellSize*.045
+                        ),
+                        0x3c4b54,
+                        .65
+                    );
+
+
+                    for(
+                        let k=-20;
+                        k<this.cellSize+20;
+                        k+=22
+                    ){
+
+                        let x1=
+                        x+10+k;
+
+                        let y1=
+                        y+
+                        this.cellSize-10;
+
+
+                        let x2=
+                        x+this.cellSize-10;
+
+                        let y2=
+                        y+10+k;
+
+
+                        this.tiles.lineBetween(
+                            x1,
+                            y1,
+                            x2,
+                            y2
+                        );
+                    }
+
+
+                    /* bolt */
+                    this.tiles.fillStyle(
+                        0xc4d0d5
+                    );
+
+                    this.tiles.fillCircle(
+                        x+18,
+                        y+18,
+                        Math.max(
+                            3,
                             this.cellSize*.035
                         )
                     );
+
+
+                    this.tiles.fillCircle(
+                        x+
+                        this.cellSize-20,
+
+                        y+
+                        this.cellSize-20,
+
+                        Math.max(
+                            3,
+                            this.cellSize*.035
+                        )
+                    );
+
+
+                    continue;
                 }
+
+
+                /* =========================
+                   NORMAL TILE
+                   ========================= */
+
+                const visited=
+                this.path.some(
+                    p=>
+                    p.r===r &&
+                    p.c===c
+                );
+
+
+                this.tiles.fillStyle(
+                    visited
+                    ? 0xffca48
+                    : 0xd5eef7
+                );
+
+
+                this.tiles.fillRoundedRect(
+                    x+5,
+                    y+5,
+                    this.cellSize-10,
+                    this.cellSize-10,
+                    14
+                );
+
+
+                this.tiles.lineStyle(
+                    2,
+                    visited
+                    ? 0xeaaa25
+                    : 0x92b8c8,
+                    .8
+                );
+
+
+                this.tiles.strokeRoundedRect(
+                    x+5,
+                    y+5,
+                    this.cellSize-10,
+                    this.cellSize-10,
+                    14
+                );
+
+
+                /* soft highlight */
+
+                this.tiles.fillStyle(
+                    0xffffff,
+                    visited
+                    ? .22
+                    : .38
+                );
+
+
+                this.tiles.fillRoundedRect(
+                    x+
+                    this.cellSize*.18,
+
+                    y+
+                    this.cellSize*.17,
+
+                    this.cellSize*.28,
+
+                    this.cellSize*.11,
+
+                    7
+                );
             }
         }
 
@@ -1932,138 +2309,135 @@ class MagnetGame extends Phaser.Scene{
         this.drawTrail();
 
 
-        const portal =
-            this.cellCenter(
-                this.portalCell.r,
-                this.portalCell.c
-            );
+        const portal=
+        this.cellCenter(
+            this.portalCell.r,
+            this.portalCell.c
+        );
 
 
-        this.portalContainer
-            .setPosition(
-                portal.x,
-                portal.y
-            );
+        this.portal
+        .setPosition(
+            portal.x,
+            portal.y
+        );
 
 
-        const remaining =
-            this.totalTiles -
-            this.path.length;
+        this.portal
+        .setScale(
+            Math.min(
+                1,
+                this.cellSize/82
+            )
+        );
 
 
-        const portalReady =
-            remaining === 1;
+        this.portal
+        .setDepth(55);
+
+
+        const portalReady=
+        this.path.length===
+        this.walkableCount-1;
 
 
         this.portalLock
-            .setVisible(
-                !portalReady
-            );
+        .setVisible(
+            !portalReady
+        );
 
 
         this.portalOuter
-            .setFillStyle(
-                portalReady
-                ? 0x111827
-                : 0x263b45,
-                portalReady
-                ? 1
-                : .80
-            );
-
-
-        this.portalContainer
-            .setScale(
-                Math.min(
-                    1,
-                    this.cellSize/78
-                )
-            );
-
-
-        this.portalContainer
-            .setDepth(35);
+        .setFillStyle(
+            portalReady
+            ? 0x101419
+            : 0x37454d
+        );
     }
 
 
+/* =========================================================
+   DRAW TRAIL
+   ========================================================= */
+
     drawTrail(){
 
-        this.trailGfx.clear();
-
-        if(this.path.length<2){
-            return;
-        }
+        this.trail.clear();
 
 
-        const palette =
-            PALETTES[
-                this.stageIndex %
-                PALETTES.length
-            ];
+        if(
+            this.path.length<2
+        )return;
 
 
-        this.trailGfx.lineStyle(
+        this.trail.lineStyle(
             Math.max(
                 7,
-                this.cellSize*.10
+                this.cellSize*.09
             ),
-            palette.trail,
-            .85
+            0xf0a823,
+            .82
         );
 
 
-        this.trailGfx.beginPath();
+        this.trail.beginPath();
 
 
         this.path.forEach(
-            (p,index)=>{
+            (p,i)=>{
 
-                const pos =
-                    this.cellCenter(
-                        p.r,
-                        p.c
-                    );
-
-
-                if(index===0){
-                    this.trailGfx
-                        .moveTo(
-                            pos.x,
-                            pos.y
-                        );
-                }else{
-                    this.trailGfx
-                        .lineTo(
-                            pos.x,
-                            pos.y
-                        );
-                }
-            }
-        );
-
-
-        this.trailGfx.strokePath();
-
-
-        for(const p of this.path){
-
-            const pos =
+                const pos=
                 this.cellCenter(
                     p.r,
                     p.c
                 );
 
-            this.trailGfx.fillStyle(
-                0xffffff,
-                .55
+
+                if(i===0){
+
+                    this.trail.moveTo(
+                        pos.x,
+                        pos.y
+                    );
+
+                }else{
+
+                    this.trail.lineTo(
+                        pos.x,
+                        pos.y
+                    );
+                }
+            }
+        );
+
+
+        this.trail.strokePath();
+
+
+        for(
+            const p
+            of this.path
+        ){
+
+            const pos=
+            this.cellCenter(
+                p.r,
+                p.c
             );
 
-            this.trailGfx.fillCircle(
+
+            this.trail.fillStyle(
+                0xffffff,
+                .48
+            );
+
+
+            this.trail.fillCircle(
                 pos.x,
                 pos.y,
                 Math.max(
                     3,
-                    this.cellSize*.045
+                    this.cellSize*.035
                 )
             );
         }
@@ -2072,16 +2446,18 @@ class MagnetGame extends Phaser.Scene{
 
     cellCenter(r,c){
 
-        return {
+        return{
+
             x:
-                this.boardX +
-                c*this.cellSize +
-                this.cellSize/2,
+            this.boardX+
+            c*this.cellSize+
+            this.cellSize/2,
 
             y:
-                this.boardY +
-                r*this.cellSize +
-                this.cellSize/2
+            this.boardY+
+            r*this.cellSize+
+            this.cellSize/2
+
         };
     }
 
@@ -2090,114 +2466,162 @@ class MagnetGame extends Phaser.Scene{
    MOVEMENT
    ========================================================= */
 
-    move(dr,dc){
+    move(
+        dr,
+        dc
+    ){
 
-        if(this.locked) return;
-        if(this.questionOpen) return;
+        if(
+            this.locked ||
+            this.questionOpen
+        )return;
 
 
         AUDIO.unlock();
 
 
-        const current =
-            this.path[
-                this.path.length-1
-            ];
+        const current=
+        this.path[
+            this.path.length-1
+        ];
 
 
-        const nr =
-            current.r + dr;
+        const nr=
+        current.r+dr;
 
-        const nc =
-            current.c + dc;
 
+        const nc=
+        current.c+dc;
+
+
+        /* LUAR BOARD */
 
         if(
-            nr < 0 ||
-            nr >= this.rows ||
-            nc < 0 ||
-            nc >= this.cols
+            nr<0 ||
+            nr>=this.rows ||
+            nc<0 ||
+            nc>=this.cols
         ){
 
-            this.bump();
+            this.hitSomething(
+                "Tak boleh keluar dari papan."
+            );
+
             return;
         }
 
 
-        const previous =
-            this.path.length>=2
-            ? this.path[
-                this.path.length-2
-            ]
-            : null;
+        const key=
+        nr+","+nc;
 
 
-        // UNDO
+        /* =========================
+           BLOCK COLLISION
+           ========================= */
+
+        if(
+            !this.walkable.has(key)
+        ){
+
+            this.hitBlock(
+                nr,
+                nc
+            );
+
+            return;
+        }
+
+
+        const previous=
+        this.path.length>=2
+        ? this.path[
+            this.path.length-2
+        ]
+        : null;
+
+
+        /* =========================
+           UNDO
+           ========================= */
+
         if(
             previous &&
-            previous.r === nr &&
-            previous.c === nc
+            previous.r===nr &&
+            previous.c===nc
         ){
 
             this.path.pop();
 
-            AUDIO.back();
+            AUDIO.undo();
 
             this.clearHint();
 
-            this.animateMagnetTo(
+
+            this.animateMagnet(
                 nr,
                 nc,
                 dr,
                 dc
             );
 
+
             this.drawBoard();
+
             this.updateProgress();
 
             return;
         }
 
 
-        // tidak boleh cross laluan sendiri
-        const alreadyVisited =
-            this.path.some(
-                p=>
-                    p.r===nr &&
-                    p.c===nc
+        /* =========================
+           TAK BOLEH CROSS LALUAN
+           ========================= */
+
+        const visited=
+        this.path.some(
+            p=>
+            p.r===nr &&
+            p.c===nc
+        );
+
+
+        if(visited){
+
+            this.hitSomething(
+                "Petak itu sudah digunakan. Undur untuk tukar laluan."
             );
 
-
-        if(alreadyVisited){
-
-            this.statusText.setText(
-                "Laluan itu sudah berwarna. Undur jika mahu tukar jalan."
-            );
-
-            this.bump();
             return;
         }
 
 
-        // Portal mesti petak terakhir
+        /* =========================
+           PORTAL HANYA LAST TILE
+           ========================= */
+
         if(
-            nr===this.portalCell.r &&
-            nc===this.portalCell.c &&
-            this.path.length !==
-                this.totalTiles-1
+            nr===
+            this.portalCell.r &&
+
+            nc===
+            this.portalCell.c &&
+
+            this.path.length!==
+            this.walkableCount-1
         ){
 
-            this.statusText.setText(
-                "Portal masih terkunci. Isi petak lain dahulu."
+            this.hitSomething(
+                "Portal masih terkunci. Lengkapkan petak lain dahulu."
             );
 
-            this.portalFlash();
 
-            this.bump();
+            this.portalBounce();
 
             return;
         }
 
+
+        /* NORMAL MOVE */
 
         this.path.push({
             r:nr,
@@ -2209,7 +2633,8 @@ class MagnetGame extends Phaser.Scene{
 
         this.clearHint();
 
-        this.animateMagnetTo(
+
+        this.animateMagnet(
             nr,
             nc,
             dr,
@@ -2218,111 +2643,304 @@ class MagnetGame extends Phaser.Scene{
 
 
         this.drawBoard();
+
         this.updateProgress();
 
 
+        /* COMPLETE */
+
         if(
-            this.path.length ===
-            this.totalTiles
+            this.path.length===
+            this.walkableCount &&
+            nr===
+            this.portalCell.r &&
+            nc===
+            this.portalCell.c
         ){
 
-            if(
-                nr===this.portalCell.r &&
-                nc===this.portalCell.c
-            ){
+            this.locked=true;
 
-                this.locked = true;
 
-                this.statusText.setText(
-                    "Portal dibuka!"
-                );
+            this.statusText.setText(
+                "Puzzle selesai! Portal dibuka."
+            );
 
-                AUDIO.complete();
 
-                this.portalSuccess();
+            AUDIO.win();
 
-                this.time.delayedCall(
-                    650,
-                    ()=>{
-                        this.showQuestion();
-                    }
-                );
-            }
+
+            this.portalSuccess();
+
+
+            this.time.delayedCall(
+                650,
+                ()=>this.showQuestion()
+            );
         }
     }
 
 
-    animateMagnetTo(
+/* =========================================================
+   BLOCK COLLISION EFFECT
+   ========================================================= */
+
+    hitBlock(r,c){
+
+        AUDIO.block();
+
+
+        this.statusText.setText(
+            "BLOCK! Magnet tak boleh lalu di sini."
+        );
+
+
+        const p=
+        this.cellCenter(
+            r,
+            c
+        );
+
+
+        const warning=
+        this.add.text(
+            p.x,
+            p.y,
+            "✕",
+            {
+                fontFamily:"Arial",
+                fontSize:
+                Math.max(
+                    28,
+                    this.cellSize*.38
+                )+"px",
+
+                fontStyle:"bold",
+
+                color:"#ff5252",
+
+                stroke:"#ffffff",
+
+                strokeThickness:5
+            }
+        )
+        .setOrigin(.5)
+        .setDepth(100);
+
+
+        this.tweens.add({
+
+            targets:warning,
+
+            scaleX:{
+                from:.4,
+                to:1.2
+            },
+
+            scaleY:{
+                from:.4,
+                to:1.2
+            },
+
+            alpha:{
+                from:1,
+                to:0
+            },
+
+            duration:430,
+
+            ease:"Back.Out",
+
+            onComplete:()=>{
+                warning.destroy();
+            }
+        });
+
+
+        this.shakeMagnet();
+    }
+
+
+    hitSomething(message){
+
+        AUDIO.block();
+
+        this.statusText
+        .setText(message);
+
+        this.shakeMagnet();
+    }
+
+
+    shakeMagnet(){
+
+        const old=
+        this.magnet.x;
+
+
+        this.tweens.add({
+
+            targets:
+            this.magnet,
+
+            x:old+6,
+
+            duration:35,
+
+            yoyo:true,
+
+            repeat:3
+        });
+    }
+
+
+/* =========================================================
+   MAGNET MOVEMENT
+   ========================================================= */
+
+    animateMagnet(
         r,
         c,
         dr,
         dc
     ){
 
-        const pos =
-            this.cellCenter(
-                r,
-                c
-            );
+        const p=
+        this.cellCenter(
+            r,
+            c
+        );
 
 
-        let angle=0;
-
-        if(dc===1) angle=90;
-        if(dc===-1) angle=-90;
-        if(dr===1) angle=180;
-        if(dr===-1) angle=0;
+        let rotation=0;
 
 
-        this.tweens.killTweensOf(
+        if(
+            dr===-1 &&
+            dc===0
+        ){
+            rotation=0;
+        }
+
+
+        if(
+            dr===1 &&
+            dc===0
+        ){
+            rotation=180;
+        }
+
+
+        if(
+            dr===0 &&
+            dc===1
+        ){
+            rotation=90;
+        }
+
+
+        if(
+            dr===0 &&
+            dc===-1
+        ){
+            rotation=-90;
+        }
+
+
+        this.tweens
+        .killTweensOf(
             this.magnet
         );
 
 
         this.tweens.add({
-            targets:this.magnet,
-            x:pos.x,
-            y:pos.y,
-            angle:angle,
+
+            targets:
+            this.magnet,
+
+            x:p.x,
+            y:p.y,
+
+            angle:rotation,
+
             duration:115,
+
             ease:"Sine.Out"
         });
     }
 
 
-    bump(){
+/* =========================================================
+   PROGRESS
+   ========================================================= */
 
-        AUDIO.blocked();
+    updateProgress(){
 
-        const oldX =
-            this.magnet.x;
+        const value=
+        this.path.length/
+        this.walkableCount;
 
-        this.tweens.add({
-            targets:this.magnet,
-            x:oldX+5,
-            duration:35,
-            yoyo:true,
-            repeat:2
-        });
+
+        const percent=
+        Math.round(
+            value*100
+        );
+
+
+        this.progressFill
+        .displayWidth=
+        Math.max(
+            4,
+            500*value
+        );
+
+
+        this.percentText
+        .setText(
+            percent+"%"
+        );
+
+
+        if(
+            percent<100
+        ){
+
+            const remaining=
+            this.walkableCount-
+            this.path.length;
+
+
+            this.statusText
+            .setText(
+                remaining+
+                " petak lagi. Elakkan "+
+                this.blockCount+
+                " BLOCK."
+            );
+        }
     }
 
 
-    portalFlash(){
+/* =========================================================
+   PORTAL EFFECT
+   ========================================================= */
+
+    portalBounce(){
 
         this.tweens.add({
+
             targets:
-                this.portalContainer,
+            this.portal,
 
             scaleX:
-                this.portalContainer.scaleX
-                *1.22,
+            this.portal.scaleX*1.20,
 
             scaleY:
-                this.portalContainer.scaleY
-                *1.22,
+            this.portal.scaleY*1.20,
 
-            duration:100,
+            duration:90,
+
             yoyo:true,
+
             repeat:1
         });
     }
@@ -2331,93 +2949,43 @@ class MagnetGame extends Phaser.Scene{
     portalSuccess(){
 
         this.portalLock
-            .setVisible(false);
-
-
-        this.portalOuter
-            .setFillStyle(
-                0x111111,
-                1
-            );
+        .setVisible(false);
 
 
         this.tweens.add({
+
             targets:
-                this.portalContainer,
-
-            scaleX:
-                this.portalContainer.scaleX
-                *1.32,
-
-            scaleY:
-                this.portalContainer.scaleY
-                *1.32,
+            this.portal,
 
             angle:360,
 
-            duration:500,
+            scaleX:
+            this.portal.scaleX*1.35,
+
+            scaleY:
+            this.portal.scaleY*1.35,
+
+            duration:480,
 
             ease:"Back.Out"
         });
 
 
         this.tweens.add({
+
             targets:
-                this.magnet,
+            this.magnet,
 
             scaleX:0,
             scaleY:0,
 
             angle:
-                this.magnet.angle +
-                360,
+            this.magnet.angle+360,
 
-            duration:480,
+            duration:450,
 
             ease:"Back.In"
         });
-    }
-
-
-    updateProgress(){
-
-        const value =
-            this.path.length /
-            this.totalTiles;
-
-
-        const percent =
-            Math.round(
-                value*100
-            );
-
-
-        this.progressFill
-            .displayWidth =
-            Math.max(
-                4,
-                505*value
-            );
-
-
-        this.percentText
-            .setText(
-                percent+"%"
-            );
-
-
-        if(percent < 100){
-
-            const left =
-                this.totalTiles -
-                this.path.length;
-
-            this.statusText
-                .setText(
-                    left+
-                    " petak lagi sebelum portal dibuka."
-                );
-        }
     }
 
 
@@ -2430,16 +2998,18 @@ class MagnetGame extends Phaser.Scene{
         if(
             this.locked ||
             this.questionOpen
-        ) return;
+        )return;
 
 
         AUDIO.unlock();
+
         AUDIO.hint();
 
         this.clearHint();
 
 
-        let matches = true;
+        let correctRoute=true;
+
 
         for(
             let i=0;
@@ -2449,125 +3019,139 @@ class MagnetGame extends Phaser.Scene{
 
             if(
                 !this.solution[i] ||
-                this.path[i].r !==
-                    this.solution[i].r ||
-                this.path[i].c !==
-                    this.solution[i].c
+
+                this.path[i].r!==
+                this.solution[i].r ||
+
+                this.path[i].c!==
+                this.solution[i].c
             ){
 
-                matches = false;
+                correctRoute=false;
+
                 break;
             }
         }
 
 
-        let target;
+        let target=null;
 
 
-        if(matches){
+        if(correctRoute){
 
-            target =
-                this.solution[
-                    this.path.length
-                ];
+            target=
+            this.solution[
+                this.path.length
+            ];
 
-            if(!target){
-                return;
-            }
+
+            if(!target)return;
+
 
             this.statusText
-                .setText(
-                    "Petunjuk: cuba petak yang bercahaya."
-                );
+            .setText(
+                "Petunjuk: bergerak ke petak bercahaya."
+            );
 
         }else{
 
-            if(this.path.length < 2){
-                return;
-            }
+            if(
+                this.path.length<2
+            )return;
 
-            target =
-                this.path[
-                    this.path.length-2
-                ];
+
+            target=
+            this.path[
+                this.path.length-2
+            ];
+
 
             this.statusText
-                .setText(
-                    "Petunjuk: undur ke petak bercahaya dahulu."
-                );
+            .setText(
+                "Petunjuk: undur ke petak bercahaya."
+            );
         }
 
 
-        const pos =
-            this.cellCenter(
-                target.r,
-                target.c
-            );
+        const p=
+        this.cellCenter(
+            target.r,
+            target.c
+        );
 
 
-        const radius =
-            this.cellSize*.30;
+        const radius=
+        this.cellSize*.30;
 
 
         this.hintGfx.lineStyle(
-            Math.max(
-                5,
-                this.cellSize*.07
-            ),
-            0xffffff,
-            1
+            7,
+            0xffffff
         );
 
+
         this.hintGfx.strokeCircle(
-            pos.x,
-            pos.y,
+            p.x,
+            p.y,
             radius
         );
 
 
         this.hintGfx.lineStyle(
             3,
-            0xffa600,
-            1
+            0xffa500
         );
+
 
         this.hintGfx.strokeCircle(
-            pos.x,
-            pos.y,
-            radius+7
+            p.x,
+            p.y,
+            radius+8
         );
 
 
-        this.hintTween =
-            this.tweens.add({
-                targets:
-                    this.hintGfx,
-                alpha:{
-                    from:.25,
-                    to:1
-                },
-                duration:350,
-                yoyo:true,
-                repeat:4,
-                onComplete:()=>{
-                    this.clearHint();
-                }
-            });
+        this.hintTween=
+        this.tweens.add({
+
+            targets:
+            this.hintGfx,
+
+            alpha:{
+                from:.25,
+                to:1
+            },
+
+            duration:320,
+
+            yoyo:true,
+
+            repeat:4,
+
+            onComplete:
+            ()=>this.clearHint()
+        });
     }
 
 
     clearHint(){
 
-        if(this.hintTween){
+        if(
+            this.hintTween
+        ){
+
             this.hintTween.stop();
+
             this.hintTween=null;
         }
 
-        if(this.hintGfx){
-            this.hintGfx
-                .setAlpha(1);
 
-            this.hintGfx.clear();
+        if(this.hintGfx){
+
+            this.hintGfx
+            .setAlpha(1);
+
+            this.hintGfx
+            .clear();
         }
     }
 
@@ -2578,144 +3162,227 @@ class MagnetGame extends Phaser.Scene{
 
     createControls(){
 
-        const y =
-            973;
-
-
-        this.controlPanel =
-            this.add.rectangle(
-                450,
-                967,
-                820,
-                155,
-                0xffffff,
-                .94
-            )
-            .setStrokeStyle(
-                3,
-                0xc7dae2
-            );
-
-
-        this.instruction =
-            this.add.text(
-                98,
-                918,
-                "SWIPE / TEKAN ARAH",
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"18px",
-                    fontStyle:"bold",
-                    color:"#607986"
-                }
-            )
-            .setOrigin(0,.5);
-
-
-        this.makeControlButton(
+        this.add.rectangle(
             450,
-            919,
+            1048,
+            820,
+            143,
+            0xffffff,
+            .95
+        )
+        .setStrokeStyle(
+            3,
+            0xc8dce4
+        );
+
+
+        this.add.text(
+            450,
+            991,
+            "SWIPE ATAU GUNA BUTANG ARAH",
+            {
+                fontFamily:
+                "Trebuchet MS, Arial",
+
+                fontSize:"16px",
+
+                fontStyle:"bold",
+
+                color:"#69808b"
+            }
+        )
+        .setOrigin(.5);
+
+
+        this.makeArrow(
+            450,
+            1023,
             "▲",
             ()=>this.move(-1,0)
         );
 
 
-        this.makeControlButton(
-            375,
-            984,
+        this.makeArrow(
+            381,
+            1075,
             "◀",
             ()=>this.move(0,-1)
         );
 
 
-        this.makeControlButton(
-            525,
-            984,
+        this.makeArrow(
+            519,
+            1075,
             "▶",
             ()=>this.move(0,1)
         );
 
 
-        this.makeControlButton(
+        this.makeArrow(
             450,
-            1018,
+            1101,
             "▼",
             ()=>this.move(1,0)
         );
 
 
-        this.makeSmallActionButton(
+        this.makeAction(
             115,
-            978,
+            1053,
             "↻",
             "RESET",
-            ()=>{
-                this.resetStage();
-            }
+            ()=>this.resetStage()
         );
 
 
-        this.makeSmallActionButton(
-            755,
-            978,
+        this.makeAction(
+            785,
+            1053,
             "⌂",
             "HOME",
             ()=>{
-                window.location.href =
-                    "index.html";
+
+                window.location.href=
+                "index.html";
             }
         );
     }
 
 
-    makeControlButton(
+    makeArrow(
         x,
         y,
         label,
         callback
     ){
 
-        const shadow =
-            this.add.circle(
-                x,
-                y+5,
-                31,
-                0x153c4c,
-                .16
-            );
+        const shadow=
+        this.add.circle(
+            x,
+            y+4,
+            28,
+            0x234653,
+            .14
+        );
 
 
-        const btn =
-            this.add.circle(
-                x,
-                y,
-                31,
-                0xf1f8fb,
-                1
-            )
-            .setStrokeStyle(
-                3,
-                0xb7ccd5
-            )
-            .setInteractive({
-                useHandCursor:true
-            });
+        const button=
+        this.add.circle(
+            x,
+            y,
+            28,
+            0xf2f8fa
+        )
+        .setStrokeStyle(
+            3,
+            0xb8ccd5
+        )
+        .setInteractive({
+            useHandCursor:true
+        });
 
 
-        const txt =
-            this.add.text(
-                x,
-                y-1,
-                label,
-                {
-                    fontFamily:"Arial",
-                    fontSize:"27px",
-                    fontStyle:"bold",
-                    color:"#294958"
-                }
-            )
-            .setOrigin(.5);
+        const text=
+        this.add.text(
+            x,
+            y,
+            label,
+            {
+                fontFamily:"Arial",
+                fontSize:"24px",
+                fontStyle:"bold",
+                color:"#294b59"
+            }
+        )
+        .setOrigin(.5);
+
+
+        button.on(
+            "pointerdown",
+            ()=>{
+
+                AUDIO.unlock();
+
+
+                this.tweens.add({
+
+                    targets:[
+                        button,
+                        text
+                    ],
+
+                    scaleX:.83,
+                    scaleY:.83,
+
+                    duration:45,
+
+                    yoyo:true
+                });
+
+
+                callback();
+            }
+        );
+    }
+
+
+    makeAction(
+        x,
+        y,
+        icon,
+        title,
+        callback
+    ){
+
+        const btn=
+        this.add.rectangle(
+            x,
+            y,
+            105,
+            81,
+            0xf5fafc
+        )
+        .setStrokeStyle(
+            3,
+            0xc2d6de
+        )
+        .setInteractive({
+            useHandCursor:true
+        });
+
+
+        const iconText=
+        this.add.text(
+            x,
+            y-13,
+            icon,
+            {
+                fontFamily:"Arial",
+                fontSize:"28px",
+                fontStyle:"bold",
+                color:"#294958"
+            }
+        )
+        .setOrigin(.5);
+
+
+        const caption=
+        this.add.text(
+            x,
+            y+24,
+            title,
+            {
+                fontFamily:
+                "Trebuchet MS, Arial",
+
+                fontSize:"13px",
+
+                fontStyle:"bold",
+
+                color:"#58717c"
+            }
+        )
+        .setOrigin(.5);
 
 
         btn.on(
@@ -2724,97 +3391,23 @@ class MagnetGame extends Phaser.Scene{
 
                 AUDIO.unlock();
 
+
                 this.tweens.add({
+
                     targets:[
                         btn,
-                        txt
-                    ],
-                    scaleX:.85,
-                    scaleY:.85,
-                    duration:45,
-                    yoyo:true
-                });
-
-                callback();
-            }
-        );
-    }
-
-
-    makeSmallActionButton(
-        x,
-        y,
-        icon,
-        label,
-        callback
-    ){
-
-        const box =
-            this.add.rectangle(
-                x,
-                y,
-                112,
-                85,
-                0xf5fafc,
-                1
-            )
-            .setStrokeStyle(
-                3,
-                0xc3d6de
-            )
-            .setInteractive({
-                useHandCursor:true
-            });
-
-
-        const iconText =
-            this.add.text(
-                x,
-                y-13,
-                icon,
-                {
-                    fontFamily:"Arial",
-                    fontSize:"30px",
-                    fontStyle:"bold",
-                    color:"#294958"
-                }
-            )
-            .setOrigin(.5);
-
-
-        const caption =
-            this.add.text(
-                x,
-                y+24,
-                label,
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"14px",
-                    fontStyle:"bold",
-                    color:"#536f7c"
-                }
-            )
-            .setOrigin(.5);
-
-
-        box.on(
-            "pointerdown",
-            ()=>{
-
-                AUDIO.unlock();
-
-                this.tweens.add({
-                    targets:[
-                        box,
                         iconText,
                         caption
                     ],
-                    scaleX:.94,
-                    scaleY:.94,
-                    duration:55,
+
+                    scaleX:.92,
+                    scaleY:.92,
+
+                    duration:50,
+
                     yoyo:true
                 });
+
 
                 callback();
             }
@@ -2824,24 +3417,22 @@ class MagnetGame extends Phaser.Scene{
 
     resetStage(){
 
-        if(this.questionOpen){
-            return;
-        }
+        if(
+            this.questionOpen
+        )return;
 
-        AUDIO.unlock();
 
-        this.magnet.setScale(
-            Math.min(
-                1,
-                this.cellSize/72
-            )
-        );
+        AUDIO.undo();
+
+
+        this.magnet
+        .setScale(1)
+        .setAlpha(1);
+
 
         this.startStage(
-            this.stageIndex
+            this.stage
         );
-
-        AUDIO.back();
     }
 
 
@@ -2849,107 +3440,100 @@ class MagnetGame extends Phaser.Scene{
    KEYBOARD
    ========================================================= */
 
-    setupKeyboard(){
+    createKeyboard(){
 
-        const keys =
-            this.input.keyboard.addKeys({
-                up:
-                    Phaser.Input.Keyboard
-                    .KeyCodes.UP,
+        const keys=
+        this.input.keyboard.addKeys({
 
-                down:
-                    Phaser.Input.Keyboard
-                    .KeyCodes.DOWN,
+            up:
+            Phaser.Input.Keyboard
+            .KeyCodes.UP,
 
-                left:
-                    Phaser.Input.Keyboard
-                    .KeyCodes.LEFT,
+            down:
+            Phaser.Input.Keyboard
+            .KeyCodes.DOWN,
 
-                right:
-                    Phaser.Input.Keyboard
-                    .KeyCodes.RIGHT,
+            left:
+            Phaser.Input.Keyboard
+            .KeyCodes.LEFT,
 
-                w:
-                    Phaser.Input.Keyboard
-                    .KeyCodes.W,
+            right:
+            Phaser.Input.Keyboard
+            .KeyCodes.RIGHT,
 
-                a:
-                    Phaser.Input.Keyboard
-                    .KeyCodes.A,
+            w:
+            Phaser.Input.Keyboard
+            .KeyCodes.W,
 
-                s:
-                    Phaser.Input.Keyboard
-                    .KeyCodes.S,
+            s:
+            Phaser.Input.Keyboard
+            .KeyCodes.S,
 
-                d:
-                    Phaser.Input.Keyboard
-                    .KeyCodes.D,
+            a:
+            Phaser.Input.Keyboard
+            .KeyCodes.A,
 
-                r:
-                    Phaser.Input.Keyboard
-                    .KeyCodes.R
-            });
+            d:
+            Phaser.Input.Keyboard
+            .KeyCodes.D,
 
+            r:
+            Phaser.Input.Keyboard
+            .KeyCodes.R
 
-        const hook =
-            (
-                key,
-                callback
-            )=>{
-
-                key.on(
-                    "down",
-                    ()=>{
-
-                        AUDIO.unlock();
-                        callback();
-                    }
-                );
-            };
+        });
 
 
-        hook(
-            keys.up,
+        keys.up.on(
+            "down",
             ()=>this.move(-1,0)
         );
 
-        hook(
-            keys.w,
+
+        keys.w.on(
+            "down",
             ()=>this.move(-1,0)
         );
 
-        hook(
-            keys.down,
+
+        keys.down.on(
+            "down",
             ()=>this.move(1,0)
         );
 
-        hook(
-            keys.s,
+
+        keys.s.on(
+            "down",
             ()=>this.move(1,0)
         );
 
-        hook(
-            keys.left,
+
+        keys.left.on(
+            "down",
             ()=>this.move(0,-1)
         );
 
-        hook(
-            keys.a,
+
+        keys.a.on(
+            "down",
             ()=>this.move(0,-1)
         );
 
-        hook(
-            keys.right,
+
+        keys.right.on(
+            "down",
             ()=>this.move(0,1)
         );
 
-        hook(
-            keys.d,
+
+        keys.d.on(
+            "down",
             ()=>this.move(0,1)
         );
 
-        hook(
-            keys.r,
+
+        keys.r.on(
+            "down",
             ()=>this.resetStage()
         );
     }
@@ -2959,21 +3543,22 @@ class MagnetGame extends Phaser.Scene{
    SWIPE
    ========================================================= */
 
-    setupSwipe(){
+    createSwipe(){
 
         this.input.on(
             "pointerdown",
             pointer=>{
 
                 if(
-                    this.questionOpen ||
-                    this.locked
-                ){
-                    return;
-                }
+                    this.locked ||
+                    this.questionOpen
+                )return;
 
-                this.swipeStart = {
+
+                this.swipeStart={
+
                     x:pointer.x,
+
                     y:pointer.y
                 };
             }
@@ -2986,54 +3571,59 @@ class MagnetGame extends Phaser.Scene{
 
                 if(
                     !this.swipeStart ||
-                    this.questionOpen ||
-                    this.locked
+                    this.locked ||
+                    this.questionOpen
                 ){
+
                     this.swipeStart=null;
+
                     return;
                 }
 
 
-                const dx =
-                    pointer.x -
-                    this.swipeStart.x;
-
-                const dy =
-                    pointer.y -
-                    this.swipeStart.y;
+                const dx=
+                pointer.x-
+                this.swipeStart.x;
 
 
-                const distance =
-                    Math.hypot(
-                        dx,
-                        dy
-                    );
+                const dy=
+                pointer.y-
+                this.swipeStart.y;
 
 
                 this.swipeStart=null;
 
 
-                if(distance < 35){
-                    return;
-                }
+                if(
+                    Math.hypot(
+                        dx,
+                        dy
+                    )<34
+                )return;
 
 
                 if(
-                    Math.abs(dx) >
+                    Math.abs(dx)>
                     Math.abs(dy)
                 ){
 
                     if(dx>0){
+
                         this.move(0,1);
+
                     }else{
+
                         this.move(0,-1);
                     }
 
                 }else{
 
                     if(dy>0){
+
                         this.move(1,0);
+
                     }else{
+
                         this.move(-1,0);
                     }
                 }
@@ -3048,60 +3638,79 @@ class MagnetGame extends Phaser.Scene{
 
     showQuestion(){
 
-        this.questionOpen =
-            true;
+        this.questionOpen=true;
 
-        this.locked =
-            true;
+        this.locked=true;
 
-        this.questionHadMistake =
-            false;
+        this.answerLocked=false;
 
-
-        this.questionLayer =
-            this.add.container(
-                0,
-                0
-            )
-            .setDepth(200);
+        this.questionMistake=false;
 
 
-        const dark =
-            this.add.rectangle(
-                450,
-                540,
-                900,
-                1080,
-                0x0b2431,
-                .70
-            )
-            .setInteractive();
+        const data=
+        QUESTIONS[
+            this.stage
+        ];
 
 
-        const shadow =
-            this.add.rectangle(
-                450,
-                560,
-                790,
-                810,
-                0x071922,
-                .20
-            );
+        const topic=data[0];
+
+        const q=data[1];
+
+        const answers=[
+            data[2],
+            data[3],
+            data[4],
+            data[5]
+        ];
+
+        const correct=
+        data[6];
 
 
-        const panel =
-            this.add.rectangle(
-                450,
-                540,
-                790,
-                810,
-                0xffffff,
-                1
-            )
-            .setStrokeStyle(
-                4,
-                0xc7dce6
-            );
+        this.questionLayer=
+        this.add.container(
+            0,
+            0
+        )
+        .setDepth(300);
+
+
+        const dark=
+        this.add.rectangle(
+            450,
+            567,
+            900,
+            1134,
+            0x092532,
+            .72
+        )
+        .setInteractive();
+
+
+        const shadow=
+        this.add.rectangle(
+            450,
+            576,
+            790,
+            820,
+            0x061821,
+            .2
+        );
+
+
+        const panel=
+        this.add.rectangle(
+            450,
+            560,
+            790,
+            820,
+            0xffffff
+        )
+        .setStrokeStyle(
+            4,
+            0xc4dae4
+        );
 
 
         this.questionLayer.add([
@@ -3111,191 +3720,178 @@ class MagnetGame extends Phaser.Scene{
         ]);
 
 
-        const q =
-            QUESTIONS[
-                this.stageIndex
-            ];
+        const badge=
+        this.add.text(
+            450,
+            190,
+            "SOALAN "+
+            (this.stage+1)+
+            " / 25",
+            {
+                fontFamily:
+                "Trebuchet MS, Arial",
 
+                fontSize:"20px",
 
-        const badge =
-            this.add.text(
-                450,
-                178,
-                "SOALAN " +
-                (this.stageIndex+1) +
-                " / 25",
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"21px",
-                    fontStyle:"bold",
-                    color:"#ffffff",
-                    backgroundColor:
-                        "#e45151",
-                    padding:{
-                        x:18,
-                        y:9
-                    }
+                fontStyle:"bold",
+
+                color:"#ffffff",
+
+                backgroundColor:
+                "#e45154",
+
+                padding:{
+                    x:18,
+                    y:9
                 }
-            )
-            .setOrigin(.5);
+            }
+        )
+        .setOrigin(.5);
 
 
-        const topic =
-            this.add.text(
-                450,
-                235,
-                q.topic,
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"24px",
-                    fontStyle:"bold",
-                    color:"#3a7188",
-                    align:"center"
-                }
-            )
-            .setOrigin(.5);
+        const topicText=
+        this.add.text(
+            450,
+            245,
+            topic,
+            {
+                fontFamily:
+                "Trebuchet MS, Arial",
+
+                fontSize:"23px",
+
+                fontStyle:"bold",
+
+                color:"#3d788f",
+
+                align:"center"
+            }
+        )
+        .setOrigin(.5);
 
 
-        const question =
-            this.add.text(
-                450,
-                312,
-                q.q,
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"27px",
-                    fontStyle:"bold",
-                    color:"#183b4a",
-                    align:"center",
+        const questionText=
+        this.add.text(
+            450,
+            325,
+            q,
+            {
+                fontFamily:
+                "Trebuchet MS, Arial",
 
-                    wordWrap:{
-                        width:675,
-                        useAdvancedWrap:true
-                    },
+                fontSize:"26px",
 
-                    lineSpacing:5
-                }
-            )
-            .setOrigin(.5);
+                fontStyle:"bold",
+
+                color:"#183d4d",
+
+                align:"center",
+
+                wordWrap:{
+                    width:665,
+                    useAdvancedWrap:true
+                },
+
+                lineSpacing:4
+            }
+        )
+        .setOrigin(.5);
 
 
         this.questionLayer.add([
             badge,
-            topic,
-            question
+            topicText,
+            questionText
         ]);
 
 
-        const optionY = [
-            465,
-            585,
-            705,
-            825
+        const ys=[
+            490,
+            610,
+            730,
+            850
         ];
 
 
-        this.answerButtons=[];
+        answers.forEach(
+            (answer,i)=>{
+
+                const button=
+                this.add.rectangle(
+                    450,
+                    ys[i],
+                    665,
+                    92,
+                    0xf1f7fa
+                )
+                .setStrokeStyle(
+                    3,
+                    0xb8cfd9
+                )
+                .setInteractive({
+                    useHandCursor:true
+                });
 
 
-        q.a.forEach(
-            (answer,index)=>{
+                const circle=
+                this.add.circle(
+                    165,
+                    ys[i],
+                    28,
+                    0x407a90
+                );
 
-                const letter =
+
+                const letter=
+                this.add.text(
+                    165,
+                    ys[i],
                     String.fromCharCode(
-                        65+index
-                    );
+                        65+i
+                    ),
+                    {
+                        fontFamily:"Arial",
+                        fontSize:"24px",
+                        fontStyle:"bold",
+                        color:"#ffffff"
+                    }
+                )
+                .setOrigin(.5);
 
 
-                const button =
-                    this.add.rectangle(
-                        450,
-                        optionY[index],
-                        665,
-                        92,
-                        0xf1f7fa,
-                        1
-                    )
-                    .setStrokeStyle(
-                        3,
-                        0xb8cfda
-                    )
-                    .setInteractive({
-                        useHandCursor:true
-                    });
+                const answerText=
+                this.add.text(
+                    210,
+                    ys[i],
+                    answer,
+                    {
+                        fontFamily:
+                        "Trebuchet MS, Arial",
 
+                        fontSize:"22px",
 
-                const badgeCircle =
-                    this.add.circle(
-                        164,
-                        optionY[index],
-                        28,
-                        0x3d7186,
-                        1
-                    );
+                        fontStyle:"bold",
 
+                        color:"#244653",
 
-                const badgeLetter =
-                    this.add.text(
-                        164,
-                        optionY[index],
-                        letter,
-                        {
-                            fontFamily:
-                                "Trebuchet MS, Arial",
-                            fontSize:"25px",
-                            fontStyle:"bold",
-                            color:"#ffffff"
+                        wordWrap:{
+                            width:520,
+                            useAdvancedWrap:true
                         }
-                    )
-                    .setOrigin(.5);
-
-
-                const answerText =
-                    this.add.text(
-                        210,
-                        optionY[index],
-                        answer,
-                        {
-                            fontFamily:
-                                "Trebuchet MS, Arial",
-                            fontSize:"23px",
-                            fontStyle:"bold",
-                            color:"#254553",
-
-                            wordWrap:{
-                                width:520,
-                                useAdvancedWrap:true
-                            }
-                        }
-                    )
-                    .setOrigin(
-                        0,
-                        .5
-                    );
+                    }
+                )
+                .setOrigin(
+                    0,
+                    .5
+                );
 
 
                 this.questionLayer.add([
                     button,
-                    badgeCircle,
-                    badgeLetter,
+                    circle,
+                    letter,
                     answerText
                 ]);
-
-
-                const data = {
-                    button,
-                    badgeCircle,
-                    badgeLetter,
-                    answerText
-                };
-
-
-                this.answerButtons.push(
-                    data
-                );
 
 
                 button.on(
@@ -3304,9 +3900,12 @@ class MagnetGame extends Phaser.Scene{
 
                         AUDIO.unlock();
 
-                        this.chooseAnswer(
-                            index,
-                            data
+
+                        this.checkAnswer(
+                            i,
+                            correct,
+                            button,
+                            circle
                         );
                     }
                 );
@@ -3315,131 +3914,102 @@ class MagnetGame extends Phaser.Scene{
 
 
         this.questionLayer
-            .setAlpha(0);
-
-
-        this.questionLayer
-            .setScale(.92);
+        .setScale(.92)
+        .setAlpha(0);
 
 
         this.tweens.add({
-            targets:
-                this.questionLayer,
 
-            alpha:1,
+            targets:
+            this.questionLayer,
 
             scaleX:1,
             scaleY:1,
+            alpha:1,
 
-            duration:260,
+            duration:270,
+
             ease:"Back.Out"
         });
     }
 
 
-    chooseAnswer(
+/* =========================================================
+   CHECK ANSWER
+   ========================================================= */
+
+    checkAnswer(
         selected,
-        data
+        correct,
+        button,
+        circle
     ){
 
         if(
-            !this.questionOpen ||
             this.answerLocked
-        ){
-            return;
-        }
-
-
-        const q =
-            QUESTIONS[
-                this.stageIndex
-            ];
+        )return;
 
 
         if(
-            selected ===
-            q.correct
+            selected===correct
         ){
 
-            this.answerLocked =
-                true;
-
-            data.button
-                .setFillStyle(
-                    0xd6f4db,
-                    1
-                )
-                .setStrokeStyle(
-                    4,
-                    0x54b86a
-                );
+            this.answerLocked=true;
 
 
-            data.badgeCircle
-                .setFillStyle(
-                    0x45a65c,
-                    1
-                );
+            button
+            .setFillStyle(
+                0xd8f3dd
+            )
+            .setStrokeStyle(
+                4,
+                0x4eae64
+            );
+
+
+            circle
+            .setFillStyle(
+                0x43a45a
+            );
 
 
             AUDIO.correct();
 
 
             if(
-                !this.questionHadMistake
+                !this.questionMistake
             ){
-                this.firstTryCorrect++;
+                this.correctFirstTry++;
             }
 
 
-            const tick =
-                this.add.text(
-                    745,
-                    data.button.y,
-                    "✓",
-                    {
-                        fontFamily:"Arial",
-                        fontSize:"38px",
-                        fontStyle:"bold",
-                        color:"#37a454"
-                    }
-                )
-                .setOrigin(.5);
-
-
-            this.questionLayer
-                .add(tick);
-
-
             this.time.delayedCall(
-                720,
+                700,
                 ()=>{
 
-                    this.answerLocked =
-                        false;
+                    this.answerLocked=false;
+
+
+                    this.questionLayer.destroy();
+
+                    this.questionOpen=false;
+
 
                     if(
-                        this.stageIndex >=
-                        QUESTIONS.length-1
+                        this.stage>=24
                     ){
-
-                        this.questionLayer.destroy();
-                        this.questionOpen=false;
 
                         this.showFinish();
 
                     }else{
 
-                        this.questionLayer.destroy();
+                        this.magnet
+                        .setScale(1)
+                        .setAngle(0);
 
-                        this.questionOpen=false;
-
-                        this.magnet.setScale(
-                            1
-                        );
 
                         this.startStage(
-                            this.stageIndex+1
+                            this.stage+1
                         );
                     }
                 }
@@ -3447,60 +4017,56 @@ class MagnetGame extends Phaser.Scene{
 
         }else{
 
-            this.questionHadMistake =
-                true;
+            this.questionMistake=true;
+
 
             AUDIO.wrong();
 
 
-            data.button
-                .setFillStyle(
-                    0xffdddd,
-                    1
-                )
-                .setStrokeStyle(
-                    4,
-                    0xe35e5e
-                );
+            button
+            .setFillStyle(
+                0xffdddd
+            )
+            .setStrokeStyle(
+                4,
+                0xdd5757
+            );
 
 
-            data.badgeCircle
-                .setFillStyle(
-                    0xd94c4c,
-                    1
-                );
+            circle
+            .setFillStyle(
+                0xd94f4f
+            );
 
 
             this.tweens.add({
-                targets:[
-                    data.button,
-                    data.badgeCircle,
-                    data.badgeLetter,
-                    data.answerText
-                ],
+
+                targets:button,
 
                 x:"+=7",
-                duration:38,
+
+                duration:40,
+
                 yoyo:true,
+
                 repeat:3,
 
                 onComplete:()=>{
 
-                    data.button
-                        .setFillStyle(
-                            0xf1f7fa,
-                            1
-                        )
-                        .setStrokeStyle(
-                            3,
-                            0xb8cfda
-                        );
+                    button
+                    .setFillStyle(
+                        0xf1f7fa
+                    )
+                    .setStrokeStyle(
+                        3,
+                        0xb8cfd9
+                    );
 
-                    data.badgeCircle
-                        .setFillStyle(
-                            0x3d7186,
-                            1
-                        );
+
+                    circle
+                    .setFillStyle(
+                        0x407a90
+                    );
                 }
             });
         }
@@ -3513,182 +4079,188 @@ class MagnetGame extends Phaser.Scene{
 
     showFinish(){
 
-        AUDIO.complete();
+        AUDIO.win();
 
 
-        const layer =
-            this.add.container(
-                0,
-                0
-            )
-            .setDepth(300);
+        const layer=
+        this.add.container()
+        .setDepth(400);
 
 
-        const dark =
-            this.add.rectangle(
-                450,
-                540,
-                900,
-                1080,
-                0x092531,
-                .72
-            )
-            .setInteractive();
+        const dark=
+        this.add.rectangle(
+            450,
+            567,
+            900,
+            1134,
+            0x092532,
+            .74
+        )
+        .setInteractive();
 
 
-        const shadow =
-            this.add.rectangle(
-                450,
-                553,
-                700,
-                665,
-                0x09202b,
-                .2
-            );
+        const shadow=
+        this.add.rectangle(
+            450,
+            583,
+            700,
+            650,
+            0x061820,
+            .2
+        );
 
 
-        const panel =
-            this.add.rectangle(
-                450,
-                535,
-                700,
-                665,
-                0xffffff,
-                1
-            )
-            .setStrokeStyle(
-                4,
-                0xc0dae5
-            );
+        const panel=
+        this.add.rectangle(
+            450,
+            565,
+            700,
+            650,
+            0xffffff
+        )
+        .setStrokeStyle(
+            4,
+            0xc3dae4
+        );
+
+
+        const magnet=
+        this.add.text(
+            450,
+            355,
+            "🧲",
+            {
+                fontSize:"115px"
+            }
+        )
+        .setOrigin(.5);
+
+
+        const title=
+        this.add.text(
+            450,
+            475,
+            "MISI MAGNET SELESAI!",
+            {
+                fontFamily:
+                "Trebuchet MS, Arial",
+
+                fontSize:"36px",
+
+                fontStyle:"bold",
+
+                color:"#183e4f"
+            }
+        )
+        .setOrigin(.5);
+
+
+        const info=
+        this.add.text(
+            450,
+            545,
+            "25 puzzle dan 25 soalan telah diselesaikan.",
+            {
+                fontFamily:
+                "Trebuchet MS, Arial",
+
+                fontSize:"23px",
+
+                color:"#59737f",
+
+                align:"center",
+
+                wordWrap:{
+                    width:560
+                }
+            }
+        )
+        .setOrigin(.5);
+
+
+        const label=
+        this.add.text(
+            450,
+            625,
+            "BETUL PADA CUBAAN PERTAMA",
+            {
+                fontFamily:
+                "Trebuchet MS, Arial",
+
+                fontSize:"17px",
+
+                fontStyle:"bold",
+
+                color:"#778b94"
+            }
+        )
+        .setOrigin(.5);
+
+
+        const score=
+        this.add.text(
+            450,
+            680,
+            this.correctFirstTry+
+            " / 25",
+            {
+                fontFamily:
+                "Trebuchet MS, Arial",
+
+                fontSize:"44px",
+
+                fontStyle:"bold",
+
+                color:"#e45154"
+            }
+        )
+        .setOrigin(.5);
+
+
+        const replay=
+        this.add.rectangle(
+            450,
+            790,
+            410,
+            78,
+            0x3e829b
+        )
+        .setStrokeStyle(
+            3,
+            0x316d82
+        )
+        .setInteractive({
+            useHandCursor:true
+        );
+
+
+        const replayText=
+        this.add.text(
+            450,
+            790,
+            "MAIN SEMULA",
+            {
+                fontFamily:
+                "Trebuchet MS, Arial",
+
+                fontSize:"24px",
+
+                fontStyle:"bold",
+
+                color:"#ffffff"
+            }
+        )
+        .setOrigin(.5);
 
 
         layer.add([
             dark,
             shadow,
-            panel
-        ]);
-
-
-        const bigMagnet =
-            this.createFinishMagnet(
-                450,
-                325
-            );
-
-
-        layer.add(
-            bigMagnet
-        );
-
-
-        const title =
-            this.add.text(
-                450,
-                460,
-                "MISI MAGNET SELESAI!",
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"36px",
-                    fontStyle:"bold",
-                    color:"#193f50",
-                    align:"center"
-                }
-            )
-            .setOrigin(.5);
-
-
-        const desc =
-            this.add.text(
-                450,
-                525,
-                "Semua 25 puzzle dan 25 soalan telah diselesaikan.",
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"24px",
-                    color:"#56727f",
-                    align:"center",
-
-                    wordWrap:{
-                        width:560
-                    }
-                }
-            )
-            .setOrigin(.5);
-
-
-        const scoreLabel =
-            this.add.text(
-                450,
-                610,
-                "BETUL PADA CUBAAN PERTAMA",
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"18px",
-                    fontStyle:"bold",
-                    color:"#7b8d95"
-                }
-            )
-            .setOrigin(.5);
-
-
-        const score =
-            this.add.text(
-                450,
-                666,
-                this.firstTryCorrect+
-                " / 25",
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"43px",
-                    fontStyle:"bold",
-                    color:"#e45252"
-                }
-            )
-            .setOrigin(.5);
-
-
-        const replay =
-            this.add.rectangle(
-                450,
-                785,
-                420,
-                78,
-                0x3f879f,
-                1
-            )
-            .setStrokeStyle(
-                3,
-                0x316b80
-            )
-            .setInteractive({
-                useHandCursor:true
-            });
-
-
-        const replayText =
-            this.add.text(
-                450,
-                785,
-                "MAIN SEMULA",
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"25px",
-                    fontStyle:"bold",
-                    color:"#ffffff"
-                }
-            )
-            .setOrigin(.5);
-
-
-        layer.add([
+            panel,
+            magnet,
             title,
-            desc,
-            scoreLabel,
+            info,
+            label,
             score,
             replay,
             replayText
@@ -3699,184 +4271,43 @@ class MagnetGame extends Phaser.Scene{
             "pointerdown",
             ()=>{
 
-                AUDIO.unlock();
+                this.correctFirstTry=0;
 
-                this.firstTryCorrect=0;
 
                 layer.destroy();
 
+
                 this.magnet
-                    .setScale(1)
-                    .setAngle(0);
+                .setVisible(true)
+                .setAlpha(1)
+                .setScale(1)
+                .setAngle(0);
+
 
                 this.startStage(0);
             }
         );
 
 
-        layer.setScale(.88);
-        layer.setAlpha(0);
+        layer
+        .setAlpha(0)
+        .setScale(.9);
 
 
         this.tweens.add({
+
             targets:layer,
+
+            alpha:1,
+
             scaleX:1,
             scaleY:1,
-            alpha:1,
-            duration:350,
+
+            duration:330,
+
             ease:"Back.Out"
         });
     }
-
-
-    createFinishMagnet(
-        x,
-        y
-    ){
-
-        const con =
-            this.add.container(
-                x,
-                y
-            );
-
-
-        const glow =
-            this.add.circle(
-                0,
-                0,
-                95,
-                0xffd66b,
-                .18
-            );
-
-
-        const g =
-            this.add.graphics();
-
-
-        g.fillStyle(
-            0xef5151,
-            1
-        );
-
-        g.fillRoundedRect(
-            -70,
-            -75,
-            52,
-            120,
-            17
-        );
-
-
-        g.fillStyle(
-            0x4285d4,
-            1
-        );
-
-        g.fillRoundedRect(
-            18,
-            -75,
-            52,
-            120,
-            17
-        );
-
-
-        g.fillStyle(
-            0xef5151,
-            1
-        );
-
-        g.fillRoundedRect(
-            -70,
-            5,
-            70,
-            58,
-            20
-        );
-
-
-        g.fillStyle(
-            0x4285d4,
-            1
-        );
-
-        g.fillRoundedRect(
-            0,
-            5,
-            70,
-            58,
-            20
-        );
-
-
-        g.fillStyle(
-            0xffffff,
-            1
-        );
-
-        g.fillRoundedRect(
-            -70,
-            -82,
-            52,
-            28,
-            10
-        );
-
-        g.fillRoundedRect(
-            18,
-            -82,
-            52,
-            28,
-            10
-        );
-
-
-        const star =
-            this.add.text(
-                0,
-                28,
-                "★",
-                {
-                    fontFamily:"Arial",
-                    fontSize:"35px",
-                    color:"#ffffff"
-                }
-            )
-            .setOrigin(.5);
-
-
-        con.add([
-            glow,
-            g,
-            star
-        ]);
-
-
-        this.tweens.add({
-            targets:glow,
-            scaleX:{
-                from:.85,
-                to:1.18
-            },
-            scaleY:{
-                from:.85,
-                to:1.18
-            },
-            alpha:{
-                from:.10,
-                to:.35
-            },
-            duration:800,
-            yoyo:true,
-            repeat:-1
-        });
-
-
-        return con;
-    }
-
 }
 
 
@@ -3884,41 +4315,41 @@ class MagnetGame extends Phaser.Scene{
    PHASER CONFIG
    ========================================================= */
 
-const config = {
+const config={
 
     type:
-        Phaser.AUTO,
+    Phaser.AUTO,
 
     parent:
-        "game",
+    "game",
 
-    width:
-        GAME_W,
+    width:W,
 
-    height:
-        GAME_H,
+    height:H,
 
     backgroundColor:
-        "#dff4ff",
+    "#dff4ff",
 
     render:{
+
         antialias:true,
+
         pixelArt:false,
+
         roundPixels:false
     },
 
     scale:{
+
         mode:
-            Phaser.Scale.FIT,
+        Phaser.Scale.FIT,
 
         autoCenter:
-            Phaser.Scale.CENTER_BOTH,
+        Phaser.Scale.CENTER_BOTH,
 
-        width:
-            GAME_W,
+        width:W,
 
-        height:
-            GAME_H
+        height:H
     },
 
     input:{
@@ -3926,9 +4357,8 @@ const config = {
     },
 
     scene:[
-        MagnetGame
+        GameScene
     ]
-
 };
 
 
