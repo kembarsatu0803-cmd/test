@@ -5,18 +5,19 @@
 
 <meta
 name="viewport"
-content="width=device-width,
+content="
+width=device-width,
 initial-scale=1,
 maximum-scale=1,
 user-scalable=no,
-viewport-fit=cover">
+viewport-fit=cover
+">
 
-<title>Maze Jawapan - Set 4</title>
+<title>Maze Puzzle Magnet - Set 4</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <style>
-
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
@@ -26,7 +27,7 @@ html,
 body{
     margin:0;
     padding:0;
-    background:#dce8ee;
+    background:#dbe7ed;
     font-family:Arial,Helvetica,sans-serif;
 }
 
@@ -49,9 +50,9 @@ body{
 #game{
     width:100%;
     overflow:hidden;
-    border-radius:13px;
-    background:#d8e9f1;
-    min-height:200px;
+    border-radius:14px;
+    background:#dceaf1;
+    position:relative;
 }
 
 #game canvas{
@@ -63,21 +64,19 @@ body{
 }
 
 .note{
+    padding:6px 3px 2px;
     text-align:center;
-    padding:6px 4px 2px;
     font-size:11px;
-    color:#587080;
+    color:#587182;
 }
 
-.error{
+#errorBox{
     display:none;
-    padding:18px;
+    padding:25px;
     text-align:center;
-    color:#8d2222;
+    color:#8a2222;
     background:#fff1f1;
-    border-radius:10px;
-    margin:8px;
-    font-size:14px;
+    border-radius:12px;
 }
 
 @media(max-width:700px){
@@ -95,10 +94,13 @@ body{
         border-radius:9px;
     }
 
+    .note{
+        font-size:10px;
+    }
 }
-
 </style>
 </head>
+
 
 <body>
 
@@ -106,24 +108,21 @@ body{
 
     <div id="game">
 
-        <div
-        id="gameError"
-        class="error">
+        <div id="errorBox">
             Phaser tidak berjaya dimuatkan.
-            Pastikan internet aktif dan refresh halaman.
+            Pastikan internet aktif kemudian refresh halaman.
         </div>
 
     </div>
 
     <div class="note">
-        Telefon / iPad: guna analog • Laptop: Arrow atau WASD
+        Telefon / iPad: gunakan analog besar • Laptop: Arrow atau WASD
     </div>
 
 </div>
 
 
 <script>
-
 (() => {
 
 "use strict";
@@ -135,13 +134,11 @@ body{
 
 if(typeof Phaser === "undefined"){
 
-    const e =
-    document.getElementById(
-        "gameError"
-    );
+    const errorBox =
+    document.getElementById("errorBox");
 
-    if(e){
-        e.style.display = "block";
+    if(errorBox){
+        errorBox.style.display = "block";
     }
 
     return;
@@ -149,12 +146,11 @@ if(typeof Phaser === "undefined"){
 
 
 /* =========================================================
-   GAME SIZE
+   DEVICE / GAME SIZE
 ========================================================= */
 
 const PORTRAIT =
-window.innerHeight >=
-window.innerWidth;
+window.innerHeight >= window.innerWidth;
 
 
 const GAME_W =
@@ -165,7 +161,7 @@ PORTRAIT
 
 const GAME_H =
 PORTRAIT
-? 960
+? 1080
 : 720;
 
 
@@ -178,7 +174,7 @@ const LETTERS = [
 
 
 /* =========================================================
-   QUESTIONS
+   QUESTIONS SET 4
 ========================================================= */
 
 const QUESTIONS = [
@@ -316,7 +312,7 @@ a:3
 },
 
 {
-section:"Hebatnya Magnet",
+section:"Hebatnya Magnet?",
 q:"12. [TP1] Objek logam manakah dalam aktiviti yang boleh ditarik oleh magnet?",
 o:[
 "Kayu aiskrim",
@@ -487,10 +483,10 @@ a:2
 
 
 /* =========================================================
-   SOUND SYSTEM
+   AUDIO
 ========================================================= */
 
-class SoundBox{
+class AudioSystem{
 
 constructor(){
 
@@ -502,7 +498,7 @@ constructor(){
 
     this.musicOn = true;
 
-    this.i = 0;
+    this.noteIndex = 0;
 
     this.notes = [
         261.63,
@@ -526,11 +522,9 @@ unlock(){
         window.AudioContext ||
         window.webkitAudioContext;
 
-
         if(!AC){
             return;
         }
-
 
         this.ctx =
         new AC();
@@ -547,7 +541,6 @@ unlock(){
         this.master.connect(
             this.ctx.destination
         );
-
     }
 
 
@@ -555,14 +548,11 @@ unlock(){
         this.ctx.state ===
         "suspended"
     ){
-
         this.ctx.resume();
-
     }
 
 
     this.startMusic();
-
 }
 
 
@@ -583,7 +573,7 @@ tone(
     this.ctx.currentTime;
 
 
-    const osc =
+    const oscillator =
     this.ctx.createOscillator();
 
 
@@ -591,11 +581,11 @@ tone(
     this.ctx.createGain();
 
 
-    osc.type =
+    oscillator.type =
     type;
 
 
-    osc.frequency
+    oscillator.frequency
     .setValueAtTime(
         frequency,
         now
@@ -604,19 +594,14 @@ tone(
 
     if(endFrequency){
 
-        osc.frequency
+        oscillator.frequency
         .exponentialRampToValueAtTime(
-
             Math.max(
                 40,
                 endFrequency
             ),
-
-            now +
-            duration
-
+            now + duration
         );
-
     }
 
 
@@ -629,16 +614,12 @@ tone(
 
     gain.gain
     .exponentialRampToValueAtTime(
-
         0.0001,
-
-        now +
-        duration
-
+        now + duration
     );
 
 
-    osc.connect(
+    oscillator.connect(
         gain
     );
 
@@ -648,19 +629,16 @@ tone(
     );
 
 
-    osc.start(
+    oscillator.start(
         now
     );
 
 
-    osc.stop(
-
+    oscillator.stop(
         now +
         duration +
         0.02
-
     );
-
 }
 
 
@@ -684,27 +662,26 @@ startMusic(){
             }
 
 
+            const note =
+            this.notes[
+                this.noteIndex %
+                this.notes.length
+            ];
+
+
+            this.noteIndex++;
+
+
             this.tone(
-
-                this.notes[
-                    this.i++ %
-                    this.notes.length
-                ],
-
-                0.18,
-
+                note,
+                0.2,
                 "sine",
-
-                0.022
-
+                0.023
             );
 
         },
-
-        460
-
+        450
     );
-
 }
 
 
@@ -712,10 +689,10 @@ correct(){
 
     this.tone(
         520,
-        0.1,
+        0.09,
         "triangle",
-        0.14,
-        700
+        0.15,
+        680
     );
 
 
@@ -726,29 +703,37 @@ correct(){
                 760,
                 0.14,
                 "triangle",
-                0.12,
-                940
+                0.13,
+                920
             );
 
         },
-
         100
-
     );
-
 }
 
 
 wrong(){
 
     this.tone(
-        190,
+        180,
         0.2,
         "sawtooth",
         0.09,
-        110
+        100
     );
+}
 
+
+newMaze(){
+
+    this.tone(
+        360,
+        0.06,
+        "triangle",
+        0.06,
+        480
+    );
 }
 
 
@@ -768,20 +753,17 @@ win(){
 
                     this.tone(
                         n,
-                        0.24,
+                        0.25,
                         "triangle",
-                        0.12
+                        0.13
                     );
 
                 },
-
                 i * 120
-
             );
 
         }
     );
-
 }
 
 
@@ -791,30 +773,28 @@ toggle(){
     !this.musicOn;
 
     return this.musicOn;
-
 }
 
 }
 
 
 const AUDIO =
-new SoundBox();
+new AudioSystem();
 
 
 /* =========================================================
-   MAIN SCENE
+   MAIN GAME
 ========================================================= */
 
-class MazeGame
+class MazeScene
 extends Phaser.Scene{
 
 
 constructor(){
 
     super(
-        "MazeGame"
+        "MazeScene"
     );
-
 }
 
 
@@ -824,7 +804,7 @@ constructor(){
 
 create(){
 
-    this.qIndex = 0;
+    this.questionIndex = 0;
 
     this.score = 0;
 
@@ -834,10 +814,16 @@ create(){
 
     this.answerZones = [];
 
+    this.floorObjects = [];
+
+    this.wallObjects = [];
+
+    this.lastMazeSignature = "";
+
     this.joyActive = false;
 
 
-    this.joyVec =
+    this.joyVector =
     new Phaser.Math.Vector2(
         0,
         0
@@ -854,7 +840,10 @@ create(){
 
     this.createMazeArea();
 
-    this.createMaze();
+
+    this.wallGroup =
+    this.physics.add.staticGroup();
+
 
     this.createPlayer();
 
@@ -865,12 +854,11 @@ create(){
 
     this.physics.add.collider(
         this.player,
-        this.walls
+        this.wallGroup
     );
 
 
-    this.showStart();
-
+    this.showStartWindow();
 }
 
 
@@ -886,157 +874,41 @@ createTextures(){
     });
 
 
-    /* WALL */
+    /* =====================================================
+       MAGNET CHARACTER
+    ===================================================== */
+
+    /*
+        Magnet ladam:
+
+             RED        BLUE
+              |          |
+              |          |
+               \________/
+
+    */
+
+
+    /* SHADOW */
 
     g.fillStyle(
-        0x31586c,
-        1
+        0x18313d,
+        0.20
     );
 
-    g.fillRect(
-        0,
-        0,
-        64,
-        64
+    g.fillEllipse(
+        32,
+        55,
+        46,
+        12
     );
 
+
+    /* BOTTOM CURVE */
 
     g.lineStyle(
-        3,
-        0x234555,
-        1
-    );
-
-    g.strokeRect(
-        1,
-        1,
-        62,
-        62
-    );
-
-
-    g.generateTexture(
-        "wallTile",
-        64,
-        64
-    );
-
-
-    g.clear();
-
-
-    /* FLOOR */
-
-    g.fillStyle(
-        0xf4e7c3,
-        1
-    );
-
-    g.fillRect(
-        0,
-        0,
-        64,
-        64
-    );
-
-
-    g.lineStyle(
-        2,
-        0xe2d2a7,
-        0.7
-    );
-
-    g.strokeRect(
-        1,
-        1,
-        62,
-        62
-    );
-
-
-    g.generateTexture(
-        "floorTile",
-        64,
-        64
-    );
-
-
-    g.clear();
-
-
-    /* CHARACTER */
-
-    g.fillStyle(
-        0xffd65a,
-        1
-    );
-
-    g.fillCircle(
-        32,
-        32,
-        27
-    );
-
-
-    g.lineStyle(
-        4,
-        0x6f541d,
-        1
-    );
-
-    g.strokeCircle(
-        32,
-        32,
-        27
-    );
-
-
-    /* HAT */
-
-    g.fillStyle(
-        0x2f81b7,
-        1
-    );
-
-    g.fillRoundedRect(
         17,
-        3,
-        30,
-        11,
-        5
-    );
-
-    g.fillRect(
-        23,
-        0,
-        18,
-        8
-    );
-
-
-    /* FACE */
-
-    g.fillStyle(
-        0x332b22,
-        1
-    );
-
-    g.fillCircle(
-        24,
-        28,
-        3
-    );
-
-    g.fillCircle(
-        40,
-        28,
-        3
-    );
-
-
-    g.lineStyle(
-        3,
-        0x332b22,
+        0x596d78,
         1
     );
 
@@ -1045,16 +917,81 @@ createTextures(){
     g.arc(
         32,
         34,
-        9,
-        0.25,
-        2.9
+        17,
+        0,
+        Math.PI,
+        false
     );
 
     g.strokePath();
 
 
+    /* RED LEG */
+
+    g.fillStyle(
+        0xe84f55,
+        1
+    );
+
+    g.fillRoundedRect(
+        7,
+        7,
+        18,
+        32,
+        7
+    );
+
+
+    /* BLUE LEG */
+
+    g.fillStyle(
+        0x4789e8,
+        1
+    );
+
+    g.fillRoundedRect(
+        39,
+        7,
+        18,
+        32,
+        7
+    );
+
+
+    /* POLE WHITE */
+
+    g.fillStyle(
+        0xffffff,
+        1
+    );
+
+    g.fillRoundedRect(
+        7,
+        5,
+        18,
+        10,
+        4
+    );
+
+    g.fillRoundedRect(
+        39,
+        5,
+        18,
+        10,
+        4
+    );
+
+
+    /* N / S */
+
+    g.fillStyle(
+        0x243947,
+        1
+    );
+
+
     g.generateTexture(
-        "hero",
+        "magnetPlayer",
         64,
         64
     );
@@ -1071,21 +1008,20 @@ createTextures(){
     );
 
     g.fillCircle(
-        4,
-        4,
-        4
+        5,
+        5,
+        5
     );
 
 
     g.generateTexture(
         "spark",
-        8,
-        8
+        10,
+        10
     );
 
 
     g.destroy();
-
 }
 
 
@@ -1097,7 +1033,7 @@ drawBackground(){
 
     this.cameras.main
     .setBackgroundColor(
-        "#d8e9f1"
+        "#dceaf1"
     );
 
 
@@ -1106,7 +1042,7 @@ drawBackground(){
 
 
     g.fillStyle(
-        0xd8e9f1,
+        0xdceaf1,
         1
     );
 
@@ -1120,31 +1056,23 @@ drawBackground(){
 
 
     g.fillStyle(
-        0xb9d5e2,
+        0xb7d3df,
         0.23
     );
 
 
     for(
         let i = 0;
-        i < 40;
+        i < 50;
         i++
     ){
 
         g.fillCircle(
-
-            (i * 151) %
-            GAME_W,
-
-            (i * 89) %
-            GAME_H,
-
+            (i * 149) % GAME_W,
+            (i * 91) % GAME_H,
             10
-
         );
-
     }
-
 }
 
 
@@ -1156,25 +1084,27 @@ createHeader(){
 
     this.add.rectangle(
         GAME_W / 2,
-        25,
+        26,
         GAME_W,
-        50,
-        0x153c55
+        52,
+        0x143c55
     );
 
 
     this.add.text(
         18,
-        14,
-        "MAZE JAWAPAN",
+        15,
+        "MAZE MAGNET",
         {
             fontFamily:"Arial",
+
             fontSize:
             PORTRAIT
             ? "20px"
             : "21px",
 
             fontStyle:"bold",
+
             color:"#ffffff"
         }
     );
@@ -1183,7 +1113,7 @@ createHeader(){
     this.progressText =
     this.add.text(
         GAME_W / 2,
-        15,
+        16,
         "1 / 25",
         {
             fontFamily:"Arial",
@@ -1201,7 +1131,7 @@ createHeader(){
     this.scoreText =
     this.add.text(
         GAME_W - 18,
-        15,
+        16,
         "Skor 0",
         {
             fontFamily:"Arial",
@@ -1214,7 +1144,6 @@ createHeader(){
         1,
         0
     );
-
 }
 
 
@@ -1225,13 +1154,13 @@ createHeader(){
 createQuestionPanel(){
 
     this.panelY =
-    58;
+    60;
 
 
     this.panelH =
     PORTRAIT
-    ? 265
-    : 165;
+    ? 268
+    : 170;
 
 
     this.panelBottom =
@@ -1257,7 +1186,7 @@ createQuestionPanel(){
     )
     .setStrokeStyle(
         2,
-        0x95b0bf
+        0x94afbe
     );
 
 
@@ -1270,7 +1199,7 @@ createQuestionPanel(){
             fontFamily:"Arial",
             fontSize:"13px",
             fontStyle:"bold",
-            color:"#24708f"
+            color:"#247493"
         }
     );
 
@@ -1290,16 +1219,16 @@ createQuestionPanel(){
 
             fontStyle:"bold",
 
-            color:"#19384b",
+            color:"#19394d",
+
+            lineSpacing:2,
 
             wordWrap:{
                 width:
                 GAME_W - 44,
 
                 useAdvancedWrap:true
-            },
-
-            lineSpacing:2
+            }
         }
     );
 
@@ -1315,45 +1244,40 @@ createQuestionPanel(){
             i++
         ){
 
-            this.optionTexts.push(
+            const text =
+            this.add.text(
+                26,
+                this.panelY +
+                118 +
+                i * 35,
+                "",
+                {
+                    fontFamily:"Arial",
 
-                this.add.text(
+                    fontSize:"14px",
 
-                    26,
+                    color:"#294b5f",
 
-                    this.panelY +
-                    118 +
-                    i * 34,
+                    wordWrap:{
+                        width:
+                        GAME_W - 52,
 
-                    "",
-
-                    {
-                        fontFamily:"Arial",
-
-                        fontSize:"14px",
-
-                        color:"#294b5f",
-
-                        wordWrap:{
-                            width:
-                            GAME_W - 52,
-
-                            useAdvancedWrap:true
-                        }
+                        useAdvancedWrap:true
                     }
-
-                )
-
+                }
             );
 
-        }
 
+            this.optionTexts.push(
+                text
+            );
+        }
     }
 
     else{
 
-        const columnWidth =
-        (GAME_W - 52) / 2;
+        const colWidth =
+        (GAME_W - 54) / 2;
 
 
         for(
@@ -1372,44 +1296,39 @@ createQuestionPanel(){
             );
 
 
-            this.optionTexts.push(
+            const text =
+            this.add.text(
+                26 +
+                col * colWidth,
 
-                this.add.text(
+                this.panelY +
+                108 +
+                row * 31,
 
-                    26 +
-                    col *
-                    columnWidth,
+                "",
 
-                    this.panelY +
-                    105 +
-                    row * 31,
+                {
+                    fontFamily:"Arial",
 
-                    "",
+                    fontSize:"14px",
 
-                    {
-                        fontFamily:"Arial",
+                    color:"#294b5f",
 
-                        fontSize:"14px",
+                    wordWrap:{
+                        width:
+                        colWidth - 18,
 
-                        color:"#294b5f",
-
-                        wordWrap:{
-                            width:
-                            columnWidth -
-                            18,
-
-                            useAdvancedWrap:true
-                        }
+                        useAdvancedWrap:true
                     }
-
-                )
-
+                }
             );
 
+
+            this.optionTexts.push(
+                text
+            );
         }
-
     }
-
 }
 
 
@@ -1419,10 +1338,10 @@ createQuestionPanel(){
 
 createMazeArea(){
 
-    const controlsSpace =
+    const controlSpace =
     PORTRAIT
-    ? 98
-    : 64;
+    ? 145
+    : 80;
 
 
     this.mazeArea = {
@@ -1431,7 +1350,7 @@ createMazeArea(){
 
         y:
         this.panelBottom +
-        10,
+        12,
 
         w:
         GAME_W -
@@ -1441,13 +1360,13 @@ createMazeArea(){
         GAME_H -
         (
             this.panelBottom +
-            10
+            12
         ) -
-        controlsSpace
-
+        controlSpace
     };
 
 
+    this.mazeBackground =
     this.add.rectangle(
 
         this.mazeArea.x +
@@ -1460,367 +1379,445 @@ createMazeArea(){
 
         this.mazeArea.h,
 
-        0xc9dfc3,
+        0x334d59,
 
         1
 
     )
     .setStrokeStyle(
-        3,
-        0x557b68
+        4,
+        0x213a46
     );
-
-
-    this.cols = 19;
-
-    this.rows = 15;
-
-
-    this.cellW =
-    this.mazeArea.w /
-    this.cols;
-
-
-    this.cellH =
-    this.mazeArea.h /
-    this.rows;
-
-}
-
-
-/* =========================================================
-   GRID
-========================================================= */
-
-emptyGrid(){
-
-    return Array.from(
-        {
-            length:
-            this.rows
-        },
-
-        () =>
-        Array(
-            this.cols
-        )
-        .fill(1)
-
-    );
-
-}
-
-
-/* =========================================================
-   CARVE PATH
-========================================================= */
-
-carve(
-    grid,
-    x1,
-    y1,
-    x2,
-    y2
-){
-
-    let x =
-    x1;
-
-
-    let y =
-    y1;
-
-
-    grid[y][x] =
-    0;
-
-
-    while(
-        x !== x2 ||
-        y !== y2
-    ){
-
-        if(
-            x !== x2
-        ){
-
-            x +=
-            Math.sign(
-                x2 - x
-            );
-
-        }
-
-        else{
-
-            y +=
-            Math.sign(
-                y2 - y
-            );
-
-        }
-
-
-        grid[y][x] =
-        0;
-
-    }
-
-}
-
-
-/* =========================================================
-   BUILD MAZE
-========================================================= */
-
-createMaze(){
-
-    const grid =
-    this.emptyGrid();
 
 
     /*
-        MAZE STRUCTURE
-
-          A                         B
-          │                         │
-          └────┐               ┌────┘
-               │               │
-               └────┐     ┌────┘
-                    │     │
-                    └──┬──┘
-                       │
-                 ┌─────┴─────┐
-                 │           │
-           C ────┘           └──── D
-
-                     START
-
-        Semua A/B/C/D akan dirandom
-        setiap kali soalan berubah.
+        REAL MAZE CELLS
     */
 
+    if(PORTRAIT){
 
-    this.startCell = {
-        x:9,
-        y:13
+        this.cols = 13;
+
+        this.rows = 15;
+    }
+
+    else{
+
+        this.cols = 19;
+
+        this.rows = 11;
+    }
+
+
+    this.cellSize =
+    Math.floor(
+        Math.min(
+            this.mazeArea.w /
+            this.cols,
+
+            this.mazeArea.h /
+            this.rows
+        )
+    );
+
+
+    this.mazePixelW =
+    this.cellSize *
+    this.cols;
+
+
+    this.mazePixelH =
+    this.cellSize *
+    this.rows;
+
+
+    this.mazeX =
+    GAME_W / 2 -
+    this.mazePixelW / 2;
+
+
+    this.mazeY =
+    this.mazeArea.y +
+    (
+        this.mazeArea.h -
+        this.mazePixelH
+    ) / 2;
+}
+
+
+/* =========================================================
+   CREATE PLAYER
+========================================================= */
+
+createPlayer(){
+
+    this.player =
+    this.physics.add.sprite(
+        -100,
+        -100,
+        "magnetPlayer"
+    );
+
+
+    const size =
+    this.cellSize *
+    0.56;
+
+
+    this.player
+    .setDisplaySize(
+        size,
+        size
+    )
+    .setDepth(80);
+
+
+    this.player.body
+    .setCircle(
+        22,
+        10,
+        10
+    );
+
+
+    this.player
+    .setMaxVelocity(
+        220,
+        220
+    );
+}
+
+
+/* =========================================================
+   MAZE CELL HELPERS
+========================================================= */
+
+createCell(
+    x,
+    y
+){
+
+    return {
+
+        x:x,
+        y:y,
+
+        visited:false,
+
+        walls:{
+            top:true,
+            right:true,
+            bottom:true,
+            left:true
+        }
     };
+}
 
 
-    /* MAIN PATH */
+/* =========================================================
+   GENERATE PERFECT MAZE
+========================================================= */
 
-    this.carve(
-        grid,
-        9,13,
-        9,10
-    );
+generateMaze(){
 
+    let maze;
+    let signature;
 
-    /* ============================
-       TOP LEFT
-    ============================ */
-
-    this.carve(
-        grid,
-        9,10,
-        6,10
-    );
-
-    this.carve(
-        grid,
-        6,10,
-        6,7
-    );
-
-    this.carve(
-        grid,
-        6,7,
-        4,7
-    );
-
-    this.carve(
-        grid,
-        4,7,
-        4,4
-    );
-
-    this.carve(
-        grid,
-        4,4,
-        2,4
-    );
-
-    this.carve(
-        grid,
-        2,4,
-        2,1
-    );
-
-    this.carve(
-        grid,
-        2,1,
-        1,1
-    );
+    let attempts = 0;
 
 
-    /* ============================
-       TOP RIGHT
-    ============================ */
+    do{
 
-    this.carve(
-        grid,
-        9,10,
-        12,10
-    );
-
-    this.carve(
-        grid,
-        12,10,
-        12,7
-    );
-
-    this.carve(
-        grid,
-        12,7,
-        14,7
-    );
-
-    this.carve(
-        grid,
-        14,7,
-        14,4
-    );
-
-    this.carve(
-        grid,
-        14,4,
-        16,4
-    );
-
-    this.carve(
-        grid,
-        16,4,
-        16,1
-    );
-
-    this.carve(
-        grid,
-        16,1,
-        17,1
-    );
+        attempts++;
 
 
-    /* ============================
-       BOTTOM LEFT
-    ============================ */
-
-    this.carve(
-        grid,
-        9,12,
-        6,12
-    );
-
-    this.carve(
-        grid,
-        6,12,
-        6,13
-    );
-
-    this.carve(
-        grid,
-        6,13,
-        3,13
-    );
-
-    this.carve(
-        grid,
-        3,13,
-        3,11
-    );
-
-    this.carve(
-        grid,
-        3,11,
-        1,11
-    );
+        maze = [];
 
 
-    /* ============================
-       BOTTOM RIGHT
-    ============================ */
+        for(
+            let y = 0;
+            y < this.rows;
+            y++
+        ){
 
-    this.carve(
-        grid,
-        9,12,
-        12,12
-    );
-
-    this.carve(
-        grid,
-        12,12,
-        12,13
-    );
-
-    this.carve(
-        grid,
-        12,13,
-        15,13
-    );
-
-    this.carve(
-        grid,
-        15,13,
-        15,11
-    );
-
-    this.carve(
-        grid,
-        15,11,
-        17,11
-    );
+            const row = [];
 
 
-    this.grid =
-    grid;
+            for(
+                let x = 0;
+                x < this.cols;
+                x++
+            ){
+
+                row.push(
+                    this.createCell(
+                        x,
+                        y
+                    )
+                );
+            }
 
 
-    this.endCells = [
-
-        {
-            x:1,
-            y:1
-        },
-
-        {
-            x:17,
-            y:1
-        },
-
-        {
-            x:1,
-            y:11
-        },
-
-        {
-            x:17,
-            y:11
+            maze.push(
+                row
+            );
         }
 
-    ];
+
+        /*
+            Start dekat tengah maze.
+        */
+
+        const startX =
+        Math.floor(
+            this.cols / 2
+        );
 
 
-    /* ============================
-       STATIC WALL GROUP
-    ============================ */
-
-    this.walls =
-    this.physics.add
-    .staticGroup();
+        const startY =
+        Math.floor(
+            this.rows / 2
+        );
 
 
-    /* ============================
-       DRAW GRID
-    ============================ */
+        const stack = [];
+
+
+        let current =
+        maze[startY][startX];
+
+
+        current.visited =
+        true;
+
+
+        let visitedCount =
+        1;
+
+
+        const total =
+        this.cols *
+        this.rows;
+
+
+        while(
+            visitedCount <
+            total
+        ){
+
+            const neighbours = [];
+
+
+            const x =
+            current.x;
+
+
+            const y =
+            current.y;
+
+
+            if(
+                y > 0 &&
+                !maze[y - 1][x].visited
+            ){
+
+                neighbours.push({
+                    cell:
+                    maze[y - 1][x],
+
+                    dir:
+                    "top"
+                });
+            }
+
+
+            if(
+                x <
+                this.cols - 1 &&
+                !maze[y][x + 1].visited
+            ){
+
+                neighbours.push({
+                    cell:
+                    maze[y][x + 1],
+
+                    dir:
+                    "right"
+                });
+            }
+
+
+            if(
+                y <
+                this.rows - 1 &&
+                !maze[y + 1][x].visited
+            ){
+
+                neighbours.push({
+                    cell:
+                    maze[y + 1][x],
+
+                    dir:
+                    "bottom"
+                });
+            }
+
+
+            if(
+                x > 0 &&
+                !maze[y][x - 1].visited
+            ){
+
+                neighbours.push({
+                    cell:
+                    maze[y][x - 1],
+
+                    dir:
+                    "left"
+                });
+            }
+
+
+            if(
+                neighbours.length
+            ){
+
+                Phaser.Utils.Array
+                .Shuffle(
+                    neighbours
+                );
+
+
+                const next =
+                neighbours[0];
+
+
+                stack.push(
+                    current
+                );
+
+
+                this.removeWall(
+                    current,
+                    next.cell,
+                    next.dir
+                );
+
+
+                current =
+                next.cell;
+
+
+                current.visited =
+                true;
+
+
+                visitedCount++;
+            }
+
+            else{
+
+                current =
+                stack.pop();
+            }
+        }
+
+
+        signature =
+        this.mazeSignature(
+            maze
+        );
+
+
+    }
+    while(
+        signature ===
+        this.lastMazeSignature &&
+        attempts < 10
+    );
+
+
+    this.lastMazeSignature =
+    signature;
+
+
+    return maze;
+}
+
+
+/* =========================================================
+   REMOVE WALL
+========================================================= */
+
+removeWall(
+    current,
+    next,
+    direction
+){
+
+    if(
+        direction ===
+        "top"
+    ){
+
+        current.walls.top =
+        false;
+
+        next.walls.bottom =
+        false;
+    }
+
+
+    else if(
+        direction ===
+        "right"
+    ){
+
+        current.walls.right =
+        false;
+
+        next.walls.left =
+        false;
+    }
+
+
+    else if(
+        direction ===
+        "bottom"
+    ){
+
+        current.walls.bottom =
+        false;
+
+        next.walls.top =
+        false;
+    }
+
+
+    else if(
+        direction ===
+        "left"
+    ){
+
+        current.walls.left =
+        false;
+
+        next.walls.right =
+        false;
+    }
+}
+
+
+/* =========================================================
+   MAZE SIGNATURE
+========================================================= */
+
+mazeSignature(
+    maze
+){
+
+    let output = "";
+
 
     for(
         let y = 0;
@@ -1834,76 +1831,34 @@ createMaze(){
             x++
         ){
 
-            const p =
-            this.cellPos(
-                x,
-                y
-            );
+            const w =
+            maze[y][x].walls;
 
 
-            /* WALL */
+            output +=
+            w.top ? "1" : "0";
 
-            if(
-                grid[y][x] === 1
-            ){
+            output +=
+            w.right ? "1" : "0";
 
-                const wall =
-                this.walls.create(
-                    p.x,
-                    p.y,
-                    "wallTile"
-                );
+            output +=
+            w.bottom ? "1" : "0";
 
-
-                wall.setDisplaySize(
-
-                    this.cellW +
-                    1,
-
-                    this.cellH +
-                    1
-
-                );
-
-
-                wall.refreshBody();
-
-            }
-
-
-            /* FLOOR */
-
-            else{
-
-                this.add.image(
-                    p.x,
-                    p.y,
-                    "floorTile"
-                )
-                .setDisplaySize(
-
-                    this.cellW +
-                    1,
-
-                    this.cellH +
-                    1
-
-                );
-
-            }
-
+            output +=
+            w.left ? "1" : "0";
         }
-
     }
 
+
+    return output;
 }
 
 
 /* =========================================================
-   CELL POSITION
+   CELL WORLD POSITION
 ========================================================= */
 
-cellPos(
+cellPosition(
     x,
     y
 ){
@@ -1911,67 +1866,1069 @@ cellPos(
     return {
 
         x:
-        this.mazeArea.x +
-        x * this.cellW +
-        this.cellW / 2,
+        this.mazeX +
+        x * this.cellSize +
+        this.cellSize / 2,
 
         y:
-        this.mazeArea.y +
-        y * this.cellH +
-        this.cellH / 2
-
+        this.mazeY +
+        y * this.cellSize +
+        this.cellSize / 2
     };
-
 }
 
 
 /* =========================================================
-   PLAYER
+   CLEAR CURRENT MAZE
 ========================================================= */
 
-createPlayer(){
+clearMaze(){
+
+    this.wallGroup.clear(
+        true,
+        true
+    );
+
+
+    this.wallObjects = [];
+
+
+    this.floorObjects
+    .forEach(
+        obj => {
+
+            obj.destroy();
+        }
+    );
+
+
+    this.floorObjects = [];
+
+
+    this.clearAnswers();
+}
+
+
+/* =========================================================
+   BUILD NEW MAZE
+========================================================= */
+
+buildNewMaze(){
+
+    this.clearMaze();
+
+
+    this.maze =
+    this.generateMaze();
+
+
+    this.startCell = {
+
+        x:
+        Math.floor(
+            this.cols / 2
+        ),
+
+        y:
+        Math.floor(
+            this.rows / 2
+        )
+    };
+
+
+    this.drawMaze();
+
+
+    this.endCells =
+    this.findAnswerCells();
+
+
+    this.createAnswers();
+
+
+    this.resetPlayer();
+
+
+    AUDIO.newMaze();
+}
+
+
+/* =========================================================
+   DRAW REAL MAZE
+========================================================= */
+
+drawMaze(){
+
+    const wallThickness =
+    Math.max(
+        4,
+        Math.floor(
+            this.cellSize *
+            0.11
+        )
+    );
+
+
+    for(
+        let y = 0;
+        y < this.rows;
+        y++
+    ){
+
+        for(
+            let x = 0;
+            x < this.cols;
+            x++
+        ){
+
+            const cell =
+            this.maze[y][x];
+
+
+            const p =
+            this.cellPosition(
+                x,
+                y
+            );
+
+
+            /*
+                FLOOR CELL
+            */
+
+            const floorColor =
+            (x + y) % 2 === 0
+            ? 0xf2e7c9
+            : 0xebddba;
+
+
+            const floor =
+            this.add.rectangle(
+
+                p.x,
+
+                p.y,
+
+                this.cellSize,
+
+                this.cellSize,
+
+                floorColor
+
+            )
+            .setDepth(10);
+
+
+            this.floorObjects.push(
+                floor
+            );
+
+
+            /*
+                TOP WALL
+            */
+
+            if(
+                cell.walls.top
+            ){
+
+                this.createWall(
+
+                    p.x,
+
+                    p.y -
+                    this.cellSize / 2,
+
+                    this.cellSize +
+                    wallThickness,
+
+                    wallThickness
+
+                );
+            }
+
+
+            /*
+                LEFT WALL
+            */
+
+            if(
+                cell.walls.left
+            ){
+
+                this.createWall(
+
+                    p.x -
+                    this.cellSize / 2,
+
+                    p.y,
+
+                    wallThickness,
+
+                    this.cellSize +
+                    wallThickness
+
+                );
+            }
+
+
+            /*
+                RIGHT OUTER WALL ONLY
+            */
+
+            if(
+                x ===
+                this.cols - 1 &&
+                cell.walls.right
+            ){
+
+                this.createWall(
+
+                    p.x +
+                    this.cellSize / 2,
+
+                    p.y,
+
+                    wallThickness,
+
+                    this.cellSize +
+                    wallThickness
+
+                );
+            }
+
+
+            /*
+                BOTTOM OUTER WALL ONLY
+            */
+
+            if(
+                y ===
+                this.rows - 1 &&
+                cell.walls.bottom
+            ){
+
+                this.createWall(
+
+                    p.x,
+
+                    p.y +
+                    this.cellSize / 2,
+
+                    this.cellSize +
+                    wallThickness,
+
+                    wallThickness
+
+                );
+            }
+        }
+    }
+}
+
+
+/* =========================================================
+   CREATE WALL
+========================================================= */
+
+createWall(
+    x,
+    y,
+    width,
+    height
+){
+
+    const wall =
+    this.add.rectangle(
+
+        x,
+        y,
+
+        width,
+        height,
+
+        0x355c70
+
+    )
+    .setStrokeStyle(
+        1,
+        0x213d4b,
+        1
+    )
+    .setDepth(30);
+
+
+    this.wallGroup.add(
+        wall
+    );
+
+
+    wall.body
+    .setSize(
+        width,
+        height
+    );
+
+
+    wall.body
+    .updateFromGameObject();
+
+
+    this.wallObjects.push(
+        wall
+    );
+}
+
+
+/* =========================================================
+   OPENING COUNT
+========================================================= */
+
+openingCount(
+    cell
+){
+
+    let count = 0;
+
+
+    if(!cell.walls.top){
+        count++;
+    }
+
+
+    if(!cell.walls.right){
+        count++;
+    }
+
+
+    if(!cell.walls.bottom){
+        count++;
+    }
+
+
+    if(!cell.walls.left){
+        count++;
+    }
+
+
+    return count;
+}
+
+
+/* =========================================================
+   BFS DISTANCES
+========================================================= */
+
+getDistances(){
+
+    const distances =
+    Array.from(
+        {
+            length:
+            this.rows
+        },
+        () =>
+        Array(
+            this.cols
+        ).fill(-1)
+    );
+
+
+    const queue = [];
+
+
+    const sx =
+    this.startCell.x;
+
+
+    const sy =
+    this.startCell.y;
+
+
+    distances[sy][sx] =
+    0;
+
+
+    queue.push({
+        x:sx,
+        y:sy
+    });
+
+
+    let head = 0;
+
+
+    while(
+        head <
+        queue.length
+    ){
+
+        const current =
+        queue[head++];
+
+
+        const cell =
+        this.maze[
+            current.y
+        ][
+            current.x
+        ];
+
+
+        const nextDistance =
+        distances[
+            current.y
+        ][
+            current.x
+        ] + 1;
+
+
+        /*
+            TOP
+        */
+
+        if(
+            !cell.walls.top
+        ){
+
+            const nx =
+            current.x;
+
+            const ny =
+            current.y - 1;
+
+
+            if(
+                distances[ny][nx] === -1
+            ){
+
+                distances[ny][nx] =
+                nextDistance;
+
+
+                queue.push({
+                    x:nx,
+                    y:ny
+                });
+            }
+        }
+
+
+        /*
+            RIGHT
+        */
+
+        if(
+            !cell.walls.right
+        ){
+
+            const nx =
+            current.x + 1;
+
+            const ny =
+            current.y;
+
+
+            if(
+                distances[ny][nx] === -1
+            ){
+
+                distances[ny][nx] =
+                nextDistance;
+
+
+                queue.push({
+                    x:nx,
+                    y:ny
+                });
+            }
+        }
+
+
+        /*
+            BOTTOM
+        */
+
+        if(
+            !cell.walls.bottom
+        ){
+
+            const nx =
+            current.x;
+
+            const ny =
+            current.y + 1;
+
+
+            if(
+                distances[ny][nx] === -1
+            ){
+
+                distances[ny][nx] =
+                nextDistance;
+
+
+                queue.push({
+                    x:nx,
+                    y:ny
+                });
+            }
+        }
+
+
+        /*
+            LEFT
+        */
+
+        if(
+            !cell.walls.left
+        ){
+
+            const nx =
+            current.x - 1;
+
+            const ny =
+            current.y;
+
+
+            if(
+                distances[ny][nx] === -1
+            ){
+
+                distances[ny][nx] =
+                nextDistance;
+
+
+                queue.push({
+                    x:nx,
+                    y:ny
+                });
+            }
+        }
+    }
+
+
+    return distances;
+}
+
+
+/* =========================================================
+   FIND FOUR DEAD-END ANSWERS
+========================================================= */
+
+findAnswerCells(){
+
+    const distances =
+    this.getDistances();
+
+
+    const deadEnds = [];
+
+
+    for(
+        let y = 0;
+        y < this.rows;
+        y++
+    ){
+
+        for(
+            let x = 0;
+            x < this.cols;
+            x++
+        ){
+
+            if(
+                x ===
+                this.startCell.x &&
+                y ===
+                this.startCell.y
+            ){
+                continue;
+            }
+
+
+            const cell =
+            this.maze[y][x];
+
+
+            if(
+                this.openingCount(
+                    cell
+                ) === 1
+            ){
+
+                deadEnds.push({
+
+                    x:x,
+                    y:y,
+
+                    distance:
+                    distances[y][x]
+
+                });
+            }
+        }
+    }
+
+
+    /*
+        Paling jauh dari START dahulu.
+    */
+
+    deadEnds.sort(
+        (a,b) =>
+        b.distance -
+        a.distance
+    );
+
+
+    const selected = [];
+
+
+    /*
+        Cuba pilih hujung yang tidak
+        terlalu rapat antara satu sama lain.
+    */
+
+    for(
+        const candidate of
+        deadEnds
+    ){
+
+        let tooClose =
+        false;
+
+
+        for(
+            const existing of
+            selected
+        ){
+
+            const distance =
+            Math.abs(
+                candidate.x -
+                existing.x
+            )
+            +
+            Math.abs(
+                candidate.y -
+                existing.y
+            );
+
+
+            if(
+                distance < 3
+            ){
+
+                tooClose =
+                true;
+
+                break;
+            }
+        }
+
+
+        if(!tooClose){
+
+            selected.push(
+                candidate
+            );
+        }
+
+
+        if(
+            selected.length === 4
+        ){
+            break;
+        }
+    }
+
+
+    /*
+        Jika tak cukup 4,
+        ambil dead end lain.
+    */
+
+    if(
+        selected.length < 4
+    ){
+
+        for(
+            const candidate of
+            deadEnds
+        ){
+
+            const exists =
+            selected.some(
+                s =>
+                s.x === candidate.x &&
+                s.y === candidate.y
+            );
+
+
+            if(!exists){
+
+                selected.push(
+                    candidate
+                );
+            }
+
+
+            if(
+                selected.length === 4
+            ){
+                break;
+            }
+        }
+    }
+
+
+    /*
+        Kes sangat jarang:
+        kalau dead end kurang 4,
+        ambil sel terjauh.
+    */
+
+    if(
+        selected.length < 4
+    ){
+
+        const all = [];
+
+
+        for(
+            let y = 0;
+            y < this.rows;
+            y++
+        ){
+
+            for(
+                let x = 0;
+                x < this.cols;
+                x++
+            ){
+
+                if(
+                    x ===
+                    this.startCell.x &&
+                    y ===
+                    this.startCell.y
+                ){
+                    continue;
+                }
+
+
+                all.push({
+
+                    x:x,
+                    y:y,
+
+                    distance:
+                    distances[y][x]
+
+                });
+            }
+        }
+
+
+        all.sort(
+            (a,b) =>
+            b.distance -
+            a.distance
+        );
+
+
+        for(
+            const candidate of
+            all
+        ){
+
+            const exists =
+            selected.some(
+                s =>
+                s.x === candidate.x &&
+                s.y === candidate.y
+            );
+
+
+            if(!exists){
+
+                selected.push(
+                    candidate
+                );
+            }
+
+
+            if(
+                selected.length === 4
+            ){
+                break;
+            }
+        }
+    }
+
+
+    return selected.slice(
+        0,
+        4
+    );
+}
+
+
+/* =========================================================
+   CREATE ANSWERS
+========================================================= */
+
+createAnswers(){
+
+    const order =
+    Phaser.Utils.Array.Shuffle(
+        [0,1,2,3]
+    );
+
+
+    const colors = [
+
+        0xe65155,
+
+        0x4385df,
+
+        0xf0aa3a,
+
+        0x42a76b
+
+    ];
+
+
+    const answerSize =
+    this.cellSize *
+    0.68;
+
+
+    for(
+        let i = 0;
+        i < 4;
+        i++
+    ){
+
+        const cell =
+        this.endCells[i];
+
+
+        const p =
+        this.cellPosition(
+            cell.x,
+            cell.y
+        );
+
+
+        const answerIndex =
+        order[i];
+
+
+        const container =
+        this.add.container(
+            p.x,
+            p.y
+        )
+        .setDepth(65);
+
+
+        const glow =
+        this.add.circle(
+
+            0,
+            0,
+
+            answerSize *
+            0.57,
+
+            colors[
+                answerIndex
+            ],
+
+            0.20
+
+        );
+
+
+        const pad =
+        this.add.rectangle(
+
+            0,
+            0,
+
+            answerSize,
+            answerSize,
+
+            0xffffff
+
+        )
+        .setStrokeStyle(
+
+            Math.max(
+                3,
+                this.cellSize *
+                0.07
+            ),
+
+            colors[
+                answerIndex
+            ]
+
+        );
+
+
+        const letter =
+        this.add.text(
+
+            0,
+            0,
+
+            LETTERS[
+                answerIndex
+            ],
+
+            {
+                fontFamily:"Arial",
+
+                fontSize:
+                `${Math.max(
+                    17,
+                    this.cellSize * 0.48
+                )}px`,
+
+                fontStyle:"bold",
+
+                color:"#173b4e"
+            }
+
+        )
+        .setOrigin(0.5);
+
+
+        container.add([
+            glow,
+            pad,
+            letter
+        ]);
+
+
+        this.answerZones.push({
+
+            container:
+            container,
+
+            answerIndex:
+            answerIndex,
+
+            x:
+            p.x,
+
+            y:
+            p.y
+        });
+
+
+        this.tweens.add({
+
+            targets:
+            container,
+
+            scale:
+            1.08,
+
+            duration:
+            650 +
+            i * 100,
+
+            yoyo:true,
+
+            repeat:-1,
+
+            ease:
+            "Sine.easeInOut"
+
+        });
+    }
+}
+
+
+/* =========================================================
+   CLEAR ANSWERS
+========================================================= */
+
+clearAnswers(){
+
+    this.answerZones
+    .forEach(
+        zone => {
+
+            if(
+                zone.container
+            ){
+
+                this.tweens
+                .killTweensOf(
+                    zone.container
+                );
+
+
+                zone.container
+                .destroy(
+                    true
+                );
+            }
+        }
+    );
+
+
+    this.answerZones = [];
+}
+
+
+/* =========================================================
+   RESET PLAYER
+========================================================= */
+
+resetPlayer(){
 
     const p =
-    this.cellPos(
+    this.cellPosition(
+
         this.startCell.x,
+
         this.startCell.y
+
     );
 
 
-    const size =
-    Math.min(
-        this.cellW,
-        this.cellH
-    ) *
-    0.58;
+    this.player
+    .setVelocity(
+        0,
+        0
+    );
 
 
-    this.player =
-    this.physics.add.sprite(
+    this.player
+    .setPosition(
         p.x,
-        p.y,
-        "hero"
-    )
-    .setDisplaySize(
-        size,
-        size
-    )
-    .setDepth(50);
+        p.y
+    );
 
 
-    this.player
-    .setMaxVelocity(
-        220,
-        220
+    this.player.body
+    .reset(
+        p.x,
+        p.y
     );
 
 
     this.player
-    .setDrag(
-        900,
-        900
-    );
+    .setRotation(0);
 
+
+    this.resetJoystick();
 }
 
 
@@ -1982,35 +2939,36 @@ createPlayer(){
 createControls(){
 
     this.controlY =
-
     this.mazeArea.y +
     this.mazeArea.h +
     (
         PORTRAIT
-        ? 53
-        : 34
+        ? 75
+        : 40
     );
+
+
+    /*
+        ANALOG DIBESARKAN
+    */
+
+    this.joyRadius =
+    PORTRAIT
+    ? 66
+    : 54;
 
 
     this.joyCenter =
     new Phaser.Math.Vector2(
 
         PORTRAIT
-        ? 88
-        : 92,
+        ? 105
+        : 95,
 
         this.controlY
 
     );
 
-
-    this.joyRadius =
-    PORTRAIT
-    ? 48
-    : 34;
-
-
-    /* BASE */
 
     this.joyBase =
     this.add.circle(
@@ -2021,20 +2979,22 @@ createControls(){
 
         this.joyRadius,
 
-        0x153c55,
+        0x153d55,
 
-        0.15
+        0.17
 
     )
     .setStrokeStyle(
-        3,
-        0x153c55,
-        0.35
+
+        4,
+
+        0x153d55,
+
+        0.45
+
     )
-    .setDepth(80);
+    .setDepth(100);
 
-
-    /* KNOB */
 
     this.joyKnob =
     this.add.circle(
@@ -2044,15 +3004,24 @@ createControls(){
         this.joyCenter.y,
 
         PORTRAIT
-        ? 23
-        : 17,
+        ? 32
+        : 26,
 
-        0x153c55,
+        0x153d55,
 
-        0.62
+        0.68
 
     )
-    .setDepth(81);
+    .setStrokeStyle(
+
+        3,
+
+        0xffffff,
+
+        0.40
+
+    )
+    .setDepth(101);
 
 
     this.add.text(
@@ -2061,95 +3030,91 @@ createControls(){
 
         this.joyCenter.y -
         this.joyRadius -
-        13,
+        15,
 
         "GERAK",
 
         {
             fontFamily:"Arial",
-            fontSize:"10px",
+            fontSize:"11px",
             fontStyle:"bold",
-            color:"#496d7f"
+            color:"#476c80"
         }
 
     )
     .setOrigin(0.5)
-    .setDepth(80);
+    .setDepth(100);
 
 
     /* HOME */
 
-    this.homeBtn =
-    this.makeButton(
+    this.homeButton =
+    this.createButton(
 
         GAME_W -
         (
             PORTRAIT
-            ? 162
-            : 175
+            ? 178
+            : 170
         ),
 
         this.controlY,
 
         PORTRAIT
-        ? 110
-        : 120,
+        ? 120
+        : 115,
 
-        38,
+        42,
 
         "HOME",
 
         () => {
 
-            location.href =
+            window.location.href =
             "index.html";
-
         }
-
     );
 
 
     /* MUSIC */
 
-    this.musicBtn =
-    this.makeButton(
+    this.musicButton =
+    this.createButton(
 
         GAME_W -
         (
             PORTRAIT
-            ? 58
-            : 62
+            ? 61
+            : 57
         ),
 
         this.controlY,
 
         PORTRAIT
-        ? 82
-        : 84,
+        ? 86
+        : 82,
 
-        38,
+        42,
 
         "♪ ON",
 
         () => {
 
+            AUDIO.unlock();
+
+
             const on =
             AUDIO.toggle();
 
 
-            this.musicBtn.label
+            this.musicButton.label
             .setText(
-
                 on
                 ? "♪ ON"
                 : "♪ OFF"
-
             );
-
         }
-
     );
-
 }
 
 
@@ -2157,22 +3122,26 @@ createControls(){
    BUTTON
 ========================================================= */
 
-makeButton(
+createButton(
     x,
     y,
-    w,
-    h,
+    width,
+    height,
     label,
     callback
 ){
 
     const box =
     this.add.rectangle(
+
         x,
         y,
-        w,
-        h,
+
+        width,
+        height,
+
         0xffffff
+
     )
     .setStrokeStyle(
         2,
@@ -2181,7 +3150,7 @@ makeButton(
     .setInteractive({
         useHandCursor:true
     })
-    .setDepth(80);
+    .setDepth(100);
 
 
     const text =
@@ -2197,7 +3166,7 @@ makeButton(
         }
     )
     .setOrigin(0.5)
-    .setDepth(81);
+    .setDepth(101);
 
 
     box.on(
@@ -2207,21 +3176,19 @@ makeButton(
             AUDIO.unlock();
 
             callback();
-
         }
     );
 
 
-    return {
+    return{
         box:box,
         label:text
     };
-
 }
 
 
 /* =========================================================
-   INPUT
+   INPUTS
 ========================================================= */
 
 createInputs(){
@@ -2233,12 +3200,20 @@ createInputs(){
 
     this.keys =
     this.input.keyboard
-    .addKeys(
-        "W,A,S,D"
-    );
+    .addKeys({
+        W:
+        Phaser.Input.Keyboard.KeyCodes.W,
 
+        A:
+        Phaser.Input.Keyboard.KeyCodes.A,
 
-    /* POINTER DOWN */
+        S:
+        Phaser.Input.Keyboard.KeyCodes.S,
+
+        D:
+        Phaser.Input.Keyboard.KeyCodes.D
+    });
+
 
     this.input.on(
         "pointerdown",
@@ -2262,25 +3237,21 @@ createInputs(){
             if(
                 distance <=
                 this.joyRadius +
-                34
+                42
             ){
 
                 this.joyActive =
                 true;
 
 
-                this.updateJoy(
+                this.updateJoystick(
                     pointer.x,
                     pointer.y
                 );
-
             }
-
         }
     );
 
-
-    /* POINTER MOVE */
 
     this.input.on(
         "pointermove",
@@ -2291,25 +3262,20 @@ createInputs(){
                 pointer.isDown
             ){
 
-                this.updateJoy(
+                this.updateJoystick(
                     pointer.x,
                     pointer.y
                 );
-
             }
-
         }
     );
 
-
-    /* POINTER UP */
 
     this.input.on(
         "pointerup",
         () => {
 
-            this.resetJoy();
-
+            this.resetJoystick();
         }
     );
 
@@ -2318,30 +3284,28 @@ createInputs(){
         "pointerupoutside",
         () => {
 
-            this.resetJoy();
-
+            this.resetJoystick();
         }
     );
-
 }
 
 
 /* =========================================================
-   JOYSTICK
+   UPDATE JOYSTICK
 ========================================================= */
 
-updateJoy(
-    x,
-    y
+updateJoystick(
+    pointerX,
+    pointerY
 ){
 
     const dx =
-    x -
+    pointerX -
     this.joyCenter.x;
 
 
     const dy =
-    y -
+    pointerY -
     this.joyCenter.y;
 
 
@@ -2352,9 +3316,11 @@ updateJoy(
     );
 
 
-    if(!distance){
+    if(
+        distance === 0
+    ){
 
-        this.joyVec.set(
+        this.joyVector.set(
             0,
             0
         );
@@ -2364,13 +3330,11 @@ updateJoy(
 
 
     const nx =
-    dx /
-    distance;
+    dx / distance;
 
 
     const ny =
-    dy /
-    distance;
+    dy / distance;
 
 
     const amount =
@@ -2380,7 +3344,7 @@ updateJoy(
     );
 
 
-    const power =
+    const strength =
     amount /
     this.joyRadius;
 
@@ -2397,14 +3361,13 @@ updateJoy(
     );
 
 
-    this.joyVec.set(
+    this.joyVector.set(
 
-        nx * power,
+        nx * strength,
 
-        ny * power
+        ny * strength
 
     );
-
 }
 
 
@@ -2412,27 +3375,31 @@ updateJoy(
    RESET JOYSTICK
 ========================================================= */
 
-resetJoy(){
+resetJoystick(){
 
     this.joyActive =
     false;
 
 
-    this.joyVec.set(
+    this.joyVector.set(
         0,
         0
     );
 
 
-    this.joyKnob
-    .setPosition(
+    if(
+        this.joyKnob
+    ){
 
-        this.joyCenter.x,
+        this.joyKnob
+        .setPosition(
 
-        this.joyCenter.y
+            this.joyCenter.x,
 
-    );
+            this.joyCenter.y
 
+        );
+    }
 }
 
 
@@ -2440,7 +3407,7 @@ resetJoy(){
    START WINDOW
 ========================================================= */
 
-showStart(){
+showStartWindow(){
 
     const shade =
     this.add.rectangle(
@@ -2453,24 +3420,24 @@ showStart(){
 
         GAME_H,
 
-        0x0d2837,
+        0x0c2838,
 
-        0.82
+        0.84
 
     )
-    .setDepth(200);
+    .setDepth(300);
 
 
     const width =
     PORTRAIT
-    ? GAME_W - 50
-    : 520;
+    ? GAME_W - 54
+    : 540;
 
 
     const height =
     PORTRAIT
-    ? 380
-    : 310;
+    ? 430
+    : 330;
 
 
     const card =
@@ -2489,9 +3456,9 @@ showStart(){
     )
     .setStrokeStyle(
         4,
-        0x4d8199
+        0x4c829c
     )
-    .setDepth(201);
+    .setDepth(301);
 
 
     const title =
@@ -2501,17 +3468,17 @@ showStart(){
 
         GAME_H / 2 -
         height / 2 +
-        48,
+        53,
 
-        "MAZE 4 LORONG",
+        "MAGNET MAZE PUZZLE",
 
         {
             fontFamily:"Arial",
 
             fontSize:
             PORTRAIT
-            ? "30px"
-            : "29px",
+            ? "29px"
+            : "28px",
 
             fontStyle:"bold",
 
@@ -2520,7 +3487,7 @@ showStart(){
 
     )
     .setOrigin(0.5)
-    .setDepth(202);
+    .setDepth(302);
 
 
     const info =
@@ -2529,17 +3496,18 @@ showStart(){
         GAME_W / 2,
 
         GAME_H / 2 -
-        15,
+        12,
 
-        "Baca soalan di bahagian atas.\n\n" +
+        "Ini ialah maze puzzle sebenar.\n\n" +
 
-        "Setiap cabang maze membawa ke satu hujung.\n" +
+        "Cari jalan melalui simpang dan jalan mati.\n" +
 
-        "Setiap hujung mempunyai jawapan A, B, C atau D.\n\n" +
+        "Empat hujung maze mengandungi A, B, C dan D.\n\n" +
 
-        "Pilih lorong dan sampai ke jawapan yang betul.\n" +
+        "Gerakkan magnet ke jawapan yang betul.\n\n" +
 
-        "Jika salah, anda kembali ke START.",
+        "Setiap soalan akan menghasilkan\n" +
+        "maze baru yang berbeza.",
 
         {
             fontFamily:"Arial",
@@ -2549,11 +3517,11 @@ showStart(){
             ? "17px"
             : "16px",
 
-            color:"#31566a",
+            color:"#31576b",
 
             align:"center",
 
-            lineSpacing:4,
+            lineSpacing:5,
 
             wordWrap:{
                 width:
@@ -2563,43 +3531,43 @@ showStart(){
 
     )
     .setOrigin(0.5)
-    .setDepth(202);
+    .setDepth(302);
 
 
-    const button =
+    const startButton =
     this.add.rectangle(
 
         GAME_W / 2,
 
         GAME_H / 2 +
         height / 2 -
-        58,
+        61,
 
-        210,
+        220,
 
-        54,
+        56,
 
-        0x2f8d59
+        0x2d8d58
 
     )
     .setStrokeStyle(
         2,
-        0x1c6941
+        0x17683e
     )
     .setInteractive({
         useHandCursor:true
     })
-    .setDepth(202);
+    .setDepth(302);
 
 
-    const buttonText =
+    const startText =
     this.add.text(
 
         GAME_W / 2,
 
         GAME_H / 2 +
         height / 2 -
-        58,
+        61,
 
         "MULA GAME",
 
@@ -2612,10 +3580,10 @@ showStart(){
 
     )
     .setOrigin(0.5)
-    .setDepth(203);
+    .setDepth(303);
 
 
-    button.on(
+    startButton.on(
         "pointerdown",
         () => {
 
@@ -2627,15 +3595,12 @@ showStart(){
                 card,
                 title,
                 info,
-                button,
-                buttonText
+                startButton,
+                startText
             ]
             .forEach(
-                object => {
-
-                    object.destroy();
-
-                }
+                object =>
+                object.destroy()
             );
 
 
@@ -2648,10 +3613,8 @@ showStart(){
 
 
             this.loadQuestion();
-
         }
     );
-
 }
 
 
@@ -2662,7 +3625,7 @@ showStart(){
 loadQuestion(){
 
     if(
-        this.qIndex >=
+        this.questionIndex >=
         QUESTIONS.length
     ){
 
@@ -2676,19 +3639,16 @@ loadQuestion(){
     true;
 
 
-    this.clearAnswers();
-
-
     const item =
     QUESTIONS[
-        this.qIndex
+        this.questionIndex
     ];
 
 
     this.progressText
     .setText(
 
-        `${this.qIndex + 1} / ${QUESTIONS.length}`
+        `${this.questionIndex + 1} / ${QUESTIONS.length}`
 
     );
 
@@ -2725,288 +3685,112 @@ loadQuestion(){
             `${LETTERS[i]}. ${item.o[i]}`
 
         );
-
     }
 
 
-    this.resetPlayer();
+    /*
+        ROMBAK MAZE UNTUK
+        SETIAP SOALAN.
+    */
 
-    this.createAnswers();
+    this.buildNewMaze();
+
+
+    this.showMazeNumber();
 
 
     this.time.delayedCall(
-        200,
+        350,
         () => {
 
             this.locked =
             false;
-
         }
     );
-
 }
 
 
 /* =========================================================
-   ANSWERS AT END OF MAZE
+   MAZE NEW MESSAGE
 ========================================================= */
 
-createAnswers(){
+showMazeNumber(){
 
-    /*
-        A B C D dirandom.
+    const bg =
+    this.add.rectangle(
 
-        Jadi jawapan A tidak
-        sentiasa berada pada
-        lorong yang sama.
-    */
+        GAME_W / 2,
+
+        this.mazeArea.y + 25,
+
+        230,
+
+        38,
+
+        0x173e54,
+
+        0.94
+
+    )
+    .setDepth(150);
 
 
-    const order =
-    Phaser.Utils.Array.Shuffle(
-        [0,1,2,3]
+    const text =
+    this.add.text(
+
+        GAME_W / 2,
+
+        this.mazeArea.y + 25,
+
+        `MAZE ${this.questionIndex + 1}`,
+
+        {
+            fontFamily:"Arial",
+            fontSize:"14px",
+            fontStyle:"bold",
+            color:"#ffffff"
+        }
+
+    )
+    .setOrigin(0.5)
+    .setDepth(151);
+
+
+    bg.setScale(
+        0.75
     );
 
 
-    const colors = [
-
-        0xe35b5b,
-
-        0x4b88df,
-
-        0xf0a53b,
-
-        0x42a86a
-
-    ];
-
-
-    const size =
-    Math.min(
-        this.cellW,
-        this.cellH
+    text.setScale(
+        0.75
     );
 
 
-    this.endCells
-    .forEach(
-        (cell,index) => {
+    this.tweens.add({
 
-            const p =
-            this.cellPos(
-                cell.x,
-                cell.y
-            );
+        targets:[
+            bg,
+            text
+        ],
 
+        scale:1,
 
-            const answerIndex =
-            order[index];
+        duration:160,
 
+        ease:"Back.Out"
 
-            const container =
-            this.add.container(
-                p.x,
-                p.y
-            )
-            .setDepth(60);
+    });
 
 
-            const glow =
-            this.add.circle(
+    this.time.delayedCall(
+        550,
+        () => {
 
-                0,
-                0,
+            bg.destroy();
 
-                size *
-                0.42,
-
-                colors[
-                    answerIndex
-                ],
-
-                0.22
-
-            );
-
-
-            const box =
-            this.add.rectangle(
-
-                0,
-                0,
-
-                size *
-                0.70,
-
-                size *
-                0.70,
-
-                0xffffff
-
-            )
-            .setStrokeStyle(
-
-                3,
-
-                colors[
-                    answerIndex
-                ]
-
-            );
-
-
-            const text =
-            this.add.text(
-
-                0,
-                0,
-
-                LETTERS[
-                    answerIndex
-                ],
-
-                {
-                    fontFamily:"Arial",
-
-                    fontSize:
-                    `${Math.max(
-                        16,
-                        size * 0.48
-                    )}px`,
-
-                    fontStyle:"bold",
-
-                    color:"#173b4e"
-                }
-
-            )
-            .setOrigin(0.5);
-
-
-            container.add([
-                glow,
-                box,
-                text
-            ]);
-
-
-            this.answerZones.push({
-
-                container:
-                container,
-
-                answerIndex:
-                answerIndex,
-
-                x:
-                p.x,
-
-                y:
-                p.y
-
-            });
-
-
-            this.tweens.add({
-
-                targets:
-                container,
-
-                scale:
-                1.08,
-
-                duration:
-                700 +
-                index * 90,
-
-                yoyo:
-                true,
-
-                repeat:
-                -1,
-
-                ease:
-                "Sine.easeInOut"
-
-            });
-
+            text.destroy();
         }
     );
-
-}
-
-
-/* =========================================================
-   CLEAR ANSWERS
-========================================================= */
-
-clearAnswers(){
-
-    this.answerZones
-    .forEach(
-        answer => {
-
-            this.tweens
-            .killTweensOf(
-                answer.container
-            );
-
-
-            answer.container
-            .destroy(true);
-
-        }
-    );
-
-
-    this.answerZones = [];
-
-}
-
-
-/* =========================================================
-   RESET PLAYER
-========================================================= */
-
-resetPlayer(){
-
-    const p =
-    this.cellPos(
-
-        this.startCell.x,
-
-        this.startCell.y
-
-    );
-
-
-    this.player
-    .setVelocity(
-        0,
-        0
-    );
-
-
-    this.player
-    .setPosition(
-        p.x,
-        p.y
-    );
-
-
-    this.player.body
-    .reset(
-        p.x,
-        p.y
-    );
-
-
-    this.player
-    .setRotation(0);
-
-
-    this.resetJoy();
-
 }
 
 
@@ -3020,7 +3804,6 @@ update(){
         !this.started ||
         !this.player
     ){
-
         return;
     }
 
@@ -3030,17 +3813,15 @@ update(){
     let moveY = 0;
 
 
-    /* =============================
+    /* =====================================================
        KEYBOARD
-    ============================= */
+    ===================================================== */
 
     if(
         this.cursors.left.isDown ||
         this.keys.A.isDown
     ){
-
-        moveX--;
-
+        moveX -= 1;
     }
 
 
@@ -3048,9 +3829,7 @@ update(){
         this.cursors.right.isDown ||
         this.keys.D.isDown
     ){
-
-        moveX++;
-
+        moveX += 1;
     }
 
 
@@ -3058,9 +3837,7 @@ update(){
         this.cursors.up.isDown ||
         this.keys.W.isDown
     ){
-
-        moveY--;
-
+        moveY -= 1;
     }
 
 
@@ -3068,22 +3845,20 @@ update(){
         this.cursors.down.isDown ||
         this.keys.S.isDown
     ){
-
-        moveY++;
-
+        moveY += 1;
     }
 
 
-    /* =============================
+    /* =====================================================
        ANALOG
-    ============================= */
+    ===================================================== */
 
     moveX +=
-    this.joyVec.x;
+    this.joyVector.x;
 
 
     moveY +=
-    this.joyVec.y;
+    this.joyVector.y;
 
 
     const length =
@@ -3103,14 +3878,13 @@ update(){
 
         moveY /=
         length;
-
     }
 
 
     const speed =
     PORTRAIT
-    ? 145
-    : 160;
+    ? 135
+    : 150;
 
 
     if(
@@ -3122,7 +3896,6 @@ update(){
             0,
             0
         );
-
     }
 
     else{
@@ -3137,54 +3910,42 @@ update(){
             speed
 
         );
-
     }
 
 
-    /* =============================
-       CHARACTER ROTATION
-    ============================= */
+    /*
+        Magnet kekal tegak supaya
+        simbol sentiasa jelas.
+        Cuma sedikit tilt semasa bergerak.
+    */
 
     if(
-        Math.abs(
-            moveX
-        ) > 0.05 ||
-
-        Math.abs(
-            moveY
-        ) > 0.05
+        Math.abs(moveX) >
+        Math.abs(moveY)
     ){
 
-        this.player.rotation =
-
-        Phaser.Math.Angle.RotateTo(
-
-            this.player.rotation,
-
-            Math.atan2(
-                moveY,
-                moveX
-            ),
-
-            0.09
-
+        this.player
+        .setRotation(
+            moveX *
+            0.10
         );
-
     }
 
+    else{
 
-    /* =============================
-       CHECK ANSWER
-    ============================= */
+        this.player
+        .setRotation(
+            0
+        );
+    }
+
 
     if(
         !this.locked
     ){
 
         this.checkAnswer();
-
     }
-
 }
 
 
@@ -3194,13 +3955,9 @@ update(){
 
 checkAnswer(){
 
-    const distanceNeeded =
-
-    Math.min(
-        this.cellW,
-        this.cellH
-    ) *
-    0.48;
+    const triggerDistance =
+    this.cellSize *
+    0.40;
 
 
     for(
@@ -3209,15 +3966,12 @@ checkAnswer(){
     ){
 
         const distance =
-
         Phaser.Math.Distance.Between(
 
             this.player.x,
-
             this.player.y,
 
             zone.x,
-
             zone.y
 
         );
@@ -3225,7 +3979,7 @@ checkAnswer(){
 
         if(
             distance <
-            distanceNeeded
+            triggerDistance
         ){
 
             this.chooseAnswer(
@@ -3233,11 +3987,8 @@ checkAnswer(){
             );
 
             return;
-
         }
-
     }
-
 }
 
 
@@ -3252,9 +4003,7 @@ chooseAnswer(
     if(
         this.locked
     ){
-
         return;
-
     }
 
 
@@ -3271,7 +4020,7 @@ chooseAnswer(
 
     const item =
     QUESTIONS[
-        this.qIndex
+        this.questionIndex
     ];
 
 
@@ -3290,47 +4039,34 @@ chooseAnswer(
 
         this.scoreText
         .setText(
-
             `Skor ${this.score}`
-
         );
 
 
         AUDIO.correct();
 
 
-        this.flash(
-
-            "BETUL! +100",
-
-            0x2f945b
-
+        this.showMessage(
+            "BETUL! MAZE BARU AKAN DIBINA",
+            0x2e9259
         );
 
 
-        this.burst(
-
+        this.createParticles(
             zone.x,
-
             zone.y
-
         );
 
 
         this.time.delayedCall(
-
-            750,
-
+            900,
             () => {
 
-                this.qIndex++;
+                this.questionIndex++;
 
                 this.loadQuestion();
-
             }
-
         );
-
     }
 
 
@@ -3341,7 +4077,6 @@ chooseAnswer(
     else{
 
         this.score =
-
         Math.max(
             0,
             this.score - 20
@@ -3350,48 +4085,43 @@ chooseAnswer(
 
         this.scoreText
         .setText(
-
             `Skor ${this.score}`
-
         );
 
 
         AUDIO.wrong();
 
 
-        this.flash(
-
-            "SALAH — CUBA LORONG LAIN",
-
-            0xc84b4b
-
+        this.showMessage(
+            "SALAH — KEMBALI KE START",
+            0xc84949
         );
 
 
         this.cameras.main
         .shake(
-            140,
-            0.004
+            150,
+            0.005
         );
 
 
         this.time.delayedCall(
-
-            700,
-
+            750,
             () => {
+
+                /*
+                    Salah:
+                    maze TIDAK berubah.
+                    Hanya kembali start.
+                */
 
                 this.resetPlayer();
 
                 this.locked =
                 false;
-
             }
-
         );
-
     }
-
 }
 
 
@@ -3399,14 +4129,20 @@ chooseAnswer(
    MESSAGE
 ========================================================= */
 
-flash(
+showMessage(
     text,
     color
 ){
 
+    const width =
+    PORTRAIT
+    ? 380
+    : 410;
+
+
     const y =
     this.mazeArea.y +
-    26;
+    27;
 
 
     const bg =
@@ -3416,18 +4152,16 @@ flash(
 
         y,
 
-        PORTRAIT
-        ? 330
-        : 350,
+        width,
 
-        40,
+        42,
 
         color,
 
         0.97
 
     )
-    .setDepth(120);
+    .setDepth(180);
 
 
     const label =
@@ -3441,14 +4175,20 @@ flash(
 
         {
             fontFamily:"Arial",
-            fontSize:"16px",
+
+            fontSize:
+            PORTRAIT
+            ? "14px"
+            : "15px",
+
             fontStyle:"bold",
+
             color:"#ffffff"
         }
 
     )
     .setOrigin(0.5)
-    .setDepth(121);
+    .setDepth(181);
 
 
     bg.setScale(
@@ -3470,27 +4210,21 @@ flash(
 
         scale:1,
 
-        duration:140,
+        duration:150,
 
         ease:"Back.Out"
-
     });
 
 
     this.time.delayedCall(
-
-        540,
-
+        600,
         () => {
 
             bg.destroy();
 
             label.destroy();
-
         }
-
     );
-
 }
 
 
@@ -3498,27 +4232,22 @@ flash(
    PARTICLES
 ========================================================= */
 
-burst(
+createParticles(
     x,
     y
 ){
 
     const colors = [
-
-        0xffd65a,
-
-        0x55c982,
-
-        0x5aa8e9,
-
-        0xff7070
-
+        0xffd55a,
+        0x54c983,
+        0x56a8e8,
+        0xff6f70
     ];
 
 
     for(
         let i = 0;
-        i < 14;
+        i < 16;
         i++
     ){
 
@@ -3528,14 +4257,12 @@ burst(
             y,
             "spark"
         )
-        .setDepth(130)
+        .setDepth(190)
         .setTint(
-
             Phaser.Utils.Array
             .GetRandom(
                 colors
             )
-
         );
 
 
@@ -3548,7 +4275,7 @@ burst(
         const distance =
         Phaser.Math.Between(
             28,
-            75
+            85
         );
 
 
@@ -3578,20 +4305,16 @@ burst(
             duration:
             Phaser.Math.Between(
                 350,
-                620
+                650
             ),
 
             onComplete:
             () => {
 
                 particle.destroy();
-
             }
-
         });
-
     }
-
 }
 
 
@@ -3612,13 +4335,10 @@ showWin(){
     );
 
 
-    this.clearAnswers();
-
-
     AUDIO.win();
 
 
-    const total =
+    const totalSeconds =
     Math.round(
 
         (
@@ -3632,13 +4352,13 @@ showWin(){
 
     const minutes =
     Math.floor(
-        total / 60
+        totalSeconds / 60
     );
 
 
     const seconds =
     String(
-        total % 60
+        totalSeconds % 60
     )
     .padStart(
         2,
@@ -3657,24 +4377,24 @@ showWin(){
 
         GAME_H,
 
-        0x0a2635,
+        0x092535,
 
-        0.84
+        0.85
 
     )
-    .setDepth(300);
+    .setDepth(400);
 
 
     const width =
     PORTRAIT
-    ? GAME_W - 48
-    : 500;
+    ? GAME_W - 52
+    : 510;
 
 
     const height =
     PORTRAIT
-    ? 340
-    : 290;
+    ? 350
+    : 300;
 
 
     const card =
@@ -3693,9 +4413,9 @@ showWin(){
     )
     .setStrokeStyle(
         4,
-        0x2f8e59
+        0x2f8d59
     )
-    .setDepth(301);
+    .setDepth(401);
 
 
     this.add.text(
@@ -3704,20 +4424,26 @@ showWin(){
 
         GAME_H / 2 -
         height / 2 +
-        50,
+        52,
 
-        "MAZE SELESAI!",
+        "SEMUA MAZE SELESAI!",
 
         {
             fontFamily:"Arial",
-            fontSize:"30px",
+
+            fontSize:
+            PORTRAIT
+            ? "28px"
+            : "30px",
+
             fontStyle:"bold",
-            color:"#237448"
+
+            color:"#237548"
         }
 
     )
     .setOrigin(0.5)
-    .setDepth(302);
+    .setDepth(402);
 
 
     this.add.text(
@@ -3727,41 +4453,49 @@ showWin(){
         GAME_H / 2 -
         15,
 
-        `Semua 25 soalan selesai!\n\nSkor: ${this.score}\nMasa: ${minutes}:${seconds}`,
+        "25 / 25 soalan selesai\n\n" +
+
+        `Skor: ${this.score}\n` +
+
+        `Masa: ${minutes}:${seconds}`,
 
         {
             fontFamily:"Arial",
+
             fontSize:"20px",
-            color:"#294b5e",
+
+            color:"#294c5f",
+
             align:"center",
+
             lineSpacing:7
         }
 
     )
     .setOrigin(0.5)
-    .setDepth(302);
+    .setDepth(402);
 
 
-    const button =
+    const restart =
     this.add.rectangle(
 
         GAME_W / 2,
 
         GAME_H / 2 +
         height / 2 -
-        58,
+        60,
 
-        200,
+        205,
 
-        52,
+        53,
 
-        0x2f8e59
+        0x2f8d59
 
     )
     .setInteractive({
         useHandCursor:true
     })
-    .setDepth(302);
+    .setDepth(402);
 
 
     this.add.text(
@@ -3770,7 +4504,7 @@ showWin(){
 
         GAME_H / 2 +
         height / 2 -
-        58,
+        60,
 
         "MAIN SEMULA",
 
@@ -3783,18 +4517,16 @@ showWin(){
 
     )
     .setOrigin(0.5)
-    .setDepth(303);
+    .setDepth(403);
 
 
-    button.on(
+    restart.on(
         "pointerdown",
         () => {
 
             this.scene.restart();
-
         }
     );
-
 }
 
 }
@@ -3807,9 +4539,8 @@ showWin(){
 const config = {
 
     /*
-        CANVAS digunakan supaya
-        lebih stabil pada Safari
-        dan iPad.
+        CANVAS lebih stabil
+        untuk Safari / iPad.
     */
 
     type:
@@ -3829,7 +4560,7 @@ const config = {
 
 
     backgroundColor:
-    "#d8e9f1",
+    "#dceaf1",
 
 
     physics:{
@@ -3845,9 +4576,7 @@ const config = {
             },
 
             debug:false
-
         }
-
     },
 
 
@@ -3856,7 +4585,6 @@ const config = {
         antialias:true,
 
         roundPixels:true
-
     },
 
 
@@ -3873,14 +4601,12 @@ const config = {
 
         height:
         GAME_H
-
     },
 
 
     scene:[
-        MazeGame
+        MazeScene
     ]
-
 };
 
 
