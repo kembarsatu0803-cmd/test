@@ -13,7 +13,10 @@ viewport-fit=cover">
 
 <title>Magnet One Trail - Set 6</title>
 
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+
 <style>
+
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
@@ -23,28 +26,34 @@ html,
 body{
     margin:0;
     padding:0;
+
     width:100%;
     min-height:100%;
-
-    font-family:"Trebuchet MS",Arial,sans-serif;
 
     background:
     linear-gradient(
         135deg,
         #d9f3ff,
-        #f7fcff,
+        #f8fcff,
         #dcecff
     );
+
+    font-family:
+    "Trebuchet MS",
+    Arial,
+    sans-serif;
 
     touch-action:none;
     overscroll-behavior:none;
 }
 
 body{
+
     min-height:100vh;
     min-height:100svh;
 
     display:flex;
+
     justify-content:center;
     align-items:flex-start;
 
@@ -55,7 +64,6 @@ body{
 }
 
 #game-shell{
-    position:relative;
 
     width:min(
         98vw,
@@ -63,7 +71,7 @@ body{
         calc(96svh * .79)
     );
 
-    aspect-ratio:5/6.35;
+    aspect-ratio:5 / 6.35;
 
     overflow:hidden;
 
@@ -79,14 +87,13 @@ body{
 }
 
 #game{
-    position:absolute;
-    inset:0;
 
     width:100%;
     height:100%;
 }
 
 #game canvas{
+
     display:block;
 
     width:100%!important;
@@ -98,27 +105,31 @@ body{
     -webkit-user-select:none;
 }
 
-#phaser-error{
+#error-box{
+
     display:none;
 
-    position:absolute;
+    position:fixed;
+
     inset:0;
 
-    z-index:999;
+    background:#e5f5ff;
+
+    color:#a22f38;
 
     align-items:center;
-    justify-content:center;
 
-    padding:35px;
+    justify-content:center;
 
     text-align:center;
 
-    background:#e0f4ff;
+    padding:30px;
 
-    color:#9d3138;
+    font-size:20px;
 
-    font-size:22px;
-    font-weight:800;
+    font-weight:bold;
+
+    z-index:9999;
 }
 
 @media(max-width:540px){
@@ -128,6 +139,7 @@ body{
     }
 
     #game-shell{
+
         width:99vw;
 
         border-radius:15px;
@@ -135,48 +147,22 @@ body{
         border-width:2px;
     }
 }
+
 </style>
-
-
-<!-- PHASER UTAMA -->
-<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
-
-<!-- FALLBACK JIKA CDN UTAMA TAK LOAD -->
-<script>
-if(!window.Phaser){
-    document.write(
-        '<script src="https://unpkg.com/phaser@3.80.1/dist/phaser.min.js"><\/script>'
-    );
-}
-</script>
-
-<script>
-if(!window.Phaser){
-    document.write(
-        '<script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js"><\/script>'
-    );
-}
-</script>
-
 </head>
 
 <body>
 
 <div id="game-shell">
-
     <div id="game"></div>
+</div>
 
-    <div id="phaser-error">
-        Phaser 3 gagal dimuatkan.<br><br>
-        Refresh page sekali lagi.
-    </div>
-
+<div id="error-box">
+    Game tidak dapat dimulakan.
 </div>
 
 
 <script>
-
-(function(){
 
 "use strict";
 
@@ -185,13 +171,15 @@ if(!window.Phaser){
    SEMAK PHASER
    ========================================================= */
 
-if(!window.Phaser){
+if(typeof Phaser === "undefined"){
 
     document.getElementById(
-        "phaser-error"
+        "error-box"
     ).style.display = "flex";
 
-    return;
+    throw new Error(
+        "Phaser gagal dimuatkan."
+    );
 }
 
 
@@ -199,29 +187,31 @@ if(!window.Phaser){
    GAME SIZE
    ========================================================= */
 
-const W = 900;
-const H = 1140;
+const GAME_W = 900;
+const GAME_H = 1140;
 
 
 /* =========================================================
-   STAGE
-
-   Semua stage dah ada solution tetap.
+   25 PUZZLE SIAP
 
    r = rows
    c = columns
-   s = starting position
-   d = direction solution
+   s = start position
+   d = laluan penyelesaian
 
-   U = UP
-   D = DOWN
-   L = LEFT
-   R = RIGHT
+   U = atas
+   D = bawah
+   L = kiri
+   R = kanan
 
-   Semua petak yang TAK termasuk dalam solution
-   akan menjadi BLOCK.
+   Semua petak yang TIDAK termasuk dalam laluan
+   automatik menjadi BLOCK.
 
-   Jadi setiap puzzle memang boleh diselesaikan.
+   Jadi:
+   - semua petak kosong boleh dilalui
+   - setiap petak hanya sekali
+   - portal sentiasa boleh dicapai
+   - portal ialah petak terakhir
    ========================================================= */
 
 const STAGES = [
@@ -229,15 +219,15 @@ const STAGES = [
 {
 r:5,
 c:5,
-s:[0,4],
-d:"DDDDLLLLUUUURRRDDDLL"
+s:[4,4],
+d:"LLLLURRRRULLLLUURDRU"
 },
 
 {
 r:5,
 c:5,
 s:[0,0],
-d:"DDDDRUUUURDDDDRRULUR"
+d:"RRRRDLLLLDRRRRDDLULD"
 },
 
 {
@@ -250,155 +240,155 @@ d:"LLLLURRRRULLLLUURDRU"
 {
 r:5,
 c:5,
-s:[4,0],
-d:"RRRRULLLLUUURDDRRRUU"
+s:[4,4],
+d:"LLLLURRRRUUULDDLUULL"
 },
 
 {
 r:5,
 c:5,
-s:[0,4],
-d:"LLLLDRRRRDDDLUULDDLL"
-},
-
-{
-r:5,
-c:6,
-s:[0,0],
-d:"RRRRRDLLLLLDDDRRRRRUULDL"
+s:[4,4],
+d:"UUUULDDDDLLLUUUURRDL"
 },
 
 {
 r:5,
 c:6,
 s:[4,5],
-d:"UUUULLLLLDRRRRDLLLLDDRUR"
+d:"LLLLLURRRRRUUULLLLLDDRUR"
 },
 
 {
 r:5,
 c:6,
 s:[4,0],
-d:"UUUURRRRRDLLLLDDDRRRRUUL"
-},
-
-{
-r:5,
-c:6,
-s:[0,5],
-d:"LLLLLDRRRRRDDDLUULLLLDDR"
+d:"UUUURRRRRDDDDLUUULLLDRRD"
 },
 
 {
 r:5,
 c:6,
 s:[0,0],
-d:"DDDDRUUUURDDDDRUUUURRDLD"
+d:"RRRRRDLLLLLDRRRRRDDLULDL"
+},
+
+{
+r:5,
+c:6,
+s:[4,5],
+d:"UUUULLLLLDDDDRRRRUUULLLD"
+},
+
+{
+r:5,
+c:6,
+s:[0,5],
+d:"DDDDLLLLLURRRRUUULLLLDDR"
+},
+
+{
+r:6,
+c:6,
+s:[0,5],
+d:"LLLLLDRRRRRDLLLLLDRRRRRDDLUL"
+},
+
+{
+r:6,
+c:6,
+s:[5,0],
+d:"UUUUURDDDDDRUUUUURDDDDDRRULU"
+},
+
+{
+r:6,
+c:6,
+s:[5,0],
+d:"UUUUURDDDDDRRRRULLLURRRUUULD"
 },
 
 {
 r:6,
 c:6,
 s:[5,5],
-d:"UUUUULDDDDDLUUUUULLLDDDDDRRU"
-},
-
-{
-r:6,
-c:6,
-s:[5,0],
-d:"RRRRRUUUUULDDDDLLLLUUUURDDDR"
-},
-
-{
-r:6,
-c:6,
-s:[0,5],
-d:"DDDDDLLLLLUUUUURRRRDDDDLLLUU"
+d:"LLLLLURRRRRULLLLLUUURRRRRDDL"
 },
 
 {
 r:6,
 c:6,
 s:[0,0],
-d:"RRRRRDLLLLLDRRRRRDDDLLLLLUUR"
+d:"RRRRRDLLLLLDDDDRRRRRUUULDDLU"
 },
 
 {
 r:6,
-c:6,
+c:7,
 s:[0,0],
-d:"RRRRRDLLLLLDRRRRRDDDLUULLLLD"
+d:"DDDDDRRRRRRUUUUULLLLLDRRRRDDDLLL"
 },
 
 {
 r:6,
 c:7,
 s:[5,0],
-d:"RRRRRRULLLLLLUUUURRRRRRDLLLLLDDR"
-},
-
-{
-r:6,
-c:7,
-s:[0,6],
-d:"LLLLLLDRRRRRRDDDDLUUULDDDLUUULDD"
-},
-
-{
-r:6,
-c:7,
-s:[0,0],
-d:"RRRRRRDDDDDLUUUULLLLLDRRRRDDDLLL"
+d:"RRRRRRULLLLLLUUUURDDDRUUURRRRDDD"
 },
 
 {
 r:6,
 c:7,
 s:[5,6],
-d:"LLLLLLURRRRRRULLLLLLURRRRRRUULDL"
+d:"LLLLLLURRRRRRUUUULLLLLLDDDRUURRR"
 },
 
 {
 r:6,
 c:7,
-s:[5,0],
-d:"UUUUURRRRRRDDDDDLLLLLURRRRULLLLU"
+s:[5,6],
+d:"LLLLLLURRRRRRUUUULDDDLLLLLURRRRU"
 },
 
 {
-r:7,
+r:6,
 c:7,
-s:[0,6],
-d:"LLLLLLDRRRRRRDLLLLLLDDDDRRRRRRUUULDDL"
+s:[0,0],
+d:"RRRRRRDLLLLLLDDDDRRRRRRUUULDDLUU"
 },
 
 {
 r:7,
 c:7,
 s:[0,0],
-d:"DDDDDDRRRRRRUUUUUULLLLLDDDDDRRRRUUUUL"
-},
-
-{
-r:7,
-c:7,
-s:[6,6],
-d:"UUUUUULLLLLLDDDDDDRRRRRUUUUULLLLDRRRD"
-},
-
-{
-r:7,
-c:7,
-s:[6,0],
-d:"RRRRRRULLLLLLURRRRRRUUUULDDDLLLLLUUUR"
+d:"DDDDDDRRRRRRULLLLLUUUUURDDDDRUUUURRRD"
 },
 
 {
 r:7,
 c:7,
 s:[0,6],
-d:"DDDDDDLLLLLLUUUUUURRRRRDLLLLDDDDRUUUR"
+d:"DDDDDDLUUUUUULLLLLDRRRRDDDDDLUUUULDDD"
+},
+
+{
+r:7,
+c:7,
+s:[0,6],
+d:"DDDDDDLLLLLLURRRRRULLLLLUUUURDDDRRRUL"
+},
+
+{
+r:7,
+c:7,
+s:[6,6],
+d:"LLLLLLUUUUUURDDDDDRRRRRULLLLUUUURRRRD"
+},
+
+{
+r:7,
+c:7,
+s:[0,0],
+d:"RRRRRRDLLLLLLDRRRRRRDDDDLLLLLLUUURDDR"
 }
 
 ];
@@ -411,7 +401,7 @@ d:"DDDDDDLLLLLLUUUUUURRRRRDLLLLDDDDRUUUR"
 const QUESTIONS = [
 
 {
-t:"Apakah Gunanya Magnet?",
+topic:"Apakah Gunanya Magnet?",
 q:"Seorang murid mahu menghasilkan pin bermagnet seperti aktiviti dalam buku. Magnet apakah yang digunakan?",
 a:[
 "Dua magnet bar",
@@ -419,11 +409,11 @@ a:[
 "Dua magnet ladam",
 "Dua magnet silinder"
 ],
-k:1
+correct:1
 },
 
 {
-t:"Apakah Gunanya Magnet?",
+topic:"Apakah Gunanya Magnet?",
 q:"Antara situasi berikut, yang manakah menunjukkan kegunaan magnet dalam kehidupan seharian?",
 a:[
 "Mengukur panjang meja",
@@ -431,11 +421,11 @@ a:[
 "Memadam tulisan pensel",
 "Menutup pintu peti sejuk dengan rapat"
 ],
-k:3
+correct:3
 },
 
 {
-t:"Apakah Gunanya Magnet?",
+topic:"Apakah Gunanya Magnet?",
 q:"Apakah alat yang boleh memegang skru supaya tidak mudah jatuh?",
 a:[
 "Pembaris plastik",
@@ -443,11 +433,11 @@ a:[
 "Pemadam",
 "Guli"
 ],
-k:1
+correct:1
 },
 
 {
-t:"Apakah Gunanya Magnet?",
+topic:"Apakah Gunanya Magnet?",
 q:"Tanda nama cikgu boleh melekat tanpa pin kerana mengandungi ____.",
 a:[
 "Kayu",
@@ -455,11 +445,11 @@ a:[
 "Magnet",
 "Plastik"
 ],
-k:2
+correct:2
 },
 
 {
-t:"Apakah Gunanya Magnet?",
+topic:"Apakah Gunanya Magnet?",
 q:"Siti mahu kotak penselnya boleh ditutup rapat seperti contoh dalam buku. Penutup itu perlu mempunyai ____.",
 a:[
 "Magnet",
@@ -467,11 +457,11 @@ a:[
 "Guli",
 "Kayu aiskrim"
 ],
-k:0
+correct:0
 },
 
 {
-t:"Bentuk Magnet",
+topic:"Bentuk Magnet",
 q:"Yang manakah nama magnet yang berbentuk seperti butang?",
 a:[
 "Magnet buku",
@@ -479,11 +469,11 @@ a:[
 "Magnet butang",
 "Magnet pensel"
 ],
-k:2
+correct:2
 },
 
 {
-t:"Bentuk Magnet",
+topic:"Bentuk Magnet",
 q:"Apakah nama magnet yang berbentuk seperti ladam kuda?",
 a:[
 "Magnet cincin",
@@ -491,11 +481,11 @@ a:[
 "Magnet butang",
 "Magnet bar"
 ],
-k:1
+correct:1
 },
 
 {
-t:"Bentuk Magnet",
+topic:"Bentuk Magnet",
 q:"Pasangan manakah terdiri daripada magnet ladam dan satu lagi bentuk magnet yang betul?",
 a:[
 "Magnet bunga dan magnet akar",
@@ -503,11 +493,11 @@ a:[
 "Magnet air dan magnet pasir",
 "Magnet ladam dan magnet bentuk U"
 ],
-k:3
+correct:3
 },
 
 {
-t:"Bentuk Magnet",
+topic:"Bentuk Magnet",
 q:"Apakah perbezaan yang dinyatakan antara magnet ladam dengan magnet bentuk U?",
 a:[
 "Kutub magnet ladam lebih rapat",
@@ -515,11 +505,11 @@ a:[
 "Magnet U diperbuat daripada kayu",
 "Magnet ladam tidak mempunyai kutub"
 ],
-k:0
+correct:0
 },
 
 {
-t:"Bentuk Magnet",
+topic:"Bentuk Magnet",
 q:"Yang manakah nama magnet yang berbentuk silinder?",
 a:[
 "Magnet akar",
@@ -527,11 +517,11 @@ a:[
 "Magnet bunga",
 "Magnet silinder"
 ],
-k:3
+correct:3
 },
 
 {
-t:"Hebatnya Magnet",
+topic:"Hebatnya Magnet",
 q:"Jika objek bergerak ke arah magnet apabila magnet didekatkan, tindakan itu disebut ____.",
 a:[
 "Memadam",
@@ -539,11 +529,11 @@ a:[
 "Menarik",
 "Menolak"
 ],
-k:2
+correct:2
 },
 
 {
-t:"Hebatnya Magnet",
+topic:"Hebatnya Magnet",
 q:"Objek plastik berbentuk pembaris manakah yang tidak dapat ditarik magnet?",
 a:[
 "Pembaris plastik",
@@ -551,11 +541,11 @@ a:[
 "Paku",
 "Skru"
 ],
-k:0
+correct:0
 },
 
 {
-t:"Hebatnya Magnet",
+topic:"Hebatnya Magnet",
 q:"Yang manakah pasangan objek yang kedua-duanya tidak dapat ditarik magnet?",
 a:[
 "Pin baju dan skru",
@@ -563,11 +553,11 @@ a:[
 "Klip kertas dan paku",
 "Skru dan paku"
 ],
-k:1
+correct:1
 },
 
 {
-t:"Hebatnya Magnet",
+topic:"Hebatnya Magnet",
 q:"Yang manakah pasangan objek yang menunjukkan satu boleh ditarik dan satu tidak boleh ditarik?",
 a:[
 "Skru dan guli",
@@ -575,11 +565,11 @@ a:[
 "Paku dan skru",
 "Pin baju dan klip kertas"
 ],
-k:0
+correct:0
 },
 
 {
-t:"Hebatnya Magnet",
+topic:"Hebatnya Magnet",
 q:"Objek yang digunakan untuk memadam tulisan manakah yang tidak dapat ditarik magnet?",
 a:[
 "Skru",
@@ -587,11 +577,11 @@ a:[
 "Paku",
 "Pemadam"
 ],
-k:3
+correct:3
 },
 
 {
-t:"Tarikan dan Tolakan Magnet",
+topic:"Tarikan dan Tolakan Magnet",
 q:"Jika U berhadapan dengan U, tindakan yang betul ialah ____.",
 a:[
 "Tarikan",
@@ -599,11 +589,11 @@ a:[
 "Tiada tindakan",
 "Pemanasan"
 ],
-k:1
+correct:1
 },
 
 {
-t:"Tarikan dan Tolakan Magnet",
+topic:"Tarikan dan Tolakan Magnet",
 q:"Apabila magnet saling menjauh kerana kutub yang sama, tindakan itu ialah ____.",
 a:[
 "Pengukuran",
@@ -611,11 +601,11 @@ a:[
 "Tolakan",
 "Tarikan"
 ],
-k:2
+correct:2
 },
 
 {
-t:"Tarikan dan Tolakan Magnet",
+topic:"Tarikan dan Tolakan Magnet",
 q:"Kutub Utara didekatkan dengan kutub Utara. Apakah yang berlaku?",
 a:[
 "Melekat pada plastik",
@@ -623,11 +613,11 @@ a:[
 "Mencair",
 "Menarik"
 ],
-k:1
+correct:1
 },
 
 {
-t:"Tarikan dan Tolakan Magnet",
+topic:"Tarikan dan Tolakan Magnet",
 q:"Jika S berhadapan dengan U, tindakan yang betul ialah ____.",
 a:[
 "Tolakan",
@@ -635,11 +625,11 @@ a:[
 "Pemanasan",
 "Tarikan"
 ],
-k:3
+correct:3
 },
 
 {
-t:"Tarikan dan Tolakan Magnet",
+topic:"Tarikan dan Tolakan Magnet",
 q:"Dua magnet bar digunakan dalam aktiviti untuk mengkaji ____.",
 a:[
 "Tarikan dan tolakan",
@@ -647,11 +637,11 @@ a:[
 "Warna magnet",
 "Rasa magnet"
 ],
-k:0
+correct:0
 },
 
 {
-t:"Kekuatan Magnet",
+topic:"Kekuatan Magnet",
 q:"Magnet digerakkan mendekati klip kertas sehingga klip kertas ____.",
 a:[
 "Hilang",
@@ -659,11 +649,11 @@ a:[
 "Ditarik",
 "Bertukar warna"
 ],
-k:2
+correct:2
 },
 
 {
-t:"Kekuatan Magnet",
+topic:"Kekuatan Magnet",
 q:"Dua magnet diuji dengan jenis klip kertas yang sama. Magnet R menarik lebih banyak klip. Apakah kesimpulan paling sesuai?",
 a:[
 "Klip kertas bukan objek tarikan",
@@ -671,11 +661,11 @@ a:[
 "Kedua-duanya sama",
 "Magnet R lebih kuat"
 ],
-k:3
+correct:3
 },
 
 {
-t:"Kekuatan Magnet",
+topic:"Kekuatan Magnet",
 q:"Dalam aktiviti kekuatan magnet, klip kertas disusun di sisi ____.",
 a:[
 "Tingkap",
@@ -683,11 +673,11 @@ a:[
 "Buku",
 "Pintu"
 ],
-k:1
+correct:1
 },
 
 {
-t:"Kekuatan Magnet",
+topic:"Kekuatan Magnet",
 q:"Untuk membandingkan kekuatan magnet dengan adil, klip kertas perlu disusun dan jarak diperhatikan menggunakan ____.",
 a:[
 "Pembaris",
@@ -695,11 +685,11 @@ a:[
 "Pemadam",
 "Kayu aiskrim"
 ],
-k:0
+correct:0
 },
 
 {
-t:"Kekuatan Magnet",
+topic:"Kekuatan Magnet",
 q:"Kekuatan magnet boleh dibandingkan dengan melihat bilangan klip kertas yang ____.",
 a:[
 "Dipotong",
@@ -707,7 +697,7 @@ a:[
 "Ditarik",
 "Dipadam"
 ],
-k:2
+correct:2
 }
 
 ];
@@ -717,7 +707,7 @@ k:2
    UTILITI
    ========================================================= */
 
-function key(r,c){
+function getKey(r,c){
 
     return r + "," + c;
 }
@@ -725,47 +715,56 @@ function key(r,c){
 
 function decodeStage(data){
 
-    var r = data.s[0];
-    var c = data.s[1];
+    let r =
+    data.s[0];
 
-    var path = [
+    let c =
+    data.s[1];
+
+
+    const path = [
+
         {
             r:r,
             c:c
         }
+
     ];
 
 
     for(
-        var i = 0;
+        let i = 0;
         i < data.d.length;
         i++
     ){
 
-        var direction =
+        const move =
         data.d.charAt(i);
 
 
-        if(direction === "U"){
+        if(move === "U"){
+
             r--;
-        }
 
-        else if(direction === "D"){
+        }else if(move === "D"){
+
             r++;
-        }
 
-        else if(direction === "L"){
+        }else if(move === "L"){
+
             c--;
-        }
 
-        else if(direction === "R"){
+        }else if(move === "R"){
+
             c++;
         }
 
 
         path.push({
+
             r:r,
             c:c
+
         });
     }
 
@@ -785,98 +784,92 @@ function decodeStage(data){
    AUDIO
    ========================================================= */
 
-class GameAudio{
+class SoundBox{
 
     constructor(){
 
         this.ctx = null;
 
         this.master = null;
-
-        this.musicTimer = null;
-
-        this.musicIndex = 0;
     }
 
 
     unlock(){
 
-        if(!this.ctx){
+        if(this.ctx){
 
-            var AC =
-            window.AudioContext ||
-            window.webkitAudioContext;
+            if(
+                this.ctx.state ===
+                "suspended"
+            ){
 
-
-            if(!AC){
-                return;
+                this.ctx.resume();
             }
 
-
-            this.ctx =
-            new AC();
-
-
-            this.master =
-            this.ctx.createGain();
-
-
-            this.master.gain.value =
-            0.13;
-
-
-            this.master.connect(
-                this.ctx.destination
-            );
+            return;
         }
 
 
-        if(
-            this.ctx.state ===
-            "suspended"
-        ){
+        const AudioContext =
+        window.AudioContext ||
+        window.webkitAudioContext;
 
-            this.ctx.resume();
+
+        if(!AudioContext){
+
+            return;
         }
 
 
-        if(!this.musicTimer){
+        this.ctx =
+        new AudioContext();
 
-            this.startMusic();
-        }
+
+        this.master =
+        this.ctx.createGain();
+
+
+        this.master.gain.value =
+        0.13;
+
+
+        this.master.connect(
+            this.ctx.destination
+        );
     }
 
 
     tone(
-        frequency,
+        freq,
         duration,
         type,
         volume
     ){
 
         if(!this.ctx){
+
             return;
         }
 
 
-        var now =
+        const now =
         this.ctx.currentTime;
 
 
-        var osc =
+        const oscillator =
         this.ctx.createOscillator();
 
 
-        var gain =
+        const gain =
         this.ctx.createGain();
 
 
-        osc.type =
+        oscillator.type =
         type || "sine";
 
 
-        osc.frequency.value =
-        frequency;
+        oscillator.frequency.value =
+        freq;
 
 
         gain.gain.setValueAtTime(
@@ -897,16 +890,22 @@ class GameAudio{
         );
 
 
-        osc.connect(gain);
+        oscillator.connect(
+            gain
+        );
+
 
         gain.connect(
             this.master
         );
 
 
-        osc.start(now);
+        oscillator.start(
+            now
+        );
 
-        osc.stop(
+
+        oscillator.stop(
             now +
             duration +
             0.03
@@ -918,9 +917,9 @@ class GameAudio{
 
         this.tone(
             330,
-            0.045,
+            .045,
             "triangle",
-            0.035
+            .035
         );
     }
 
@@ -929,9 +928,9 @@ class GameAudio{
 
         this.tone(
             130,
-            0.09,
+            .09,
             "square",
-            0.045
+            .045
         );
     }
 
@@ -940,23 +939,20 @@ class GameAudio{
 
         this.tone(
             620,
-            0.08,
+            .08,
             "triangle",
-            0.09
+            .09
         );
 
 
-        var self = this;
-
-
         setTimeout(
-            function(){
+            ()=>{
 
-                self.tone(
+                this.tone(
                     840,
-                    0.13,
+                    .13,
                     "triangle",
-                    0.09
+                    .09
                 );
 
             },
@@ -967,25 +963,22 @@ class GameAudio{
 
     win(){
 
-        var self = this;
-
-
         this.tone(
             523,
-            0.08,
+            .08,
             "sine",
-            0.1
+            .1
         );
 
 
         setTimeout(
-            function(){
+            ()=>{
 
-                self.tone(
+                this.tone(
                     659,
-                    0.10,
+                    .10,
                     "sine",
-                    0.1
+                    .1
                 );
 
             },
@@ -994,117 +987,72 @@ class GameAudio{
 
 
         setTimeout(
-            function(){
+            ()=>{
 
-                self.tone(
+                this.tone(
                     784,
-                    0.16,
+                    .16,
                     "sine",
-                    0.1
+                    .1
                 );
 
             },
             180
         );
     }
-
-
-    startMusic(){
-
-        var self = this;
-
-
-        var notes = [
-
-            261.63,
-            329.63,
-            392.00,
-            329.63,
-
-            293.66,
-            349.23,
-            440.00,
-            349.23,
-
-            329.63,
-            392.00,
-            493.88,
-            440.00
-
-        ];
-
-
-        this.musicTimer =
-        setInterval(
-            function(){
-
-                if(!self.ctx){
-                    return;
-                }
-
-
-                self.tone(
-
-                    notes[
-                        self.musicIndex %
-                        notes.length
-                    ],
-
-                    0.18,
-
-                    "sine",
-
-                    0.012
-                );
-
-
-                self.musicIndex++;
-
-            },
-            470
-        );
-    }
 }
 
 
-var AUDIO =
-new GameAudio();
+const AUDIO =
+new SoundBox();
 
 
 /* =========================================================
-   GAME SCENE
+   SCENE
    ========================================================= */
 
-class MagnetScene extends Phaser.Scene{
+class MagnetScene
+extends Phaser.Scene{
 
     constructor(){
 
-        super({
-            key:"MagnetScene"
-        });
+        super(
+            "MagnetScene"
+        );
     }
 
 
     create(){
 
-        this.stageIndex = 0;
+        this.stageIndex =
+        0;
 
-        this.firstTry = 0;
 
-        this.locked = false;
+        this.correctFirstTry =
+        0;
 
-        this.questionOpen = false;
 
-        this.answerLocked = false;
+        this.locked =
+        false;
 
-        this.dragging = false;
+
+        this.questionOpen =
+        false;
+
+
+        this.answerLocked =
+        false;
+
+
+        this.dragging =
+        false;
 
 
         this.bg =
         this.add.graphics();
 
 
-        this.frameG =
+        this.boardG =
         this.add.graphics();
 
 
@@ -1131,19 +1079,18 @@ class MagnetScene extends Phaser.Scene{
         this.setupTouch();
 
 
-        var self = this;
-
-
         this.input.on(
             "pointerdown",
-            function(){
+            ()=>{
 
                 AUDIO.unlock();
             }
         );
 
 
-        this.startStage(0);
+        this.startStage(
+            0
+        );
     }
 
 
@@ -1162,30 +1109,30 @@ class MagnetScene extends Phaser.Scene{
         this.bg.fillRect(
             0,
             0,
-            W,
-            H
+            GAME_W,
+            GAME_H
         );
 
 
         this.bg.fillStyle(
             0xffffff,
-            0.18
+            .18
         );
 
 
         for(
-            var y = -80;
-            y < H + 80;
+            let y = -80;
+            y < GAME_H + 80;
             y += 115
         ){
 
             for(
-                var x = -90;
-                x < W + 90;
+                let x = -90;
+                x < GAME_W + 90;
                 x += 150
             ){
 
-                var offset = 0;
+                let offset = 0;
 
 
                 if(
@@ -1203,9 +1150,11 @@ class MagnetScene extends Phaser.Scene{
                 this.bg.fillRoundedRect(
 
                     x + offset,
+
                     y,
 
                     92,
+
                     48,
 
                     22
@@ -1227,7 +1176,7 @@ class MagnetScene extends Phaser.Scene{
             820,
             150,
             0xffffff,
-            0.97
+            .97
         )
         .setStrokeStyle(
             3,
@@ -1255,14 +1204,14 @@ class MagnetScene extends Phaser.Scene{
         )
         .setOrigin(
             0,
-            0.5
+            .5
         );
 
 
         this.stageText =
         this.add.text(
             72,
-            75,
+            74,
             "STAGE 1 / 25",
             {
                 fontFamily:
@@ -1280,15 +1229,15 @@ class MagnetScene extends Phaser.Scene{
         )
         .setOrigin(
             0,
-            0.5
+            .5
         );
 
 
         this.statusText =
         this.add.text(
             72,
-            110,
-            "Seret jari. Lalui semua petak sekali sahaja.",
+            108,
+            "Seret jari untuk gerakkan magnet.",
             {
                 fontFamily:
                 "Trebuchet MS, Arial",
@@ -1302,42 +1251,42 @@ class MagnetScene extends Phaser.Scene{
         )
         .setOrigin(
             0,
-            0.5
+            .5
         );
 
 
         this.progressBack =
         this.add.rectangle(
             72,
-            142,
+            140,
             560,
             12,
             0xd8e6eb
         )
         .setOrigin(
             0,
-            0.5
+            .5
         );
 
 
         this.progressFill =
         this.add.rectangle(
             72,
-            142,
+            140,
             1,
             12,
             0xffbd42
         )
         .setOrigin(
             0,
-            0.5
+            .5
         );
 
 
         this.progressText =
         this.add.text(
             650,
-            142,
+            140,
             "",
             {
                 fontFamily:
@@ -1355,13 +1304,13 @@ class MagnetScene extends Phaser.Scene{
         )
         .setOrigin(
             0,
-            0.5
+            .5
         );
 
 
         this.add.text(
             790,
-            83,
+            82,
             "SERET\nJARI",
             {
                 fontFamily:
@@ -1381,13 +1330,13 @@ class MagnetScene extends Phaser.Scene{
             }
         )
         .setOrigin(
-            0.5
+            .5
         );
     }
 
 
 /* =========================================================
-   PORTAL
+   PORTAL HITAM
    ========================================================= */
 
     createPortal(){
@@ -1399,21 +1348,21 @@ class MagnetScene extends Phaser.Scene{
         );
 
 
-        var glow =
+        const glow =
         this.add.circle(
             0,
             0,
-            36,
+            38,
             0x000000,
-            0.12
+            .12
         );
 
 
-        var outer =
+        const outer =
         this.add.circle(
             0,
             0,
-            30,
+            31,
             0x15191e,
             1
         )
@@ -1423,12 +1372,12 @@ class MagnetScene extends Phaser.Scene{
         );
 
 
-        var middle =
+        const ring1 =
         this.add.circle(
             0,
             0,
-            20,
-            0x07090b,
+            22,
+            0x080a0c,
             1
         )
         .setStrokeStyle(
@@ -1437,21 +1386,21 @@ class MagnetScene extends Phaser.Scene{
         );
 
 
-        var core =
+        const ring2 =
         this.add.circle(
             0,
             0,
-            9,
+            12,
             0x000000,
             1
         )
         .setStrokeStyle(
             2,
-            0xe4eaee
+            0xdde5e9
         );
 
 
-        var dot =
+        const dot =
         this.add.circle(
             0,
             0,
@@ -1465,8 +1414,8 @@ class MagnetScene extends Phaser.Scene{
 
             glow,
             outer,
-            middle,
-            core,
+            ring1,
+            ring2,
             dot
 
         ]);
@@ -1480,20 +1429,20 @@ class MagnetScene extends Phaser.Scene{
         this.tweens.add({
 
             targets:
-            middle,
+            ring1,
 
             scaleX:{
-                from:0.82,
-                to:1.12
+                from:.82,
+                to:1.13
             },
 
             scaleY:{
-                from:0.82,
-                to:1.12
+                from:.82,
+                to:1.13
             },
 
             alpha:{
-                from:0.5,
+                from:.45,
                 to:1
             },
 
@@ -1510,7 +1459,7 @@ class MagnetScene extends Phaser.Scene{
 
 
 /* =========================================================
-   MAGNET
+   CHARACTER MAGNET
    ========================================================= */
 
     createMagnet(){
@@ -1522,22 +1471,22 @@ class MagnetScene extends Phaser.Scene{
         );
 
 
-        var shadow =
+        const shadow =
         this.add.ellipse(
             4,
-            27,
+            28,
             62,
             18,
             0x173946,
-            0.2
+            .2
         );
 
 
-        var g =
+        const g =
         this.add.graphics();
 
 
-        /* RED */
+        /* MERAH */
 
         g.fillStyle(
             0xef4f55,
@@ -1563,7 +1512,7 @@ class MagnetScene extends Phaser.Scene{
         );
 
 
-        /* BLUE */
+        /* BIRU */
 
         g.fillStyle(
             0x4389d8,
@@ -1589,7 +1538,7 @@ class MagnetScene extends Phaser.Scene{
         );
 
 
-        /* METAL */
+        /* BESI */
 
         g.fillStyle(
             0xf6f8f9,
@@ -1618,7 +1567,7 @@ class MagnetScene extends Phaser.Scene{
         g.lineStyle(
             3,
             0x263d49,
-            0.8
+            .8
         );
 
 
@@ -1640,19 +1589,13 @@ class MagnetScene extends Phaser.Scene{
         );
 
 
-        var shine =
-        this.add.text(
+        const sparkle =
+        this.add.circle(
             0,
             14,
-            "✦",
-            {
-                fontFamily:"Arial",
-                fontSize:"15px",
-                color:"#ffffff"
-            }
-        )
-        .setOrigin(
-            0.5
+            4,
+            0xffffff,
+            .85
         );
 
 
@@ -1660,7 +1603,7 @@ class MagnetScene extends Phaser.Scene{
 
             shadow,
             g,
-            shine
+            sparkle
 
         ]);
 
@@ -1672,7 +1615,7 @@ class MagnetScene extends Phaser.Scene{
 
 
 /* =========================================================
-   STAGE
+   START STAGE
    ========================================================= */
 
     startStage(index){
@@ -1697,22 +1640,22 @@ class MagnetScene extends Phaser.Scene{
         false;
 
 
-        var decoded =
+        const stage =
         decodeStage(
             STAGES[index]
         );
 
 
         this.rows =
-        decoded.rows;
+        stage.rows;
 
 
         this.cols =
-        decoded.cols;
+        stage.cols;
 
 
         this.solution =
-        decoded.path;
+        stage.path;
 
 
         this.walkable =
@@ -1720,13 +1663,14 @@ class MagnetScene extends Phaser.Scene{
 
 
         for(
-            var i = 0;
+            let i = 0;
             i < this.solution.length;
             i++
         ){
 
             this.walkable.add(
-                key(
+
+                getKey(
                     this.solution[i].r,
                     this.solution[i].c
                 )
@@ -1739,19 +1683,19 @@ class MagnetScene extends Phaser.Scene{
 
 
         for(
-            var r = 0;
+            let r = 0;
             r < this.rows;
             r++
         ){
 
             for(
-                var c = 0;
+                let c = 0;
                 c < this.cols;
                 c++
             ){
 
-                var k =
-                key(
+                const k =
+                getKey(
                     r,
                     c
                 );
@@ -1770,6 +1714,7 @@ class MagnetScene extends Phaser.Scene{
         this.current = {
 
             r:this.solution[0].r,
+
             c:this.solution[0].c
 
         };
@@ -1787,10 +1732,12 @@ class MagnetScene extends Phaser.Scene{
 
         this.visited =
         new Set([
-            key(
+
+            getKey(
                 this.current.r,
                 this.current.c
             )
+
         ]);
 
 
@@ -1809,15 +1756,15 @@ class MagnetScene extends Phaser.Scene{
 
         this.statusText
         .setText(
-            "Seret jari. Semua petak kosong mesti dilalui."
+            "Lalui semua petak kosong sekali sahaja."
         );
 
 
         this.drawBoard();
 
 
-        var pos =
-        this.center(
+        const startPos =
+        this.cellCenter(
             this.current.r,
             this.current.c
         );
@@ -1830,12 +1777,12 @@ class MagnetScene extends Phaser.Scene{
         .setScale(
             Math.min(
                 1,
-                this.cell / 80
+                this.cellSize / 80
             )
         )
         .setPosition(
-            pos.x,
-            pos.y
+            startPos.x,
+            startPos.y
         );
 
 
@@ -1849,13 +1796,15 @@ class MagnetScene extends Phaser.Scene{
 
     calculateBoard(){
 
-        this.cell =
+        this.cellSize =
         Math.floor(
             Math.min(
 
-                770 / this.cols,
+                770 /
+                this.cols,
 
-                805 / this.rows,
+                810 /
+                this.rows,
 
                 116
             )
@@ -1864,57 +1813,60 @@ class MagnetScene extends Phaser.Scene{
 
         this.boardW =
         this.cols *
-        this.cell;
+        this.cellSize;
 
 
         this.boardH =
         this.rows *
-        this.cell;
+        this.cellSize;
 
 
         this.boardX =
         (
-            W -
+            GAME_W -
             this.boardW
-        ) / 2;
+        ) /
+        2;
 
 
         this.boardY =
-        185 +
+        180 +
         Math.max(
             0,
             (
-                820 -
+                825 -
                 this.boardH
-            ) / 2
+            ) /
+            2
         );
 
 
         this.dragThreshold =
         Math.max(
-            25,
-            this.cell *
-            0.27
+            24,
+            this.cellSize *
+            .27
         );
     }
 
 
-    center(r,c){
+    cellCenter(r,c){
 
         return{
 
             x:
             this.boardX +
             c *
-            this.cell +
-            this.cell / 2,
+            this.cellSize +
+            this.cellSize / 2,
 
 
             y:
             this.boardY +
             r *
-            this.cell +
-            this.cell / 2
+            this.cellSize +
+            this.cellSize / 2
+
         };
     }
 
@@ -1925,7 +1877,7 @@ class MagnetScene extends Phaser.Scene{
 
     drawBoard(){
 
-        this.frameG.clear();
+        this.boardG.clear();
 
         this.tileG.clear();
 
@@ -1934,132 +1886,133 @@ class MagnetScene extends Phaser.Scene{
         this.blockG.clear();
 
 
-        var pad = 20;
+        const padding =
+        20;
 
 
-        /* BOARD SHADOW */
+        /* SHADOW */
 
-        this.frameG.fillStyle(
+        this.boardG.fillStyle(
             0x173c4e,
-            0.14
+            .14
         );
 
 
-        this.frameG.fillRoundedRect(
+        this.boardG.fillRoundedRect(
 
             this.boardX -
-            pad +
+            padding +
             8,
 
             this.boardY -
-            pad +
+            padding +
             10,
 
             this.boardW +
-            pad * 2,
+            padding * 2,
 
             this.boardH +
-            pad * 2,
+            padding * 2,
 
             28
         );
 
 
-        /* WHITE FRAME */
+        /* FRAME PUTIH */
 
-        this.frameG.fillStyle(
+        this.boardG.fillStyle(
             0xffffff,
             1
         );
 
 
-        this.frameG.fillRoundedRect(
+        this.boardG.fillRoundedRect(
 
             this.boardX -
-            pad,
+            padding,
 
             this.boardY -
-            pad,
+            padding,
 
             this.boardW +
-            pad * 2,
+            padding * 2,
 
             this.boardH +
-            pad * 2,
+            padding * 2,
 
             28
         );
 
 
-        this.frameG.lineStyle(
+        this.boardG.lineStyle(
             5,
             0xb8ced9,
             1
         );
 
 
-        this.frameG.strokeRoundedRect(
+        this.boardG.strokeRoundedRect(
 
             this.boardX -
-            pad,
+            padding,
 
             this.boardY -
-            pad,
+            padding,
 
             this.boardW +
-            pad * 2,
+            padding * 2,
 
             this.boardH +
-            pad * 2,
+            padding * 2,
 
             28
         );
 
 
-        /* GRID */
+        /* =========================
+           SEMUA GRID
+           ========================= */
 
         for(
-            var r = 0;
+            let r = 0;
             r < this.rows;
             r++
         ){
 
             for(
-                var c = 0;
+                let c = 0;
                 c < this.cols;
                 c++
             ){
 
-                var x =
+                const x =
                 this.boardX +
                 c *
-                this.cell;
+                this.cellSize;
 
 
-                var y =
+                const y =
                 this.boardY +
                 r *
-                this.cell;
+                this.cellSize;
 
 
-                var cellKey =
-                key(
+                const k =
+                getKey(
                     r,
                     c
                 );
 
 
-                var already =
-                this.visited.has(
-                    cellKey
-                );
+                const visited =
+                this.visited.has(k);
 
 
                 this.tileG.fillStyle(
 
-                    already
+                    visited
                     ? 0xffca46
-                    : 0xd7eff8,
+                    : 0xd6eff8,
 
                     1
                 );
@@ -2070,8 +2023,8 @@ class MagnetScene extends Phaser.Scene{
                     x + 5,
                     y + 5,
 
-                    this.cell - 10,
-                    this.cell - 10,
+                    this.cellSize - 10,
+                    this.cellSize - 10,
 
                     14
                 );
@@ -2081,11 +2034,11 @@ class MagnetScene extends Phaser.Scene{
 
                     2,
 
-                    already
+                    visited
                     ? 0xe4a323
                     : 0x93b8c7,
 
-                    0.85
+                    .85
                 );
 
 
@@ -2094,38 +2047,40 @@ class MagnetScene extends Phaser.Scene{
                     x + 5,
                     y + 5,
 
-                    this.cell - 10,
-                    this.cell - 10,
+                    this.cellSize - 10,
+                    this.cellSize - 10,
 
                     14
                 );
 
 
+                /* HIGHLIGHT */
+
                 this.tileG.fillStyle(
 
                     0xffffff,
 
-                    already
-                    ? 0.20
-                    : 0.38
+                    visited
+                    ? .20
+                    : .38
                 );
 
 
                 this.tileG.fillRoundedRect(
 
                     x +
-                    this.cell *
-                    0.16,
+                    this.cellSize *
+                    .16,
 
                     y +
-                    this.cell *
-                    0.15,
+                    this.cellSize *
+                    .15,
 
-                    this.cell *
-                    0.29,
+                    this.cellSize *
+                    .29,
 
-                    this.cell *
-                    0.10,
+                    this.cellSize *
+                    .10,
 
                     6
                 );
@@ -2133,7 +2088,9 @@ class MagnetScene extends Phaser.Scene{
         }
 
 
-        /* PATH */
+        /* =========================
+           TRAIL
+           ========================= */
 
         if(
             this.history.length >
@@ -2144,13 +2101,13 @@ class MagnetScene extends Phaser.Scene{
 
                 Math.max(
                     8,
-                    this.cell *
-                    0.085
+                    this.cellSize *
+                    .085
                 ),
 
                 0xf0a424,
 
-                0.85
+                .85
             );
 
 
@@ -2158,30 +2115,32 @@ class MagnetScene extends Phaser.Scene{
 
 
             for(
-                var h = 0;
-                h < this.history.length;
-                h++
+                let i = 0;
+                i < this.history.length;
+                i++
             ){
 
-                var point =
-                this.center(
-                    this.history[h].r,
-                    this.history[h].c
+                const p =
+                this.cellCenter(
+
+                    this.history[i].r,
+
+                    this.history[i].c
                 );
 
 
-                if(h === 0){
+                if(i === 0){
 
                     this.pathG.moveTo(
-                        point.x,
-                        point.y
+                        p.x,
+                        p.y
                     );
 
                 }else{
 
                     this.pathG.lineTo(
-                        point.x,
-                        point.y
+                        p.x,
+                        p.y
                     );
                 }
             }
@@ -2191,51 +2150,43 @@ class MagnetScene extends Phaser.Scene{
         }
 
 
-        /* BLOCK */
+        /* =========================
+           BLOCK
+           ========================= */
 
-        var iterator =
-        this.blocks.values();
+        this.blocks.forEach(
+            blockKey=>{
 
-
-        var item =
-        iterator.next();
-
-
-        while(
-            !item.done
-        ){
-
-            var parts =
-            item.value.split(",");
+                const parts =
+                blockKey.split(",");
 
 
-            this.drawBlock(
+                this.drawBlock(
 
-                Number(
-                    parts[0]
-                ),
+                    Number(
+                        parts[0]
+                    ),
 
-                Number(
-                    parts[1]
-                )
-            );
-
-
-            item =
-            iterator.next();
-        }
+                    Number(
+                        parts[1]
+                    )
+                );
+            }
+        );
 
 
-        /* PORTAL */
+        /* =========================
+           PORTAL
+           ========================= */
 
-        var finalCell =
+        const finalCell =
         this.solution[
             this.solution.length - 1
         ];
 
 
-        var portalPos =
-        this.center(
+        const portalPos =
+        this.cellCenter(
             finalCell.r,
             finalCell.c
         );
@@ -2249,7 +2200,7 @@ class MagnetScene extends Phaser.Scene{
         .setScale(
             Math.min(
                 1,
-                this.cell / 84
+                this.cellSize / 84
             )
         );
     }
@@ -2261,40 +2212,38 @@ class MagnetScene extends Phaser.Scene{
 
     drawBlock(r,c){
 
-        var x =
+        const x =
         this.boardX +
         c *
-        this.cell;
+        this.cellSize;
 
 
-        var y =
+        const y =
         this.boardY +
         r *
-        this.cell;
+        this.cellSize;
 
 
-        var margin =
-        this.cell *
-        0.11;
+        const margin =
+        this.cellSize *
+        .11;
 
 
-        var bx =
-        x +
-        margin;
+        const bx =
+        x + margin;
 
 
-        var by =
-        y +
-        margin;
+        const by =
+        y + margin;
 
 
-        var bw =
-        this.cell -
+        const bw =
+        this.cellSize -
         margin * 2;
 
 
-        var bh =
-        this.cell -
+        const bh =
+        this.cellSize -
         margin * 2;
 
 
@@ -2302,7 +2251,7 @@ class MagnetScene extends Phaser.Scene{
 
         this.blockG.fillStyle(
             0x25343d,
-            0.25
+            .25
         );
 
 
@@ -2321,7 +2270,7 @@ class MagnetScene extends Phaser.Scene{
         /* BODY */
 
         this.blockG.fillStyle(
-            0x59666e,
+            0x58656d,
             1
         );
 
@@ -2357,7 +2306,7 @@ class MagnetScene extends Phaser.Scene{
         );
 
 
-        /* METAL HIGHLIGHT */
+        /* METAL */
 
         this.blockG.fillStyle(
             0x7d8a91,
@@ -2374,26 +2323,26 @@ class MagnetScene extends Phaser.Scene{
 
             Math.max(
                 10,
-                bh * 0.18
+                bh * .18
             ),
 
             7
         );
 
 
-        /* YELLOW STRIPE */
+        /* STRIPE KUNING */
 
-        var warningY =
+        const stripeY =
         by +
         bh *
-        0.57;
+        .57;
 
 
-        var warningH =
+        const stripeH =
         Math.max(
             13,
             bh *
-            0.17
+            .17
         );
 
 
@@ -2407,59 +2356,60 @@ class MagnetScene extends Phaser.Scene{
 
             bx + 8,
 
-            warningY,
+            stripeY,
 
             bw - 16,
 
-            warningH
+            stripeH
         );
 
+
+        /* STRIPE HITAM */
 
         this.blockG.lineStyle(
             5,
             0x3c464c,
-            0.9
+            .9
         );
 
 
         for(
-            var stripeX =
+            let sx =
             bx - 12;
 
-            stripeX <
+            sx <
             bx + bw + 12;
 
-            stripeX += 24
+            sx += 24
         ){
 
             this.blockG.lineBetween(
 
-                stripeX,
+                sx,
 
-                warningY +
-                warningH,
+                stripeY +
+                stripeH,
 
-                stripeX +
-                18,
+                sx + 18,
 
-                warningY
+                stripeY
             );
         }
 
 
         /* BOLT */
 
-        this.blockG.fillStyle(
-            0xd7dee2,
-            1
+        const bolt =
+        Math.max(
+            3,
+            this.cellSize *
+            .032
         );
 
 
-        var bolt =
-        Math.max(
-            3,
-            this.cell *
-            0.032
+        this.blockG.fillStyle(
+            0xd7dee2,
+            1
         );
 
 
@@ -2493,40 +2443,40 @@ class MagnetScene extends Phaser.Scene{
 
 
 /* =========================================================
-   TOUCH / DRAG
+   TOUCHSCREEN
 
-   TIADA D-PAD
-   TIADA ANALOG
-   TIADA BUTTON MOVEMENT
+   TAK ADA:
+   - ANALOG
+   - D-PAD
+   - BUTTON MOVEMENT
+
+   SELURUH CANVAS BOLEH DRAG.
    ========================================================= */
 
     setupTouch(){
 
-        var self = this;
-
-
         this.input.on(
             "pointerdown",
-            function(pointer){
+            pointer=>{
 
                 if(
-                    self.locked ||
-                    self.questionOpen
+                    this.locked ||
+                    this.questionOpen
                 ){
 
                     return;
                 }
 
 
-                self.dragging =
+                this.dragging =
                 true;
 
 
-                self.lastX =
+                this.lastTouchX =
                 pointer.x;
 
 
-                self.lastY =
+                this.lastTouchY =
                 pointer.y;
             }
         );
@@ -2534,50 +2484,55 @@ class MagnetScene extends Phaser.Scene{
 
         this.input.on(
             "pointermove",
-            function(pointer){
+            pointer=>{
 
                 if(
-                    !self.dragging ||
+                    !this.dragging ||
                     !pointer.isDown ||
-                    self.locked ||
-                    self.questionOpen
+                    this.locked ||
+                    this.questionOpen
                 ){
 
                     return;
                 }
 
 
-                var safety = 0;
+                let safety =
+                0;
 
 
                 while(
                     safety < 6
                 ){
 
-                    var dx =
+                    const dx =
                     pointer.x -
-                    self.lastX;
+                    this.lastTouchX;
 
 
-                    var dy =
+                    const dy =
                     pointer.y -
-                    self.lastY;
+                    this.lastTouchY;
 
 
                     if(
                         Math.abs(dx) <
-                        self.dragThreshold &&
+                        this.dragThreshold &&
 
                         Math.abs(dy) <
-                        self.dragThreshold
+                        this.dragThreshold
                     ){
 
                         break;
                     }
 
 
-                    var dr = 0;
-                    var dc = 0;
+                    let dr =
+                    0;
+
+
+                    let dc =
+                    0;
 
 
                     if(
@@ -2591,9 +2546,9 @@ class MagnetScene extends Phaser.Scene{
                         : -1;
 
 
-                        self.lastX +=
+                        this.lastTouchX +=
                         dc *
-                        self.dragThreshold;
+                        this.dragThreshold;
 
                     }else{
 
@@ -2603,14 +2558,14 @@ class MagnetScene extends Phaser.Scene{
                         : -1;
 
 
-                        self.lastY +=
+                        this.lastTouchY +=
                         dr *
-                        self.dragThreshold;
+                        this.dragThreshold;
                     }
 
 
-                    var moved =
-                    self.tryMove(
+                    const moved =
+                    this.tryMove(
                         dr,
                         dc
                     );
@@ -2618,11 +2573,11 @@ class MagnetScene extends Phaser.Scene{
 
                     if(!moved){
 
-                        self.lastX =
+                        this.lastTouchX =
                         pointer.x;
 
 
-                        self.lastY =
+                        this.lastTouchY =
                         pointer.y;
 
 
@@ -2638,9 +2593,69 @@ class MagnetScene extends Phaser.Scene{
 
         this.input.on(
             "pointerup",
-            function(){
+            pointer=>{
 
-                self.dragging =
+                if(
+                    !this.dragging
+                ){
+
+                    return;
+                }
+
+
+                const dx =
+                pointer.x -
+                this.lastTouchX;
+
+
+                const dy =
+                pointer.y -
+                this.lastTouchY;
+
+
+                if(
+                    !this.locked &&
+                    !this.questionOpen
+                ){
+
+                    if(
+                        Math.abs(dx) >
+                        20 ||
+
+                        Math.abs(dy) >
+                        20
+                    ){
+
+                        if(
+                            Math.abs(dx) >
+                            Math.abs(dy)
+                        ){
+
+                            this.tryMove(
+
+                                0,
+
+                                dx > 0
+                                ? 1
+                                : -1
+                            );
+
+                        }else{
+
+                            this.tryMove(
+
+                                dy > 0
+                                ? 1
+                                : -1,
+
+                                0
+                            );
+                        }
+                    }
+                }
+
+
+                this.dragging =
                 false;
             }
         );
@@ -2648,9 +2663,9 @@ class MagnetScene extends Phaser.Scene{
 
         this.input.on(
             "pointerout",
-            function(){
+            ()=>{
 
-                self.dragging =
+                this.dragging =
                 false;
             }
         );
@@ -2658,7 +2673,7 @@ class MagnetScene extends Phaser.Scene{
 
 
 /* =========================================================
-   MOVE RULES
+   MOVE
    ========================================================= */
 
     tryMove(dr,dc){
@@ -2672,26 +2687,28 @@ class MagnetScene extends Phaser.Scene{
         }
 
 
-        var nr =
+        const nextR =
         this.current.r +
         dr;
 
 
-        var nc =
+        const nextC =
         this.current.c +
         dc;
 
 
-        /* LUAR BOARD */
+        /* ========================
+           LUAR GRID
+           ======================== */
 
         if(
-            nr < 0 ||
-            nr >= this.rows ||
-            nc < 0 ||
-            nc >= this.cols
+            nextR < 0 ||
+            nextR >= this.rows ||
+            nextC < 0 ||
+            nextC >= this.cols
         ){
 
-            this.reject(
+            this.rejectMove(
                 "Tak boleh keluar dari papan."
             );
 
@@ -2700,14 +2717,16 @@ class MagnetScene extends Phaser.Scene{
         }
 
 
-        var nextKey =
-        key(
-            nr,
-            nc
+        const nextKey =
+        getKey(
+            nextR,
+            nextC
         );
 
 
-        /* BLOCK */
+        /* ========================
+           BLOCK
+           ======================== */
 
         if(
             this.blocks.has(
@@ -2715,14 +2734,14 @@ class MagnetScene extends Phaser.Scene{
             )
         ){
 
-            this.reject(
+            this.rejectMove(
                 "BLOCK! Cari arah lain."
             );
 
 
             this.flashCell(
-                nr,
-                nc,
+                nextR,
+                nextC,
                 0xff4f55
             );
 
@@ -2731,7 +2750,9 @@ class MagnetScene extends Phaser.Scene{
         }
 
 
-        /* DAH LALU */
+        /* ========================
+           DAH LALU
+           ======================== */
 
         if(
             this.visited.has(
@@ -2739,14 +2760,14 @@ class MagnetScene extends Phaser.Scene{
             )
         ){
 
-            this.reject(
-                "Petak kuning dah dilalui. Tak boleh lalu semula."
+            this.rejectMove(
+                "Petak itu sudah dilalui."
             );
 
 
             this.flashCell(
-                nr,
-                nc,
+                nextR,
+                nextC,
                 0xff4f55
             );
 
@@ -2755,36 +2776,41 @@ class MagnetScene extends Phaser.Scene{
         }
 
 
-        /* ===============================================
-           SEMAK JALAN YANG MASIH BOLEH SAMPAI PORTAL
+        /* =================================================
+           JANGAN BENARKAN LALUAN YANG BUAT PUZZLE BUNTU
 
-           Laluan yang akan buat puzzle buntu
-           tidak dibenarkan.
-           =============================================== */
+           Setiap stage sudah ada solution sah.
 
-        var required =
+           Jadi hanya arah yang masih membolehkan pemain
+           melalui SEMUA baki petak hingga portal
+           akan dibenarkan.
+           ================================================= */
+
+        const correctNext =
         this.solution[
             this.history.length
         ];
 
 
         if(
-            !required ||
+            !correctNext ||
 
-            required.r !== nr ||
+            correctNext.r !==
+            nextR ||
 
-            required.c !== nc
+            correctNext.c !==
+            nextC
         ){
 
-            this.reject(
-                "Arah ini akan buat laluan buntu. Cuba arah lain."
+            this.rejectMove(
+                "Arah itu akan buat laluan buntu."
             );
 
 
             this.flashCell(
-                nr,
-                nc,
-                0xff9f32
+                nextR,
+                nextC,
+                0xffa23a
             );
 
 
@@ -2792,12 +2818,15 @@ class MagnetScene extends Phaser.Scene{
         }
 
 
-        /* VALID */
+        /* ========================
+           MOVE VALID
+           ======================== */
 
         this.current = {
 
-            r:nr,
-            c:nc
+            r:nextR,
+
+            c:nextC
 
         };
 
@@ -2809,23 +2838,18 @@ class MagnetScene extends Phaser.Scene{
 
         this.history.push({
 
-            r:nr,
-            c:nc
+            r:nextR,
 
-        ]);
+            c:nextC
+
+        });
 
 
         AUDIO.move();
 
 
-        var pos =
-        this.center(
-            nr,
-            nc
-        );
-
-
-        var angle = 0;
+        let angle =
+        0;
 
 
         if(dr === 1){
@@ -2845,6 +2869,13 @@ class MagnetScene extends Phaser.Scene{
         }
 
 
+        const destination =
+        this.cellCenter(
+            nextR,
+            nextC
+        );
+
+
         this.tweens
         .killTweensOf(
             this.magnet
@@ -2857,10 +2888,10 @@ class MagnetScene extends Phaser.Scene{
             this.magnet,
 
             x:
-            pos.x,
+            destination.x,
 
             y:
-            pos.y,
+            destination.y,
 
             angle:
             angle,
@@ -2878,6 +2909,10 @@ class MagnetScene extends Phaser.Scene{
         this.updateProgress();
 
 
+        /* ========================
+           SEMUA PETAK SELESAI
+           ======================== */
+
         if(
             this.history.length ===
             this.solution.length
@@ -2892,10 +2927,10 @@ class MagnetScene extends Phaser.Scene{
 
 
 /* =========================================================
-   REJECT
+   REJECT MOVE
    ========================================================= */
 
-    reject(message){
+    rejectMove(message){
 
         AUDIO.wrong();
 
@@ -2906,7 +2941,7 @@ class MagnetScene extends Phaser.Scene{
         );
 
 
-        var oldX =
+        const oldX =
         this.magnet.x;
 
 
@@ -2936,26 +2971,26 @@ class MagnetScene extends Phaser.Scene{
         color
     ){
 
-        var pos =
-        this.center(
+        const position =
+        this.cellCenter(
             r,
             c
         );
 
 
-        var ring =
+        const ring =
         this.add.circle(
 
-            pos.x,
+            position.x,
 
-            pos.y,
+            position.y,
 
-            this.cell *
-            0.28,
+            this.cellSize *
+            .28,
 
             color,
 
-            0.15
+            .15
         )
         .setStrokeStyle(
             5,
@@ -2984,8 +3019,7 @@ class MagnetScene extends Phaser.Scene{
             duration:
             340,
 
-            onComplete:
-            function(){
+            onComplete:()=>{
 
                 ring.destroy();
             }
@@ -2999,32 +3033,28 @@ class MagnetScene extends Phaser.Scene{
 
     updateProgress(){
 
-        var done =
+        const done =
         this.history.length;
 
 
-        var total =
+        const total =
         this.solution.length;
 
 
-        var remaining =
+        const remaining =
         total -
         done;
 
 
         this.progressFill
-        .setDisplaySize(
-
-            Math.max(
-                4,
-                560 *
-                (
-                    done /
-                    total
-                )
-            ),
-
-            12
+        .displayWidth =
+        Math.max(
+            4,
+            560 *
+            (
+                done /
+                total
+            )
         );
 
 
@@ -3043,7 +3073,7 @@ class MagnetScene extends Phaser.Scene{
             this.statusText
             .setText(
                 remaining +
-                " petak lagi. Jangan lalu petak kuning semula."
+                " petak lagi. Petak kuning tak boleh dilalui semula."
             );
 
         }else if(
@@ -3052,14 +3082,14 @@ class MagnetScene extends Phaser.Scene{
 
             this.statusText
             .setText(
-                "Tinggal portal hitam. Seret masuk portal!"
+                "Tinggal portal hitam!"
             );
         }
     }
 
 
 /* =========================================================
-   COMPLETE
+   COMPLETE STAGE
    ========================================================= */
 
     completeStage(){
@@ -3128,21 +3158,18 @@ class MagnetScene extends Phaser.Scene{
         });
 
 
-        var self = this;
-
-
         this.time.delayedCall(
             600,
-            function(){
+            ()=>{
 
-                self.showQuestion();
+                this.showQuestion();
             }
         );
     }
 
 
 /* =========================================================
-   QUESTION WINDOW
+   QUESTION
    ========================================================= */
 
     showQuestion(){
@@ -3163,7 +3190,7 @@ class MagnetScene extends Phaser.Scene{
         false;
 
 
-        var question =
+        const question =
         QUESTIONS[
             this.stageIndex
         ];
@@ -3179,19 +3206,19 @@ class MagnetScene extends Phaser.Scene{
         );
 
 
-        var dark =
+        const dark =
         this.add.rectangle(
             450,
             570,
             900,
             1140,
             0x092532,
-            0.73
+            .73
         )
         .setInteractive();
 
 
-        var panel =
+        const panel =
         this.add.rectangle(
             450,
             560,
@@ -3214,7 +3241,7 @@ class MagnetScene extends Phaser.Scene{
         ]);
 
 
-        var badge =
+        const badge =
         this.add.text(
             450,
             175,
@@ -3247,15 +3274,15 @@ class MagnetScene extends Phaser.Scene{
             }
         )
         .setOrigin(
-            0.5
+            .5
         );
 
 
-        var topic =
+        const topic =
         this.add.text(
             450,
             230,
-            question.t,
+            question.topic,
             {
                 fontFamily:
                 "Trebuchet MS, Arial",
@@ -3274,11 +3301,11 @@ class MagnetScene extends Phaser.Scene{
             }
         )
         .setOrigin(
-            0.5
+            .5
         );
 
 
-        var qText =
+        const questionText =
         this.add.text(
             450,
             315,
@@ -3309,7 +3336,7 @@ class MagnetScene extends Phaser.Scene{
             }
         )
         .setOrigin(
-            0.5
+            .5
         );
 
 
@@ -3317,12 +3344,12 @@ class MagnetScene extends Phaser.Scene{
 
             badge,
             topic,
-            qText
+            questionText
 
         ]);
 
 
-        var yPositions = [
+        const yPositions = [
 
             485,
             605,
@@ -3332,125 +3359,122 @@ class MagnetScene extends Phaser.Scene{
         ];
 
 
-        for(
-            let i = 0;
-            i < 4;
-            i++
-        ){
+        question.a.forEach(
+            (answer,index)=>{
 
-            let button =
-            this.add.rectangle(
-                450,
-                yPositions[i],
-                665,
-                92,
-                0xf1f7fa,
-                1
-            )
-            .setStrokeStyle(
-                3,
-                0xb8cfd9
-            )
-            .setInteractive({
-                useHandCursor:true
-            });
+                const button =
+                this.add.rectangle(
+                    450,
+                    yPositions[index],
+                    665,
+                    92,
+                    0xf1f7fa,
+                    1
+                )
+                .setStrokeStyle(
+                    3,
+                    0xb8cfd9
+                )
+                .setInteractive();
 
 
-            let circle =
-            this.add.circle(
-                165,
-                yPositions[i],
-                28,
-                0x40798f,
-                1
-            );
+                const circle =
+                this.add.circle(
+                    165,
+                    yPositions[index],
+                    28,
+                    0x40798f,
+                    1
+                );
 
 
-            let letter =
-            this.add.text(
-                165,
-                yPositions[i],
-                String.fromCharCode(
-                    65 + i
-                ),
-                {
-                    fontFamily:
-                    "Arial",
+                const letter =
+                this.add.text(
+                    165,
+                    yPositions[index],
+                    String.fromCharCode(
+                        65 + index
+                    ),
+                    {
+                        fontFamily:
+                        "Arial",
 
-                    fontSize:
-                    "24px",
+                        fontSize:
+                        "24px",
 
-                    fontStyle:
-                    "bold",
+                        fontStyle:
+                        "bold",
 
-                    color:
-                    "#ffffff"
-                }
-            )
-            .setOrigin(
-                0.5
-            );
-
-
-            let answerText =
-            this.add.text(
-                210,
-                yPositions[i],
-                question.a[i],
-                {
-                    fontFamily:
-                    "Trebuchet MS, Arial",
-
-                    fontSize:
-                    "22px",
-
-                    fontStyle:
-                    "bold",
-
-                    color:
-                    "#244653",
-
-                    wordWrap:{
-                        width:510,
-                        useAdvancedWrap:true
+                        color:
+                        "#ffffff"
                     }
-                }
-            )
-            .setOrigin(
-                0,
-                0.5
-            );
+                )
+                .setOrigin(
+                    .5
+                );
 
 
-            this.questionLayer.add([
+                const answerText =
+                this.add.text(
+                    210,
+                    yPositions[index],
+                    answer,
+                    {
+                        fontFamily:
+                        "Trebuchet MS, Arial",
 
-                button,
-                circle,
-                letter,
-                answerText
+                        fontSize:
+                        "22px",
 
-            ]);
+                        fontStyle:
+                        "bold",
+
+                        color:
+                        "#244653",
+
+                        wordWrap:{
+                            width:510,
+                            useAdvancedWrap:true
+                        }
+                    }
+                )
+                .setOrigin(
+                    0,
+                    .5
+                );
 
 
-            let self = this;
+                this.questionLayer.add([
+
+                    button,
+                    circle,
+                    letter,
+                    answerText
+
+                ]);
 
 
-            button.on(
-                "pointerdown",
-                function(){
+                button.on(
+                    "pointerdown",
+                    ()=>{
 
-                    AUDIO.unlock();
+                        AUDIO.unlock();
 
 
-                    self.checkAnswer(
-                        i,
-                        question.k,
-                        button,
-                        circle
-                    );
-                }
-            );
-        }
+                        this.checkAnswer(
+
+                            index,
+
+                            question.correct,
+
+                            button,
+
+                            circle
+                        );
+                    }
+                );
+            }
+        );
 
 
         this.questionLayer
@@ -3458,7 +3482,7 @@ class MagnetScene extends Phaser.Scene{
             0
         )
         .setScale(
-            0.92
+            .92
         );
 
 
@@ -3486,7 +3510,7 @@ class MagnetScene extends Phaser.Scene{
 
 
 /* =========================================================
-   ANSWER
+   CHECK ANSWER
    ========================================================= */
 
     checkAnswer(
@@ -3505,7 +3529,8 @@ class MagnetScene extends Phaser.Scene{
 
 
         if(
-            selected === correct
+            selected ===
+            correct
         ){
 
             this.answerLocked =
@@ -3535,39 +3560,37 @@ class MagnetScene extends Phaser.Scene{
                 !this.questionMistake
             ){
 
-                this.firstTry++;
+                this.correctFirstTry++;
             }
-
-
-            var self = this;
 
 
             this.time.delayedCall(
                 650,
-                function(){
+                ()=>{
 
-                    self.questionLayer
+                    this.questionLayer
                     .destroy();
 
 
-                    self.questionOpen =
+                    this.questionOpen =
                     false;
 
 
-                    self.answerLocked =
+                    this.answerLocked =
                     false;
 
 
                     if(
-                        self.stageIndex >= 24
+                        this.stageIndex >=
+                        24
                     ){
 
-                        self.showFinish();
+                        this.showFinish();
 
                     }else{
 
-                        self.startStage(
-                            self.stageIndex + 1
+                        this.startStage(
+                            this.stageIndex + 1
                         );
                     }
                 }
@@ -3615,8 +3638,7 @@ class MagnetScene extends Phaser.Scene{
                 repeat:
                 3,
 
-                onComplete:
-                function(){
+                onComplete:()=>{
 
                     button
                     .setFillStyle(
@@ -3647,7 +3669,7 @@ class MagnetScene extends Phaser.Scene{
         AUDIO.win();
 
 
-        var layer =
+        const layer =
         this.add.container(
             0,
             0
@@ -3657,19 +3679,19 @@ class MagnetScene extends Phaser.Scene{
         );
 
 
-        var dark =
+        const dark =
         this.add.rectangle(
             450,
             570,
             900,
             1140,
             0x092532,
-            0.76
+            .76
         )
         .setInteractive();
 
 
-        var panel =
+        const panel =
         this.add.rectangle(
             450,
             550,
@@ -3684,24 +3706,10 @@ class MagnetScene extends Phaser.Scene{
         );
 
 
-        var magnetIcon =
+        const title =
         this.add.text(
             450,
-            340,
-            "🧲",
-            {
-                fontSize:"100px"
-            }
-        )
-        .setOrigin(
-            0.5
-        );
-
-
-        var title =
-        this.add.text(
-            450,
-            440,
+            420,
             "MISI SELESAI!",
             {
                 fontFamily:
@@ -3718,14 +3726,14 @@ class MagnetScene extends Phaser.Scene{
             }
         )
         .setOrigin(
-            0.5
+            .5
         );
 
 
-        var description =
+        const text =
         this.add.text(
             450,
-            515,
+            505,
             "Semua 25 puzzle dan 25 soalan telah diselesaikan.",
             {
                 fontFamily:
@@ -3746,16 +3754,16 @@ class MagnetScene extends Phaser.Scene{
             }
         )
         .setOrigin(
-            0.5
+            .5
         );
 
 
-        var score =
+        const score =
         this.add.text(
             450,
-            610,
+            595,
             "Betul cubaan pertama: " +
-            this.firstTry +
+            this.correctFirstTry +
             " / 25",
             {
                 fontFamily:
@@ -3772,14 +3780,14 @@ class MagnetScene extends Phaser.Scene{
             }
         )
         .setOrigin(
-            0.5
+            .5
         );
 
 
-        var replay =
+        const replay =
         this.add.rectangle(
             450,
-            710,
+            700,
             400,
             76,
             0x3e839b,
@@ -3789,15 +3797,13 @@ class MagnetScene extends Phaser.Scene{
             3,
             0x316c81
         )
-        .setInteractive({
-            useHandCursor:true
-        });
+        .setInteractive();
 
 
-        var replayText =
+        const replayText =
         this.add.text(
             450,
-            710,
+            700,
             "MAIN SEMULA",
             {
                 fontFamily:
@@ -3814,7 +3820,7 @@ class MagnetScene extends Phaser.Scene{
             }
         )
         .setOrigin(
-            0.5
+            .5
         );
 
 
@@ -3822,9 +3828,8 @@ class MagnetScene extends Phaser.Scene{
 
             dark,
             panel,
-            magnetIcon,
             title,
-            description,
+            text,
             score,
             replay,
             replayText
@@ -3832,18 +3837,20 @@ class MagnetScene extends Phaser.Scene{
         ]);
 
 
-        var self = this;
-
-
         replay.on(
             "pointerdown",
-            function(){
+            ()=>{
 
-                self.firstTry = 0;
+                this.correctFirstTry =
+                0;
+
 
                 layer.destroy();
 
-                self.startStage(0);
+
+                this.startStage(
+                    0
+                );
             }
         );
     }
@@ -3854,12 +3861,14 @@ class MagnetScene extends Phaser.Scene{
 /* =========================================================
    PHASER CONFIG
 
-   CANVAS dipilih kerana lebih stabil pada Safari/iPad.
+   TERUS START.
+   TAK ADA LOADER.
+   TAK ADA GENERATOR BERAT.
    ========================================================= */
 
 try{
 
-    var config = {
+    const config = {
 
         type:
         Phaser.CANVAS,
@@ -3868,10 +3877,10 @@ try{
         "game",
 
         width:
-        W,
+        GAME_W,
 
         height:
-        H,
+        GAME_H,
 
         backgroundColor:
         "#dff4ff",
@@ -3892,10 +3901,10 @@ try{
             Phaser.Scale.CENTER_BOTH,
 
             width:
-            W,
+            GAME_W,
 
             height:
-            H
+            GAME_H
         },
 
         input:{
@@ -3905,7 +3914,9 @@ try{
         },
 
         scene:[
+
             MagnetScene
+
         ]
     };
 
@@ -3916,9 +3927,14 @@ try{
 
 }catch(error){
 
-    var errorBox =
+    console.error(
+        error
+    );
+
+
+    const errorBox =
     document.getElementById(
-        "phaser-error"
+        "error-box"
     );
 
 
@@ -3936,7 +3952,6 @@ try{
     );
 }
 
-})();
 </script>
 
 </body>
