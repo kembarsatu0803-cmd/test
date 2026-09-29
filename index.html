@@ -2,9 +2,16 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta
+    name="viewport"
+    content="width=device-width,
+    initial-scale=1,
+    maximum-scale=1,
+    user-scalable=no,
+    viewport-fit=cover"
+>
 
-<title>Trail Puzzle • Set 6</title>
+<title>Magnet Rail Switch - Set 1</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
@@ -16,42 +23,44 @@
 
 html,body{
     margin:0;
+    padding:0;
+    width:100%;
     min-height:100%;
-    font-family:Arial,sans-serif;
+    background:
+        radial-gradient(circle at top,#e9f8ff 0%,#cdefff 40%,#c7ddff 100%);
+    font-family:"Trebuchet MS",Arial,sans-serif;
+    touch-action:none;
     overscroll-behavior:none;
 }
 
 body{
+    min-height:100vh;
+    min-height:100svh;
     display:flex;
-    justify-content:center;
     align-items:flex-start;
-    padding:8px;
-    background:
-        radial-gradient(
-            ellipse at 15% 10%,
-            #e7faff,
-            transparent 55%
-        ),
-        linear-gradient(
-            140deg,
-            #b9dce8,
-            #e8eff5 60%,
-            #bdd3e8
-        );
+    justify-content:center;
+    padding:
+        max(4px,env(safe-area-inset-top))
+        4px
+        max(4px,env(safe-area-inset-bottom));
 }
 
-#shell{
+#game-shell{
     width:min(
         98vw,
-        820px,
-        calc(97svh * .78947)
+        760px,
+        calc(97svh * 0.75)
     );
-    aspect-ratio:900/1140;
-    border:3px solid #fff;
-    border-radius:30px;
+
+    aspect-ratio:3/4;
+
+    background:#dff5ff;
+    border-radius:20px;
     overflow:hidden;
-    background:#eaf5f8;
-    box-shadow:0 20px 65px #163c5929;
+
+    box-shadow:
+        0 8px 25px rgba(34,77,120,.22),
+        inset 0 0 0 2px rgba(255,255,255,.8);
 }
 
 #game{
@@ -60,2098 +69,2142 @@ body{
 }
 
 canvas{
-    display:block!important;
-    touch-action:none;
-    user-select:none;
-    -webkit-user-select:none;
+    display:block;
+    width:100% !important;
+    height:100% !important;
 }
 
-@media(max-width:540px){
+@media(max-width:600px){
     body{
-        padding:3px;
+        padding:2px;
     }
 
-    #shell{
+    #game-shell{
         width:99vw;
-        border-width:2px;
-        border-radius:20px;
+        border-radius:12px;
     }
 }
+
 </style>
 </head>
 
 <body>
 
-<div id="shell">
+<div id="game-shell">
     <div id="game"></div>
 </div>
 
 <script>
+(() => {
+
 "use strict";
 
-const W=900;
-const H=1140;
+/* =========================================================
+   SOALAN
+========================================================= */
 
-const QUESTIONS=[
+const QUESTIONS = [
+
 {
-    topic:"Apakah Gunanya Magnet?",
-    q:"Seorang murid mahu menghasilkan pin bermagnet seperti aktiviti dalam buku. Magnet apakah yang digunakan?",
-    a:[
-        "Dua magnet bar",
-        "Dua magnet butang",
-        "Dua magnet ladam",
-        "Dua magnet silinder"
-    ],
-    correct:1
+q:"Apakah kegunaan magnet pada pemutar skru bermagnet?",
+a:[
+"Memegang skru",
+"Mencairkan skru",
+"Mewarnakan skru",
+"Memotong skru"
+],
+correct:0
 },
+
 {
-    topic:"Apakah Gunanya Magnet?",
-    q:"Antara situasi berikut, yang manakah menunjukkan kegunaan magnet dalam kehidupan seharian?",
-    a:[
-        "Mengukur panjang meja",
-        "Mewarnakan gambar",
-        "Memadam tulisan pensel",
-        "Menutup pintu peti sejuk dengan rapat"
-    ],
-    correct:3
+q:"Skru kerap jatuh ketika seseorang bekerja. Alat manakah paling sesuai berdasarkan contoh dalam buku?",
+a:[
+"Kayu aiskrim",
+"Pemutar skru bermagnet",
+"Pembaris plastik",
+"Guli"
+],
+correct:1
 },
+
 {
-    topic:"Apakah Gunanya Magnet?",
-    q:"Apakah alat yang boleh memegang skru supaya tidak mudah jatuh?",
-    a:[
-        "Pembaris plastik",
-        "Pemutar skru bermagnet",
-        "Pemadam",
-        "Guli"
-    ],
-    correct:1
+q:"Magnet pada kotak pensel membantu bahagian penutup ____.",
+a:[
+"Menjadi panjang",
+"Menjadi lembut",
+"Bertukar warna",
+"Tertutup rapat"
+],
+correct:3
 },
+
 {
-    topic:"Apakah Gunanya Magnet?",
-    q:"Tanda nama cikgu boleh melekat tanpa pin kerana mengandungi ____.",
-    a:[
-        "Kayu",
-        "Kertas",
-        "Magnet",
-        "Plastik"
-    ],
-    correct:2
+q:"Jika penutup beg tangan menggunakan magnet, magnet membantu bahagian itu ____.",
+a:[
+"Melekat atau tertutup",
+"Menjadi lut sinar",
+"Menghasilkan bunyi",
+"Bertukar menjadi kayu"
+],
+correct:0
 },
+
 {
-    topic:"Apakah Gunanya Magnet?",
-    q:"Siti mahu kotak penselnya boleh ditutup rapat seperti contoh dalam buku. Penutup itu perlu mempunyai ____.",
-    a:[
-        "Magnet",
-        "Pemadam",
-        "Guli",
-        "Kayu aiskrim"
-    ],
-    correct:0
+q:"Magnet pada pintu peti sejuk membantu pintu menjadi ____.",
+a:[
+"Lebih tinggi",
+"Lebih panjang",
+"Tertutup rapat",
+"Lebih ringan"
+],
+correct:2
 },
+
 {
-    topic:"Bentuk Magnet",
-    q:"Yang manakah nama magnet yang berbentuk seperti butang?",
-    a:[
-        "Magnet buku",
-        "Magnet pemadam",
-        "Magnet butang",
-        "Magnet pensel"
-    ],
-    correct:2
+q:"Magnet yang kelihatan seperti batang bulat memanjang dinamakan ____.",
+a:[
+"Magnet bar",
+"Magnet silinder",
+"Magnet cincin",
+"Magnet butang"
+],
+correct:1
 },
+
 {
-    topic:"Bentuk Magnet",
-    q:"Apakah nama magnet yang berbentuk seperti ladam kuda?",
-    a:[
-        "Magnet cincin",
-        "Magnet ladam",
-        "Magnet butang",
-        "Magnet bar"
-    ],
-    correct:1
+q:"Magnet dinamakan berdasarkan ____.",
+a:[
+"Beratnya",
+"Baunya",
+"Warnanya",
+"Bentuknya"
+],
+correct:3
 },
+
 {
-    topic:"Bentuk Magnet",
-    q:"Pasangan manakah terdiri daripada magnet ladam dan satu lagi bentuk magnet yang betul?",
-    a:[
-        "Magnet bunga dan magnet akar",
-        "Magnet kertas dan magnet kayu",
-        "Magnet air dan magnet pasir",
-        "Magnet ladam dan magnet bentuk U"
-    ],
-    correct:3
+q:"Seorang murid melihat magnet berbentuk kepingan bulat padat. Nama yang sesuai ialah ____.",
+a:[
+"Magnet butang",
+"Magnet bentuk U",
+"Magnet cincin",
+"Magnet ladam"
+],
+correct:0
 },
+
 {
-    topic:"Bentuk Magnet",
-    q:"Apakah perbezaan yang dinyatakan antara magnet ladam dengan magnet bentuk U?",
-    a:[
-        "Kutub magnet ladam lebih rapat",
-        "Magnet U tidak mempunyai kutub",
-        "Magnet U diperbuat daripada kayu",
-        "Magnet ladam tidak mempunyai kutub"
-    ],
-    correct:0
+q:"Apakah nama magnet yang berbentuk batang panjang?",
+a:[
+"Magnet butang",
+"Magnet cincin",
+"Magnet bar",
+"Magnet ladam"
+],
+correct:2
 },
+
 {
-    topic:"Bentuk Magnet",
-    q:"Yang manakah nama magnet yang berbentuk silinder?",
-    a:[
-        "Magnet akar",
-        "Magnet segitiga daun",
-        "Magnet bunga",
-        "Magnet silinder"
-    ],
-    correct:3
+q:"Ali mengumpulkan magnet bar, silinder, ladam, bentuk U, butang dan cincin. Apakah yang ditunjukkan oleh koleksi ini?",
+a:[
+"Magnet mempunyai pelbagai bentuk",
+"Semua magnet berbentuk bulat",
+"Semua magnet mempunyai satu bentuk",
+"Magnet tidak mempunyai bentuk"
+],
+correct:0
 },
+
 {
-    topic:"Hebatnya Magnet",
-    q:"Jika objek bergerak ke arah magnet apabila magnet didekatkan, tindakan itu disebut ____.",
-    a:[
-        "Memadam",
-        "Mengukur",
-        "Menarik",
-        "Menolak"
-    ],
-    correct:2
+q:"Objek bulat manakah dalam aktiviti yang tidak dapat ditarik magnet?",
+a:[
+"Paku",
+"Guli",
+"Skru",
+"Pin baju"
+],
+correct:1
 },
+
 {
-    topic:"Hebatnya Magnet",
-    q:"Objek plastik berbentuk pembaris manakah yang tidak dapat ditarik magnet?",
-    a:[
-        "Pembaris plastik",
-        "Klip kertas",
-        "Paku",
-        "Skru"
-    ],
-    correct:0
+q:"Dalam satu ujian, skru dan pin baju bergerak ke arah magnet. Apakah persamaan kedua-duanya?",
+a:[
+"Kedua-duanya pembaris",
+"Kedua-duanya tidak dapat ditarik",
+"Kedua-duanya magnet",
+"Kedua-duanya dapat ditarik magnet"
+],
+correct:3
 },
+
 {
-    topic:"Hebatnya Magnet",
-    q:"Yang manakah pasangan objek yang kedua-duanya tidak dapat ditarik magnet?",
-    a:[
-        "Pin baju dan skru",
-        "Guli dan pemadam",
-        "Klip kertas dan paku",
-        "Skru dan paku"
-    ],
-    correct:1
+q:"Magnet tidak dapat menarik ____.",
+a:[
+"Paku",
+"Skru",
+"Pensel",
+"Pin baju"
+],
+correct:2
 },
+
 {
-    topic:"Hebatnya Magnet",
-    q:"Yang manakah pasangan objek yang menunjukkan satu boleh ditarik dan satu tidak boleh ditarik?",
-    a:[
-        "Skru dan guli",
-        "Guli dan pemadam",
-        "Paku dan skru",
-        "Pin baju dan klip kertas"
-    ],
-    correct:0
+q:"Yang manakah pasangan objek yang kedua-duanya boleh ditarik magnet berdasarkan contoh unit ini?",
+a:[
+"Guli dan pemadam",
+"Butang plastik dan guli",
+"Kayu aiskrim dan pembaris plastik",
+"Skru dan pin baju"
+],
+correct:3
 },
+
 {
-    topic:"Hebatnya Magnet",
-    q:"Objek yang digunakan untuk memadam tulisan manakah yang tidak dapat ditarik magnet?",
-    a:[
-        "Skru",
-        "Klip kertas",
-        "Paku",
-        "Pemadam"
-    ],
-    correct:3
+q:"Butang daripada bahan apakah yang tidak dapat ditarik magnet dalam aktiviti?",
+a:[
+"Penutup botol logam",
+"Butang plastik",
+"Skru",
+"Pin baju"
+],
+correct:1
 },
+
 {
-    topic:"Tarikan dan Tolakan Magnet",
-    q:"Jika U berhadapan dengan U, tindakan yang betul ialah ____.",
-    a:[
-        "Tarikan",
-        "Tolakan",
-        "Tiada tindakan",
-        "Pemanasan"
-    ],
-    correct:1
+q:"Sebuah magnet menarik magnet lain. Apakah yang boleh dikatakan tentang kutub yang berhadapan?",
+a:[
+"Kedua-duanya kutub yang berlainan",
+"Satu magnet ialah plastik",
+"Magnet tidak mempunyai kutub",
+"Kedua-duanya mesti sama"
+],
+correct:0
 },
+
 {
-    topic:"Tarikan dan Tolakan Magnet",
-    q:"Apabila magnet saling menjauh kerana kutub yang sama, tindakan itu ialah ____.",
-    a:[
-        "Pengukuran",
-        "Pemadaman",
-        "Tolakan",
-        "Tarikan"
-    ],
-    correct:2
+q:"Kutub magnet yang sama apabila didekatkan akan ____.",
+a:[
+"Hilang",
+"Melekat pada kayu",
+"Menolak",
+"Menarik"
+],
+correct:2
 },
+
 {
-    topic:"Tarikan dan Tolakan Magnet",
-    q:"Kutub Utara didekatkan dengan kutub Utara. Apakah yang berlaku?",
-    a:[
-        "Melekat pada plastik",
-        "Menolak",
-        "Mencair",
-        "Menarik"
-    ],
-    correct:1
+q:"Dua magnet boleh menarik atau ____ apabila didekatkan.",
+a:[
+"Menolak",
+"Mengukur",
+"Mewarnakan",
+"Memadam"
+],
+correct:0
 },
+
 {
-    topic:"Tarikan dan Tolakan Magnet",
-    q:"Jika S berhadapan dengan U, tindakan yang betul ialah ____.",
-    a:[
-        "Tolakan",
-        "Tiada tindakan",
-        "Pemanasan",
-        "Tarikan"
-    ],
-    correct:3
+q:"Sebuah magnet menolak magnet lain. Apakah yang boleh dikatakan tentang kutub yang berhadapan?",
+a:[
+"Magnet tidak mempunyai kutub",
+"Satu magnet ialah kayu",
+"Kedua-duanya mesti berlainan",
+"Kedua-duanya kutub yang sama"
+],
+correct:3
 },
+
 {
-    topic:"Tarikan dan Tolakan Magnet",
-    q:"Dua magnet bar digunakan dalam aktiviti untuk mengkaji ____.",
-    a:[
-        "Tarikan dan tolakan",
-        "Bau magnet",
-        "Warna magnet",
-        "Rasa magnet"
-    ],
-    correct:0
+q:"Hakim mahu melihat tolakan antara dua magnet. Apakah susunan yang sesuai?",
+a:[
+"Magnet dijauhkan tanpa diuji",
+"Kutub yang berlainan didekatkan",
+"Kutub yang sama didekatkan",
+"Magnet ditutup dengan kertas"
+],
+correct:2
 },
+
 {
-    topic:"Kekuatan Magnet",
-    q:"Magnet digerakkan mendekati klip kertas sehingga klip kertas ____.",
-    a:[
-        "Hilang",
-        "Mencair",
-        "Ditarik",
-        "Bertukar warna"
-    ],
-    correct:2
+q:"Magnet P menarik klip kertas dari jarak lebih jauh berbanding magnet Q. Magnet manakah lebih kuat?",
+a:[
+"Magnet P",
+"Kedua-duanya tiada kekuatan",
+"Kedua-duanya sama",
+"Magnet Q"
+],
+correct:0
 },
+
 {
-    topic:"Kekuatan Magnet",
-    q:"Dua magnet diuji dengan jenis klip kertas yang sama. Magnet R menarik lebih banyak klip. Apakah kesimpulan paling sesuai?",
-    a:[
-        "Klip kertas bukan objek tarikan",
-        "Magnet R lebih lemah",
-        "Kedua-duanya sama",
-        "Magnet R lebih kuat"
-    ],
-    correct:3
+q:"Jika satu magnet boleh menarik klip kertas dari jarak yang lebih jauh, apakah maksudnya?",
+a:[
+"Magnet itu diperbuat daripada kayu",
+"Magnet itu lebih kuat",
+"Magnet itu lebih lemah",
+"Magnet itu bukan magnet"
+],
+correct:1
 },
+
 {
-    topic:"Kekuatan Magnet",
-    q:"Dalam aktiviti kekuatan magnet, klip kertas disusun di sisi ____.",
-    a:[
-        "Tingkap",
-        "Pembaris",
-        "Buku",
-        "Pintu"
-    ],
-    correct:1
+q:"Magnet yang menarik lebih banyak klip kertas dianggap lebih ____.",
+a:[
+"Lemah",
+"Lembut",
+"Ringan",
+"Kuat"
+],
+correct:3
 },
+
 {
-    topic:"Kekuatan Magnet",
-    q:"Untuk membandingkan kekuatan magnet dengan adil, klip kertas perlu disusun dan jarak diperhatikan menggunakan ____.",
-    a:[
-        "Pembaris",
-        "Guli",
-        "Pemadam",
-        "Kayu aiskrim"
-    ],
-    correct:0
+q:"Magnet berbentuk huruf apakah yang digunakan dalam aktiviti menguji kekuatan magnet?",
+a:[
+"Pemadam sahaja",
+"Magnet bentuk U",
+"Guli sahaja",
+"Pensel sahaja"
+],
+correct:1
 },
+
 {
-    topic:"Kekuatan Magnet",
-    q:"Kekuatan magnet boleh dibandingkan dengan melihat bilangan klip kertas yang ____.",
-    a:[
-        "Dipotong",
-        "Diwarnakan",
-        "Ditarik",
-        "Dipadam"
-    ],
-    correct:2
+q:"Magnet yang menarik klip kertas dari jarak lebih jauh dianggap lebih ____.",
+a:[
+"Lembut",
+"Lemah",
+"Kuat",
+"Licin"
+],
+correct:2
 }
+
 ];
 
-const key=p=>p.r+","+p.c;
 
-const edge=(a,b)=>
-    [key(a),key(b)].sort().join("|");
+/* =========================================================
+   AUDIO
+========================================================= */
 
-function rng(seed){
-    return()=>{
-        let t=seed+=0x6D2B79F5;
-
-        t=Math.imul(
-            t^(t>>>15),
-            t|1
-        );
-
-        t^=t+Math.imul(
-            t^(t>>>7),
-            t|61
-        );
-
-        return(
-            (t^(t>>>14))>>>0
-        )/4294967296;
-    };
-}
-
-function shuffle(a,r){
-    for(let i=a.length-1;i>0;i--){
-        const j=Math.floor(r()*(i+1));
-        [a[i],a[j]]=[a[j],a[i]];
-    }
-
-    return a;
-}
-
-function neighbours(p,rows,cols){
-    return[
-        {r:p.r-1,c:p.c},
-        {r:p.r+1,c:p.c},
-        {r:p.r,c:p.c-1},
-        {r:p.r,c:p.c+1}
-    ].filter(v=>
-        v.r>=0&&
-        v.r<rows&&
-        v.c>=0&&
-        v.c<cols
-    );
-}
-
-function snake(rows,cols,vertical){
-    const a=[];
-
-    for(
-        let i=0;
-        i<(vertical?cols:rows);
-        i++
-    ){
-        for(
-            let j=0;
-            j<(vertical?rows:cols);
-            j++
-        ){
-            const n=i%2
-                ?(vertical?rows:cols)-1-j
-                :j;
-
-            a.push(
-                vertical
-                    ?{r:n,c:i}
-                    :{r:i,c:n}
-            );
-        }
-    }
-
-    return a;
-}
-
-function mutate(path,rows,cols,r,steps){
-    let p=path.slice();
-
-    for(let s=0;s<steps;s++){
-        if(r()<.5){
-            p.reverse();
-        }
-
-        const end=p[p.length-1];
-
-        for(
-            const n of shuffle(
-                neighbours(end,rows,cols),
-                r
-            )
-        ){
-            const i=p.findIndex(
-                v=>key(v)===key(n)
-            );
-
-            if(i>=0&&i<p.length-2){
-                p=p.slice(0,i+1).concat(
-                    p.slice(i+1).reverse()
-                );
-
-                break;
-            }
-        }
-    }
-
-    return p;
-}
-
-function turns(p){
-    let n=0;
-
-    for(let i=2;i<p.length;i++){
-        if(
-            p[i].r-p[i-1].r!==
-            p[i-1].r-p[i-2].r
-            ||
-            p[i].c-p[i-1].c!==
-            p[i-1].c-p[i-2].c
-        ){
-            n++;
-        }
-    }
-
-    return n;
-}
-
-class SoundBox{
-    constructor(){
-        this.enabled=true;
-        this.ctx=null;
-        this.timer=null;
-        this.i=0;
-    }
-
-    unlock(){
-        const AC=
-            window.AudioContext||
-            window.webkitAudioContext;
-
-        if(!AC)return;
-
-        if(!this.ctx){
-            this.ctx=new AC();
-
-            this.master=
-                this.ctx.createGain();
-
-            this.master.gain.value=.12;
-
-            this.master.connect(
-                this.ctx.destination
-            );
-
-            this.timer=setInterval(()=>{
-                if(!document.hidden){
-                    this.tone(
-                        [
-                            262,330,392,330,
-                            294,349,440,349
-                        ][this.i++%8],
-                        .22,
-                        "sine",
-                        .035
-                    );
-                }
-            },540);
-        }
-
-        if(this.ctx.state==="suspended"){
-            this.ctx.resume().catch(()=>{});
-        }
-    }
-
-    tone(
-        f,
-        d=.07,
-        type="triangle",
-        v=.12
-    ){
-        if(
-            !this.ctx||
-            !this.enabled||
-            this.ctx.state!=="running"
-        ){
-            return;
-        }
-
-        const o=this.ctx.createOscillator();
-        const g=this.ctx.createGain();
-        const t=this.ctx.currentTime;
-
-        o.type=type;
-        o.frequency.value=f;
-
-        g.gain.setValueAtTime(
-            .0001,
-            t
-        );
-
-        g.gain.exponentialRampToValueAtTime(
-            v,
-            t+.01
-        );
-
-        g.gain.exponentialRampToValueAtTime(
-            .0001,
-            t+d
-        );
-
-        o.connect(g);
-        g.connect(this.master);
-
-        o.start(t);
-        o.stop(t+d+.02);
-    }
-
-    move(){
-        this.tone(
-            430,.045,"sine",.08
-        );
-    }
-
-    undo(){
-        this.tone(
-            290,.045,"sine",.07
-        );
-    }
-
-    bad(){
-        this.tone(
-            145,.08,"triangle",.12
-        );
-    }
-
-    win(){
-        [523,659,784].forEach((n,i)=>{
-            setTimeout(
-                ()=>this.tone(n,.18),
-                i*100
-            );
-        });
-    }
-}
-
-const AUDIO=new SoundBox();
-
-class TrailPuzzle extends Phaser.Scene{
+class AudioManager{
 
     constructor(){
-        super("TrailPuzzle");
+        this.ctx = null;
+        this.musicTimer = null;
+        this.enabled = true;
+        this.started = false;
+        this.noteIndex = 0;
+
+        this.notes = [
+            261.63,
+            329.63,
+            392.00,
+            329.63,
+            293.66,
+            349.23,
+            440.00,
+            349.23
+        ];
     }
 
-    text(
-        x,y,value,
-        size=22,
-        color="#20465c",
-        bold=false
-    ){
-        return this.add.text(
-            x,y,value,
-            {
-                fontFamily:"Trebuchet MS, Arial",
-                fontSize:size+"px",
-                fontStyle:bold?"bold":"normal",
-                color
-            }
-        ).setOrigin(0,.5);
-    }
+    init(){
 
-    card(
-        x,y,w,h,
-        fill=0xffffff,
-        stroke=0xd8e7ed,
-        radius=24
-    ){
-        const g=this.add.graphics();
+        if(this.started) return;
 
-        g.fillStyle(
-            0x193c53,.07
-        ).fillRoundedRect(
-            x,y+6,w,h,radius
-        );
+        try{
 
-        g.fillStyle(
-            fill,1
-        ).fillRoundedRect(
-            x,y,w,h,radius
-        );
+            this.ctx =
+                new (
+                    window.AudioContext ||
+                    window.webkitAudioContext
+                )();
 
-        g.lineStyle(
-            2,stroke,1
-        ).strokeRoundedRect(
-            x,y,w,h,radius
-        );
-
-        return g;
-    }
-
-    button(
-        x,y,w,h,
-        label,
-        callback,
-        dark=false
-    ){
-        const c=this.add.container(x,y);
-
-        const g=this.card(
-            -w/2,
-            -h/2,
-            w,h,
-            dark?0x236b82:0xf0f7fa,
-            dark?0x236b82:0xd3e4eb,
-            16
-        );
-
-        const t=this.text(
-            0,0,label,19,
-            dark?"#ffffff":"#325e73",
-            true
-        ).setOrigin(.5);
-
-        const hit=this.add.zone(
-            0,0,w,h
-        ).setInteractive({
-            useHandCursor:true
-        });
-
-        c.add([g,t,hit]);
-
-        hit.on("pointerdown",()=>{
-            AUDIO.unlock();
-            callback();
-        });
-
-        return c;
-    }
-
-    create(){
-        this.stageIndex=0;
-        this.score=0;
-        this.seed=Date.now()>>>0;
-        this.used=new Set();
-
-        this.locked=false;
-        this.questionOpen=false;
-        this.dragId=null;
-        this.timeLeft=60;
-        this.hint=false;
-
-        const bg=this.add.graphics();
-
-        bg.fillStyle(
-            0xeaf5f8
-        ).fillRect(0,0,W,H);
-
-        bg.fillStyle(
-            0xffffff,.45
-        ).fillCircle(
-            840,320,220
-        );
-
-        bg.fillStyle(
-            0xd4e9ef,.55
-        ).fillCircle(
-            30,890,220
-        );
-
-        for(let y=280;y<1100;y+=32){
-            for(let x=24;x<900;x+=32){
-                bg.fillStyle(
-                    0x8bb4c6,.15
-                ).fillCircle(
-                    x,y,1.5
-                );
-            }
-        }
-
-        this.card(
-            26,22,848,220
-        );
-
-        this.card(
-            43,39,65,65,
-            0x236b82,
-            0x236b82,
-            20
-        );
-
-        this.text(
-            75,71,"✦",
-            39,"#fff3c9",true
-        ).setOrigin(.5);
-
-        this.text(
-            124,57,
-            "TRAIL PUZZLE",
-            31,"#173e53",true
-        );
-
-        this.text(
-            125,89,
-            "SET 6  /  MISI MAGNET",
-            16,"#7291a1",true
-        );
-
-        this.stageText=this.text(
-            54,138,"",
-            23,"#20465c",true
-        );
-
-        this.levelText=this.text(
-            252,138,"",
-            16,"#238395",true
-        );
-
-        this.statusText=this.text(
-            54,180,"",
-            19,"#668292"
-        );
-
-        this.track=this.add.graphics();
-
-        this.progressText=this.text(
-            504,214,"",
-            16,"#537285",true
-        ).setOrigin(1,.5);
-
-        this.clock=this.add.graphics();
-
-        this.clockText=this.text(
-            662,90,
-            "01:00",
-            35,"#ffffff",true
-        )
-        .setOrigin(.5)
-        .setFontFamily("Courier New, monospace");
-
-        this.text(
-            662,53,
-            "BANTUAN DALAM",
-            12,"#7c9eac",true
-        ).setOrigin(.5);
-
-        this.clockText.setDepth(3);
-
-        this.soundButton=this.button(
-            804,68,92,48,
-            "BUNYI",
-            ()=>{
-                AUDIO.enabled=!AUDIO.enabled;
-
-                this.soundLabel.setText(
-                    AUDIO.enabled
-                        ?"BUNYI"
-                        :"SENYAP"
-                );
-            }
-        );
-
-        this.soundLabel=
-            this.soundButton.list[1];
-
-        this.button(
-            781,142,134,53,
-            "↻ RESET",
-            ()=>this.resetStage()
-        );
-
-        this.miniDots=this.add.graphics();
-
-        this.boardG=this.add.graphics();
-        this.tileG=this.add.graphics();
-        this.hintG=this.add.graphics();
-        this.pathG=this.add.graphics();
-        this.barrierG=this.add.graphics();
-
-        this.portal=this.add.container(
-            0,0
-        ).setDepth(30);
-
-        const glow=this.add.circle(
-            0,0,36,
-            0x42c4cf,.15
-        );
-
-        const outer=this.add.circle(
-            0,0,29,
-            0x174054
-        ).setStrokeStyle(
-            3,0x6bbdca
-        );
-
-        const inner=this.add.circle(
-            0,0,20,
-            0x091d2b
-        ).setStrokeStyle(
-            2,0x3d7b94
-        );
-
-        const core=this.add.circle(
-            0,0,7,
-            0xa3e5e9
-        );
-
-        this.portal.add([
-            glow,outer,inner,core
-        ]);
-
-        this.tweens.add({
-            targets:glow,
-            scale:1.16,
-            alpha:.45,
-            duration:900,
-            yoyo:true,
-            repeat:-1
-        });
-
-        this.player=this.add.container(
-            0,0
-        ).setDepth(40);
-
-        this.player.add([
-            this.add.ellipse(
-                2,22,48,13,
-                0x193c53,.18
-            ),
-
-            this.add.circle(
-                0,2,25,
-                0x1a526b
-            ),
-
-            this.add.circle(
-                0,-2,24,
-                0x398baa
-            ).setStrokeStyle(
-                4,0xffffff
-            ),
-
-            this.add.circle(
-                -7,-10,8,
-                0x82cbdc,.5
-            ),
-
-            this.text(
-                0,-2,"✦",
-                28,"#ffffff",true
-            ).setOrigin(.5)
-        ]);
-
-        this.card(
-            44,1054,812,60,
-            0xffffff,
-            0xdae8ee,
-            20
-        );
-
-        this.text(
-            72,1084,"✦",
-            24,"#368aa2",true
-        );
-
-        this.text(
-            108,1084,
-            "Seret untuk maju",
-            19,"#456b80",true
-        );
-
-        this.text(
-            350,1084,
-            "↶  Tarik balik = undo",
-            19,"#456b80",true
-        );
-
-        this.text(
-            827,1084,
-            "●  Portal terakhir",
-            18,"#456b80",true
-        ).setOrigin(1,.5);
-
-        this.setupInput();
-        this.startStage(0);
-    }
-
-    settings(){
-        const s=this.stageIndex;
-        const t=Math.floor(s/5);
-
-        return{
-            rows:[5,5,6,6,7][t],
-            cols:[5,6,6,7,7][t],
-
-            barriers:
-                [3,7,10,13,16][t]+s%5,
-
-            steps:
-                [4,14,28,48,72][t]+
-                s%5*(t+2),
-
-            label:[
-                "MUDAH",
-                "SEDERHANA",
-                "MENCABAR",
-                "SUKAR",
-                "SANGAT SUKAR"
-            ][t]
-        };
-    }
-
-    generate(){
-        const s=this.settings();
-
-        this.rows=s.rows;
-        this.cols=s.cols;
-
-        this.levelText.setText(s.label);
-
-        for(let attempt=0;attempt<160;attempt++){
-            const r=rng(
-                (
-                    this.seed+
-                    this.stageIndex*100003+
-                    attempt*92821
-                )>>>0
-            );
-
-            let best=null;
-            let bestTurns=-1;
-
-            for(
-                let i=0;
-                i<6+Math.floor(this.stageIndex/4);
-                i++
-            ){
-                const p=mutate(
-                    snake(
-                        this.rows,
-                        this.cols,
-                        r()<.5
-                    ),
-                    this.rows,
-                    this.cols,
-                    r,
-                    s.steps+i*2
-                );
-
-                const n=turns(p);
-
-                if(n>bestTurns){
-                    best=p;
-                    bestTurns=n;
-                }
+            if(this.ctx.state === "suspended"){
+                this.ctx.resume();
             }
 
-            this.safePath=best;
-            this.start={...best[0]};
-            this.goal={...best[best.length-1]};
+            this.started = true;
 
-            const safe=new Set(
-                best.slice(1).map(
-                    (p,i)=>edge(best[i],p)
-                )
-            );
+            this.startMusic();
 
-            const candidates=[];
+        }catch(e){}
 
-            for(let y=0;y<this.rows;y++){
-                for(let x=0;x<this.cols;x++){
-                    const a={r:y,c:x};
-
-                    for(
-                        const b of[
-                            {r:y+1,c:x},
-                            {r:y,c:x+1}
-                        ]
-                    ){
-                        if(
-                            b.r<this.rows&&
-                            b.c<this.cols&&
-                            !safe.has(edge(a,b))
-                        ){
-                            candidates.push({a,b});
-                        }
-                    }
-                }
-            }
-
-            this.barriers=shuffle(
-                candidates,r
-            ).slice(0,s.barriers);
-
-            this.blocked=new Set(
-                this.barriers.map(
-                    b=>edge(b.a,b.b)
-                )
-            );
-
-            const signature=
-                this.rows+"x"+this.cols+
-                ":"+key(this.start)+
-                ":"+key(this.goal)+
-                ":"+
-                [...this.blocked]
-                .sort()
-                .join(";");
-
-            if(!this.used.has(signature)){
-                this.used.add(signature);
-                return;
-            }
-        }
     }
 
-    startStage(i){
-        this.stopTimer();
+    tone(freq,duration=.12,type="sine",volume=.04){
 
-        this.stageIndex=i;
-        this.locked=false;
-        this.questionOpen=false;
-        this.dragId=null;
-
-        this.generate();
-
-        this.cell=Math.floor(
-            Math.min(
-                750/this.cols,
-                744/this.rows,
-                118
-            )
-        );
-
-        this.bw=this.cols*this.cell;
-        this.bh=this.rows*this.cell;
-
-        this.bx=(W-this.bw)/2;
-        this.by=276+(744-this.bh)/2;
-
-        this.stageText.setText(
-            "STAGE "+
-            String(i+1).padStart(2,"0")+
-            " / 25"
-        );
-
-        this.miniDots.clear();
-
-        for(let n=0;n<25;n++){
-            this.miniDots.fillStyle(
-                n<i
-                    ?0x2c9b9f
-                    :n===i
-                        ?0xefb84c
-                        :0xd7e6ed
-            ).fillRoundedRect(
-                558+n*11.6,
-                208,
-                8,8,3
-            );
-        }
-
-        this.resetStage();
-    }
-
-    resetStage(){
         if(
-            this.questionOpen||
-            this.finished
-        ){
-            return;
-        }
+            !this.enabled ||
+            !this.ctx ||
+            this.ctx.state !== "running"
+        ) return;
 
-        this.locked=false;
-        this.dragId=null;
-        this.hint=false;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
 
-        this.history=[
-            {...this.start}
+        osc.type = type;
+        osc.frequency.value = freq;
+
+        const now = this.ctx.currentTime;
+
+        gain.gain.setValueAtTime(volume,now);
+        gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            now + duration
+        );
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + duration);
+    }
+
+    click(){
+        this.tone(520,.07,"sine",.035);
+    }
+
+    correct(){
+        this.tone(523,.10,"triangle",.06);
+
+        setTimeout(()=>{
+            this.tone(659,.12,"triangle",.055);
+        },90);
+
+        setTimeout(()=>{
+            this.tone(784,.16,"triangle",.05);
+        },180);
+    }
+
+    wrong(){
+        this.tone(180,.10,"sawtooth",.025);
+
+        setTimeout(()=>{
+            this.tone(135,.14,"sawtooth",.02);
+        },100);
+    }
+
+    finish(){
+
+        const seq=[523,659,784,1046];
+
+        seq.forEach((f,i)=>{
+            setTimeout(()=>{
+                this.tone(f,.22,"triangle",.055);
+            },i*120);
+        });
+
+    }
+
+    startMusic(){
+
+        if(this.musicTimer) return;
+
+        this.musicTimer=setInterval(()=>{
+
+            if(
+                !this.enabled ||
+                !this.ctx ||
+                this.ctx.state !== "running"
+            ) return;
+
+            this.tone(
+                this.notes[this.noteIndex],
+                .22,
+                "sine",
+                .012
+            );
+
+            this.noteIndex =
+                (this.noteIndex+1) %
+                this.notes.length;
+
+        },650);
+
+    }
+
+    toggle(){
+
+        this.enabled=!this.enabled;
+
+        return this.enabled;
+    }
+}
+
+const AUDIO = new AudioManager();
+
+
+/* =========================================================
+   PHASER
+========================================================= */
+
+class MagnetGame extends Phaser.Scene{
+
+    constructor(){
+        super("MagnetGame");
+
+        this.questionIndex=0;
+
+        this.answerPods=[];
+
+        this.podAngles=[
+            Math.PI,
+            Math.PI*1.5,
+            0,
+            Math.PI*.5
         ];
 
-        this.visited=new Set([
-            key(this.start)
-        ]);
+        this.rotationOffset=0;
 
-        this.current={...this.start};
+        this.rotationSpeed=.00032;
 
-        this.timeLeft=60;
-
-        this.player.setVisible(true);
-
-        this.draw();
-        this.place();
-        this.updateProgress();
-        this.startTimer();
-    }
-
-    centre(p){
-        return{
-            x:this.bx+(p.c+.5)*this.cell,
-            y:this.by+(p.r+.5)*this.cell
-        };
-    }
-
-    toCell(x,y){
-        if(
-            x<this.bx||
-            x>=this.bx+this.bw||
-            y<this.by||
-            y>=this.by+this.bh
-        ){
-            return null;
-        }
-
-        return{
-            r:Math.floor(
-                (y-this.by)/this.cell
-            ),
-
-            c:Math.floor(
-                (x-this.bx)/this.cell
-            )
-        };
-    }
-
-    place(){
-        const p=this.centre(this.current);
-
-        this.player
-        .setPosition(p.x,p.y)
-        .setScale(
-            Math.min(1,this.cell/88)
-        );
-    }
-
-    draw(){
-        const g=this.boardG;
-        const t=this.tileG;
-
-        g.clear();
-        t.clear();
-
-        this.hintG.clear();
-        this.pathG.clear();
-        this.barrierG.clear();
-
-        g.fillStyle(
-            0x244d65,.10
-        ).fillRoundedRect(
-            this.bx-19,
-            this.by-12,
-            this.bw+38,
-            this.bh+40,
-            30
-        );
-
-        g.fillStyle(
-            0xffffff
-        ).fillRoundedRect(
-            this.bx-20,
-            this.by-20,
-            this.bw+40,
-            this.bh+40,
-            30
-        );
-
-        g.lineStyle(
-            2,0xcbdfe8
-        ).strokeRoundedRect(
-            this.bx-20,
-            this.by-20,
-            this.bw+40,
-            this.bh+40,
-            30
-        );
-
-        for(let r=0;r<this.rows;r++){
-            for(let c=0;c<this.cols;c++){
-                const p={r,c};
-
-                const v=this.visited.has(
-                    key(p)
-                );
-
-                const x=
-                    this.bx+c*this.cell+5;
-
-                const y=
-                    this.by+r*this.cell+5;
-
-                const w=this.cell-10;
-
-                t.fillStyle(
-                    v?0xd5a23e:0xb7d2dd
-                ).fillRoundedRect(
-                    x,y+4,w,w,13
-                );
-
-                t.fillStyle(
-                    v?0xffd36b:0xe2f0f5
-                ).fillRoundedRect(
-                    x,y,w,w,13
-                );
-
-                t.lineStyle(
-                    2,
-                    v?0xf1bf54:0xc6dfe8
-                ).strokeRoundedRect(
-                    x,y,w,w,13
-                );
-
-                t.fillStyle(
-                    0xffffff,
-                    v?.34:.50
-                ).fillRoundedRect(
-                    x+8,y+7,w-16,5,3
-                );
-
-                if(!v){
-                    t.fillStyle(
-                        0xa6c6d4,.42
-                    ).fillCircle(
-                        x+w/2,
-                        y+w/2,
-                        2.5
-                    );
-                }
-            }
-        }
-
-        const line=(
-            graphics,
-            path,
-            width,
-            color,
-            alpha
-        )=>{
-            graphics.lineStyle(
-                width,color,alpha
-            );
-
-            graphics.beginPath();
-
-            path.forEach((p,i)=>{
-                const a=this.centre(p);
-
-                if(i){
-                    graphics.lineTo(
-                        a.x,a.y
-                    );
-                }else{
-                    graphics.moveTo(
-                        a.x,a.y
-                    );
-                }
-            });
-
-            graphics.strokePath();
-        };
-
-        if(this.hint){
-            line(
-                this.hintG,
-                this.safePath,
-                Math.max(
-                    5,this.cell*.052
-                ),
-                0x319caf,
-                .6
-            );
-
-            this.safePath.forEach((p,i)=>{
-                if(
-                    i===this.safePath.length-1
-                ){
-                    return;
-                }
-
-                const a=this.centre(p);
-
-                const b=this.centre(
-                    this.safePath[i+1]
-                );
-
-                const x=(a.x+b.x)/2;
-                const y=(a.y+b.y)/2;
-
-                const angle=Math.atan2(
-                    b.y-a.y,
-                    b.x-a.x
-                );
-
-                this.hintG.lineStyle(
-                    3,0x26899b,.85
-                );
-
-                for(const d of[-.65,.65]){
-                    this.hintG.lineBetween(
-                        x,y,
-                        x-Math.cos(angle+d)*9,
-                        y-Math.sin(angle+d)*9
-                    );
-                }
-            });
-        }
-
-        if(this.history.length>1){
-            line(
-                this.pathG,
-                this.history,
-                12,
-                0xe7a332,
-                .8
-            );
-
-            line(
-                this.pathG,
-                this.history,
-                5,
-                0xfff0b7,
-                .95
-            );
-        }
-
-        const st=this.centre(this.start);
-
-        this.pathG.lineStyle(
-            3,0xffffff,.8
-        ).strokeCircle(
-            st.x,st.y,9
-        );
-
-        for(const b of this.barriers){
-            const a=this.centre(b.a);
-            const z=this.centre(b.b);
-
-            const x=(a.x+z.x)/2;
-            const y=(a.y+z.y)/2;
-
-            const len=this.cell*.50;
-
-            const vertical=
-                b.a.r===b.b.r;
-
-            const bg=this.barrierG;
-
-            const w=vertical?12:len;
-            const h=vertical?len:12;
-
-            bg.fillStyle(
-                0x173e53,.20
-            ).fillRoundedRect(
-                x-w/2+2,
-                y-h/2+3,
-                w,h,4
-            );
-
-            bg.fillStyle(
-                0x274b5d
-            ).fillRoundedRect(
-                x-w/2,
-                y-h/2,
-                w,h,4
-            );
-
-            bg.fillStyle(0xffd16a);
-
-            for(
-                let n=-len/2+6;
-                n<len/2-4;
-                n+=16
-            ){
-                if(vertical){
-                    bg.fillRect(
-                        x-4,y+n,8,6
-                    );
-                }else{
-                    bg.fillRect(
-                        x+n,y-4,6,8
-                    );
-                }
-            }
-        }
-
-        const goal=this.centre(this.goal);
-
-        this.portal
-        .setPosition(goal.x,goal.y)
-        .setScale(
-            Math.min(1,this.cell/90)
-        );
-    }
-
-    updateProgress(){
-        const total=this.rows*this.cols;
-        const done=this.visited.size;
-
-        this.track.clear();
-
-        this.track.fillStyle(
-            0xe6eef2
-        ).fillRoundedRect(
-            54,208,364,11,5
-        );
-
-        this.track.fillStyle(
-            0xeeb547
-        ).fillRoundedRect(
-            54,208,
-            Math.max(
-                11,364*done/total
-            ),
-            11,5
-        );
-
-        this.progressText.setText(
-            done+" / "+total
-        );
-
-        this.statusText.setText(
-            this.hint
-                ?"Ikut anak panah biru. Tarik balik jika perlu."
-                :done===total-1
-                    ?"Tinggal portal! Lengkapkan misi anda."
-                    :"Lengkapkan semua petak • "+
-                        (total-done)+" lagi"
-        );
-    }
-
-    clockDisplay(){
-        const v=Math.max(
-            0,this.timeLeft
-        );
-
-        const color=
-            v===0
-                ?0x247d8e
-                :v<=10
-                    ?0xbb5360
-                    :v<=30
-                        ?0xa47a31
-                        :0x204c64;
-
-        this.clock.clear();
-
-        this.clock.fillStyle(
-            color
-        ).fillRoundedRect(
-            590,65,144,53,14
-        );
-
-        this.clock.lineStyle(
-            5,0xd8e8ee
-        ).strokeCircle(
-            552,90,22
-        );
-
-        this.clock.lineStyle(
-            5,
-            v<=10&&v>0
-                ?0xd26a72
-                :0x51aeb8
-        )
-        .beginPath()
-        .arc(
-            552,90,22,
-            -Math.PI/2,
-            -Math.PI/2+
-                Math.PI*2*(v/60),
-            false
-        )
-        .strokePath();
-
-        this.clock.lineStyle(
-            2,0x40667a
-        )
-        .lineBetween(
-            552,90,552,77
-        )
-        .lineBetween(
-            552,90,560,94
-        );
-
-        this.clockText.setText(
-            "0"+
-            Math.floor(v/60)+
-            ":"+
-            String(v%60).padStart(2,"0")
-        );
-    }
-
-    startTimer(){
-        this.stopTimer();
-        this.clockDisplay();
-
-        this.timer=this.time.addEvent({
-            delay:1000,
-            loop:true,
-
-            callback:()=>{
-                if(
-                    this.locked||
-                    this.questionOpen
-                ){
-                    return;
-                }
-
-                this.timeLeft=Math.max(
-                    0,this.timeLeft-1
-                );
-
-                this.clockDisplay();
-
-                if(this.timeLeft===0){
-                    this.stopTimer();
-
-                    this.hint=true;
-
-                    this.draw();
-                    this.updateProgress();
-                }
-            }
-        });
-    }
-
-    stopTimer(){
-        if(this.timer){
-            this.timer.remove(false);
-            this.timer=null;
-        }
-    }
-
-    setupInput(){
-        this.input.on(
-            "pointerdown",
-            p=>{
-                AUDIO.unlock();
-
-                if(
-                    this.locked||
-                    this.questionOpen||
-                    this.dragId!==null
-                ){
-                    return;
-                }
-
-                const c=this.toCell(
-                    p.x,p.y
-                );
-
-                if(
-                    c&&
-                    key(c)===key(this.current)
-                ){
-                    this.dragId=p.id;
-                    this.lastX=p.x;
-                    this.lastY=p.y;
-                }
-            }
-        );
-
-        this.input.on(
-            "pointermove",
-            p=>{
-                if(
-                    this.dragId!==p.id||
-                    !p.isDown||
-                    this.locked||
-                    this.questionOpen
-                ){
-                    return;
-                }
-
-                const dx=p.x-this.lastX;
-                const dy=p.y-this.lastY;
-
-                const n=Math.max(
-                    1,
-                    Math.ceil(
-                        Math.hypot(dx,dy)/
-                        Math.max(
-                            8,this.cell*.12
-                        )
-                    )
-                );
-
-                for(let i=1;i<=n;i++){
-                    const c=this.toCell(
-                        this.lastX+dx*i/n,
-                        this.lastY+dy*i/n
-                    );
-
-                    if(c){
-                        this.move(c);
-                    }
-
-                    if(this.locked){
-                        break;
-                    }
-                }
-
-                this.lastX=p.x;
-                this.lastY=p.y;
-            }
-        );
-
-        const release=p=>{
-            if(p.id===this.dragId){
-                this.dragId=null;
-            }
-        };
-
-        this.input.on(
-            "pointerup",
-            release
-        );
-
-        this.input.on(
-            "pointerupoutside",
-            release
-        );
-
-        this.input.on(
-            "gameout",
-            ()=>this.dragId=null
-        );
-    }
-
-    move(p){
-        if(
-            this.locked||
-            Math.abs(p.r-this.current.r)+
-            Math.abs(p.c-this.current.c)!==1
-        ){
-            return;
-        }
-
-        const prev=
-            this.history[
-                this.history.length-2
-            ];
-
-        if(prev&&key(prev)===key(p)){
-            this.visited.delete(
-                key(this.history.pop())
-            );
-
-            this.current={...prev};
-
-            AUDIO.undo();
-
-            this.place();
-            this.draw();
-            this.updateProgress();
-
-            return;
-        }
-
-        if(
-            this.blocked.has(
-                edge(this.current,p)
-            )
-        ){
-            this.feedback(
-                p,
-                "Ada penghalang. Cari jalan lain."
-            );
-
-            return;
-        }
-
-        if(this.visited.has(key(p))){
-            this.feedback(
-                p,
-                "Tarik balik satu demi satu untuk undo."
-            );
-
-            return;
-        }
-
-        const portal=
-            key(p)===key(this.goal);
-
-        if(
-            portal&&
-            this.visited.size!==
-                this.rows*this.cols-1
-        ){
-            this.feedback(
-                p,
-                "Portal mesti jadi petak terakhir."
-            );
-
-            return;
-        }
-
-        this.current={...p};
-        this.history.push({...p});
-        this.visited.add(key(p));
-
-        AUDIO.move();
-
-        this.place();
-        this.draw();
-        this.updateProgress();
-
-        if(portal){
-            this.locked=true;
-            this.dragId=null;
-
-            this.stopTimer();
-
-            this.statusText.setText(
-                "Hebat! Puzzle selesai."
-            );
-
-            AUDIO.win();
-
-            this.time.delayedCall(
-                400,
-                ()=>this.showQuestion()
-            );
-        }
-    }
-
-    feedback(p,message){
-        this.statusText.setText(message);
-
-        if(
-            this.time.now<
-            (this.nextFeedback||0)
-        ){
-            return;
-        }
-
-        this.nextFeedback=
-            this.time.now+220;
-
-        AUDIO.bad();
-
-        const a=this.centre(p);
-
-        const ring=this.add.circle(
-            a.x,a.y,
-            this.cell*.26,
-            0xe77973,.10
-        )
-        .setStrokeStyle(
-            3,0xdd7871
-        )
-        .setDepth(50);
-
-        this.tweens.add({
-            targets:ring,
-            alpha:0,
-            scale:1.2,
-            duration:240,
-            onComplete:()=>ring.destroy()
-        });
-    }
-
-    showQuestion(){
-        this.questionOpen=true;
         this.answerLocked=false;
-        this.mistake=false;
 
-        const q=QUESTIONS[this.stageIndex];
+        this.trackCX=360;
+        this.trackCY=680;
 
-        this.questionLayer=
-            this.add.container(0,0)
-            .setDepth(100);
+        this.trackRX=265;
+        this.trackRY=125;
 
-        const panel=this.card(
-            54,154,792,856,
-            0xffffff,
-            0xbad4df,
-            32
+        this.magnetX=360;
+        this.magnetY=680;
+
+        this.magnetPulse=0;
+    }
+
+
+    create(){
+
+        this.cameras.main.setBackgroundColor("#dff6ff");
+
+        this.createBackground();
+        this.createHeader();
+        this.createQuestionPanel();
+        this.createLab();
+        this.createTrack();
+        this.createMagnet();
+        this.createAnswerPods();
+        this.createFooter();
+
+        this.showQuestion();
+
+        this.input.on("pointerdown",()=>{
+            AUDIO.init();
+        });
+
+    }
+
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+    createBackground(){
+
+        const g=this.add.graphics();
+
+        /* wall */
+
+        g.fillStyle(0xeaf9ff,1);
+        g.fillRect(0,0,720,960);
+
+        /* decorative circles */
+
+        g.fillStyle(0xd5f2ff,.7);
+
+        g.fillCircle(60,80,90);
+        g.fillCircle(670,200,100);
+        g.fillCircle(40,840,95);
+        g.fillCircle(700,900,130);
+
+        /* grid */
+
+        g.lineStyle(1,0xcfe7f1,.38);
+
+        for(let x=0;x<=720;x+=40){
+            g.lineBetween(x,0,x,960);
+        }
+
+        for(let y=0;y<=960;y+=40){
+            g.lineBetween(0,y,720,y);
+        }
+
+        /* bottom laboratory floor */
+
+        g.fillStyle(0xb9dce9,.42);
+        g.fillRect(0,548,720,412);
+
+        g.fillStyle(0xffffff,.55);
+        g.fillRoundedRect(
+            24,
+            565,
+            672,
+            338,
+            28
         );
 
-        const badge=this.card(
-            316,177,268,46,
-            0xe7f5f5,
-            0xe7f5f5,
-            14
+        g.lineStyle(3,0xb8d8e8,.8);
+
+        g.strokeRoundedRect(
+            24,
+            565,
+            672,
+            338,
+            28
         );
 
-        const title=this.text(
-            450,200,
-            "SOALAN "+
-            (this.stageIndex+1)+
-            " / 25",
-            19,"#287d8b",true
+    }
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+    createHeader(){
+
+        const g=this.add.graphics();
+
+        g.fillStyle(0xffffff,.96);
+
+        g.fillRoundedRect(
+            24,
+            18,
+            672,
+            65,
+            22
+        );
+
+        g.lineStyle(2,0xb9dceb,1);
+
+        g.strokeRoundedRect(
+            24,
+            18,
+            672,
+            65,
+            22
+        );
+
+        this.add.text(
+            48,
+            50,
+            "MAGNET RAIL SWITCH",
+            {
+                fontFamily:"Trebuchet MS",
+                fontSize:"26px",
+                fontStyle:"bold",
+                color:"#17445c"
+            }
+        ).setOrigin(0,.5);
+
+        this.progressText=this.add.text(
+            610,
+            50,
+            "1 / 25",
+            {
+                fontFamily:"Trebuchet MS",
+                fontSize:"21px",
+                fontStyle:"bold",
+                color:"#245b74"
+            }
         ).setOrigin(.5);
 
-        const topic=this.text(
-            450,263,
-            q.topic,
-            24,"#285269",true
+        this.soundBtn=this.add.container(662,50);
+
+        const bg=this.add.circle(
+            0,0,24,0xe6f7ff
+        );
+
+        bg.setStrokeStyle(
+            2,
+            0x9bcfe4
+        );
+
+        this.soundIcon=this.add.text(
+            0,
+            0,
+            "♪",
+            {
+                fontSize:"24px",
+                fontStyle:"bold",
+                color:"#1f607e"
+            }
         ).setOrigin(.5);
 
-        const question=this.text(
-            450,352,
-            q.q,
-            27,"#173e53",true
-        )
-        .setOrigin(.5)
-        .setAlign("center")
-        .setWordWrapWidth(682)
-        .setLineSpacing(5);
-
-        this.questionLayer.add([
-            panel,
-            badge,
-            title,
-            topic,
-            question
+        this.soundBtn.add([
+            bg,
+            this.soundIcon
         ]);
 
-        this.answerCards=[];
-
-        q.a.forEach((answer,i)=>{
-            const y=482+i*119;
-
-            const g=this.add.graphics();
-
-            const circle=this.add.circle(
-                128,y+45,25,
-                0x367c96
-            );
-
-            const letter=this.text(
-                128,y+45,
-                String.fromCharCode(65+i),
-                23,"#ffffff",true
-            ).setOrigin(.5);
-
-            const label=this.text(
-                174,y+45,
-                answer,
-                24,"#2b5065",true
-            ).setWordWrapWidth(570);
-
-            const hit=this.add.zone(
-                450,y+45,694,96
-            ).setInteractive({
+        this.soundBtn
+            .setSize(48,48)
+            .setInteractive({
                 useHandCursor:true
             });
 
-            this.questionLayer.add([
-                g,
-                circle,
-                letter,
-                label,
-                hit
+        this.soundBtn.on(
+            "pointerdown",
+            ()=>{
+
+                AUDIO.init();
+
+                const on=AUDIO.toggle();
+
+                this.soundIcon.setText(
+                    on ? "♪" : "×"
+                );
+            }
+        );
+
+    }
+
+
+/* =========================================================
+   QUESTION PANEL
+========================================================= */
+
+    createQuestionPanel(){
+
+        this.questionCard=
+            this.add.container(360,105);
+
+        const shadow=this.add.graphics();
+
+        shadow.fillStyle(
+            0x5b8ba0,
+            .13
+        );
+
+        shadow.fillRoundedRect(
+            -322,
+            5,
+            644,
+            415,
+            28
+        );
+
+        const card=this.add.graphics();
+
+        card.fillStyle(
+            0xffffff,
+            1
+        );
+
+        card.fillRoundedRect(
+            -322,
+            0,
+            644,
+            410,
+            28
+        );
+
+        card.lineStyle(
+            3,
+            0xaed9eb,
+            1
+        );
+
+        card.strokeRoundedRect(
+            -322,
+            0,
+            644,
+            410,
+            28
+        );
+
+        this.topicText=this.add.text(
+            -292,
+            28,
+            "APAKAH GUNANYA MAGNET?",
+            {
+                fontFamily:"Trebuchet MS",
+                fontSize:"17px",
+                fontStyle:"bold",
+                color:"#1681a8"
+            }
+        );
+
+        this.questionText=this.add.text(
+            -292,
+            64,
+            "",
+            {
+                fontFamily:"Trebuchet MS",
+                fontSize:"24px",
+                fontStyle:"bold",
+                color:"#17394d",
+                wordWrap:{
+                    width:584
+                },
+                lineSpacing:5
+            }
+        );
+
+        this.answersText=[];
+
+        const colors=[
+            "#eaf7ff",
+            "#f0eeff",
+            "#fff4df",
+            "#eaf9ed"
+        ];
+
+        for(let i=0;i<4;i++){
+
+            const y=200+i*48;
+
+            const box=this.add.graphics();
+
+            box.fillStyle(
+                Phaser.Display.Color
+                    .HexStringToColor(
+                        colors[i]
+                    )
+                    .color,
+                1
+            );
+
+            box.fillRoundedRect(
+                -292,
+                y,
+                584,
+                40,
+                12
+            );
+
+            box.lineStyle(
+                1,
+                0xc9dce7,
+                1
+            );
+
+            box.strokeRoundedRect(
+                -292,
+                y,
+                584,
+                40,
+                12
+            );
+
+            const letter=
+                String.fromCharCode(
+                    65+i
+                );
+
+            const t=this.add.text(
+                -275,
+                y+20,
+                "",
+                {
+                    fontFamily:"Trebuchet MS",
+                    fontSize:"18px",
+                    fontStyle:"bold",
+                    color:"#213b4b"
+                }
+            ).setOrigin(0,.5);
+
+            this.answersText.push(t);
+
+            this.questionCard.add([
+                box,
+                t
             ]);
 
-            const item={g,circle,y};
+        }
 
-            this.answerCards.push(item);
+        this.questionCard.addAt(
+            [
+                shadow,
+                card,
+                this.topicText,
+                this.questionText
+            ],
+            0
+        );
 
-            this.paintAnswer(
-                item,
-                "normal"
-            );
+    }
 
-            hit.on(
-                "pointerdown",
-                ()=>this.answer(i)
-            );
-        });
 
-        this.answerStatus=this.text(
-            450,969,
-            "Pilih satu jawapan yang betul.",
-            19,"#7b94a1"
+/* =========================================================
+   LAB DECORATIONS
+========================================================= */
+
+    createLab(){
+
+        const g=this.add.graphics();
+
+        /* left equipment */
+
+        g.fillStyle(0x9ecfe1,1);
+
+        g.fillRoundedRect(
+            47,
+            592,
+            48,
+            52,
+            8
+        );
+
+        g.fillStyle(0xffffff,1);
+
+        g.fillRect(
+            60,
+            575,
+            22,
+            20
+        );
+
+        g.lineStyle(
+            3,
+            0x6eaac3,
+            1
+        );
+
+        g.strokeRect(
+            60,
+            575,
+            22,
+            20
+        );
+
+        /* right equipment */
+
+        g.fillStyle(
+            0xa6d5e6,
+            1
+        );
+
+        g.fillRoundedRect(
+            620,
+            591,
+            48,
+            53,
+            8
+        );
+
+        g.fillStyle(
+            0x68adca,
+            1
+        );
+
+        g.fillCircle(
+            644,
+            610,
+            8
+        );
+
+        g.fillCircle(
+            644,
+            631,
+            6
+        );
+
+        this.add.text(
+            360,
+            591,
+            "TEKAN KAPSUL JAWAPAN",
+            {
+                fontFamily:"Trebuchet MS",
+                fontSize:"18px",
+                fontStyle:"bold",
+                color:"#5b8293"
+            }
         ).setOrigin(.5);
 
-        this.questionLayer.add(
-            this.answerStatus
-        );
     }
 
-    paintAnswer(item,state){
-        const colors={
-            normal:[
-                0xf0f7fa,
-                0xd3e4ec,
-                0x367c96
-            ],
 
-            wrong:[
-                0xffecea,
-                0xe49b94,
-                0xd4736c
-            ],
+/* =========================================================
+   TRACK
+========================================================= */
 
-            correct:[
-                0xe3f5e9,
-                0x78ba93,
-                0x389968
-            ]
-        }[state];
+    createTrack(){
 
-        item.g.clear()
-        .fillStyle(colors[0])
-        .fillRoundedRect(
-            103,item.y,694,96,19
-        )
-        .lineStyle(2,colors[1])
-        .strokeRoundedRect(
-            103,item.y,694,96,19
+        const g=this.add.graphics();
+
+        /* outer rail */
+
+        g.lineStyle(
+            20,
+            0x6c8794,
+            1
         );
 
-        item.circle.setFillStyle(
-            colors[2]
+        g.strokeEllipse(
+            this.trackCX,
+            this.trackCY,
+            this.trackRX*2,
+            this.trackRY*2
         );
+
+        /* metal */
+
+        g.lineStyle(
+            13,
+            0xc7d8df,
+            1
+        );
+
+        g.strokeEllipse(
+            this.trackCX,
+            this.trackCY,
+            this.trackRX*2,
+            this.trackRY*2
+        );
+
+        /* inner highlight */
+
+        g.lineStyle(
+            3,
+            0xffffff,
+            .75
+        );
+
+        g.strokeEllipse(
+            this.trackCX,
+            this.trackCY,
+            this.trackRX*2,
+            this.trackRY*2
+        );
+
+        /* rail sleepers */
+
+        for(let i=0;i<28;i++){
+
+            const a=
+                (Math.PI*2/28)*i;
+
+            const x=
+                this.trackCX+
+                Math.cos(a)*
+                this.trackRX;
+
+            const y=
+                this.trackCY+
+                Math.sin(a)*
+                this.trackRY;
+
+            const line=
+                this.add.rectangle(
+                    x,
+                    y,
+                    24,
+                    5,
+                    0x708c98
+                );
+
+            line.rotation=
+                a + Math.PI/2;
+        }
+
     }
 
-    answer(i){
+
+/* =========================================================
+   MAGNET
+========================================================= */
+
+    createMagnet(){
+
+        this.magnet=
+            this.add.container(
+                this.magnetX,
+                this.magnetY
+            );
+
+        this.magnetGlow=
+            this.add.circle(
+                0,
+                0,
+                105,
+                0x44d6ff,
+                .12
+            );
+
+        const core=
+            this.add.circle(
+                0,
+                0,
+                73,
+                0xf5fbff,
+                1
+            );
+
+        core.setStrokeStyle(
+            5,
+            0x8fbfd2
+        );
+
+        /* horseshoe magnet */
+
+        const magG=
+            this.add.graphics();
+
+        magG.lineStyle(
+            31,
+            0xe64e53,
+            1
+        );
+
+        magG.beginPath();
+
+        magG.arc(
+            0,
+            0,
+            47,
+            Phaser.Math.DegToRad(
+                25
+            ),
+            Phaser.Math.DegToRad(
+                155
+            ),
+            true
+        );
+
+        magG.strokePath();
+
+        /* poles */
+
+        magG.fillStyle(
+            0x4a91d0,
+            1
+        );
+
+        magG.fillRoundedRect(
+            -58,
+            -17,
+            30,
+            43,
+            7
+        );
+
+        magG.fillStyle(
+            0xe64e53,
+            1
+        );
+
+        magG.fillRoundedRect(
+            28,
+            -17,
+            30,
+            43,
+            7
+        );
+
+        this.add.text(
+            this.magnetX-43,
+            this.magnetY+1,
+            "S",
+            {
+                fontSize:"15px",
+                fontStyle:"bold",
+                color:"#ffffff"
+            }
+        ).setOrigin(.5);
+
+        this.add.text(
+            this.magnetX+43,
+            this.magnetY+1,
+            "N",
+            {
+                fontSize:"15px",
+                fontStyle:"bold",
+                color:"#ffffff"
+            }
+        ).setOrigin(.5);
+
+        this.magnetLabel=
+            this.add.text(
+                0,
+                38,
+                "MAGNET",
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+                    fontSize:"15px",
+                    fontStyle:"bold",
+                    color:"#37677a"
+                }
+            ).setOrigin(.5);
+
+        this.magnet.add([
+            this.magnetGlow,
+            core,
+            magG,
+            this.magnetLabel
+        ]);
+
+    }
+
+
+/* =========================================================
+   ANSWER PODS
+========================================================= */
+
+    createAnswerPods(){
+
+        const podColors=[
+            0x3fb5e8,
+            0x8d72df,
+            0xf3a845,
+            0x50ba72
+        ];
+
+        for(let i=0;i<4;i++){
+
+            const pod=this.add.container(
+                0,
+                0
+            );
+
+            const shadow=
+                this.add.ellipse(
+                    3,
+                    7,
+                    76,
+                    46,
+                    0x2a5263,
+                    .18
+                );
+
+            const body=
+                this.add.ellipse(
+                    0,
+                    0,
+                    74,
+                    48,
+                    podColors[i],
+                    1
+                );
+
+            body.setStrokeStyle(
+                4,
+                0xffffff
+            );
+
+            const inner=
+                this.add.circle(
+                    0,
+                    0,
+                    18,
+                    0xffffff,
+                    .98
+                );
+
+            const letter=
+                this.add.text(
+                    0,
+                    0,
+                    String.fromCharCode(
+                        65+i
+                    ),
+                    {
+                        fontFamily:
+                            "Trebuchet MS",
+                        fontSize:"23px",
+                        fontStyle:"bold",
+                        color:"#244354"
+                    }
+                ).setOrigin(.5);
+
+            pod.add([
+                shadow,
+                body,
+                inner,
+                letter
+            ]);
+
+            pod.setSize(
+                86,
+                62
+            );
+
+            pod.setInteractive({
+                useHandCursor:true
+            });
+
+            pod.answerIndex=i;
+            pod.baseScale=1;
+
+            pod.on(
+                "pointerdown",
+                ()=>this.selectAnswer(
+                    pod
+                )
+            );
+
+            this.answerPods.push(
+                pod
+            );
+
+        }
+
+    }
+
+
+/* =========================================================
+   FOOTER / STATUS
+========================================================= */
+
+    createFooter(){
+
+        this.statusBox=
+            this.add.graphics();
+
+        this.statusBox.fillStyle(
+            0xffffff,
+            .96
+        );
+
+        this.statusBox.fillRoundedRect(
+            70,
+            865,
+            580,
+            62,
+            20
+        );
+
+        this.statusBox.lineStyle(
+            2,
+            0xb6d8e6,
+            1
+        );
+
+        this.statusBox.strokeRoundedRect(
+            70,
+            865,
+            580,
+            62,
+            20
+        );
+
+        this.statusText=
+            this.add.text(
+                360,
+                896,
+                "Pilih kapsul A, B, C atau D.",
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+                    fontSize:"19px",
+                    fontStyle:"bold",
+                    color:"#31576a",
+                    align:"center"
+                }
+            ).setOrigin(.5);
+
+    }
+
+
+/* =========================================================
+   QUESTION
+========================================================= */
+
+    showQuestion(){
+
+        this.answerLocked=false;
+
+        const data=
+            QUESTIONS[
+                this.questionIndex
+            ];
+
+        this.progressText.setText(
+            `${this.questionIndex+1} / ${QUESTIONS.length}`
+        );
+
+        this.questionText.setText(
+            `${this.questionIndex+1}. ${data.q}`
+        );
+
+        data.a.forEach(
+            (ans,i)=>{
+
+                const letter=
+                    String.fromCharCode(
+                        65+i
+                    );
+
+                this.answersText[i]
+                    .setText(
+                        `${letter}. ${ans}`
+                    );
+            }
+        );
+
+        if(this.questionIndex<=4){
+
+            this.topicText.setText(
+                "APAKAH GUNANYA MAGNET?"
+            );
+
+        }else if(
+            this.questionIndex<=9
+        ){
+
+            this.topicText.setText(
+                "BENTUK MAGNET"
+            );
+
+        }else if(
+            this.questionIndex<=14
+        ){
+
+            this.topicText.setText(
+                "HEBATNYA MAGNET"
+            );
+
+        }else if(
+            this.questionIndex<=19
+        ){
+
+            this.topicText.setText(
+                "TARIKAN DAN TOLAKAN MAGNET"
+            );
+
+        }else{
+
+            this.topicText.setText(
+                "KEKUATAN MAGNET"
+            );
+        }
+
+        this.statusText
+            .setColor("#31576a")
+            .setText(
+                "Pilih kapsul A, B, C atau D."
+            );
+
+        this.rotationSpeed=
+            .00030 +
+            Math.floor(
+                this.questionIndex/5
+            ) * .000045;
+
+        this.resetPods();
+
+    }
+
+
+/* =========================================================
+   ANSWER LOGIC
+========================================================= */
+
+    selectAnswer(pod){
+
         if(this.answerLocked){
             return;
         }
 
-        AUDIO.unlock();
+        AUDIO.init();
+        AUDIO.click();
+
+        const selected=
+            pod.answerIndex;
 
         const correct=
-            i===QUESTIONS[
-                this.stageIndex
+            QUESTIONS[
+                this.questionIndex
             ].correct;
 
-        const item=this.answerCards[i];
+        if(selected===correct){
 
-        if(correct){
             this.answerLocked=true;
 
-            if(!this.mistake){
-                this.score++;
-            }
+            AUDIO.correct();
 
-            this.paintAnswer(
-                item,
-                "correct"
+            this.statusText
+                .setColor("#187541")
+                .setText(
+                    "Betul! Magnet menarik jawapan."
+                );
+
+            this.correctAnimation(
+                pod
             );
 
-            this.answerStatus
-            .setText(
-                "Betul! Bagus sekali."
-            )
-            .setColor("#389968");
-
-            AUDIO.win();
-
-            this.time.delayedCall(
-                700,
-                ()=>{
-                    this.questionLayer.destroy();
-
-                    this.questionOpen=false;
-
-                    if(this.stageIndex===24){
-                        this.finish();
-                    }else{
-                        this.startStage(
-                            this.stageIndex+1
-                        );
-                    }
-                }
-            );
         }else{
-            this.mistake=true;
 
-            this.paintAnswer(
-                item,
-                "wrong"
+            AUDIO.wrong();
+
+            this.statusText
+                .setColor("#b7333b")
+                .setText(
+                    "Belum tepat. Cuba kapsul lain."
+                );
+
+            this.wrongAnimation(
+                pod
             );
 
-            this.answerStatus
-            .setText(
-                "Belum tepat. Cuba sekali lagi."
-            )
-            .setColor("#c36b65");
-
-            AUDIO.bad();
-
-            this.time.delayedCall(
-                350,
-                ()=>{
-                    if(
-                        !this.answerLocked&&
-                        item.g.active
-                    ){
-                        this.paintAnswer(
-                            item,
-                            "normal"
-                        );
-                    }
-                }
-            );
         }
+
     }
 
-    finish(){
-        this.finished=true;
-        this.locked=true;
 
-        this.stopTimer();
+/* =========================================================
+   CORRECT ANIMATION
+========================================================= */
 
-        const layer=this.add.container(
-            0,0
-        ).setDepth(110);
+    correctAnimation(pod){
 
-        const panel=this.card(
-            90,285,720,568,
-            0xffffff,
-            0xc4dce5,
-            32
-        );
+        pod.disableInteractive();
 
-        const star=this.text(
-            450,391,
-            "✦",
-            90,"#e9b342",true
-        ).setOrigin(.5);
+        const startX=pod.x;
+        const startY=pod.y;
 
-        const title=this.text(
-            450,492,
-            "MISI SELESAI!",
-            40,"#20465c",true
-        ).setOrigin(.5);
+        /* magnetic field pulse */
 
-        const desc=this.text(
-            450,558,
-            "25 puzzle dan 25 soalan berjaya diselesaikan.",
-            23,"#718e9e"
-        )
-        .setOrigin(.5)
-        .setWordWrapWidth(580)
-        .setAlign("center");
+        this.tweens.add({
+            targets:
+                this.magnetGlow,
+            scaleX:1.7,
+            scaleY:1.7,
+            alpha:.04,
+            duration:280,
+            yoyo:true,
+            repeat:2
+        });
 
-        const score=this.text(
-            450,639,
-            "Betul cubaan pertama: "+
-            this.score+
-            " / 25",
-            25,"#268691",true
-        ).setOrigin(.5);
+        /* magnet vibration */
 
-        const replay=this.button(
-            450,755,400,72,
-            "MAIN SEMULA",
-            ()=>{
-                layer.destroy();
+        this.tweens.add({
+            targets:
+                this.magnet,
+            scaleX:1.06,
+            scaleY:1.06,
+            duration:110,
+            yoyo:true,
+            repeat:3
+        });
 
-                this.finished=false;
-                this.score=0;
-                this.seed=Date.now()>>>0;
+        const trail=
+            this.add.graphics();
 
-                this.used.clear();
+        let progress=0;
 
-                this.startStage(0);
+        this.tweens.addCounter({
+
+            from:0,
+            to:1,
+
+            duration:700,
+
+            ease:"Cubic.easeIn",
+
+            onUpdate:(tw)=>{
+
+                progress=
+                    tw.getValue();
+
+                const mx=
+                    Phaser.Math.Linear(
+                        startX,
+                        this.magnetX,
+                        progress
+                    );
+
+                const my=
+                    Phaser.Math.Linear(
+                        startY,
+                        this.magnetY,
+                        progress
+                    );
+
+                /* curve */
+
+                const curve=
+                    Math.sin(
+                        progress*Math.PI
+                    ) * 55;
+
+                pod.x=
+                    mx +
+                    Math.sin(
+                        progress*Math.PI*2
+                    )*curve*.28;
+
+                pod.y=
+                    my - curve;
+
+                pod.rotation+=.12;
+
+                pod.setScale(
+                    1-progress*.38
+                );
+
+                trail.clear();
+
+                trail.lineStyle(
+                    3,
+                    0x48cfff,
+                    .32
+                );
+
+                trail.lineBetween(
+                    pod.x,
+                    pod.y,
+                    this.magnetX,
+                    this.magnetY
+                );
+
             },
+
+            onComplete:()=>{
+
+                trail.destroy();
+
+                this.tweens.add({
+                    targets:pod,
+                    alpha:0,
+                    scaleX:.15,
+                    scaleY:.15,
+                    duration:180,
+                    onComplete:()=>{
+
+                        this.time.delayedCall(
+                            500,
+                            ()=>this.nextQuestion()
+                        );
+
+                    }
+                });
+
+            }
+
+        });
+
+    }
+
+
+/* =========================================================
+   WRONG ANIMATION
+========================================================= */
+
+    wrongAnimation(pod){
+
+        if(
+            pod.getData(
+                "movingWrong"
+            )
+        ) return;
+
+        pod.setData(
+            "movingWrong",
             true
         );
 
-        layer.add([
-            panel,
-            star,
-            title,
-            desc,
-            score,
-            replay
-        ]);
+        pod.disableInteractive();
+
+        const oldX=pod.x;
+        const oldY=pod.y;
+
+        const dx=
+            pod.x-this.magnetX;
+
+        const dy=
+            pod.y-this.magnetY;
+
+        const len=
+            Math.sqrt(
+                dx*dx+
+                dy*dy
+            ) || 1;
+
+        const push=52;
+
+        const targetX=
+            oldX+
+            (dx/len)*push;
+
+        const targetY=
+            oldY+
+            (dy/len)*push;
+
+        /* red cross */
+
+        const cross=
+            this.add.text(
+                pod.x,
+                pod.y-44,
+                "✕",
+                {
+                    fontSize:"30px",
+                    fontStyle:"bold",
+                    color:"#e6454d"
+                }
+            ).setOrigin(.5);
+
+        this.tweens.add({
+
+            targets:cross,
+
+            y:cross.y-24,
+            alpha:0,
+
+            duration:520,
+
+            onComplete:()=>{
+                cross.destroy();
+            }
+
+        });
+
+        this.tweens.add({
+
+            targets:pod,
+
+            x:targetX,
+            y:targetY,
+            scaleX:1.12,
+            scaleY:1.12,
+
+            duration:170,
+
+            ease:"Quad.easeOut",
+
+            yoyo:true,
+
+            onComplete:()=>{
+
+                pod.setScale(1);
+
+                pod.setData(
+                    "movingWrong",
+                    false
+                );
+
+                pod.setInteractive({
+                    useHandCursor:true
+                });
+
+            }
+
+        });
+
     }
+
+
+/* =========================================================
+   NEXT
+========================================================= */
+
+    nextQuestion(){
+
+        this.questionIndex++;
+
+        if(
+            this.questionIndex >=
+            QUESTIONS.length
+        ){
+
+            this.finishGame();
+
+            return;
+        }
+
+        this.showQuestion();
+
+    }
+
+
+/* =========================================================
+   RESET POD
+========================================================= */
+
+    resetPods(){
+
+        for(let i=0;i<4;i++){
+
+            const pod=
+                this.answerPods[i];
+
+            pod.setAlpha(1);
+            pod.setScale(1);
+            pod.rotation=0;
+
+            pod.setData(
+                "movingWrong",
+                false
+            );
+
+            pod.setInteractive({
+                useHandCursor:true
+            });
+
+            this.podAngles[i]=
+                Math.PI*.5*i;
+
+        }
+
+        this.rotationOffset=0;
+
+        this.positionPods();
+
+    }
+
+
+/* =========================================================
+   FINISH
+========================================================= */
+
+    finishGame(){
+
+        this.answerLocked=true;
+
+        AUDIO.finish();
+
+        this.questionText.setText(
+            "Tahniah! Semua 25 soalan telah selesai."
+        );
+
+        this.topicText.setText(
+            "MISI MAGNET SELESAI"
+        );
+
+        this.answersText.forEach(
+            t=>t.setText("")
+        );
+
+        this.statusText
+            .setColor("#187541")
+            .setText(
+                "25 / 25 berjaya diselesaikan!"
+            );
+
+        this.answerPods.forEach(
+            pod=>{
+                pod.disableInteractive();
+
+                this.tweens.add({
+                    targets:pod,
+                    alpha:0,
+                    duration:400
+                });
+            }
+        );
+
+        this.progressText.setText(
+            "25 / 25"
+        );
+
+        this.createCelebration();
+
+        this.createReplayButton();
+
+    }
+
+
+/* =========================================================
+   CELEBRATION
+========================================================= */
+
+    createCelebration(){
+
+        for(let i=0;i<28;i++){
+
+            const x=
+                Phaser.Math.Between(
+                    90,
+                    630
+                );
+
+            const y=
+                Phaser.Math.Between(
+                    610,
+                    805
+                );
+
+            const star=
+                this.add.star(
+                    x,
+                    y,
+                    5,
+                    3,
+                    8,
+                    Phaser.Display.Color
+                        .RandomRGB(80,240)
+                        .color,
+                    .9
+                );
+
+            star.setScale(0);
+
+            this.tweens.add({
+
+                targets:star,
+
+                scaleX:
+                    Phaser.Math.FloatBetween(
+                        .7,
+                        1.5
+                    ),
+
+                scaleY:
+                    Phaser.Math.FloatBetween(
+                        .7,
+                        1.5
+                    ),
+
+                angle:
+                    Phaser.Math.Between(
+                        90,
+                        260
+                    ),
+
+                alpha:0,
+
+                duration:
+                    Phaser.Math.Between(
+                        900,
+                        1500
+                    ),
+
+                delay:
+                    Phaser.Math.Between(
+                        0,
+                        500
+                    ),
+
+                repeat:2,
+
+                onRepeat:()=>{
+
+                    star.alpha=1;
+
+                    star.x=
+                        Phaser.Math.Between(
+                            90,
+                            630
+                        );
+
+                    star.y=
+                        Phaser.Math.Between(
+                            610,
+                            820
+                        );
+                }
+
+            });
+
+        }
+
+    }
+
+
+/* =========================================================
+   REPLAY
+========================================================= */
+
+    createReplayButton(){
+
+        const replay=
+            this.add.container(
+                360,
+                780
+            );
+
+        const shadow=
+            this.add.graphics();
+
+        shadow.fillStyle(
+            0x23566d,
+            .18
+        );
+
+        shadow.fillRoundedRect(
+            -115,
+            -27+5,
+            230,
+            58,
+            18
+        );
+
+        const bg=
+            this.add.graphics();
+
+        bg.fillStyle(
+            0x36aadd,
+            1
+        );
+
+        bg.fillRoundedRect(
+            -115,
+            -27,
+            230,
+            58,
+            18
+        );
+
+        bg.lineStyle(
+            3,
+            0xffffff,
+            .85
+        );
+
+        bg.strokeRoundedRect(
+            -115,
+            -27,
+            230,
+            58,
+            18
+        );
+
+        const txt=
+            this.add.text(
+                0,
+                1,
+                "MAIN SEMULA",
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+                    fontSize:"22px",
+                    fontStyle:"bold",
+                    color:"#ffffff"
+                }
+            ).setOrigin(.5);
+
+        replay.add([
+            shadow,
+            bg,
+            txt
+        ]);
+
+        replay.setSize(
+            240,
+            70
+        );
+
+        replay.setInteractive({
+            useHandCursor:true
+        });
+
+        replay.on(
+            "pointerdown",
+            ()=>{
+
+                AUDIO.click();
+
+                this.scene.restart();
+
+            }
+        );
+
+    }
+
+
+/* =========================================================
+   POD POSITION
+========================================================= */
+
+    positionPods(){
+
+        this.answerPods.forEach(
+            (pod,i)=>{
+
+                if(
+                    pod.getData(
+                        "movingWrong"
+                    )
+                ) return;
+
+                const angle=
+                    this.podAngles[i]+
+                    this.rotationOffset;
+
+                pod.x=
+                    this.trackCX+
+                    Math.cos(angle)*
+                    this.trackRX;
+
+                pod.y=
+                    this.trackCY+
+                    Math.sin(angle)*
+                    this.trackRY;
+
+                /*
+                   slight scaling gives depth:
+                   front = bigger
+                */
+
+                const depth=
+                    (
+                        Math.sin(angle)+1
+                    )/2;
+
+                const scale=
+                    .84+
+                    depth*.18;
+
+                pod.setScale(scale);
+
+                pod.setDepth(
+                    20+
+                    Math.round(
+                        depth*10
+                    )
+                );
+
+            }
+        );
+
+    }
+
+
+/* =========================================================
+   UPDATE
+========================================================= */
+
+    update(time,delta){
+
+        if(!this.answerLocked){
+
+            this.rotationOffset +=
+                this.rotationSpeed *
+                delta;
+
+            this.positionPods();
+
+        }
+
+        this.magnetPulse+=
+            delta*.004;
+
+        if(
+            this.magnetGlow &&
+            !this.answerLocked
+        ){
+
+            const s=
+                1+
+                Math.sin(
+                    this.magnetPulse
+                )*.045;
+
+            this.magnetGlow
+                .setScale(s);
+
+        }
+
+    }
+
 }
 
-new Phaser.Game({
-    type:Phaser.CANVAS,
+
+/* =========================================================
+   CONFIG
+========================================================= */
+
+const config={
+
+    type:Phaser.AUTO,
 
     parent:"game",
 
-    width:W,
-    height:H,
+    width:720,
+    height:960,
 
-    backgroundColor:"#eaf5f8",
+    backgroundColor:"#dff6ff",
 
     render:{
         antialias:true,
@@ -2160,9 +2213,8 @@ new Phaser.Game({
 
     scale:{
         mode:Phaser.Scale.FIT,
-        autoCenter:Phaser.Scale.CENTER_BOTH,
-        width:W,
-        height:H
+        autoCenter:
+            Phaser.Scale.CENTER_BOTH
     },
 
     input:{
@@ -2170,9 +2222,14 @@ new Phaser.Game({
     },
 
     scene:[
-        TrailPuzzle
+        MagnetGame
     ]
-});
+
+};
+
+new Phaser.Game(config);
+
+})();
 </script>
 
 </body>
