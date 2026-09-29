@@ -26,9 +26,13 @@ html,
 body{
     margin:0;
     padding:0;
-
     width:100%;
     min-height:100%;
+
+    font-family:
+    "Trebuchet MS",
+    Arial,
+    sans-serif;
 
     background:
     linear-gradient(
@@ -37,11 +41,6 @@ body{
         #f8fcff,
         #dcecff
     );
-
-    font-family:
-    "Trebuchet MS",
-    Arial,
-    sans-serif;
 
     touch-action:none;
     overscroll-behavior:none;
@@ -66,7 +65,7 @@ body{
     width:min(
         98vw,
         820px,
-        calc(96svh * 0.789)
+        calc(96svh * .789)
     );
 
     aspect-ratio:900/1140;
@@ -90,6 +89,7 @@ body{
 }
 
 #game canvas{
+
     display:block!important;
 
     width:100%!important;
@@ -108,9 +108,11 @@ body{
     }
 
     #game-shell{
+
         width:99vw;
 
         border-radius:15px;
+
         border-width:2px;
     }
 }
@@ -123,6 +125,7 @@ body{
 <div id="game-shell">
     <div id="game"></div>
 </div>
+
 
 <script>
 
@@ -493,10 +496,7 @@ function edgeKey(a,b){
 
 
 /* =========================================================
-   LIGHTWEIGHT RANDOM
-
-   TIADA RECURSION.
-   TIADA HEAVY GENERATOR.
+   LIGHT RANDOM
    ========================================================= */
 
 function makeRandom(seed){
@@ -511,7 +511,10 @@ function makeRandom(seed){
         t =
         Math.imul(
             t ^
-            t >>> 15,
+            (
+                t >>>
+                15
+            ),
             t | 1
         );
 
@@ -520,7 +523,10 @@ function makeRandom(seed){
         t +
         Math.imul(
             t ^
-            t >>> 7,
+            (
+                t >>>
+                7
+            ),
             t | 61
         );
 
@@ -528,15 +534,19 @@ function makeRandom(seed){
         return(
             (
                 t ^
-                t >>> 14
-            ) >>> 0
+                (
+                    t >>>
+                    14
+                )
+            ) >>>
+            0
         ) /
         4294967296;
     };
 }
 
 
-function shuffleArray(
+function shuffle(
     array,
     random
 ){
@@ -559,16 +569,14 @@ function shuffleArray(
         );
 
 
-        const temporary =
-        array[i];
-
-
-        array[i] =
-        array[j];
-
-
-        array[j] =
-        temporary;
+        [
+            array[i],
+            array[j]
+        ] =
+        [
+            array[j],
+            array[i]
+        ];
     }
 
 
@@ -577,12 +585,12 @@ function shuffleArray(
 
 
 /* =========================================================
-   GUARANTEED FULL-GRID PATH
+   GUARANTEED SAFE FULL GRID PATH
 
-   Ini cuma digunakan untuk memastikan penghalang
-   tidak memusnahkan semua kemungkinan laluan.
+   Hanya untuk pastikan susunan penghalang
+   masih ada sekurang-kurangnya satu laluan.
 
-   Player TIDAK dipaksa ikut path ini.
+   PLAYER TAK DIPAKSA IKUT PATH INI.
    ========================================================= */
 
 function makeSafePath(
@@ -595,15 +603,13 @@ function makeSafePath(
     [];
 
 
-    /*
-    HORIZONTAL SNAKE
-    */
-
     if(
         mode %
         2 ===
         0
     ){
+
+        /* HORIZONTAL SNAKE */
 
         for(
             let r=0;
@@ -647,9 +653,7 @@ function makeSafePath(
 
     }else{
 
-        /*
-        VERTICAL SNAKE
-        */
+        /* VERTICAL SNAKE */
 
         for(
             let c=0;
@@ -693,9 +697,7 @@ function makeSafePath(
     }
 
 
-    /*
-    MIRROR LEFT / RIGHT
-    */
+    /* MIRROR LEFT RIGHT */
 
     if(
         mode &
@@ -719,9 +721,7 @@ function makeSafePath(
     }
 
 
-    /*
-    MIRROR TOP / BOTTOM
-    */
+    /* MIRROR TOP BOTTOM */
 
     if(
         mode &
@@ -745,9 +745,7 @@ function makeSafePath(
     }
 
 
-    /*
-    REVERSE START / PORTAL
-    */
+    /* REVERSE */
 
     if(
         mode &
@@ -828,7 +826,7 @@ class SoundBox{
 
 
         this.master.gain.value =
-        0.12;
+        0.11;
 
 
         this.master.connect(
@@ -842,9 +840,9 @@ class SoundBox{
 
     tone(
         frequency,
-        duration,
-        type,
-        volume
+        duration=.07,
+        type="sine",
+        volume=.05
     ){
 
         if(
@@ -868,8 +866,7 @@ class SoundBox{
 
 
         oscillator.type =
-        type ||
-        "sine";
+        type;
 
 
         oscillator.frequency.value =
@@ -883,8 +880,7 @@ class SoundBox{
 
 
         gain.gain.exponentialRampToValueAtTime(
-            volume ||
-            0.05,
+            volume,
             now +
             0.01
         );
@@ -924,9 +920,9 @@ class SoundBox{
 
         this.tone(
             350,
-            0.035,
+            .035,
             "triangle",
-            0.03
+            .03
         );
     }
 
@@ -935,9 +931,9 @@ class SoundBox{
 
         this.tone(
             250,
-            0.04,
+            .04,
             "triangle",
-            0.03
+            .03
         );
     }
 
@@ -946,9 +942,9 @@ class SoundBox{
 
         this.tone(
             135,
-            0.07,
+            .07,
             "square",
-            0.035
+            .035
         );
     }
 
@@ -957,9 +953,9 @@ class SoundBox{
 
         this.tone(
             620,
-            0.08,
+            .08,
             "triangle",
-            0.08
+            .08
         );
 
 
@@ -968,9 +964,9 @@ class SoundBox{
 
                 this.tone(
                     840,
-                    0.13,
+                    .13,
                     "triangle",
-                    0.08
+                    .08
                 );
 
             },
@@ -983,9 +979,9 @@ class SoundBox{
 
         this.tone(
             523,
-            0.08,
+            .08,
             "sine",
-            0.09
+            .09
         );
 
 
@@ -994,9 +990,9 @@ class SoundBox{
 
                 this.tone(
                     659,
-                    0.10,
+                    .10,
                     "sine",
-                    0.09
+                    .09
                 );
 
             },
@@ -1009,9 +1005,9 @@ class SoundBox{
 
                 this.tone(
                     784,
-                    0.16,
+                    .16,
                     "sine",
-                    0.09
+                    .09
                 );
 
             },
@@ -1034,12 +1030,12 @@ class SoundBox{
 
             261.63,
             329.63,
-            392.00,
+            392,
             329.63,
 
             293.66,
             349.23,
-            392.00,
+            392,
             349.23
 
         ];
@@ -1064,11 +1060,11 @@ class SoundBox{
                         notes.length
                     ],
 
-                    0.16,
+                    .16,
 
                     "sine",
 
-                    0.010
+                    .009
                 );
 
 
@@ -1134,43 +1130,32 @@ extends Phaser.Scene{
         0;
 
 
-        this.lastFlashTime =
-        0;
-
-
         this.sessionSeed =
-        Date.now() >>> 0;
+        Date.now() >>>
+        0;
 
 
         this.stageSeeds =
         [];
 
 
-        /*
-        GRAPHICS
-        */
-
-        this.bgGraphics =
+        this.bgG =
         this.add.graphics();
 
 
-        this.boardGraphics =
+        this.boardG =
         this.add.graphics();
 
 
-        this.tileGraphics =
+        this.tileG =
         this.add.graphics();
 
 
-        this.pathGraphics =
+        this.pathG =
         this.add.graphics();
 
 
-        this.barrierGraphics =
-        this.add.graphics();
-
-
-        this.effectGraphics =
+        this.barrierG =
         this.add.graphics();
 
 
@@ -1180,7 +1165,7 @@ extends Phaser.Scene{
 
         this.createPortal();
 
-        this.createPlayerSymbol();
+        this.createSymbol();
 
         this.setupTouch();
 
@@ -1207,14 +1192,14 @@ extends Phaser.Scene{
 
     drawBackground(){
 
-        this.bgGraphics
+        this.bgG
         .fillStyle(
             0xdff4ff,
             1
         );
 
 
-        this.bgGraphics
+        this.bgG
         .fillRect(
             0,
             0,
@@ -1223,10 +1208,10 @@ extends Phaser.Scene{
         );
 
 
-        this.bgGraphics
+        this.bgG
         .fillStyle(
             0xffffff,
-            0.18
+            .18
         );
 
 
@@ -1255,7 +1240,7 @@ extends Phaser.Scene{
                 45;
 
 
-                this.bgGraphics
+                this.bgG
                 .fillRoundedRect(
 
                     x +
@@ -1286,7 +1271,7 @@ extends Phaser.Scene{
             820,
             150,
             0xffffff,
-            0.97
+            .97
         )
         .setStrokeStyle(
             3,
@@ -1314,7 +1299,7 @@ extends Phaser.Scene{
         )
         .setOrigin(
             0,
-            0.5
+            .5
         );
 
 
@@ -1339,7 +1324,7 @@ extends Phaser.Scene{
         )
         .setOrigin(
             0,
-            0.5
+            .5
         );
 
 
@@ -1347,7 +1332,7 @@ extends Phaser.Scene{
         this.add.text(
             70,
             108,
-            "Lalui semua petak dan pergi ke portal.",
+            "Seret simbol melalui semua petak.",
             {
                 fontFamily:
                 "Trebuchet MS, Arial",
@@ -1361,7 +1346,7 @@ extends Phaser.Scene{
         )
         .setOrigin(
             0,
-            0.5
+            .5
         );
 
 
@@ -1375,7 +1360,7 @@ extends Phaser.Scene{
         )
         .setOrigin(
             0,
-            0.5
+            .5
         );
 
 
@@ -1389,7 +1374,7 @@ extends Phaser.Scene{
         )
         .setOrigin(
             0,
-            0.5
+            .5
         );
 
 
@@ -1414,11 +1399,11 @@ extends Phaser.Scene{
         )
         .setOrigin(
             0,
-            0.5
+            .5
         );
 
 
-        const resetButton =
+        const reset =
         this.add.rectangle(
             785,
             92,
@@ -1455,11 +1440,11 @@ extends Phaser.Scene{
             }
         )
         .setOrigin(
-            0.5
+            .5
         );
 
 
-        resetButton.on(
+        reset.on(
             "pointerdown",
             ()=>{
 
@@ -1477,10 +1462,13 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   PLAYER SYMBOL
+   SYMBOL
+
+   TIADA MAGNET.
+   CUMA SYMBOL.
    ========================================================= */
 
-    createPlayerSymbol(){
+    createSymbol(){
 
         this.player =
         this.add.container(
@@ -1496,7 +1484,7 @@ extends Phaser.Scene{
             44,
             13,
             0x173946,
-            0.16
+            .16
         );
 
 
@@ -1544,7 +1532,7 @@ extends Phaser.Scene{
             }
         )
         .setOrigin(
-            0.5
+            .5
         );
 
 
@@ -1584,7 +1572,7 @@ extends Phaser.Scene{
             0,
             38,
             0x000000,
-            0.12
+            .12
         );
 
 
@@ -1646,28 +1634,23 @@ extends Phaser.Scene{
         );
 
 
-        /*
-        HANYA PORTAL BERNAFAS.
-        PLAYER TAK ADA ANIMASI JITTER.
-        */
-
         this.tweens.add({
 
             targets:
             ring,
 
             scaleX:{
-                from:0.86,
+                from:.86,
                 to:1.10
             },
 
             scaleY:{
-                from:0.86,
+                from:.86,
                 to:1.10
             },
 
             alpha:{
-                from:0.55,
+                from:.55,
                 to:1
             },
 
@@ -1684,10 +1667,10 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   STAGE SETTINGS
+   DIFFICULTY
    ========================================================= */
 
-    getStageSettings(){
+    getSettings(){
 
         if(
             this.stageIndex <
@@ -1695,11 +1678,8 @@ extends Phaser.Scene{
         ){
 
             return{
-
                 rows:5,
-
                 cols:5,
-
                 barriers:5
             };
         }
@@ -1711,11 +1691,8 @@ extends Phaser.Scene{
         ){
 
             return{
-
                 rows:5,
-
                 cols:6,
-
                 barriers:6
             };
         }
@@ -1727,11 +1704,8 @@ extends Phaser.Scene{
         ){
 
             return{
-
                 rows:6,
-
                 cols:6,
-
                 barriers:8
             };
         }
@@ -1743,22 +1717,16 @@ extends Phaser.Scene{
         ){
 
             return{
-
                 rows:6,
-
                 cols:7,
-
                 barriers:10
             };
         }
 
 
         return{
-
             rows:7,
-
             cols:7,
-
             barriers:12
         };
     }
@@ -1767,17 +1735,11 @@ extends Phaser.Scene{
 /* =========================================================
    BUILD STAGE
 
-   PENTING:
+   TAK ADA BLOCKED CELL.
 
-   TIADA CELL YANG DI-BLOCK.
+   SEMUA CELL KEKAL ADA.
 
-   SEMUA CELL BOLEH DILALUI.
-
-   PENGHALANG CUMA WUJUD DI ANTARA
-   DUA CELL.
-
-   INI PART YANG MEMBEZAKAN CODE BARU
-   DARIPADA CODE LAMA.
+   BARRIER CUMA ANTARA CELL.
    ========================================================= */
 
     buildStage(
@@ -1785,7 +1747,7 @@ extends Phaser.Scene{
     ){
 
         const settings =
-        this.getStageSettings();
+        this.getSettings();
 
 
         this.rows =
@@ -1843,10 +1805,6 @@ extends Phaser.Scene{
         16;
 
 
-        /*
-        Safe full-grid route.
-        */
-
         this.safePath =
         makeSafePath(
 
@@ -1873,10 +1831,7 @@ extends Phaser.Scene{
         };
 
 
-        /*
-        EDGES yang digunakan oleh safe path
-        tak akan menerima barrier.
-        */
+        /* SAFE EDGES */
 
         const safeEdges =
         new Set();
@@ -1904,10 +1859,7 @@ extends Phaser.Scene{
         }
 
 
-        /*
-        Cari semua sambungan grid yang boleh
-        dijadikan lokasi penghalang.
-        */
+        /* BARRIER CANDIDATES */
 
         const candidates =
         [];
@@ -1932,9 +1884,7 @@ extends Phaser.Scene{
                 };
 
 
-                /*
-                RIGHT EDGE
-                */
+                /* RIGHT */
 
                 if(
                     c + 1 <
@@ -1963,9 +1913,13 @@ extends Phaser.Scene{
 
                         candidates.push({
 
-                            a:current,
+                            a:{
+                                ...current
+                            },
 
-                            b:next,
+                            b:{
+                                ...next
+                            },
 
                             key:k
 
@@ -1974,9 +1928,7 @@ extends Phaser.Scene{
                 }
 
 
-                /*
-                DOWN EDGE
-                */
+                /* DOWN */
 
                 if(
                     r + 1 <
@@ -2005,9 +1957,13 @@ extends Phaser.Scene{
 
                         candidates.push({
 
-                            a:current,
+                            a:{
+                                ...current
+                            },
 
-                            b:next,
+                            b:{
+                                ...next
+                            },
 
                             key:k
 
@@ -2018,15 +1974,9 @@ extends Phaser.Scene{
         }
 
 
-        /*
-        Cari candidate yang berada di
-        bahagian tengah board.
+        /* CANDIDATE TENGAH */
 
-        Jadi barrier bukan semua dekat
-        tepi atau hujung.
-        */
-
-        const centreCandidates =
+        const centre =
         candidates.filter(
             edge=>{
 
@@ -2049,14 +1999,14 @@ extends Phaser.Scene{
                 return(
 
                     middleRow >
-                    0.5 &&
+                    .5 &&
 
                     middleRow <
                     this.rows -
                     1.5 &&
 
                     middleCol >
-                    0.5 &&
+                    .5 &&
 
                     middleCol <
                     this.cols -
@@ -2066,13 +2016,13 @@ extends Phaser.Scene{
         );
 
 
-        shuffleArray(
-            centreCandidates,
+        shuffle(
+            centre,
             random
         );
 
 
-        shuffleArray(
+        shuffle(
             candidates,
             random
         );
@@ -2087,57 +2037,57 @@ extends Phaser.Scene{
 
 
         /*
-        Sekurang-kurangnya separuh lebih
-        barrier cuba diletakkan di tengah.
+        MAJORITI BARRIER CUBA DILETAKKAN
+        DI BAHAGIAN TENGAH.
         */
 
-        const centreAmount =
+        const centreWanted =
         Math.min(
 
-            centreCandidates.length,
+            centre.length,
 
             Math.ceil(
                 settings.barriers *
-                0.60
+                .60
             )
         );
 
 
         for(
             let i=0;
-            i<centreAmount;
+            i<centreWanted;
             i++
         ){
 
-            const edge =
-            centreCandidates[i];
+            const barrier =
+            centre[i];
 
 
             if(
                 !this.barrierSet.has(
-                    edge.key
+                    barrier.key
                 )
             ){
 
                 this.barriers.push(
-                    edge
+                    barrier
                 );
 
 
                 this.barrierSet.add(
-                    edge.key
+                    barrier.key
                 );
             }
         }
 
 
         /*
-        Baki barrier dirambangkan
-        seluruh board.
+        BAKI PENGHALANG RANDOM
+        SELURUH BOARD.
         */
 
         for(
-            const edge
+            const barrier
             of candidates
         ){
 
@@ -2152,7 +2102,7 @@ extends Phaser.Scene{
 
             if(
                 this.barrierSet.has(
-                    edge.key
+                    barrier.key
                 )
             ){
 
@@ -2161,19 +2111,15 @@ extends Phaser.Scene{
 
 
             this.barriers.push(
-                edge
+                barrier
             );
 
 
             this.barrierSet.add(
-                edge.key
+                barrier.key
             );
         }
 
-
-        /*
-        USER STATE
-        */
 
         this.currentCell =
         {
@@ -2205,7 +2151,7 @@ extends Phaser.Scene{
 
     startStage(
         index,
-        newPattern
+        newPattern=true
     ){
 
         this.stageIndex =
@@ -2240,7 +2186,8 @@ extends Phaser.Scene{
         .setText(
             "STAGE " +
             (
-                index + 1
+                index +
+                1
             ) +
             " / 25"
         );
@@ -2248,11 +2195,8 @@ extends Phaser.Scene{
 
         this.statusText
         .setText(
-            "Seret simbol. Tarik balik untuk undo."
+            "Seret untuk maju. Tarik balik untuk undo."
         );
-
-
-        this.drawBoard();
 
 
         this.player
@@ -2264,8 +2208,9 @@ extends Phaser.Scene{
         );
 
 
-        this.placePlayer();
+        this.drawBoard();
 
+        this.placePlayer();
 
         this.updateProgress();
     }
@@ -2273,8 +2218,6 @@ extends Phaser.Scene{
 
 /* =========================================================
    RESET
-
-   BARRIER KEKAL TEMPAT YANG SAMA.
    ========================================================= */
 
     resetStage(){
@@ -2342,7 +2285,7 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   BOARD SIZE
+   BOARD
    ========================================================= */
 
     calculateBoard(){
@@ -2414,6 +2357,7 @@ extends Phaser.Scene{
             this.cellSize +
             this.cellSize /
             2
+
         };
     }
 
@@ -2443,42 +2387,37 @@ extends Phaser.Scene{
         }
 
 
-        const c =
-        Math.floor(
-            (
-                x -
-                this.boardX
-            ) /
-            this.cellSize
-        );
-
-
-        const r =
-        Math.floor(
-            (
-                y -
-                this.boardY
-            ) /
-            this.cellSize
-        );
-
-
         return{
 
-            r:r,
-            c:c
+            r:
+            Math.floor(
+                (
+                    y -
+                    this.boardY
+                ) /
+                this.cellSize
+            ),
+
+
+            c:
+            Math.floor(
+                (
+                    x -
+                    this.boardX
+                ) /
+                this.cellSize
+            )
+
         };
     }
 
 
 /* =========================================================
-   PLAYER POSITION
-
-   TERUS SET POSITION.
+   SYMBOL POSITION
 
    TAK ADA TWEEN.
-
-   JADI SYMBOL TAK BERGEGAR / TAK LARI.
+   TAK ADA SHAKE.
+   TAK ADA JITTER.
    ========================================================= */
 
     placePlayer(){
@@ -2515,15 +2454,13 @@ extends Phaser.Scene{
 
     drawBoard(){
 
-        this.boardGraphics.clear();
+        this.boardG.clear();
 
-        this.tileGraphics.clear();
+        this.tileG.clear();
 
-        this.pathGraphics.clear();
+        this.pathG.clear();
 
-        this.barrierGraphics.clear();
-
-        this.effectGraphics.clear();
+        this.barrierG.clear();
 
 
         const padding =
@@ -2532,14 +2469,14 @@ extends Phaser.Scene{
 
         /* BOARD SHADOW */
 
-        this.boardGraphics
+        this.boardG
         .fillStyle(
             0x173c4e,
-            0.14
+            .14
         );
 
 
-        this.boardGraphics
+        this.boardG
         .fillRoundedRect(
 
             this.boardX -
@@ -2551,10 +2488,12 @@ extends Phaser.Scene{
             10,
 
             this.boardW +
-            padding * 2,
+            padding *
+            2,
 
             this.boardH +
-            padding * 2,
+            padding *
+            2,
 
             28
         );
@@ -2562,14 +2501,14 @@ extends Phaser.Scene{
 
         /* WHITE BOARD */
 
-        this.boardGraphics
+        this.boardG
         .fillStyle(
             0xffffff,
             1
         );
 
 
-        this.boardGraphics
+        this.boardG
         .fillRoundedRect(
 
             this.boardX -
@@ -2579,16 +2518,18 @@ extends Phaser.Scene{
             padding,
 
             this.boardW +
-            padding * 2,
+            padding *
+            2,
 
             this.boardH +
-            padding * 2,
+            padding *
+            2,
 
             28
         );
 
 
-        this.boardGraphics
+        this.boardG
         .lineStyle(
             5,
             0xb8ced9,
@@ -2596,7 +2537,7 @@ extends Phaser.Scene{
         );
 
 
-        this.boardGraphics
+        this.boardG
         .strokeRoundedRect(
 
             this.boardX -
@@ -2606,20 +2547,21 @@ extends Phaser.Scene{
             padding,
 
             this.boardW +
-            padding * 2,
+            padding *
+            2,
 
             this.boardH +
-            padding * 2,
+            padding *
+            2,
 
             28
         );
 
 
         /* =================================================
-           SEMUA CELL SENTIASA DILUKIS
+           SEMUA GRID KEKAL ADA
 
-           TAK ADA CELL BLOCK.
-           TAK ADA CELL DIHILANGKAN.
+           LANGSUNG TAK ADA BLOCKED CELL.
            ================================================= */
 
         for(
@@ -2655,7 +2597,7 @@ extends Phaser.Scene{
                 );
 
 
-                this.tileGraphics
+                this.tileG
                 .fillStyle(
 
                     visited
@@ -2666,22 +2608,24 @@ extends Phaser.Scene{
                 );
 
 
-                this.tileGraphics
+                this.tileG
                 .fillRoundedRect(
 
                     x + 5,
 
                     y + 5,
 
-                    this.cellSize - 10,
+                    this.cellSize -
+                    10,
 
-                    this.cellSize - 10,
+                    this.cellSize -
+                    10,
 
                     14
                 );
 
 
-                this.tileGraphics
+                this.tileG
                 .lineStyle(
 
                     2,
@@ -2690,52 +2634,54 @@ extends Phaser.Scene{
                     ? 0xe4a323
                     : 0x93b8c7,
 
-                    0.85
+                    .85
                 );
 
 
-                this.tileGraphics
+                this.tileG
                 .strokeRoundedRect(
 
                     x + 5,
 
                     y + 5,
 
-                    this.cellSize - 10,
+                    this.cellSize -
+                    10,
 
-                    this.cellSize - 10,
+                    this.cellSize -
+                    10,
 
                     14
                 );
 
 
-                this.tileGraphics
+                this.tileG
                 .fillStyle(
 
                     0xffffff,
 
                     visited
-                    ? 0.20
-                    : 0.38
+                    ? .20
+                    : .38
                 );
 
 
-                this.tileGraphics
+                this.tileG
                 .fillRoundedRect(
 
                     x +
                     this.cellSize *
-                    0.16,
+                    .16,
 
                     y +
                     this.cellSize *
-                    0.15,
+                    .15,
 
                     this.cellSize *
-                    0.29,
+                    .29,
 
                     this.cellSize *
-                    0.10,
+                    .10,
 
                     6
                 );
@@ -2743,31 +2689,29 @@ extends Phaser.Scene{
         }
 
 
-        /* ==============================
-           USER DRAWN PATH
-           ============================== */
+        /* USER LINE */
 
         if(
             this.history.length >
             1
         ){
 
-            this.pathGraphics
+            this.pathG
             .lineStyle(
 
                 Math.max(
                     8,
                     this.cellSize *
-                    0.085
+                    .085
                 ),
 
                 0xf0a424,
 
-                0.92
+                .92
             );
 
 
-            this.pathGraphics
+            this.pathG
             .beginPath();
 
 
@@ -2777,14 +2721,12 @@ extends Phaser.Scene{
                 i++
             ){
 
-                const cell =
-                this.history[i];
-
-
                 const position =
                 this.cellCenter(
-                    cell.r,
-                    cell.c
+
+                    this.history[i].r,
+
+                    this.history[i].c
                 );
 
 
@@ -2793,34 +2735,33 @@ extends Phaser.Scene{
                     0
                 ){
 
-                    this.pathGraphics
+                    this.pathG
                     .moveTo(
+
                         position.x,
+
                         position.y
                     );
 
                 }else{
 
-                    this.pathGraphics
+                    this.pathG
                     .lineTo(
+
                         position.x,
+
                         position.y
                     );
                 }
             }
 
 
-            this.pathGraphics
+            this.pathG
             .strokePath();
         }
 
 
-        /* ==============================
-           BARRIERS
-
-           PENGHALANG DI ANTARA CELL.
-           BUKAN DI ATAS CELL.
-           ============================== */
+        /* PENGHALANG */
 
         for(
             const barrier
@@ -2833,9 +2774,7 @@ extends Phaser.Scene{
         }
 
 
-        /* ==============================
-           PORTAL
-           ============================== */
+        /* PORTAL */
 
         const portalPosition =
         this.cellCenter(
@@ -2866,17 +2805,16 @@ extends Phaser.Scene{
 /* =========================================================
    DRAW BARRIER
 
-   BARRIER DUDUK PADA GARIS DI ANTARA
-   DUA PETAK.
+   PENGHALANG BERADA DI ANTARA PETAK.
 
-   JADI GRID LANGSUNG TAK DITUTUP.
+   DIA TAK TUTUP PETAK.
    ========================================================= */
 
     drawBarrier(
         barrier
     ){
 
-        const a =
+        const pointA =
         this.cellCenter(
 
             barrier.a.r,
@@ -2885,7 +2823,7 @@ extends Phaser.Scene{
         );
 
 
-        const b =
+        const pointB =
         this.cellCenter(
 
             barrier.b.r,
@@ -2896,79 +2834,76 @@ extends Phaser.Scene{
 
         const middleX =
         (
-            a.x +
-            b.x
+            pointA.x +
+            pointB.x
         ) /
         2;
 
 
         const middleY =
         (
-            a.y +
-            b.y
+            pointA.y +
+            pointB.y
         ) /
         2;
 
 
         const thickness =
         Math.max(
-            11,
+            10,
             this.cellSize *
-            0.10
+            .09
         );
 
 
         const length =
         this.cellSize *
-        0.58;
+        .48;
 
 
-        /*
-        SAME ROW:
-        barrier vertical
-        */
+        /* SAME ROW = VERTICAL BARRIER */
 
         if(
             barrier.a.r ===
             barrier.b.r
         ){
 
-            this.barrierGraphics
+            this.barrierG
             .fillStyle(
-                0x37454d,
-                0.22
+                0x3f4b51,
+                .20
             );
 
 
-            this.barrierGraphics
+            this.barrierG
             .fillRoundedRect(
 
                 middleX -
                 thickness /
                 2 +
-                3,
+                2,
 
                 middleY -
                 length /
                 2 +
-                3,
+                2,
 
                 thickness,
 
                 length,
 
-                5
+                4
             );
 
 
-            this.barrierGraphics
+            this.barrierG
             .fillStyle(
                 0xf6c648,
                 1
             );
 
 
-            this.barrierGraphics
+            this.barrierG
             .fillRoundedRect(
 
                 middleX -
@@ -2983,13 +2918,13 @@ extends Phaser.Scene{
 
                 length,
 
-                5
+                4
             );
 
 
-            this.barrierGraphics
+            this.barrierG
             .fillStyle(
-                0x39464c,
+                0x374047,
                 1
             );
 
@@ -2999,17 +2934,17 @@ extends Phaser.Scene{
                 middleY -
                 length /
                 2 +
-                8;
+                7;
 
                 y<
                 middleY +
                 length /
                 2;
 
-                y+=20
+                y+=18
             ){
 
-                this.barrierGraphics
+                this.barrierG
                 .fillRect(
 
                     middleX -
@@ -3020,53 +2955,50 @@ extends Phaser.Scene{
 
                     thickness,
 
-                    7
+                    6
                 );
             }
 
         }else{
 
-            /*
-            SAME COLUMN:
-            barrier horizontal
-            */
+            /* HORIZONTAL BARRIER */
 
-            this.barrierGraphics
+            this.barrierG
             .fillStyle(
-                0x37454d,
-                0.22
+                0x3f4b51,
+                .20
             );
 
 
-            this.barrierGraphics
+            this.barrierG
             .fillRoundedRect(
 
                 middleX -
                 length /
                 2 +
-                3,
+                2,
 
                 middleY -
                 thickness /
                 2 +
-                3,
+                2,
 
                 length,
 
                 thickness,
 
-                5
+                4
             );
 
 
-            this.barrierGraphics
+            this.barrierG
             .fillStyle(
                 0xf6c648,
                 1
             );
 
 
-            this.barrierGraphics
+            this.barrierG
             .fillRoundedRect(
 
                 middleX -
@@ -3081,13 +3013,13 @@ extends Phaser.Scene{
 
                 thickness,
 
-                5
+                4
             );
 
 
-            this.barrierGraphics
+            this.barrierG
             .fillStyle(
-                0x39464c,
+                0x374047,
                 1
             );
 
@@ -3097,17 +3029,17 @@ extends Phaser.Scene{
                 middleX -
                 length /
                 2 +
-                8;
+                7;
 
                 x<
                 middleX +
                 length /
                 2;
 
-                x+=20
+                x+=18
             ){
 
-                this.barrierGraphics
+                this.barrierG
                 .fillRect(
 
                     x,
@@ -3116,7 +3048,7 @@ extends Phaser.Scene{
                     thickness /
                     2,
 
-                    7,
+                    6,
 
                     thickness
                 );
@@ -3126,7 +3058,7 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   CHECK BARRIER BETWEEN 2 CELLS
+   CHECK BARRIER
    ========================================================= */
 
     hasBarrier(
@@ -3147,14 +3079,6 @@ extends Phaser.Scene{
 
 /* =========================================================
    TOUCH CONTROL
-
-   USER MESTI START PADA SYMBOL.
-
-   KEMUDIAN:
-   - maju
-   - belok
-   - undo
-   semuanya dalam drag yang sama.
    ========================================================= */
 
     setupTouch(){
@@ -3190,8 +3114,7 @@ extends Phaser.Scene{
 
 
                 /*
-                MESTI START DRAG PADA CELL
-                YANG SEDANG DIDUDUKI SYMBOL.
+                DRAG MESTI START PADA SYMBOL.
                 */
 
                 if(
@@ -3235,13 +3158,6 @@ extends Phaser.Scene{
                 }
 
 
-                /*
-                SAMPLE LINE JARI.
-
-                Ini mengelakkan pointermove lompat
-                beberapa cell pada phone/iPad.
-                */
-
                 const startX =
                 this.lastDragX;
 
@@ -3271,21 +3187,30 @@ extends Phaser.Scene{
 
                 const spacing =
                 Math.max(
-                    10,
+                    9,
                     this.cellSize *
-                    0.18
+                    .16
                 );
 
 
                 const steps =
                 Math.max(
+
                     1,
+
                     Math.ceil(
                         distance /
                         spacing
                     )
                 );
 
+
+                /*
+                SAMPLE DRAG PATH.
+
+                Ini elakkan jari laju
+                lompat terus 2-3 grid.
+                */
 
                 for(
                     let i=1;
@@ -3300,6 +3225,7 @@ extends Phaser.Scene{
 
                     const sampleX =
                     Phaser.Math.Linear(
+
                         startX,
                         endX,
                         ratio
@@ -3308,6 +3234,7 @@ extends Phaser.Scene{
 
                     const sampleY =
                     Phaser.Math.Linear(
+
                         startY,
                         endY,
                         ratio
@@ -3316,22 +3243,21 @@ extends Phaser.Scene{
 
                     const targetCell =
                     this.pointerToCell(
+
                         sampleX,
+
                         sampleY
                     );
 
 
                     if(
-                        !targetCell
+                        targetCell
                     ){
 
-                        continue;
+                        this.processCell(
+                            targetCell
+                        );
                     }
-
-
-                    this.processDragCell(
-                        targetCell
-                    );
 
 
                     if(
@@ -3375,10 +3301,10 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   PROCESS CELL UNDER FINGER
+   PROCESS CELL
    ========================================================= */
 
-    processDragCell(
+    processCell(
         target
     ){
 
@@ -3394,27 +3320,20 @@ extends Phaser.Scene{
         }
 
 
-        const rowDistance =
+        const distance =
         Math.abs(
             target.r -
             this.currentCell.r
-        );
-
-
-        const colDistance =
+        )
+        +
         Math.abs(
             target.c -
             this.currentCell.c
         );
 
 
-        /*
-        HANYA CELL BERSEBELAHAN.
-        */
-
         if(
-            rowDistance +
-            colDistance !==
+            distance !==
             1
         ){
 
@@ -3429,7 +3348,7 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   MOVE + UNDO
+   FORWARD + UNDO
    ========================================================= */
 
     tryMove(
@@ -3443,12 +3362,12 @@ extends Phaser.Scene{
         );
 
 
-        /* =================================================
+        /* =========================
            UNDO
 
-           Kalau user seret balik tepat ke
-           cell sebelumnya, line dibuang balik.
-           ================================================= */
+           USER TARIK BALIK KE PETAK
+           SEBELUMNYA.
+           ========================= */
 
         if(
             this.history.length >
@@ -3470,13 +3389,6 @@ extends Phaser.Scene{
                 target.c
             ){
 
-                /*
-                Undo hanya perlu check history.
-                Barrier tak relevan kerana user
-                sedang patah balik laluan yang
-                memang dah berjaya dilalui.
-                */
-
                 this.undoStep();
 
 
@@ -3485,20 +3397,22 @@ extends Phaser.Scene{
         }
 
 
-        /* =================================================
-           PENGHALANG ANTARA CURRENT DAN TARGET
-           ================================================= */
+        /* =========================
+           BARRIER
+           ========================= */
 
         if(
             this.hasBarrier(
+
                 this.currentCell,
+
                 target
             )
         ){
 
             this.statusText
             .setText(
-                "Ada penghalang di situ. Cari jalan lain."
+                "Ada penghalang. Cari jalan lain."
             );
 
 
@@ -3506,7 +3420,9 @@ extends Phaser.Scene{
 
 
             this.flashBarrier(
+
                 this.currentCell,
+
                 target
             );
 
@@ -3515,9 +3431,11 @@ extends Phaser.Scene{
         }
 
 
-        /* =================================================
-           TAK BOLEH CROSS LINE LAMA
-           ================================================= */
+        /* =========================
+           ALREADY VISITED
+
+           TAK BOLEH CROSS LINE.
+           ========================= */
 
         if(
             this.visited.has(
@@ -3535,7 +3453,9 @@ extends Phaser.Scene{
 
 
             this.flashCell(
+
                 target.r,
+
                 target.c
             );
 
@@ -3552,24 +3472,26 @@ extends Phaser.Scene{
         this.portalCell.c;
 
 
-        /* =================================================
-           PORTAL MESTI PETAK TERAKHIR
-           ================================================= */
+        const total =
+        this.rows *
+        this.cols;
+
+
+        /* =========================
+           PORTAL MESTI LAST
+           ========================= */
 
         if(
             isPortal &&
 
             this.visited.size !==
-            (
-                this.rows *
-                this.cols
-            ) -
+            total -
             1
         ){
 
             this.statusText
             .setText(
-                "Portal belum boleh masuk. Lalui semua petak dahulu."
+                "Lalui semua petak dahulu sebelum masuk portal."
             );
 
 
@@ -3577,7 +3499,9 @@ extends Phaser.Scene{
 
 
             this.flashCell(
+
                 target.r,
+
                 target.c
             );
 
@@ -3586,9 +3510,9 @@ extends Phaser.Scene{
         }
 
 
-        /* =================================================
+        /* =========================
            FORWARD
-           ================================================= */
+           ========================= */
 
         this.currentCell =
         {
@@ -3616,8 +3540,8 @@ extends Phaser.Scene{
 
 
         /*
-        SYMBOL TERUS SNAP KE CENTER.
-        TAK ADA TWEEN.
+        SNAP TERUS.
+        TAK ADA MOVEMENT TWEEN.
         */
 
         this.placePlayer();
@@ -3632,10 +3556,7 @@ extends Phaser.Scene{
             isPortal &&
 
             this.visited.size ===
-            (
-                this.rows *
-                this.cols
-            )
+            total
         ){
 
             this.completeStage();
@@ -3666,6 +3587,7 @@ extends Phaser.Scene{
 
 
         this.visited.delete(
+
             cellKey(
                 removed.r,
                 removed.c
@@ -3694,13 +3616,14 @@ extends Phaser.Scene{
 
 
         /*
-        SYMBOL TERUS SNAP BALIK.
+        SYMBOL TERUS BALIK.
 
-        LINE JUGA HILANG SEBAB
-        history.pop().
+        history.pop() buat line
+        hilang semula.
         */
 
         this.placePlayer();
+
 
         this.drawBoard();
 
@@ -3710,8 +3633,6 @@ extends Phaser.Scene{
 
 /* =========================================================
    FLASH CELL
-
-   PLAYER TAK BERGEGAR.
    ========================================================= */
 
     flashCell(
@@ -3734,11 +3655,11 @@ extends Phaser.Scene{
             position.y,
 
             this.cellSize *
-            0.28,
+            .27,
 
             0xff5555,
 
-            0.12
+            .12
         )
         .setStrokeStyle(
             5,
@@ -3784,14 +3705,14 @@ extends Phaser.Scene{
         b
     ){
 
-        const pa =
+        const pointA =
         this.cellCenter(
             a.r,
             a.c
         );
 
 
-        const pb =
+        const pointB =
         this.cellCenter(
             b.r,
             b.c
@@ -3800,16 +3721,16 @@ extends Phaser.Scene{
 
         const x =
         (
-            pa.x +
-            pb.x
+            pointA.x +
+            pointB.x
         ) /
         2;
 
 
         const y =
         (
-            pa.y +
-            pb.y
+            pointA.y +
+            pointB.y
         ) /
         2;
 
@@ -3818,9 +3739,9 @@ extends Phaser.Scene{
         this.add.circle(
             x,
             y,
-            16,
+            15,
             0xff4f4f,
-            0.75
+            .70
         )
         .setDepth(
             160
@@ -3842,7 +3763,7 @@ extends Phaser.Scene{
             0,
 
             duration:
-            260,
+            250,
 
             onComplete:()=>{
 
@@ -3875,6 +3796,7 @@ extends Phaser.Scene{
         this.progressFill
         .displayWidth =
         Math.max(
+
             4,
 
             470 *
@@ -3941,25 +3863,11 @@ extends Phaser.Scene{
 
 
         /*
-        TAK GERAKKAN PLAYER.
-        CUMA FADE.
+        TAK ADA LAYER GELAP YANG TUTUP GAME.
         */
 
-        this.tweens.add({
-
-            targets:
-            this.player,
-
-            alpha:
-            0,
-
-            duration:
-            280
-        });
-
-
         this.time.delayedCall(
-            420,
+            350,
             ()=>{
 
                 this.showQuestion();
@@ -3969,7 +3877,10 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   QUESTION WINDOW
+   QUESTION
+
+   PANEL SAHAJA.
+   TAK ADA FULL SCREEN DARK OVERLAY.
    ========================================================= */
 
     showQuestion(){
@@ -4006,26 +3917,14 @@ extends Phaser.Scene{
         );
 
 
-        const dark =
-        this.add.rectangle(
-            450,
-            570,
-            900,
-            1140,
-            0x092532,
-            0.73
-        )
-        .setInteractive();
-
-
         const panel =
         this.add.rectangle(
             450,
-            560,
-            790,
-            840,
+            570,
+            760,
+            850,
             0xffffff,
-            1
+            .98
         )
         .setStrokeStyle(
             4,
@@ -4033,18 +3932,10 @@ extends Phaser.Scene{
         );
 
 
-        this.questionLayer.add([
-
-            dark,
-            panel
-
-        ]);
-
-
         const badge =
         this.add.text(
             450,
-            175,
+            185,
             "SOALAN " +
             (
                 this.stageIndex +
@@ -4074,14 +3965,14 @@ extends Phaser.Scene{
             }
         )
         .setOrigin(
-            0.5
+            .5
         );
 
 
         const topic =
         this.add.text(
             450,
-            230,
+            240,
             question.topic,
             {
                 fontFamily:
@@ -4101,21 +3992,21 @@ extends Phaser.Scene{
             }
         )
         .setOrigin(
-            0.5
+            .5
         );
 
 
         const questionText =
         this.add.text(
             450,
-            315,
+            330,
             question.q,
             {
                 fontFamily:
                 "Trebuchet MS, Arial",
 
                 fontSize:
-                "26px",
+                "25px",
 
                 fontStyle:
                 "bold",
@@ -4127,7 +4018,7 @@ extends Phaser.Scene{
                 "center",
 
                 wordWrap:{
-                    width:665,
+                    width:650,
                     useAdvancedWrap:true
                 },
 
@@ -4136,12 +4027,13 @@ extends Phaser.Scene{
             }
         )
         .setOrigin(
-            0.5
+            .5
         );
 
 
         this.questionLayer.add([
 
+            panel,
             badge,
             topic,
             questionText
@@ -4149,13 +4041,12 @@ extends Phaser.Scene{
         ]);
 
 
-        const answerY = [
-
-            485,
-            605,
-            725,
-            845
-
+        const answerY =
+        [
+            500,
+            620,
+            740,
+            860
         ];
 
 
@@ -4169,8 +4060,8 @@ extends Phaser.Scene{
                 this.add.rectangle(
                     450,
                     answerY[index],
-                    665,
-                    92,
+                    650,
+                    90,
                     0xf1f7fa,
                     1
                 )
@@ -4216,7 +4107,7 @@ extends Phaser.Scene{
                     }
                 )
                 .setOrigin(
-                    0.5
+                    .5
                 );
 
 
@@ -4230,7 +4121,7 @@ extends Phaser.Scene{
                         "Trebuchet MS, Arial",
 
                         fontSize:
-                        "22px",
+                        "21px",
 
                         fontStyle:
                         "bold",
@@ -4239,14 +4130,14 @@ extends Phaser.Scene{
                         "#244653",
 
                         wordWrap:{
-                            width:510,
+                            width:500,
                             useAdvancedWrap:true
                         }
                     }
                 )
                 .setOrigin(
                     0,
-                    0.5
+                    .5
                 );
 
 
@@ -4281,30 +4172,11 @@ extends Phaser.Scene{
                 );
             }
         );
-
-
-        this.questionLayer
-        .setAlpha(
-            0
-        );
-
-
-        this.tweens.add({
-
-            targets:
-            this.questionLayer,
-
-            alpha:
-            1,
-
-            duration:
-            200
-        });
     }
 
 
 /* =========================================================
-   ANSWER
+   CHECK ANSWER
    ========================================================= */
 
     checkAnswer(
@@ -4359,7 +4231,7 @@ extends Phaser.Scene{
 
 
             this.time.delayedCall(
-                650,
+                600,
                 ()=>{
 
                     this.questionLayer
@@ -4420,7 +4292,7 @@ extends Phaser.Scene{
 
 
             this.time.delayedCall(
-                350,
+                320,
                 ()=>{
 
                     if(
@@ -4450,12 +4322,12 @@ extends Phaser.Scene{
 
 /* =========================================================
    FINISH
+
+   PANEL SAHAJA.
+   TIADA FULLSCREEN OVERLAY.
    ========================================================= */
 
     showFinish(){
-
-        AUDIO.win();
-
 
         const layer =
         this.add.container(
@@ -4467,26 +4339,14 @@ extends Phaser.Scene{
         );
 
 
-        const dark =
-        this.add.rectangle(
-            450,
-            570,
-            900,
-            1140,
-            0x092532,
-            0.76
-        )
-        .setInteractive();
-
-
         const panel =
         this.add.rectangle(
             450,
-            550,
+            560,
             700,
-            620,
+            560,
             0xffffff,
-            1
+            .98
         )
         .setStrokeStyle(
             4,
@@ -4497,14 +4357,14 @@ extends Phaser.Scene{
         const icon =
         this.add.text(
             450,
-            335,
+            385,
             "✦",
             {
                 fontFamily:
                 "Arial",
 
                 fontSize:
-                "100px",
+                "90px",
 
                 fontStyle:
                 "bold",
@@ -4514,14 +4374,14 @@ extends Phaser.Scene{
             }
         )
         .setOrigin(
-            0.5
+            .5
         );
 
 
         const title =
         this.add.text(
             450,
-            440,
+            470,
             "MISI SELESAI!",
             {
                 fontFamily:
@@ -4538,21 +4398,21 @@ extends Phaser.Scene{
             }
         )
         .setOrigin(
-            0.5
+            .5
         );
 
 
         const description =
         this.add.text(
             450,
-            515,
+            545,
             "Semua 25 puzzle dan 25 soalan telah diselesaikan.",
             {
                 fontFamily:
                 "Trebuchet MS, Arial",
 
                 fontSize:
-                "23px",
+                "22px",
 
                 color:
                 "#58737f",
@@ -4566,14 +4426,14 @@ extends Phaser.Scene{
             }
         )
         .setOrigin(
-            0.5
+            .5
         );
 
 
         const score =
         this.add.text(
             450,
-            605,
+            620,
             "Betul cubaan pertama: " +
             this.correctFirstTry +
             " / 25",
@@ -4582,7 +4442,7 @@ extends Phaser.Scene{
                 "Trebuchet MS, Arial",
 
                 fontSize:
-                "25px",
+                "24px",
 
                 fontStyle:
                 "bold",
@@ -4592,14 +4452,14 @@ extends Phaser.Scene{
             }
         )
         .setOrigin(
-            0.5
+            .5
         );
 
 
         const replay =
         this.add.rectangle(
             450,
-            710,
+            715,
             400,
             76,
             0x3e839b,
@@ -4611,13 +4471,13 @@ extends Phaser.Scene{
         )
         .setInteractive({
             useHandCursor:true
-        );
+        });
 
 
         const replayText =
         this.add.text(
             450,
-            710,
+            715,
             "MAIN SEMULA",
             {
                 fontFamily:
@@ -4634,13 +4494,12 @@ extends Phaser.Scene{
             }
         )
         .setOrigin(
-            0.5
+            .5
         );
 
 
         layer.add([
 
-            dark,
             panel,
             icon,
             title,
@@ -4661,7 +4520,8 @@ extends Phaser.Scene{
 
 
                 this.sessionSeed =
-                Date.now() >>> 0;
+                Date.now() >>>
+                0;
 
 
                 this.stageSeeds =
@@ -4687,11 +4547,13 @@ extends Phaser.Scene{
 
    TIADA:
    - LOADING OVERLAY
-   - DYNAMIC SCRIPT LOADER
-   - RECURSIVE PUZZLE GENERATOR
-   - BLOCKED CELL GENERATOR
+   - ERROR OVERLAY
+   - POSITION FIXED COVER
+   - DARK FULLSCREEN LAYER
+   - BLOCKED CELL SYSTEM
+   - HEAVY PUZZLE GENERATOR
 
-   TERUS START PHASER.
+   TERUS START GAME.
    ========================================================= */
 
 new Phaser.Game({
@@ -4742,9 +4604,7 @@ new Phaser.Game({
     },
 
     scene:[
-
         TrailPuzzle
-
     ]
 
 });
