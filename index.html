@@ -2,7 +2,6 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
-
 <meta
 name="viewport"
 content="width=device-width,
@@ -26,7 +25,6 @@ html,
 body{
     margin:0;
     padding:0;
-
     width:100%;
     min-height:100%;
 
@@ -526,7 +524,8 @@ function makeRandom(seed){
                     t >>>
                     14
                 )
-            ) >>> 0
+            ) >>>
+            0
         ) /
         4294967296;
     };
@@ -650,10 +649,7 @@ function gridNeighbours(
 
 
 /* =========================================================
-   BASIC HAMILTONIAN SNAKE
-
-   INI CUMA TITIK MULA.
-   LEPAS TU PATH AKAN DIMUTATE.
+   BASIC FULL GRID PATH
    ========================================================= */
 
 function basicSnake(
@@ -759,15 +755,7 @@ function basicSnake(
 
 
 /* =========================================================
-   MUTATE HAMILTONIAN PATH
-
-   TAK GUNA RECURSION.
-
-   Semakin tinggi stage,
-   semakin banyak mutasi dibuat.
-
-   Ini yang buat pattern laluan
-   makin bercabang / berselekoh secara visual.
+   MUTATE FULL GRID PATH
    ========================================================= */
 
 function mutateHamiltonian(
@@ -1005,10 +993,7 @@ function mutateHamiltonian(
 
 
 /* =========================================================
-   COUNT TURN
-
-   DIGUNAKAN SUPAYA STAGE TINGGI
-   PILIH PATTERN YANG LEBIH BERSELEKOH.
+   COUNT TURNS
    ========================================================= */
 
 function countTurns(
@@ -1452,14 +1437,29 @@ extends Phaser.Scene{
         0;
 
 
-        /*
-        SEMUA PATTERN YANG DAH DIGUNA
-        DISIMPAN DI SINI.
-        */
-
         this.usedPatternSignatures =
         new Set();
 
+
+        /* ===============================
+           COUNTDOWN
+           =============================== */
+
+        this.countdownEvent =
+        null;
+
+
+        this.timeLeft =
+        60;
+
+
+        this.hintVisible =
+        false;
+
+
+        /* ===============================
+           GRAPHICS
+           =============================== */
 
         this.bgG =
         this.add.graphics();
@@ -1470,6 +1470,15 @@ extends Phaser.Scene{
 
 
         this.tileG =
+        this.add.graphics();
+
+
+        /*
+        Hint berada di atas tile,
+        tapi di bawah line user.
+        */
+
+        this.hintG =
         this.add.graphics();
 
 
@@ -1682,6 +1691,58 @@ extends Phaser.Scene{
         );
 
 
+        /* =================================================
+           COUNTDOWN DISPLAY
+           ================================================= */
+
+        this.timerText =
+        this.add.text(
+            690,
+            38,
+            "60s",
+            {
+                fontFamily:
+                "Trebuchet MS, Arial",
+
+                fontSize:
+                "24px",
+
+                fontStyle:
+                "bold",
+
+                color:
+                "#e45155"
+            }
+        )
+        .setOrigin(
+            .5
+        );
+
+
+        this.timerLabel =
+        this.add.text(
+            690,
+            67,
+            "COUNTDOWN",
+            {
+                fontFamily:
+                "Trebuchet MS, Arial",
+
+                fontSize:
+                "13px",
+
+                fontStyle:
+                "bold",
+
+                color:
+                "#6c8792"
+            }
+        )
+        .setOrigin(
+            .5
+        );
+
+
         this.statusText =
         this.add.text(
             70,
@@ -1760,7 +1821,7 @@ extends Phaser.Scene{
         const reset =
         this.add.rectangle(
             785,
-            92,
+            105,
             120,
             58,
             0xf5fafc,
@@ -1777,7 +1838,7 @@ extends Phaser.Scene{
 
         this.add.text(
             785,
-            92,
+            105,
             "↻ RESET",
             {
                 fontFamily:
@@ -2019,12 +2080,6 @@ extends Phaser.Scene{
 
 /* =========================================================
    DIFFICULTY
-
-   SETIAP STAGE:
-   - grid makin besar
-   - penghalang bertambah
-   - mutasi laluan bertambah
-   - selekoh bertambah
    ========================================================= */
 
     getSettings(){
@@ -2191,7 +2246,7 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   BUAT HAMILTONIAN PATH YANG MAKIN BERSELEKOH
+   CREATE SAFE PATH
    ========================================================= */
 
     makePath(
@@ -2277,13 +2332,6 @@ extends Phaser.Scene{
 
 /* =========================================================
    PATTERN SIGNATURE
-
-   BUKAN SEKADAR PENGHALANG.
-
-   KESELURUHAN SUSUNAN SAFE PATH
-   + BARRIER DISIMPAN.
-
-   JADI PATTERN SEBELUM TAK BOLEH BERULANG.
    ========================================================= */
 
     patternSignature(){
@@ -2291,8 +2339,8 @@ extends Phaser.Scene{
         const barrierKeys =
         this.barriers
         .map(
-            barrier=>
-            barrier.key
+            b=>
+            b.key
         )
         .sort();
 
@@ -2325,7 +2373,7 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   GENERATE SATU PATTERN
+   GENERATE PATTERN
    ========================================================= */
 
     generatePattern(
@@ -2348,10 +2396,6 @@ extends Phaser.Scene{
             0
         );
 
-
-        /* =================================================
-           BINA PATH YANG BERBEZA
-           ================================================= */
 
         this.safePath =
         this.makePath(
@@ -2376,13 +2420,6 @@ extends Phaser.Scene{
             ]
         };
 
-
-        /* =================================================
-           EDGE YANG DIGUNAKAN SAFE PATH
-
-           BARRIER TAK BOLEH DILETAK PADA EDGE INI.
-           JADI PUZZLE SENTIASA BOLEH SIAP.
-           ================================================= */
 
         const safeEdges =
         new Set();
@@ -2411,10 +2448,6 @@ extends Phaser.Scene{
         }
 
 
-        /* =================================================
-           CARI SEMUA EDGE LAIN
-           ================================================= */
-
         const candidates =
         [];
 
@@ -2437,8 +2470,6 @@ extends Phaser.Scene{
                     c:c
                 };
 
-
-                /* RIGHT */
 
                 if(
                     c + 1 <
@@ -2481,8 +2512,6 @@ extends Phaser.Scene{
                     }
                 }
 
-
-                /* DOWN */
 
                 if(
                     r + 1 <
@@ -2533,13 +2562,6 @@ extends Phaser.Scene{
             random
         );
 
-
-        /* =================================================
-           STAGE TINGGI BIAS KE BAHAGIAN TENGAH
-
-           Tapi masih disebarkan,
-           bukan semua berkumpul.
-           ================================================= */
 
         const centreX =
         (
@@ -2645,10 +2667,6 @@ extends Phaser.Scene{
         );
 
 
-        /* =================================================
-           PILIH BARRIER DAN CUBA SEBARKAN
-           ================================================= */
-
         for(
             const barrier
             of candidates
@@ -2746,11 +2764,6 @@ extends Phaser.Scene{
         }
 
 
-        /* =================================================
-           JIKA TAK CUKUP,
-           ISI BAKI TANPA FILTER JARAK.
-           ================================================= */
-
         for(
             const barrier
             of candidates
@@ -2788,10 +2801,7 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   BUILD STAGE UNIK
-
-   CUBA SEHINGGA DAPAT PATTERN
-   YANG BELUM PERNAH DIGUNAKAN.
+   BUILD UNIQUE STAGE
    ========================================================= */
 
     buildStage(){
@@ -2845,7 +2855,8 @@ extends Phaser.Scene{
         }
 
 
-        this.usedPatternSignatures.add(
+        this.usedPatternSignatures
+        .add(
             signature
         );
 
@@ -2882,6 +2893,13 @@ extends Phaser.Scene{
         index
     ){
 
+        /*
+        Berhentikan timer stage lama.
+        */
+
+        this.stopCountdown();
+
+
         this.stageIndex =
         index;
 
@@ -2902,8 +2920,19 @@ extends Phaser.Scene{
         false;
 
 
-        this.buildStage();
+        /*
+        HINT DISEMBUNYIKAN UNTUK STAGE BARU.
+        */
 
+        this.hintVisible =
+        false;
+
+
+        this.timeLeft =
+        60;
+
+
+        this.buildStage();
 
         this.calculateBoard();
 
@@ -2931,6 +2960,15 @@ extends Phaser.Scene{
         );
 
 
+        this.timerText
+        .setText(
+            "60s"
+        )
+        .setColor(
+            "#e45155"
+        );
+
+
         this.player
         .setVisible(
             true
@@ -2945,13 +2983,205 @@ extends Phaser.Scene{
         this.placePlayer();
 
         this.updateProgress();
+
+
+        /*
+        START COUNTDOWN 60 SAAT.
+        */
+
+        this.startCountdown();
+    }
+
+
+/* =========================================================
+   COUNTDOWN 60 SAAT
+   ========================================================= */
+
+    startCountdown(){
+
+        this.stopCountdown();
+
+
+        this.timeLeft =
+        60;
+
+
+        this.timerText
+        .setText(
+            "60s"
+        )
+        .setColor(
+            "#e45155"
+        );
+
+
+        this.countdownEvent =
+        this.time.addEvent({
+
+            delay:
+            1000,
+
+
+            loop:
+            true,
+
+
+            callback:
+            ()=>{
+
+                /*
+                Kalau dah masuk soalan atau
+                stage dah selesai, timer tak jalan.
+                */
+
+                if(
+                    this.questionOpen ||
+                    this.locked
+                ){
+
+                    return;
+                }
+
+
+                this.timeLeft--;
+
+
+                /*
+                10 SAAT TERAKHIR JADI LEBIH MERAH.
+                */
+
+                if(
+                    this.timeLeft <=
+                    10
+                ){
+
+                    this.timerText
+                    .setColor(
+                        "#d93636"
+                    );
+
+                }else{
+
+                    this.timerText
+                    .setColor(
+                        "#e45155"
+                    );
+                }
+
+
+                this.timerText
+                .setText(
+
+                    Math.max(
+                        0,
+                        this.timeLeft
+                    )
+                    +
+                    "s"
+                );
+
+
+                /*
+                HABIS 60 SAAT.
+                */
+
+                if(
+                    this.timeLeft <=
+                    0
+                ){
+
+                    this.stopCountdown();
+
+
+                    this.revealHiddenPath();
+                }
+            }
+
+        });
+    }
+
+
+/* =========================================================
+   STOP COUNTDOWN
+   ========================================================= */
+
+    stopCountdown(){
+
+        if(
+            this.countdownEvent
+        ){
+
+            this.countdownEvent
+            .remove(
+                false
+            );
+
+
+            this.countdownEvent =
+            null;
+        }
+    }
+
+
+/* =========================================================
+   60 SAAT HABIS
+
+   TUNJUK LALUAN TERSEMBUNYI.
+
+   PENTING:
+   TAK ADA OVERLAY.
+   TAK ADA WINDOW TUTUP GAME.
+   GAME MASIH BOLEH DIMAIN.
+   ========================================================= */
+
+    revealHiddenPath(){
+
+        if(
+            this.hintVisible ||
+            this.questionOpen ||
+            this.locked
+        ){
+
+            return;
+        }
+
+
+        this.hintVisible =
+        true;
+
+
+        this.timerText
+        .setText(
+            "0s"
+        )
+        .setColor(
+            "#4b91aa"
+        );
+
+
+        this.statusText
+        .setText(
+            "Masa tamat! Laluan bantuan ditunjukkan."
+        );
+
+
+        /*
+        REDRAW SAHAJA.
+        TAK TUTUP GAME.
+        */
+
+        this.drawBoard();
     }
 
 
 /* =========================================================
    RESET
 
-   RESET TAK TUKAR PATTERN.
+   RESET:
+   - pattern sama
+   - user balik start
+   - hint hilang
+   - countdown balik 60
    ========================================================= */
 
     resetStage(){
@@ -2969,6 +3199,10 @@ extends Phaser.Scene{
 
 
         this.dragging =
+        false;
+
+
+        this.hintVisible =
         false;
 
 
@@ -3013,8 +3247,15 @@ extends Phaser.Scene{
 
         this.statusText
         .setText(
-            "Puzzle direset. Pattern kekal sama."
+            "Puzzle direset. Countdown bermula semula."
         );
+
+
+        /*
+        COUNTDOWN BALIK 60.
+        */
+
+        this.startCountdown();
     }
 
 
@@ -3147,10 +3388,7 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   SYMBOL POSITION
-
-   TAK ADA TWEEN.
-   TAK ADA GEGAR.
+   PLAYER POSITION
    ========================================================= */
 
     placePlayer(){
@@ -3191,6 +3429,8 @@ extends Phaser.Scene{
 
         this.tileG.clear();
 
+        this.hintG.clear();
+
         this.pathG.clear();
 
         this.barrierG.clear();
@@ -3199,6 +3439,8 @@ extends Phaser.Scene{
         const padding =
         20;
 
+
+        /* BOARD SHADOW */
 
         this.boardG
         .fillStyle(
@@ -3229,6 +3471,8 @@ extends Phaser.Scene{
             28
         );
 
+
+        /* BOARD */
 
         this.boardG
         .fillStyle(
@@ -3417,6 +3661,20 @@ extends Phaser.Scene{
 
 
         /* =================================================
+           HINT PATH
+
+           HANYA MUNCUL SELEPAS COUNTDOWN 0.
+           ================================================= */
+
+        if(
+            this.hintVisible
+        ){
+
+            this.drawHiddenSolution();
+        }
+
+
+        /* =================================================
            USER LINE
            ================================================= */
 
@@ -3490,9 +3748,7 @@ extends Phaser.Scene{
         }
 
 
-        /* =================================================
-           PENGHALANG
-           ================================================= */
+        /* BARRIERS */
 
         for(
             const barrier
@@ -3505,9 +3761,7 @@ extends Phaser.Scene{
         }
 
 
-        /* =================================================
-           PORTAL
-           ================================================= */
+        /* PORTAL */
 
         const portalPosition =
         this.cellCenter(
@@ -3536,7 +3790,180 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   DRAW BARRIER
+   DRAW HIDDEN SOLUTION
+
+   LINE BIRU = LALUAN BANTUAN.
+
+   TAK MENGGANGGU LINE ORANGE USER.
+   ========================================================= */
+
+    drawHiddenSolution(){
+
+        if(
+            !this.safePath ||
+            this.safePath.length <
+            2
+        ){
+
+            return;
+        }
+
+
+        const width =
+        Math.max(
+            5,
+            this.cellSize *
+            .055
+        );
+
+
+        /*
+        LINE BIRU TRANSPARENT.
+        */
+
+        this.hintG
+        .lineStyle(
+            width,
+            0x45b7c4,
+            .62
+        );
+
+
+        this.hintG
+        .beginPath();
+
+
+        for(
+            let i=0;
+            i<this.safePath.length;
+            i++
+        ){
+
+            const position =
+            this.cellCenter(
+
+                this.safePath[i].r,
+
+                this.safePath[i].c
+            );
+
+
+            if(
+                i ===
+                0
+            ){
+
+                this.hintG
+                .moveTo(
+
+                    position.x,
+
+                    position.y
+                );
+
+            }else{
+
+                this.hintG
+                .lineTo(
+
+                    position.x,
+
+                    position.y
+                );
+            }
+        }
+
+
+        this.hintG
+        .strokePath();
+
+
+        /*
+        TITIK PUTIH-BIRU SEPANJANG
+        LALUAN BANTUAN.
+
+        Tak letak setiap cell supaya
+        visual tak terlalu padat.
+        */
+
+        for(
+            let i=0;
+            i<this.safePath.length;
+            i++
+        ){
+
+            if(
+                i %
+                2 !==
+                0 &&
+
+                i !==
+                this.safePath.length -
+                1
+            ){
+
+                continue;
+            }
+
+
+            const position =
+            this.cellCenter(
+
+                this.safePath[i].r,
+
+                this.safePath[i].c
+            );
+
+
+            const radius =
+            Math.max(
+                4,
+                this.cellSize *
+                .035
+            );
+
+
+            this.hintG
+            .fillStyle(
+                0xffffff,
+                .90
+            );
+
+
+            this.hintG
+            .fillCircle(
+
+                position.x,
+
+                position.y,
+
+                radius
+            );
+
+
+            this.hintG
+            .lineStyle(
+                2,
+                0x45b7c4,
+                .95
+            );
+
+
+            this.hintG
+            .strokeCircle(
+
+                position.x,
+
+                position.y,
+
+                radius
+            );
+        }
+    }
+
+
+/* =========================================================
+   BARRIER
    ========================================================= */
 
     drawBarrier(
@@ -3589,8 +4016,6 @@ extends Phaser.Scene{
         this.cellSize *
         .50;
 
-
-        /* VERTICAL */
 
         if(
             barrier.a.r ===
@@ -3689,8 +4114,6 @@ extends Phaser.Scene{
             }
 
         }else{
-
-            /* HORIZONTAL */
 
             this.barrierG
             .fillStyle(
@@ -4086,9 +4509,7 @@ extends Phaser.Scene{
         );
 
 
-        /* =================================================
-           UNDO
-           ================================================= */
+        /* UNDO */
 
         if(
             this.history.length >
@@ -4118,9 +4539,7 @@ extends Phaser.Scene{
         }
 
 
-        /* =================================================
-           BARRIER
-           ================================================= */
+        /* BARRIER */
 
         if(
             this.hasBarrier(
@@ -4152,9 +4571,7 @@ extends Phaser.Scene{
         }
 
 
-        /* =================================================
-           PETAK DAH LALU
-           ================================================= */
+        /* CELL DAH LALU */
 
         if(
             this.visited.has(
@@ -4196,9 +4613,7 @@ extends Phaser.Scene{
         this.portalCell.c;
 
 
-        /* =================================================
-           PORTAL MESTI LAST
-           ================================================= */
+        /* PORTAL LAST */
 
         if(
             isPortal &&
@@ -4229,9 +4644,7 @@ extends Phaser.Scene{
         }
 
 
-        /* =================================================
-           FORWARD
-           ================================================= */
+        /* FORWARD */
 
         this.currentCell =
         {
@@ -4517,7 +4930,21 @@ extends Phaser.Scene{
         );
 
 
+        /*
+        Kalau hint dah keluar,
+        status kekalkan mesej hint.
+        */
+
         if(
+            this.hintVisible
+        ){
+
+            this.statusText
+            .setText(
+                "Laluan bantuan sedang ditunjukkan."
+            );
+
+        }else if(
             remaining >
             1
         ){
@@ -4525,7 +4952,9 @@ extends Phaser.Scene{
             this.statusText
             .setText(
                 remaining +
-                " petak lagi. Stage seterusnya lebih susah."
+                " petak lagi. Countdown " +
+                this.timeLeft +
+                "s."
             );
 
         }else if(
@@ -4546,6 +4975,14 @@ extends Phaser.Scene{
    ========================================================= */
 
     completeStage(){
+
+        /*
+        STAGE SELESAI,
+        TIMER TERUS BERHENTI.
+        */
+
+        this.stopCountdown();
+
 
         this.locked =
         true;
@@ -4575,10 +5012,7 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   QUESTION PANEL
-
-   PANEL SAHAJA.
-   TAK ADA FULLSCREEN OVERLAY.
+   QUESTION
    ========================================================= */
 
     showQuestion(){
@@ -4874,7 +5308,7 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   CHECK ANSWER
+   ANSWER
    ========================================================= */
 
     checkAnswer(
@@ -5020,6 +5454,9 @@ extends Phaser.Scene{
    ========================================================= */
 
     showFinish(){
+
+        this.stopCountdown();
+
 
         const layer =
         this.add.container(
@@ -5236,13 +5673,11 @@ extends Phaser.Scene{
 /* =========================================================
    START GAME
 
-   JANGAN TAMBAH:
-   - loading overlay
-   - error overlay
-   - fullscreen cover
-   - blocked-cell system
-   - recursive generator berat
-
+   KEKALKAN:
+   - TIADA LOADING OVERLAY
+   - TIADA ERROR OVERLAY
+   - TIADA FULLSCREEN COVER
+   - TIADA BLOCKED CELL
    ========================================================= */
 
 new Phaser.Game({
