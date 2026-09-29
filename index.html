@@ -11,79 +11,61 @@ maximum-scale=1,
 user-scalable=no,
 viewport-fit=cover">
 
-<title>Makmal Uji Air - Set 1</title>
+<title>Water Gun Aquarium - Set 1</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <style>
-
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
 }
 
-html,
-body{
+html,body{
     margin:0;
     padding:0;
-
+    width:100%;
     min-height:100%;
-
-    font-family:
-    "Trebuchet MS",
-    Arial,
-    sans-serif;
-
     background:
-    linear-gradient(
-        135deg,
-        #dff7ff,
-        #effcff,
-        #dcecff
-    );
-
+        linear-gradient(
+            135deg,
+            #bfe9f5,
+            #eafaff,
+            #ccebf6
+        );
+    font-family:"Trebuchet MS",Arial,sans-serif;
     overscroll-behavior:none;
 }
 
 body{
+    min-height:100vh;
+    min-height:100svh;
+
     display:flex;
     justify-content:center;
     align-items:flex-start;
 
     padding:
-    max(5px,env(safe-area-inset-top))
-    4px
-    max(5px,env(safe-area-inset-bottom));
+        max(4px,env(safe-area-inset-top))
+        3px
+        max(4px,env(safe-area-inset-bottom));
 }
 
-
-/* ===============================
-   GAME CONTAINER
-================================ */
-
 #game-shell{
+    width:min(98vw,760px);
+    aspect-ratio:800/1240;
+    max-height:98svh;
 
-    width:min(
-        98vw,
-        700px
-    );
-
-    aspect-ratio:760/1180;
-
-    max-height:96svh;
-
-    border:
-    3px solid #19324d;
-
-    border-radius:22px;
+    border:3px solid #17384d;
+    border-radius:20px;
 
     overflow:hidden;
 
-    background:#eefaff;
+    background:#dff7ff;
 
     box-shadow:
-    0 12px 28px
-    rgba(28,63,92,.18);
+        0 10px 26px
+        rgba(20,55,78,.18);
 }
 
 #game{
@@ -100,11 +82,6 @@ canvas{
     touch-action:none;
 }
 
-
-/* ===============================
-   PHONE
-================================ */
-
 @media(max-width:600px){
 
     body{
@@ -112,20 +89,14 @@ canvas{
     }
 
     #game-shell{
-
         width:99vw;
-
-        max-height:98svh;
-
+        max-height:99svh;
         border-width:2px;
-
-        border-radius:15px;
+        border-radius:14px;
     }
 }
-
 </style>
 </head>
-
 
 <body>
 
@@ -133,16 +104,13 @@ canvas{
     <div id="game"></div>
 </div>
 
-
 <script>
-
 (() => {
 
 "use strict";
 
-
 /* =========================================================
-   SOALAN
+   SOALAN SET 1
 ========================================================= */
 
 const QUESTIONS = [
@@ -425,26 +393,26 @@ c:2
 ];
 
 
-
 /* =========================================================
    GAME SIZE
 ========================================================= */
 
-const W = 760;
-const H = 1180;
+const W = 800;
+const H = 1240;
 
+const AQUARIUM_TOP = 405;
+const AQUARIUM_BOTTOM = 1050;
+
+const LETTERS = ["A","B","C","D"];
 
 
 /* =========================================================
    AUDIO
-   AUDIO DIHASILKAN SENDIRI DENGAN WEB AUDIO
 ========================================================= */
 
 let audioCtx = null;
-
 let musicTimer = null;
-
-let musicOn = true;
+let musicEnabled = true;
 
 
 function ensureAudio(){
@@ -452,132 +420,75 @@ function ensureAudio(){
     if(!audioCtx){
 
         audioCtx =
-        new(
+        new (
             window.AudioContext ||
             window.webkitAudioContext
         )();
     }
 
     if(audioCtx.state === "suspended"){
-
         audioCtx.resume();
     }
 }
 
 
-
 function tone(
     freq = 440,
-    dur = .1,
+    duration = .1,
     type = "sine",
-    vol = .03,
+    volume = .02,
     delay = 0
 ){
 
     ensureAudio();
 
-    const oscillator =
-    audioCtx.createOscillator();
+    const osc =
+        audioCtx.createOscillator();
 
     const gain =
-    audioCtx.createGain();
+        audioCtx.createGain();
 
-    const time =
-    audioCtx.currentTime + delay;
+    const t =
+        audioCtx.currentTime + delay;
 
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq,t);
 
-    oscillator.type = type;
-
-    oscillator.frequency.value = freq;
-
-    gain.gain.value = vol;
-
-
-    oscillator.connect(gain);
-
-    gain.connect(
-        audioCtx.destination
-    );
-
-
-    gain.gain.setValueAtTime(
-        vol,
-        time
-    );
+    gain.gain.setValueAtTime(volume,t);
 
     gain.gain.exponentialRampToValueAtTime(
         .0001,
-        time + dur
+        t + duration
     );
 
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
 
-    oscillator.start(time);
-
-    oscillator.stop(
-        time + dur + .02
-    );
+    osc.start(t);
+    osc.stop(t + duration + .02);
 }
 
+
+function sfxShoot(){
+
+    tone(520,.045,"sine",.035);
+    tone(680,.05,"sine",.025,.035);
+}
 
 
 function sfxCorrect(){
 
-    tone(
-        660,
-        .08,
-        "triangle",
-        .04
-    );
-
-    tone(
-        880,
-        .12,
-        "triangle",
-        .035,
-        .08
-    );
+    tone(660,.08,"triangle",.04);
+    tone(880,.1,"triangle",.035,.08);
+    tone(1100,.12,"triangle",.03,.16);
 }
-
 
 
 function sfxWrong(){
 
-    tone(
-        180,
-        .12,
-        "sawtooth",
-        .038
-    );
-
-    tone(
-        130,
-        .15,
-        "sawtooth",
-        .03,
-        .08
-    );
+    tone(190,.12,"sawtooth",.03);
+    tone(145,.16,"sawtooth",.025,.07);
 }
-
-
-
-function sfxDrop(){
-
-    tone(
-        520,
-        .05,
-        "sine",
-        .022
-    );
-
-    tone(
-        700,
-        .05,
-        "sine",
-        .017,
-        .05
-    );
-}
-
 
 
 function startMusic(){
@@ -586,64 +497,46 @@ function startMusic(){
 
     ensureAudio();
 
-
-    const sequence = [
-
+    const notes = [
         262,
         330,
         392,
         330,
         294,
         349,
-        440,
+        392,
         349
-
     ];
-
 
     let i = 0;
 
+    musicTimer = setInterval(() => {
 
-    musicTimer =
-    setInterval(() => {
+        if(!musicEnabled) return;
 
-        if(musicOn){
+        tone(
+            notes[i % notes.length],
+            .17,
+            "triangle",
+            .007
+        );
 
-            tone(
+        i++;
 
-                sequence[
-                    i %
-                    sequence.length
-                ],
-
-                .16,
-
-                "triangle",
-
-                .009
-            );
-
-            i++;
-        }
-
-    },440);
+    },520);
 }
-
 
 
 /* =========================================================
-   PHASER SCENE
+   SCENE
 ========================================================= */
 
-class WaterLab extends Phaser.Scene{
+class AquariumGame extends Phaser.Scene{
 
 
 constructor(){
-
-    super("WaterLab");
-
+    super("AquariumGame");
 }
-
 
 
 /* =========================================================
@@ -653,203 +546,117 @@ constructor(){
 create(){
 
     this.qIndex = 0;
-
     this.score = 0;
+    this.wrong = 0;
 
     this.locked = false;
 
-    this.optionCards = [];
+    this.fishes = [];
+    this.projectiles = [];
+    this.bubbles = [];
 
-
-    this.drawBackground();
-
+    this.drawMainBackground();
     this.createHUD();
-
     this.createQuestionPanel();
+    this.createAquarium();
+    this.createGun();
 
-    this.createLabArea();
-
+    this.createFish(0);
+    this.createFish(1);
+    this.createFish(2);
+    this.createFish(3);
 
     this.loadQuestion();
-
-
-    /*
-    Browser hanya benarkan audio
-    selepas sentuhan pertama.
-    */
 
     this.input.once(
         "pointerdown",
         () => {
-
+            ensureAudio();
             startMusic();
-
         }
     );
 }
-
 
 
 /* =========================================================
    BACKGROUND
 ========================================================= */
 
-drawBackground(){
+drawMainBackground(){
 
     this.add.rectangle(
         W/2,
         H/2,
         W,
         H,
-        0xeefaff
+        0xe6f8ff
     );
 
-
     const g =
-    this.add.graphics();
-
+        this.add.graphics();
 
     g.fillStyle(
-        0xd8f5ff,
+        0xd9f4ff,
         1
     );
 
     g.fillRoundedRect(
-        16,
-        16,
-        W-32,
-        H-32,
+        15,
+        15,
+        W-30,
+        H-30,
         28
     );
 
-
     g.lineStyle(
         3,
-        0x24435f,
+        0x244d68,
         1
     );
 
     g.strokeRoundedRect(
-        16,
-        16,
-        W-32,
-        H-32,
+        15,
+        15,
+        W-30,
+        H-30,
         28
-    );
-
-
-    /*
-    MEJA MAKMAL
-    */
-
-    g.fillStyle(
-        0xc9edf7,
-        1
-    );
-
-    g.fillRect(
-        34,
-        1015,
-        W-68,
-        100
-    );
-
-
-    g.fillStyle(
-        0x8fbdcd,
-        1
-    );
-
-    g.fillRect(
-        34,
-        1115,
-        W-68,
-        32
-    );
-
-
-    /*
-    BUBBLE BACKGROUND
-    */
-
-    const bubbles = [
-
-        [72,118,12],
-
-        [688,132,17],
-
-        [58,454,9],
-
-        [700,470,13],
-
-        [95,1030,8],
-
-        [670,990,10]
-
-    ];
-
-
-    bubbles.forEach(
-        bubble => {
-
-            g.lineStyle(
-                3,
-                0x8fd4e7,
-                .55
-            );
-
-            g.strokeCircle(
-                bubble[0],
-                bubble[1],
-                bubble[2]
-            );
-
-        }
     );
 }
 
 
-
 /* =========================================================
-   TOP HUD
+   HUD
 ========================================================= */
 
 createHUD(){
 
-    /*
-    HOME
-    */
-
     const home =
-    this.add.rectangle(
-        45,
-        46,
-        42,
-        42,
-        0xffffff
-    )
-    .setStrokeStyle(
-        2,
-        0x2a526b
-    )
-    .setInteractive({
-        useHandCursor:true
-    });
-
+        this.add.rectangle(
+            48,
+            48,
+            44,
+            44,
+            0xffffff
+        )
+        .setStrokeStyle(
+            2,
+            0x21485f
+        )
+        .setInteractive({
+            useHandCursor:true
+        });
 
     this.add.text(
-        45,
-        45,
+        48,
+        47,
         "⌂",
         {
-            fontSize:"29px",
-            color:"#173850"
+            fontSize:"30px",
+            color:"#17384d",
+            fontStyle:"bold"
         }
     )
-    .setOrigin(
-        .5,
-        .55
-    );
+    .setOrigin(.5);
 
 
     home.on(
@@ -857,178 +664,126 @@ createHUD(){
         () => {
 
             try{
-
                 window.location.href =
-                "index.html";
-
-            }catch(error){
-
-            }
+                    "index.html";
+            }catch(e){}
 
         }
     );
 
-
-
-    /*
-    TITLE
-    */
 
     this.add.text(
-        78,
-        46,
-        "MAKMAL UJI AIR",
+        85,
+        48,
+        "WATER GUN AQUARIUM",
         {
-
-            fontSize:"27px",
-
+            fontSize:"25px",
             fontStyle:"bold",
-
-            color:"#16324b"
-
+            color:"#16394f"
         }
     )
-    .setOrigin(
-        0,
-        .5
-    );
+    .setOrigin(0,.5);
 
-
-
-    /*
-    COUNTER
-    */
 
     this.counter =
-    this.add.text(
-        688,
-        46,
-        "1/25",
-        {
-
-            fontSize:"22px",
-
-            fontStyle:"bold",
-
-            color:"#16324b"
-
-        }
-    )
-    .setOrigin(
-        1,
-        .5
-    );
+        this.add.text(
+            700,
+            48,
+            "1/25",
+            {
+                fontSize:"22px",
+                fontStyle:"bold",
+                color:"#16394f"
+            }
+        )
+        .setOrigin(1,.5);
 
 
-
-    /*
-    PROGRESS BAR
-    */
-
-    this.progressBg =
-    this.add.rectangle(
-        470,
-        46,
-        150,
-        18,
-        0xc7dfe8
-    )
-    .setStrokeStyle(
-        2,
-        0x315b70
-    )
-    .setOrigin(
-        0,
-        .5
-    );
+    this.soundButton =
+        this.add.rectangle(
+            744,
+            48,
+            40,
+            40,
+            0xffffff
+        )
+        .setStrokeStyle(
+            2,
+            0x21485f
+        )
+        .setInteractive({
+            useHandCursor:true
+        });
 
 
-    this.progressFill =
-    this.add.rectangle(
-        472,
-        46,
-        146,
-        12,
-        0x36b6db
-    )
-    .setOrigin(
-        0,
-        .5
-    )
-    .setScale(
-        0,
-        1
-    );
+    this.soundText =
+        this.add.text(
+            744,
+            48,
+            "♪",
+            {
+                fontSize:"24px",
+                fontStyle:"bold",
+                color:"#17384d"
+            }
+        )
+        .setOrigin(.5);
 
 
-
-    /*
-    SOUND BUTTON
-    */
-
-    this.soundBtn =
-    this.add.rectangle(
-        716,
-        46,
-        38,
-        38,
-        0xffffff
-    )
-    .setStrokeStyle(
-        2,
-        0x2a526b
-    )
-    .setInteractive({
-        useHandCursor:true
-    });
-
-
-    this.soundIcon =
-    this.add.text(
-        716,
-        46,
-        "♪",
-        {
-
-            fontSize:"24px",
-
-            fontStyle:"bold",
-
-            color:"#173850"
-
-        }
-    )
-    .setOrigin(.5);
-
-
-    this.soundBtn.on(
+    this.soundButton.on(
         "pointerdown",
         () => {
 
             ensureAudio();
 
-            musicOn =
-            !musicOn;
+            musicEnabled =
+                !musicEnabled;
 
-
-            this.soundIcon.setText(
-                musicOn
-                ?
-                "♪"
-                :
-                "×"
+            this.soundText.setText(
+                musicEnabled
+                ? "♪"
+                : "×"
             );
 
-
-            if(musicOn){
-
+            if(musicEnabled){
                 startMusic();
             }
-
         }
     );
-}
 
+
+    /* PROGRESS */
+
+    this.add.rectangle(
+        400,
+        84,
+        620,
+        14,
+        0xb9d8e5
+    )
+    .setStrokeStyle(
+        2,
+        0x54798d
+    );
+
+
+    this.progress =
+        this.add.rectangle(
+            91,
+            84,
+            616,
+            10,
+            0x4bb9da
+        )
+        .setOrigin(
+            0,
+            .5
+        )
+        .setScale(
+            0,
+            1
+        );
+}
 
 
 /* =========================================================
@@ -1038,650 +793,981 @@ createHUD(){
 createQuestionPanel(){
 
     this.add.rectangle(
-        380,
-        164,
-        660,
-        180,
+        400,
+        238,
+        710,
+        280,
         0xffffff
     )
     .setStrokeStyle(
         3,
-        0x284e68
+        0x24506a
     );
 
 
     this.qLabel =
-    this.add.text(
-        67,
-        94,
-        "SOALAN 1",
-        {
-
-            fontSize:"18px",
-
-            fontStyle:"bold",
-
-            color:"#2383a8"
-
-        }
-    );
+        this.add.text(
+            67,
+            112,
+            "SOALAN 1",
+            {
+                fontSize:"18px",
+                fontStyle:"bold",
+                color:"#278aad"
+            }
+        );
 
 
-    this.qText =
-    this.add.text(
-        67,
-        127,
-        "",
-        {
+    this.questionText =
+        this.add.text(
+            67,
+            144,
+            "",
+            {
+                fontSize:"23px",
+                fontStyle:"bold",
+                color:"#17384d",
+                lineSpacing:3,
+                wordWrap:{
+                    width:665
+                }
+            }
+        );
 
-            fontSize:"25px",
 
-            fontStyle:"bold",
+    this.optionTexts = [];
 
-            color:"#17334a",
 
-            wordWrap:{
-                width:625
-            },
+    const positions = [
 
-            lineSpacing:4
+        [78,260],
+        [405,260],
+        [78,320],
+        [405,320]
 
-        }
-    );
+    ];
+
+
+    for(
+        let i=0;
+        i<4;
+        i++
+    ){
+
+        const box =
+            this.add.rectangle(
+                positions[i][0] + 145,
+                positions[i][1],
+                290,
+                50,
+                0xf1f9fc
+            )
+            .setStrokeStyle(
+                2,
+                0x9cc6d7
+            );
+
+
+        const badge =
+            this.add.circle(
+                positions[i][0] + 18,
+                positions[i][1],
+                19,
+                [
+                    0x64c7e7,
+                    0xffc95d,
+                    0x84d5a1,
+                    0xd39be7
+                ][i]
+            )
+            .setStrokeStyle(
+                2,
+                0x315a70
+            );
+
+
+        this.add.text(
+            positions[i][0] + 18,
+            positions[i][1],
+            LETTERS[i],
+            {
+                fontSize:"20px",
+                fontStyle:"bold",
+                color:"#17384d"
+            }
+        )
+        .setOrigin(.5);
+
+
+        const text =
+            this.add.text(
+                positions[i][0] + 44,
+                positions[i][1],
+                "",
+                {
+                    fontSize:"16px",
+                    fontStyle:"bold",
+                    color:"#24485d",
+                    wordWrap:{
+                        width:235
+                    }
+                }
+            )
+            .setOrigin(
+                0,
+                .5
+            );
+
+
+        this.optionTexts.push(
+            text
+        );
+    }
 
 
     this.status =
+        this.add.text(
+            400,
+            374,
+            "Tap ikan A, B, C atau D untuk menembak.",
+            {
+                fontSize:"17px",
+                fontStyle:"bold",
+                color:"#4b7185"
+            }
+        )
+        .setOrigin(.5);
+}
+
+
+/* =========================================================
+   AQUARIUM
+========================================================= */
+
+createAquarium(){
+
+    /*
+    BACK WATER
+    */
+
+    const tank =
+        this.add.graphics();
+
+
+    tank.fillStyle(
+        0x52b9dd,
+        1
+    );
+
+    tank.fillRoundedRect(
+        42,
+        AQUARIUM_TOP,
+        716,
+        AQUARIUM_BOTTOM -
+        AQUARIUM_TOP,
+        20
+    );
+
+
+    /*
+    WATER GRADIENT EFFECT
+    */
+
+    tank.fillStyle(
+        0x3b9ec7,
+        .28
+    );
+
+    tank.fillRect(
+        45,
+        AQUARIUM_TOP + 205,
+        710,
+        435
+    );
+
+
+    tank.fillStyle(
+        0x277fa9,
+        .16
+    );
+
+    tank.fillRect(
+        45,
+        AQUARIUM_TOP + 410,
+        710,
+        230
+    );
+
+
+    /*
+    GLASS BORDER
+    */
+
+    tank.lineStyle(
+        8,
+        0x1d4961,
+        1
+    );
+
+    tank.strokeRoundedRect(
+        42,
+        AQUARIUM_TOP,
+        716,
+        AQUARIUM_BOTTOM -
+        AQUARIUM_TOP,
+        20
+    );
+
+
+    tank.lineStyle(
+        4,
+        0xffffff,
+        .4
+    );
+
+    tank.beginPath();
+
+    tank.moveTo(
+        60,
+        AQUARIUM_TOP + 25
+    );
+
+    tank.lineTo(
+        60,
+        AQUARIUM_BOTTOM - 35
+    );
+
+    tank.strokePath();
+
+
+    /*
+    LIGHT RAYS
+    */
+
+    const ray =
+        this.add.graphics();
+
+    ray.fillStyle(
+        0xffffff,
+        .06
+    );
+
+    ray.fillTriangle(
+        85,
+        AQUARIUM_TOP + 10,
+        250,
+        AQUARIUM_TOP + 10,
+        415,
+        AQUARIUM_BOTTOM - 65
+    );
+
+    ray.fillTriangle(
+        400,
+        AQUARIUM_TOP + 10,
+        540,
+        AQUARIUM_TOP + 10,
+        680,
+        AQUARIUM_BOTTOM - 60
+    );
+
+
+    /*
+    SAND
+    */
+
+    const sand =
+        this.add.graphics();
+
+    sand.fillStyle(
+        0xe3c47a,
+        1
+    );
+
+    sand.fillRect(
+        46,
+        AQUARIUM_BOTTOM - 75,
+        708,
+        71
+    );
+
+
+    sand.fillStyle(
+        0xcda65e,
+        1
+    );
+
+    for(
+        let i=0;
+        i<50;
+        i++
+    ){
+
+        sand.fillCircle(
+            Phaser.Math.Between(
+                55,
+                745
+            ),
+            Phaser.Math.Between(
+                AQUARIUM_BOTTOM - 65,
+                AQUARIUM_BOTTOM - 14
+            ),
+            Phaser.Math.Between(
+                2,
+                4
+            )
+        );
+    }
+
+
+    this.createRocks();
+    this.createPlants();
+    this.createBubbles();
+
+
+    /*
+    AQUARIUM LABEL
+    */
+
+    this.add.rectangle(
+        400,
+        AQUARIUM_TOP + 25,
+        215,
+        34,
+        0x174c68,
+        .7
+    );
+
+
     this.add.text(
-        380,
-        238,
-        "Pilih satu kad jawapan untuk diuji.",
+        400,
+        AQUARIUM_TOP + 25,
+        "TAP IKAN UNTUK TEMBAK",
         {
-
-            fontSize:"18px",
-
+            fontSize:"15px",
             fontStyle:"bold",
-
-            color:"#4e7388"
-
+            color:"#ffffff"
         }
     )
     .setOrigin(.5);
 }
 
 
-
 /* =========================================================
-   LAB AREA
+   ROCKS
 ========================================================= */
 
-createLabArea(){
+createRocks(){
 
     const g =
-    this.add.graphics();
+        this.add.graphics();
+
+
+    const rocks = [
+
+        [110,AQUARIUM_BOTTOM-83,40,25],
+        [150,AQUARIUM_BOTTOM-88,32,20],
+        [690,AQUARIUM_BOTTOM-82,45,25],
+        [645,AQUARIUM_BOTTOM-87,32,23],
+        [340,AQUARIUM_BOTTOM-78,28,18],
+        [450,AQUARIUM_BOTTOM-80,35,19]
+
+    ];
+
+
+    rocks.forEach(
+        r => {
+
+            g.fillStyle(
+                0x6d8290,
+                1
+            );
+
+            g.fillEllipse(
+                r[0],
+                r[1],
+                r[2]*2,
+                r[3]*2
+            );
+
+            g.fillStyle(
+                0x91a4ae,
+                .7
+            );
+
+            g.fillEllipse(
+                r[0]-8,
+                r[1]-6,
+                r[2],
+                r[3]/1.4
+            );
+
+        }
+    );
+}
+
+
+/* =========================================================
+   PLANTS
+========================================================= */
+
+createPlants(){
+
+    const plants = [
+        95,
+        130,
+        185,
+        590,
+        650,
+        710
+    ];
+
+
+    plants.forEach(
+        (x,index) => {
+
+            const plant =
+                this.add.container(
+                    x,
+                    AQUARIUM_BOTTOM - 73
+                );
+
+
+            const stem =
+                this.add.rectangle(
+                    0,
+                    -35,
+                    8,
+                    75,
+                    0x268456
+                )
+                .setOrigin(
+                    .5,
+                    1
+                );
+
+
+            const leaf1 =
+                this.add.ellipse(
+                    -13,
+                    -40,
+                    17,
+                    45,
+                    0x45aa6d
+                )
+                .setRotation(-.55);
+
+
+            const leaf2 =
+                this.add.ellipse(
+                    13,
+                    -55,
+                    17,
+                    48,
+                    0x55bb76
+                )
+                .setRotation(.55);
+
+
+            const leaf3 =
+                this.add.ellipse(
+                    -11,
+                    -70,
+                    15,
+                    40,
+                    0x3e9d65
+                )
+                .setRotation(-.5);
+
+
+            plant.add([
+                stem,
+                leaf1,
+                leaf2,
+                leaf3
+            ]);
+
+
+            plant.setScale(
+                Phaser.Math.FloatBetween(
+                    .8,
+                    1.2
+                )
+            );
+
+
+            this.tweens.add({
+
+                targets:plant,
+
+                angle:
+                    index % 2 === 0
+                    ? 4
+                    : -4,
+
+                duration:
+                    Phaser.Math.Between(
+                        1200,
+                        1900
+                    ),
+
+                yoyo:true,
+                repeat:-1,
+
+                ease:"Sine.easeInOut"
+
+            });
+
+        }
+    );
+}
+
+
+/* =========================================================
+   BUBBLES
+========================================================= */
+
+createBubbles(){
+
+    for(
+        let i=0;
+        i<24;
+        i++
+    ){
+
+        const bubble =
+            this.add.circle(
+                Phaser.Math.Between(
+                    65,
+                    735
+                ),
+
+                Phaser.Math.Between(
+                    AQUARIUM_TOP + 45,
+                    AQUARIUM_BOTTOM - 90
+                ),
+
+                Phaser.Math.Between(
+                    3,
+                    8
+                ),
+
+                0xdff8ff,
+                .35
+            )
+            .setStrokeStyle(
+                2,
+                0xffffff,
+                .5
+            );
+
+
+        bubble.speed =
+            Phaser.Math.FloatBetween(
+                15,
+                38
+            );
+
+
+        bubble.wobble =
+            Phaser.Math.FloatBetween(
+                1.1,
+                2.3
+            );
+
+
+        bubble.phase =
+            Math.random() *
+            Math.PI *
+            2;
+
+
+        this.bubbles.push(
+            bubble
+        );
+    }
+}
+
+
+/* =========================================================
+   FISH
+========================================================= */
+
+createFish(index){
+
+    const fish =
+        this.add.container(
+            150 + index*150,
+            535 + index*115
+        );
+
+
+    fish.setSize(
+        150,
+        90
+    );
+
+
+    fish.setInteractive(
+        new Phaser.Geom.Rectangle(
+            -80,
+            -50,
+            160,
+            100
+        ),
+
+        Phaser.Geom.Rectangle.Contains
+    );
 
 
     /*
-    RAK PIPET
+    FISH GRAPHIC
     */
 
-    g.fillStyle(
-        0x7fa9bb,
-        1
-    );
-
-    g.fillRoundedRect(
-        96,
-        300,
-        568,
-        18,
-        9
-    );
+    const fishShape =
+        this.add.container(
+            0,
+            0
+        );
 
 
-    g.fillStyle(
-        0x4e7387,
-        1
-    );
+    const colors = [
 
-    g.fillRect(
-        128,
-        318,
-        13,
-        94
-    );
+        0xff876f,
+        0xf4c84c,
+        0x75d19a,
+        0xb58be3
 
-    g.fillRect(
-        619,
-        318,
-        13,
-        94
-    );
+    ];
+
+
+    const darkColors = [
+
+        0xd75e4c,
+        0xd4a72f,
+        0x4daa73,
+        0x8865b8
+
+    ];
+
+
+    /*
+    TAIL
+    */
+
+    const tail =
+        this.add.triangle(
+            -62,
+            0,
+
+            -18,
+            0,
+
+            20,
+            -33,
+
+            20,
+            33,
+
+            darkColors[index]
+        );
+
+
+    /*
+    BODY
+    */
+
+    const body =
+        this.add.ellipse(
+            0,
+            0,
+            112,
+            66,
+            colors[index]
+        )
+        .setStrokeStyle(
+            3,
+            0x173f55
+        );
+
+
+    /*
+    TOP FIN
+    */
+
+    const topFin =
+        this.add.triangle(
+            -3,
+            -31,
+
+            -20,
+            3,
+
+            7,
+            -30,
+
+            25,
+            3,
+
+            darkColors[index]
+        );
+
+
+    /*
+    BOTTOM FIN
+    */
+
+    const bottomFin =
+        this.add.triangle(
+            0,
+            31,
+
+            -10,
+            -2,
+
+            18,
+            28,
+
+            28,
+            -2,
+
+            darkColors[index]
+        );
+
+
+    /*
+    EYE
+    */
+
+    const eyeWhite =
+        this.add.circle(
+            34,
+            -10,
+            9,
+            0xffffff
+        );
+
+
+    const eye =
+        this.add.circle(
+            38,
+            -10,
+            4,
+            0x101820
+        );
+
+
+    /*
+    MOUTH
+    */
+
+    const mouth =
+        this.add.arc(
+            49,
+            10,
+            9,
+            20,
+            140,
+            false,
+            0x173f55
+        );
+
+
+    /*
+    SMALL BODY SPOTS
+    */
+
+    const spot1 =
+        this.add.circle(
+            -15,
+            -12,
+            7,
+            darkColors[index],
+            .55
+        );
+
+
+    const spot2 =
+        this.add.circle(
+            -27,
+            10,
+            5,
+            darkColors[index],
+            .5
+        );
+
+
+    fishShape.add([
+
+        tail,
+        topFin,
+        bottomFin,
+        body,
+        spot1,
+        spot2,
+        eyeWhite,
+        eye,
+        mouth
+
+    ]);
 
 
     /*
     LABEL
     */
 
-    g.fillStyle(
-        0xe9fbff,
-        1
-    );
-
-    g.fillRoundedRect(
-        280,
-        324,
-        200,
-        54,
-        13
-    );
-
-
-    g.lineStyle(
-        3,
-        0x5b879b,
-        1
-    );
-
-    g.strokeRoundedRect(
-        280,
-        324,
-        200,
-        54,
-        13
-    );
+    const labelCircle =
+        this.add.circle(
+            0,
+            0,
+            24,
+            0xffffff,
+            .92
+        )
+        .setStrokeStyle(
+            3,
+            0x173f55
+        );
 
 
-    this.add.text(
-        380,
-        350,
-        "PIPET AIR",
-        {
-
-            fontSize:"20px",
-
-            fontStyle:"bold",
-
-            color:"#35586d"
-
-        }
-    )
-    .setOrigin(.5);
+    const label =
+        this.add.text(
+            0,
+            0,
+            LETTERS[index],
+            {
+                fontSize:"27px",
+                fontStyle:"bold",
+                color:"#17384d"
+            }
+        )
+        .setOrigin(.5);
 
 
-
-    /*
-    PIPET
-    */
-
-    this.dropper =
-    this.add.container(
-        380,
-        418
-    );
-
-
-    const bulb =
-    this.add.ellipse(
-        0,
-        -22,
-        42,
-        50,
-        0x79cfe7
-    )
-    .setStrokeStyle(
-        3,
-        0x315b70
-    );
-
-
-    const tube =
-    this.add.rectangle(
-        0,
-        22,
-        14,
-        62,
-        0xf8fdff
-    )
-    .setStrokeStyle(
-        3,
-        0x315b70
-    );
-
-
-    const tip =
-    this.add.triangle(
-
-        0,
-        57,
-
-        -8,
-        -4,
-
-        8,
-        -4,
-
-        0,
-        16,
-
-        0x315b70
-
-    );
-
-
-    const shine =
-    this.add.ellipse(
-        -8,
-        -31,
-        8,
-        12,
-        0xffffff,
-        .7
-    );
-
-
-    this.dropper.add([
-
-        bulb,
-
-        tube,
-
-        tip,
-
-        shine
-
+    fish.add([
+        fishShape,
+        labelCircle,
+        label
     ]);
 
 
+    fish.fishShape =
+        fishShape;
+
+    fish.tail =
+        tail;
+
+    fish.body =
+        body;
+
+    fish.labelCircle =
+        labelCircle;
+
+    fish.label =
+        label;
+
+
+    fish.answerIndex =
+        index;
+
+
+    fish.direction =
+        index % 2 === 0
+        ? 1
+        : -1;
+
+
+    fish.speed =
+        Phaser.Math.FloatBetween(
+            40,
+            70
+        );
+
+
+    fish.baseY =
+        530 +
+        index * 120;
+
+
+    fish.waveAmp =
+        Phaser.Math.FloatBetween(
+            14,
+            27
+        );
+
+
+    fish.waveSpeed =
+        Phaser.Math.FloatBetween(
+            .0014,
+            .0022
+        );
+
+
+    fish.phase =
+        Math.random() *
+        Math.PI *
+        2;
+
+
+    fish.nextSpeedChange =
+        Phaser.Math.Between(
+            2500,
+            5000
+        );
+
+
+    fish.elapsedChange = 0;
+
 
     /*
-    ANSWER CARDS
+    TAIL MOVEMENT
     */
 
-    const cardY = [
+    this.tweens.add({
 
-        530,
+        targets:tail,
 
-        665,
+        scaleY:.68,
 
-        800,
+        duration:
+            Phaser.Math.Between(
+                150,
+                230
+            ),
 
-        935
+        yoyo:true,
+        repeat:-1,
 
-    ];
+        ease:"Sine.easeInOut"
+
+    });
 
 
-    cardY.forEach(
-        (y,index) => {
+    /*
+    TAP FISH
+    */
 
-            this.makeOptionCard(
-                index,
-                380,
-                y
+    fish.on(
+        "pointerdown",
+        pointer => {
+
+            pointer.event.stopPropagation();
+
+            this.shootFish(
+                fish
             );
 
         }
     );
 
 
-
-    /*
-    BOTTOM SCORE PANEL
-    */
-
-    this.add.rectangle(
-        380,
-        1065,
-        620,
-        66,
-        0xffffff
-    )
-    .setStrokeStyle(
-        3,
-        0x2d536a
-    );
-
-
-    this.add.text(
-        92,
-        1065,
-        "SKOR",
-        {
-
-            fontSize:"20px",
-
-            fontStyle:"bold",
-
-            color:"#3a6177"
-
-        }
-    )
-    .setOrigin(.5);
-
-
-    this.scoreText =
-    this.add.text(
-        153,
-        1065,
-        "0",
-        {
-
-            fontSize:"30px",
-
-            fontStyle:"bold",
-
-            color:"#173850"
-
-        }
-    )
-    .setOrigin(.5);
-
-
-
-    this.add.text(
-        287,
-        1065,
-        "Ujian",
-        {
-
-            fontSize:"19px",
-
-            fontStyle:"bold",
-
-            color:"#3a6177"
-
-        }
-    )
-    .setOrigin(.5);
-
-
-
-    /*
-    10 RESULT DOTS
-    */
-
-    this.testDots = [];
-
-
-    for(
-        let i=0;
-        i<10;
-        i++
-    ){
-
-        const dot =
-        this.add.circle(
-            351 + i*27,
-            1065,
-            8,
-            0xd8e8ef
-        )
-        .setStrokeStyle(
-            2,
-            0x6f96a8
-        );
-
-
-        this.testDots.push(
-            dot
-        );
-    }
-
-
-
-    /*
-    INSTRUCTION
-    */
-
-    this.add.text(
-        380,
-        1151,
-        "Tekan kad A, B, C atau D untuk memilih jawapan",
-        {
-
-            fontSize:"17px",
-
-            color:"#476b7e"
-
-        }
-    )
-    .setOrigin(.5);
-}
-
-
-
-/* =========================================================
-   CREATE ANSWER CARD
-========================================================= */
-
-makeOptionCard(
-    index,
-    x,
-    y
-){
-
-    const colors = [
-
-        0x66c7e4,
-
-        0xffc75f,
-
-        0x8bd3a8,
-
-        0xd59dea
-
-    ];
-
-
-    const card =
-    this.add.container(
-        x,
-        y
-    );
-
-
-    /*
-    SHADOW
-    */
-
-    const shadow =
-    this.add.rectangle(
-        4,
-        7,
-        620,
-        116,
-        0x18394a,
-        .15
-    );
-
-
-    /*
-    CARD
-    */
-
-    const bg =
-    this.add.rectangle(
-        0,
-        0,
-        620,
-        116,
-        0xffffff
-    )
-    .setStrokeStyle(
-        3,
-        0x315b70
-    )
-    .setInteractive({
-        useHandCursor:true
-    });
-
-
-
-    /*
-    LETTER BADGE
-    */
-
-    const badge =
-    this.add.circle(
-        -260,
-        0,
-        30,
-        colors[index]
-    )
-    .setStrokeStyle(
-        2,
-        0x315b70
-    );
-
-
-    const letter =
-    this.add.text(
-        -260,
-        0,
-        "ABCD"[index],
-        {
-
-            fontSize:"27px",
-
-            fontStyle:"bold",
-
-            color:"#173850"
-
-        }
-    )
-    .setOrigin(.5);
-
-
-
-    /*
-    ANSWER TEXT
-    */
-
-    const answer =
-    this.add.text(
-        -212,
-        -31,
-        "",
-        {
-
-            fontSize:"24px",
-
-            fontStyle:"bold",
-
-            color:"#173850",
-
-            wordWrap:{
-                width:455
-            },
-
-            lineSpacing:3
-
-        }
-    );
-
-
-
-    /*
-    WATER TEST STRIP
-    */
-
-    const tray =
-    this.add.rectangle(
-        45,
-        43,
-        440,
-        12,
-        0xc9d7dd
-    )
-    .setStrokeStyle(
-        2,
-        0x567c8f
-    );
-
-
-    /*
-    ABSORPTION ANIMATION
-    */
-
-    const absorb =
-    this.add.rectangle(
-        -175,
-        43,
-        440,
-        8,
-        0x48c782,
-        .82
-    )
-    .setOrigin(
-        0,
-        .5
-    )
-    .setScale(
-        0,
-        1
-    );
-
-
-    card.add([
-
-        shadow,
-
-        bg,
-
-        badge,
-
-        letter,
-
-        answer,
-
-        tray,
-
-        absorb
-
-    ]);
-
-
-    card.bg = bg;
-
-    card.answer = answer;
-
-    card.absorb = absorb;
-
-    card.baseX = x;
-
-    card.baseY = y;
-
-    card.index = index;
-
-
-
-    /*
-    TAP
-    */
-
-    bg.on(
-        "pointerdown",
-        () => {
-
-            this.choose(index);
-
-        }
-    );
-
-
-    /*
-    LAPTOP HOVER
-    */
-
-    bg.on(
+    fish.on(
         "pointerover",
         () => {
 
-            if(
-                !this.locked
-            ){
+            if(!this.locked){
 
-                card.setScale(
-                    1.018
+                fish.setScale(
+                    1.06
                 );
             }
 
@@ -1689,21 +1775,176 @@ makeOptionCard(
     );
 
 
-    bg.on(
+    fish.on(
         "pointerout",
         () => {
 
-            card.setScale(1);
+            fish.setScale(1);
 
         }
     );
 
 
-    this.optionCards.push(
-        card
+    this.fishes.push(
+        fish
     );
 }
 
+
+/* =========================================================
+   GUN
+========================================================= */
+
+createGun(){
+
+    /*
+    WATER GUN BASE
+    */
+
+    this.gun =
+        this.add.container(
+            400,
+            1135
+        );
+
+
+    const gunBody =
+        this.add.rectangle(
+            0,
+            10,
+            104,
+            55,
+            0x56bde1
+        )
+        .setStrokeStyle(
+            3,
+            0x183e55
+        );
+
+
+    const tank =
+        this.add.ellipse(
+            -28,
+            23,
+            48,
+            62,
+            0x8fe1f5
+        )
+        .setStrokeStyle(
+            3,
+            0x183e55
+        );
+
+
+    const grip =
+        this.add.rectangle(
+            18,
+            50,
+            32,
+            62,
+            0x297fa5
+        )
+        .setStrokeStyle(
+            3,
+            0x183e55
+        );
+
+
+    this.nozzle =
+        this.add.rectangle(
+            0,
+            -38,
+            22,
+            88,
+            0x4caed1
+        )
+        .setStrokeStyle(
+            3,
+            0x183e55
+        )
+        .setOrigin(
+            .5,
+            1
+        );
+
+
+    const tip =
+        this.add.rectangle(
+            0,
+            -84,
+            34,
+            17,
+            0x1d6688
+        )
+        .setStrokeStyle(
+            2,
+            0x17384d
+        );
+
+
+    this.nozzleGroup =
+        this.add.container(
+            0,
+            0,
+            [
+                this.nozzle,
+                tip
+            ]
+        );
+
+
+    this.gun.add([
+
+        tank,
+        gunBody,
+        grip,
+        this.nozzleGroup
+
+    ]);
+
+
+    this.add.text(
+        400,
+        1210,
+        "WATER GUN",
+        {
+            fontSize:"17px",
+            fontStyle:"bold",
+            color:"#244d64"
+        }
+    )
+    .setOrigin(.5);
+
+
+    this.scoreText =
+        this.add.text(
+            95,
+            1140,
+            "SKOR\n0",
+            {
+                fontSize:"18px",
+                align:"center",
+                fontStyle:"bold",
+                color:"#17384d"
+            }
+        )
+        .setOrigin(.5);
+
+
+    this.wrongText =
+        this.add.text(
+            705,
+            1140,
+            "SALAH\n0",
+            {
+                fontSize:"18px",
+                align:"center",
+                fontStyle:"bold",
+                color:"#17384d"
+            }
+        )
+        .setOrigin(.5);
+}
 
 
 /* =========================================================
@@ -1716,459 +1957,586 @@ loadQuestion(){
 
 
     const item =
-    QUESTIONS[
-        this.qIndex
-    ];
-
+        QUESTIONS[
+            this.qIndex
+        ];
 
 
     this.qLabel.setText(
-
         "SOALAN " +
         (
             this.qIndex + 1
         )
-
     );
 
 
-    this.qText.setText(
+    this.questionText.setText(
         item.q
     );
 
 
-    this.status
-    .setText(
-        "Pilih satu kad jawapan untuk diuji."
-    )
-    .setColor(
-        "#4e7388"
-    );
+    for(
+        let i=0;
+        i<4;
+        i++
+    ){
+
+        this.optionTexts[i]
+            .setText(
+                item.a[i]
+            );
+    }
 
 
     this.counter.setText(
-
         (
             this.qIndex + 1
         )
-
         +
-
         "/25"
-
     );
 
 
-
-    /*
-    PROGRESS
-    */
-
-    this.progressFill.setScale(
-
+    this.progress.setScale(
         this.qIndex /
         QUESTIONS.length,
-
         1
-
     );
 
 
+    this.status
+        .setText(
+            "Tap ikan A, B, C atau D untuk menembak."
+        )
+        .setColor(
+            "#4b7185"
+        );
+
 
     /*
-    RESET CARDS
+    RANDOMISE FISH POSITIONS
     */
 
-    this.optionCards.forEach(
-        (card,index) => {
+    const lanes = [
+        510,
+        640,
+        770,
+        900
+    ];
 
-            card.answer.setText(
-                item.a[index]
+
+    Phaser.Utils.Array.Shuffle(
+        lanes
+    );
+
+
+    this.fishes.forEach(
+        (fish,index) => {
+
+            fish.x =
+                Phaser.Math.Between(
+                    130,
+                    670
+                );
+
+
+            fish.baseY =
+                lanes[index];
+
+
+            fish.y =
+                fish.baseY;
+
+
+            fish.speed =
+                Phaser.Math.FloatBetween(
+                    42,
+                    78
+                );
+
+
+            fish.direction =
+                Math.random() < .5
+                ? -1
+                : 1;
+
+
+            fish.fishShape.scaleX =
+                fish.direction;
+
+
+            fish.setScale(1);
+
+
+            fish.body.clearTint();
+
+            fish.labelCircle.setFillStyle(
+                0xffffff,
+                .92
             );
 
 
-            card.setScale(1);
-
-
-            card.bg.setFillStyle(
-                0xffffff
-            );
-
-
-            card.bg.setStrokeStyle(
-                3,
-                0x315b70
-            );
-
-
-            card.absorb.setScale(
-                0,
-                1
-            );
-
-
-            card.setVisible(true);
-
+            fish.setAlpha(1);
         }
     );
-
-
-
-    /*
-    RESET PIPET
-    */
-
-    this.dropper
-    .setPosition(
-        380,
-        418
-    )
-    .setVisible(true)
-    .setAlpha(1);
 }
 
 
-
 /* =========================================================
-   PLAYER CHOOSE ANSWER
+   SHOOT
 ========================================================= */
 
-choose(index){
+shootFish(fish){
 
-    if(
-        this.locked
-    ){
-
+    if(this.locked){
         return;
     }
 
 
     ensureAudio();
-
     startMusic();
 
 
     this.locked = true;
 
 
-    const item =
-    QUESTIONS[
-        this.qIndex
-    ];
-
-
-    const card =
-    this.optionCards[
-        index
-    ];
-
-
-    this.status
-    .setText(
-        "Pipet sedang menguji jawapan..."
-    )
-    .setColor(
-        "#3e7790"
-    );
-
-
-    sfxDrop();
-
+    sfxShoot();
 
 
     /*
-    PIPET TURUN
+    ROTATE NOZZLE TOWARD FISH
     */
+
+    const dx =
+        fish.x -
+        this.gun.x;
+
+    const dy =
+        fish.y -
+        this.gun.y;
+
+
+    const angle =
+        Math.atan2(
+            dy,
+            dx
+        )
+        +
+        Math.PI/2;
+
 
     this.tweens.add({
 
         targets:
-        this.dropper,
+            this.nozzleGroup,
 
-        y:
-        card.baseY - 84,
+        rotation:
+            angle,
 
-        duration:390,
+        duration:120,
 
-        ease:
-        "Sine.easeInOut",
+        ease:"Sine.easeOut"
+
+    });
 
 
-        onComplete:
+    this.time.delayedCall(
+        90,
         () => {
 
-
-            /*
-            WATER DROP
-            */
-
-            const drop =
-            this.add.circle(
-
-                card.baseX,
-
-                card.baseY - 34,
-
-                11,
-
-                0x32bfe6
-
-            )
-            .setStrokeStyle(
-                2,
-                0x1c6a88
+            this.createWaterShot(
+                fish
             );
 
-
-            /*
-            DROP FALL
-            */
-
-            this.tweens.add({
-
-                targets:drop,
-
-                y:
-                card.baseY + 39,
-
-                scale:.65,
-
-                duration:270,
-
-                ease:
-                "Quad.easeIn",
+        }
+    );
+}
 
 
-                onComplete:
-                () => {
+/* =========================================================
+   WATER PROJECTILE
+========================================================= */
 
-                    drop.destroy();
+createWaterShot(targetFish){
+
+    /*
+    WATER STREAM DROPLET
+    */
+
+    const drop =
+        this.add.circle(
+            this.gun.x,
+            this.gun.y - 55,
+            10,
+            0xc8f6ff
+        )
+        .setStrokeStyle(
+            3,
+            0x158bb9
+        )
+        .setDepth(20);
 
 
-                    this.resolveAnswer(
+    const projectile = {
 
-                        index,
+        sprite:drop,
 
-                        item.c
+        target:
+            targetFish,
 
+        speed:900
+
+    };
+
+
+    this.projectiles.push(
+        projectile
+    );
+
+
+    /*
+    SMALL SPLASH AT NOZZLE
+    */
+
+    for(
+        let i=0;
+        i<4;
+        i++
+    ){
+
+        const mini =
+            this.add.circle(
+                this.gun.x +
+                Phaser.Math.Between(
+                    -8,
+                    8
+                ),
+
+                this.gun.y - 70,
+
+                Phaser.Math.Between(
+                    3,
+                    6
+                ),
+
+                0xd9faff
+            )
+            .setDepth(20);
+
+
+        this.tweens.add({
+
+            targets:mini,
+
+            x:
+                mini.x +
+                Phaser.Math.Between(
+                    -18,
+                    18
+                ),
+
+            y:
+                mini.y -
+                Phaser.Math.Between(
+                    15,
+                    35
+                ),
+
+            alpha:0,
+
+            duration:240,
+
+            onComplete:
+                () => mini.destroy()
+
+        });
+    }
+}
+
+
+/* =========================================================
+   HIT FISH
+========================================================= */
+
+hitFish(fish){
+
+    this.createSplash(
+        fish.x,
+        fish.y
+    );
+
+
+    const correct =
+        QUESTIONS[
+            this.qIndex
+        ].c;
+
+
+    if(
+        fish.answerIndex ===
+        correct
+    ){
+
+        this.handleCorrect(
+            fish
+        );
+
+    }else{
+
+        this.handleWrong(
+            fish
+        );
+    }
+}
+
+
+/* =========================================================
+   CORRECT
+========================================================= */
+
+handleCorrect(fish){
+
+    this.score++;
+
+
+    this.scoreText.setText(
+        "SKOR\n" +
+        this.score
+    );
+
+
+    sfxCorrect();
+
+
+    fish.labelCircle.setFillStyle(
+        0xbaf3cd,
+        1
+    );
+
+
+    fish.body.setTint(
+        0x74e79a
+    );
+
+
+    this.status
+        .setText(
+            "BETUL! Ikan " +
+            LETTERS[fish.answerIndex] +
+            " ialah jawapan yang tepat."
+        )
+        .setColor(
+            "#24794a"
+        );
+
+
+    /*
+    GREEN BURST
+    */
+
+    this.burst(
+        fish.x,
+        fish.y,
+        0x72e39b
+    );
+
+
+    this.tweens.add({
+
+        targets:fish,
+
+        scaleX:1.18,
+        scaleY:1.18,
+
+        duration:150,
+
+        yoyo:true,
+
+        repeat:1
+
+    });
+
+
+    this.time.delayedCall(
+        850,
+        () => {
+
+            this.qIndex++;
+
+
+            if(
+                this.qIndex >=
+                QUESTIONS.length
+            ){
+
+                this.showFinish();
+
+            }else{
+
+                this.loadQuestion();
+            }
+        }
+    );
+}
+
+
+/* =========================================================
+   WRONG
+========================================================= */
+
+handleWrong(fish){
+
+    this.wrong++;
+
+
+    this.wrongText.setText(
+        "SALAH\n" +
+        this.wrong
+    );
+
+
+    sfxWrong();
+
+
+    fish.labelCircle.setFillStyle(
+        0xffcaca,
+        1
+    );
+
+
+    fish.body.setTint(
+        0xff7070
+    );
+
+
+    this.status
+        .setText(
+            "Belum tepat. Cuba tembak ikan lain."
+        )
+        .setColor(
+            "#aa3b3b"
+        );
+
+
+    /*
+    SHAKE
+    */
+
+    this.tweens.add({
+
+        targets:fish,
+
+        x:fish.x + 10,
+
+        duration:55,
+
+        yoyo:true,
+
+        repeat:4,
+
+        onComplete:
+            () => {
+
+                fish.body.clearTint();
+
+                fish.labelCircle.setFillStyle(
+                    0xffffff,
+                    .92
+                );
+
+
+                this.locked = false;
+
+
+                this.status
+                    .setText(
+                        "Cuba lagi. Tap ikan A, B, C atau D."
+                    )
+                    .setColor(
+                        "#4b7185"
                     );
 
-                }
-
-            });
-
-        }
+            }
 
     });
 }
 
 
-
 /* =========================================================
-   CHECK ANSWER
+   SPLASH
 ========================================================= */
 
-resolveAnswer(
-    chosen,
-    correct
-){
+createSplash(x,y){
 
-    const card =
-    this.optionCards[
-        chosen
-    ];
-
-
-    const isCorrect =
-    chosen === correct;
-
-
-
-    /* =============================
-       BETUL
-    ============================== */
-
-    if(
-        isCorrect
+    for(
+        let i=0;
+        i<12;
+        i++
     ){
 
-        this.score++;
+        const p =
+            this.add.circle(
+                x,
+                y,
+                Phaser.Math.Between(
+                    3,
+                    7
+                ),
+                0xd9f9ff
+            )
+            .setDepth(30);
 
 
-        this.scoreText.setText(
-            this.score
-        );
+        const angle =
+            Math.random() *
+            Math.PI *
+            2;
 
 
-        sfxCorrect();
-
-
-
-        card.bg
-        .setFillStyle(
-            0xe4faed
-        )
-        .setStrokeStyle(
-            4,
-            0x2a9d60
-        );
-
-
-
-        /*
-        GREEN ABSORB EFFECT
-        */
-
-        card.absorb.setScale(
-            0,
-            1
-        );
+        const dist =
+            Phaser.Math.Between(
+                20,
+                58
+            );
 
 
         this.tweens.add({
 
-            targets:
-            card.absorb,
+            targets:p,
 
-            scaleX:1,
+            x:
+                x +
+                Math.cos(angle) *
+                dist,
 
-            duration:430,
+            y:
+                y +
+                Math.sin(angle) *
+                dist,
 
-            ease:
-            "Sine.easeOut"
+            alpha:0,
+
+            scale:.25,
+
+            duration:
+                Phaser.Math.Between(
+                    300,
+                    520
+                ),
+
+            onComplete:
+                () => p.destroy()
 
         });
-
-
-
-        this.status
-        .setText(
-            "BETUL! Sampel menyerap titisan ujian."
-        )
-        .setColor(
-            "#25824d"
-        );
-
-
-        this.burst(
-
-            card.baseX,
-
-            card.baseY + 42,
-
-            0x4bcf88
-
-        );
     }
-
-
-
-    /* =============================
-       SALAH
-    ============================== */
-
-    else{
-
-        sfxWrong();
-
-
-        card.bg
-        .setFillStyle(
-            0xffecec
-        )
-        .setStrokeStyle(
-            4,
-            0xdc4c4c
-        );
-
-
-        /*
-        SHOW CORRECT ANSWER
-        */
-
-        const right =
-        this.optionCards[
-            correct
-        ];
-
-
-        right.bg
-        .setFillStyle(
-            0xe9faef
-        )
-        .setStrokeStyle(
-            4,
-            0x2a9d60
-        );
-
-
-        this.status
-        .setText(
-            "Belum tepat. Jawapan betul ditanda hijau."
-        )
-        .setColor(
-            "#b13e3e"
-        );
-
-
-        this.splash(
-
-            card.baseX,
-
-            card.baseY + 42
-
-        );
-    }
-
-
-
-    /*
-    RESULT DOT
-    */
-
-    this.testDots[
-        this.qIndex % 10
-    ]
-    .setFillStyle(
-
-        isCorrect
-        ?
-        0x48c782
-        :
-        0xf06a6a
-
-    );
-
-
-
-    /*
-    NEXT QUESTION
-    */
-
-    this.time.delayedCall(
-
-        1250,
-
-        () => {
-
-            this.nextQuestion();
-
-        }
-
-    );
 }
 
 
-
 /* =========================================================
-   CORRECT PARTICLES
+   BURST
 ========================================================= */
 
-burst(
-    x,
-    y,
-    color
-){
+burst(x,y,color){
 
     for(
         let i=0;
@@ -2176,187 +2544,46 @@ burst(
         i++
     ){
 
-        const particle =
-        this.add.circle(
-            x,
-            y,
-            5,
-            color
-        );
+        const p =
+            this.add.circle(
+                x,
+                y,
+                6,
+                color
+            );
 
 
         const angle =
-        (
-            Math.PI * 2 / 10
-        ) * i;
-
-
-        const distance =
-        Phaser.Math.Between(
-            24,
-            52
-        );
+            Math.PI *
+            2 *
+            i /
+            10;
 
 
         this.tweens.add({
 
-            targets:particle,
+            targets:p,
 
             x:
-            x +
-            Math.cos(angle)
-            *
-            distance,
+                x +
+                Math.cos(angle) *
+                55,
 
             y:
-            y +
-            Math.sin(angle)
-            *
-            distance,
+                y +
+                Math.sin(angle) *
+                55,
 
             alpha:0,
 
-            scale:.2,
-
-            duration:500,
-
+            duration:450,
 
             onComplete:
-            () => {
-
-                particle.destroy();
-
-            }
+                () => p.destroy()
 
         });
     }
 }
-
-
-
-/* =========================================================
-   WRONG SPLASH
-========================================================= */
-
-splash(
-    x,
-    y
-){
-
-    for(
-        let i=0;
-        i<9;
-        i++
-    ){
-
-        const particle =
-        this.add.circle(
-
-            x,
-
-            y,
-
-            Phaser.Math.Between(
-                4,
-                7
-            ),
-
-            0x35bde5
-
-        );
-
-
-        const dx =
-        Phaser.Math.Between(
-            -58,
-            58
-        );
-
-
-        const dy =
-        Phaser.Math.Between(
-            -42,
-            12
-        );
-
-
-        this.tweens.add({
-
-            targets:particle,
-
-            x:
-            x + dx,
-
-            y:
-            y + dy,
-
-            alpha:0,
-
-            duration:470,
-
-
-            onComplete:
-            () => {
-
-                particle.destroy();
-
-            }
-
-        });
-    }
-}
-
-
-
-/* =========================================================
-   NEXT QUESTION
-========================================================= */
-
-nextQuestion(){
-
-    this.qIndex++;
-
-
-    /*
-    FINISH
-    */
-
-    if(
-        this.qIndex >=
-        QUESTIONS.length
-    ){
-
-        this.showFinish();
-
-        return;
-    }
-
-
-
-    /*
-    RESET DOTS EVERY 10 QUESTIONS
-    */
-
-    if(
-        this.qIndex % 10 === 0
-    ){
-
-        this.testDots.forEach(
-            dot => {
-
-                dot.setFillStyle(
-                    0xd8e8ef
-                );
-
-            }
-        );
-    }
-
-
-
-    this.loadQuestion();
-}
-
 
 
 /* =========================================================
@@ -2368,7 +2595,7 @@ showFinish(){
     this.locked = true;
 
 
-    this.progressFill.setScale(
+    this.progress.setScale(
         1,
         1
     );
@@ -2379,222 +2606,174 @@ showFinish(){
     );
 
 
-    this.qLabel.setText(
-        "SELESAI"
-    );
+    this.fishes.forEach(
+        fish => {
 
+            fish.disableInteractive();
 
-    this.qText.setText(
-        "Tahniah! Semua 25 soalan telah diuji di Makmal Uji Air."
+        }
     );
 
 
     this.status
-    .setText(
-        "Skor akhir: "
-        +
-        this.score
-        +
-        " / 25"
-    )
-    .setColor(
-        "#1f7950"
-    );
+        .setText(
+            "Semua ikan berjaya ditembak!"
+        )
+        .setColor(
+            "#24794a"
+        );
 
 
-
-    /*
-    HIDE ANSWER CARDS
-    */
-
-    this.optionCards.forEach(
-        card => {
-
-            card.setVisible(
-                false
-            );
-
-        }
-    );
-
-
-    this.dropper.setVisible(
-        false
-    );
-
-
-
-    /*
-    RESULT PANEL
-    */
-
-    const panel =
-    this.add.container(
-        380,
-        690
-    );
-
-
-    const shadow =
-    this.add.rectangle(
-        7,
-        10,
-        560,
-        360,
-        0x173850,
-        .15
-    );
-
-
-    const bg =
-    this.add.rectangle(
-        0,
-        0,
-        560,
-        360,
-        0xffffff
-    )
-    .setStrokeStyle(
-        4,
-        0x315b70
-    );
-
-
-    const star =
-    this.add.text(
-        0,
-        -108,
-        "★",
-        {
-
-            fontSize:"78px",
-
-            color:"#f2b544"
-
-        }
-    )
-    .setOrigin(.5);
+    const overlay =
+        this.add.rectangle(
+            400,
+            720,
+            600,
+            400,
+            0xffffff,
+            .97
+        )
+        .setStrokeStyle(
+            4,
+            0x204a62
+        )
+        .setDepth(100);
 
 
     const title =
-    this.add.text(
-        0,
-        -42,
-        "EKSPERIMEN SELESAI!",
-        {
+        this.add.text(
+            400,
+            605,
+            "MISI AKUARIUM SELESAI!",
+            {
+                fontSize:"31px",
+                fontStyle:"bold",
+                color:"#16394f"
+            }
+        )
+        .setOrigin(.5)
+        .setDepth(101);
 
-            fontSize:"31px",
 
-            fontStyle:"bold",
-
-            color:"#173850"
-
-        }
-    )
-    .setOrigin(.5);
+    const star =
+        this.add.text(
+            400,
+            665,
+            "★",
+            {
+                fontSize:"72px",
+                color:"#f5c449"
+            }
+        )
+        .setOrigin(.5)
+        .setDepth(101);
 
 
     const score =
-    this.add.text(
-        0,
-        25,
-        this.score + " / 25",
-        {
-
-            fontSize:"56px",
-
-            fontStyle:"bold",
-
-            color:"#2383a8"
-
-        }
-    )
-    .setOrigin(.5);
+        this.add.text(
+            400,
+            755,
+            this.score +
+            " / 25",
+            {
+                fontSize:"54px",
+                fontStyle:"bold",
+                color:"#248db5"
+            }
+        )
+        .setOrigin(.5)
+        .setDepth(101);
 
 
-
-    /*
-    REPLAY BUTTON
-    */
-
-    const replay =
-    this.add.rectangle(
-        0,
-        116,
-        260,
-        62,
-        0x45b7dc
-    )
-    .setStrokeStyle(
-        3,
-        0x25556d
-    )
-    .setInteractive({
-        useHandCursor:true
-    });
+    const info =
+        this.add.text(
+            400,
+            815,
+            "Jawapan salah: " +
+            this.wrong,
+            {
+                fontSize:"21px",
+                fontStyle:"bold",
+                color:"#536f7e"
+            }
+        )
+        .setOrigin(.5)
+        .setDepth(101);
 
 
-    const replayText =
-    this.add.text(
-        0,
-        116,
-        "MAIN SEMULA",
-        {
-
-            fontSize:"23px",
-
-            fontStyle:"bold",
-
-            color:"#ffffff"
-
-        }
-    )
-    .setOrigin(.5);
-
-
-
-    panel.add([
-
-        shadow,
-
-        bg,
-
-        star,
-
-        title,
-
-        score,
-
-        replay,
-
-        replayText
-
-    ]);
+    const button =
+        this.add.rectangle(
+            400,
+            890,
+            280,
+            65,
+            0x40acd2
+        )
+        .setStrokeStyle(
+            3,
+            0x1b536d
+        )
+        .setInteractive({
+            useHandCursor:true
+        })
+        .setDepth(101);
 
 
+    const buttonText =
+        this.add.text(
+            400,
+            890,
+            "MAIN SEMULA",
+            {
+                fontSize:"23px",
+                fontStyle:"bold",
+                color:"#ffffff"
+            }
+        )
+        .setOrigin(.5)
+        .setDepth(102);
 
-    replay.on(
+
+    button.on(
         "pointerdown",
         () => {
 
-            panel.destroy();
+            overlay.destroy();
+            title.destroy();
+            star.destroy();
+            score.destroy();
+            info.destroy();
+            button.destroy();
+            buttonText.destroy();
 
 
             this.qIndex = 0;
-
             this.score = 0;
+            this.wrong = 0;
 
 
             this.scoreText.setText(
-                "0"
+                "SKOR\n0"
             );
 
 
-            this.testDots.forEach(
-                dot => {
+            this.wrongText.setText(
+                "SALAH\n0"
+            );
 
-                    dot.setFillStyle(
-                        0xd8e8ef
+
+            this.fishes.forEach(
+                fish => {
+
+                    fish.setInteractive(
+                        new Phaser.Geom.Rectangle(
+                            -80,
+                            -50,
+                            160,
+                            100
+                        ),
+
+                        Phaser.Geom.Rectangle.Contains
                     );
 
                 }
@@ -2607,8 +2786,314 @@ showFinish(){
     );
 }
 
+
+/* =========================================================
+   UPDATE
+========================================================= */
+
+update(time,delta){
+
+    const dt =
+        delta /
+        1000;
+
+
+    /*
+    MOVE FISH
+    */
+
+    this.fishes.forEach(
+        fish => {
+
+            fish.elapsedChange +=
+                delta;
+
+
+            /*
+            NATURAL SPEED CHANGE
+            */
+
+            if(
+                fish.elapsedChange >=
+                fish.nextSpeedChange
+            ){
+
+                fish.elapsedChange = 0;
+
+                fish.nextSpeedChange =
+                    Phaser.Math.Between(
+                        2500,
+                        5000
+                    );
+
+
+                fish.speed =
+                    Phaser.Math.FloatBetween(
+                        38,
+                        78
+                    );
+            }
+
+
+            fish.x +=
+                fish.direction *
+                fish.speed *
+                dt;
+
+
+            /*
+            SWIMMING WAVE
+            */
+
+            fish.y =
+                fish.baseY
+                +
+                Math.sin(
+                    time *
+                    fish.waveSpeed
+                    +
+                    fish.phase
+                )
+                *
+                fish.waveAmp
+                +
+                Math.sin(
+                    time *
+                    .004
+                    +
+                    fish.phase
+                )
+                *
+                4;
+
+
+            /*
+            TURN AROUND
+            */
+
+            if(
+                fish.x > 690
+            ){
+
+                fish.x = 690;
+
+                fish.direction = -1;
+
+                fish.fishShape.scaleX = -1;
+
+            }else if(
+                fish.x < 110
+            ){
+
+                fish.x = 110;
+
+                fish.direction = 1;
+
+                fish.fishShape.scaleX = 1;
+            }
+
+
+            /*
+            SUBTLE FISH ROTATION
+            */
+
+            fish.rotation =
+                Math.sin(
+                    time *
+                    fish.waveSpeed +
+                    fish.phase
+                )
+                *
+                .04;
+
+        }
+    );
+
+
+    /*
+    BUBBLES
+    */
+
+    this.bubbles.forEach(
+        bubble => {
+
+            bubble.y -=
+                bubble.speed *
+                dt;
+
+
+            bubble.x +=
+                Math.sin(
+                    time *
+                    .001 *
+                    bubble.wobble +
+                    bubble.phase
+                )
+                *
+                .12;
+
+
+            if(
+                bubble.y <
+                AQUARIUM_TOP + 22
+            ){
+
+                bubble.y =
+                    AQUARIUM_BOTTOM -
+                    Phaser.Math.Between(
+                        80,
+                        120
+                    );
+
+
+                bubble.x =
+                    Phaser.Math.Between(
+                        65,
+                        735
+                    );
+            }
+
+        }
+    );
+
+
+    /*
+    WATER PROJECTILES
+    */
+
+    for(
+        let i =
+            this.projectiles.length - 1;
+
+        i >= 0;
+
+        i--
+    ){
+
+        const shot =
+            this.projectiles[i];
+
+
+        if(
+            !shot.sprite ||
+            !shot.sprite.active
+        ){
+
+            this.projectiles.splice(
+                i,
+                1
+            );
+
+            continue;
+        }
+
+
+        const fish =
+            shot.target;
+
+
+        const dx =
+            fish.x -
+            shot.sprite.x;
+
+
+        const dy =
+            fish.y -
+            shot.sprite.y;
+
+
+        const dist =
+            Math.sqrt(
+                dx*dx +
+                dy*dy
+            );
+
+
+        if(
+            dist < 30
+        ){
+
+            shot.sprite.destroy();
+
+            this.projectiles.splice(
+                i,
+                1
+            );
+
+
+            this.hitFish(
+                fish
+            );
+
+            continue;
+        }
+
+
+        const vx =
+            dx /
+            dist *
+            shot.speed;
+
+
+        const vy =
+            dy /
+            dist *
+            shot.speed;
+
+
+        shot.sprite.x +=
+            vx *
+            dt;
+
+
+        shot.sprite.y +=
+            vy *
+            dt;
+
+
+        /*
+        WATER TRAIL
+        */
+
+        if(
+            Math.random() <
+            .35
+        ){
+
+            const trail =
+                this.add.circle(
+                    shot.sprite.x,
+                    shot.sprite.y,
+                    Phaser.Math.Between(
+                        2,
+                        5
+                    ),
+                    0xd6f8ff,
+                    .75
+                )
+                .setDepth(19);
+
+
+            this.tweens.add({
+
+                targets:trail,
+
+                alpha:0,
+
+                scale:.2,
+
+                duration:220,
+
+                onComplete:
+                    () => trail.destroy()
+
+            });
+        }
+
+    }
 }
 
+}
 
 
 /* =========================================================
@@ -2618,41 +3103,38 @@ showFinish(){
 const config = {
 
     type:
-    Phaser.AUTO,
+        Phaser.AUTO,
 
     parent:
-    "game",
+        "game",
 
     width:
-    W,
+        W,
 
     height:
-    H,
+        H,
 
     backgroundColor:
-    "#eefaff",
-
+        "#dff7ff",
 
     scene:[
-        WaterLab
+        AquariumGame
     ],
-
 
     scale:{
 
         mode:
-        Phaser.Scale.FIT,
+            Phaser.Scale.FIT,
 
         autoCenter:
-        Phaser.Scale.CENTER_BOTH,
+            Phaser.Scale.CENTER_BOTH,
 
         width:
-        W,
+            W,
 
         height:
-        H
+            H
     },
-
 
     render:{
 
@@ -2661,24 +3143,20 @@ const config = {
         pixelArt:false,
 
         roundPixels:true
-
     }
 
 };
 
 
-
 /* =========================================================
-   START GAME
+   START
 ========================================================= */
 
 new Phaser.Game(
     config
 );
 
-
 })();
-
 </script>
 
 </body>
