@@ -126,6 +126,7 @@ body{
     <div id="game"></div>
 </div>
 
+
 <script>
 
 "use strict";
@@ -525,8 +526,7 @@ function makeRandom(seed){
                     t >>>
                     14
                 )
-            ) >>>
-            0
+            ) >>> 0
         ) /
         4294967296;
     };
@@ -572,30 +572,102 @@ function shuffle(
 
 
 /* =========================================================
-   SAFE FULL GRID PATH
-
-   HANYA DIGUNAKAN UNTUK PASTIKAN
-   PENGHALANG TAK BUAT GAME MUSTAHIL.
-
-   PLAYER TIDAK DIPAKSA IKUT LALUAN INI.
+   GRID NEIGHBOURS
    ========================================================= */
 
-function makeSafePath(
+function gridNeighbours(
+    cell,
     rows,
-    cols,
-    mode
+    cols
 ){
 
-    let path =
+    const output =
     [];
 
 
-    /* HORIZONTAL */
+    if(
+        cell.r >
+        0
+    ){
+
+        output.push({
+            r:
+            cell.r - 1,
+
+            c:
+            cell.c
+        });
+    }
+
 
     if(
-        mode %
-        2 ===
+        cell.r <
+        rows - 1
+    ){
+
+        output.push({
+            r:
+            cell.r + 1,
+
+            c:
+            cell.c
+        });
+    }
+
+
+    if(
+        cell.c >
         0
+    ){
+
+        output.push({
+            r:
+            cell.r,
+
+            c:
+            cell.c - 1
+        });
+    }
+
+
+    if(
+        cell.c <
+        cols - 1
+    ){
+
+        output.push({
+            r:
+            cell.r,
+
+            c:
+            cell.c + 1
+        });
+    }
+
+
+    return output;
+}
+
+
+/* =========================================================
+   BASIC HAMILTONIAN SNAKE
+
+   INI CUMA TITIK MULA.
+   LEPAS TU PATH AKAN DIMUTATE.
+   ========================================================= */
+
+function basicSnake(
+    rows,
+    cols,
+    vertical
+){
+
+    const path =
+    [];
+
+
+    if(
+        !vertical
     ){
 
         for(
@@ -640,8 +712,6 @@ function makeSafePath(
 
     }else{
 
-        /* VERTICAL */
-
         for(
             let c=0;
             c<cols;
@@ -684,64 +754,327 @@ function makeSafePath(
     }
 
 
-    /* MIRROR KIRI KANAN */
-
-    if(
-        mode &
-        2
-    ){
-
-        path =
-        path.map(
-            p=>({
-
-                r:p.r,
-
-                c:
-                cols -
-                1 -
-                p.c
-
-            })
-        );
-    }
-
-
-    /* MIRROR ATAS BAWAH */
-
-    if(
-        mode &
-        4
-    ){
-
-        path =
-        path.map(
-            p=>({
-
-                r:
-                rows -
-                1 -
-                p.r,
-
-                c:p.c
-
-            })
-        );
-    }
-
-
-    /* REVERSE */
-
-    if(
-        mode &
-        8
-    ){
-
-        path.reverse();
-    }
-
-
     return path;
+}
+
+
+/* =========================================================
+   MUTATE HAMILTONIAN PATH
+
+   TAK GUNA RECURSION.
+
+   Semakin tinggi stage,
+   semakin banyak mutasi dibuat.
+
+   Ini yang buat pattern laluan
+   makin bercabang / berselekoh secara visual.
+   ========================================================= */
+
+function mutateHamiltonian(
+    path,
+    rows,
+    cols,
+    random,
+    steps
+){
+
+    let current =
+    path.map(
+        cell=>({
+
+            r:
+            cell.r,
+
+            c:
+            cell.c
+
+        })
+    );
+
+
+    for(
+        let step=0;
+        step<steps;
+        step++
+    ){
+
+        const useStart =
+        random() <
+        .5;
+
+
+        if(
+            useStart
+        ){
+
+            const endpoint =
+            current[0];
+
+
+            const neighbours =
+            shuffle(
+                gridNeighbours(
+                    endpoint,
+                    rows,
+                    cols
+                ),
+                random
+            );
+
+
+            let changed =
+            false;
+
+
+            for(
+                const neighbour
+                of neighbours
+            ){
+
+                let index =
+                -1;
+
+
+                for(
+                    let i=2;
+                    i<current.length;
+                    i++
+                ){
+
+                    if(
+                        current[i].r ===
+                        neighbour.r &&
+
+                        current[i].c ===
+                        neighbour.c
+                    ){
+
+                        index =
+                        i;
+
+                        break;
+                    }
+                }
+
+
+                if(
+                    index >
+                    1
+                ){
+
+                    current =
+
+                    current
+                    .slice(
+                        0,
+                        index
+                    )
+                    .reverse()
+
+                    .concat(
+
+                        current.slice(
+                            index
+                        )
+                    );
+
+
+                    changed =
+                    true;
+
+
+                    break;
+                }
+            }
+
+
+            if(
+                !changed &&
+                random() <
+                .35
+            ){
+
+                current.reverse();
+            }
+
+        }else{
+
+            const endpoint =
+            current[
+                current.length -
+                1
+            ];
+
+
+            const neighbours =
+            shuffle(
+                gridNeighbours(
+                    endpoint,
+                    rows,
+                    cols
+                ),
+                random
+            );
+
+
+            let changed =
+            false;
+
+
+            for(
+                const neighbour
+                of neighbours
+            ){
+
+                let index =
+                -1;
+
+
+                for(
+                    let i=0;
+                    i<current.length-2;
+                    i++
+                ){
+
+                    if(
+                        current[i].r ===
+                        neighbour.r &&
+
+                        current[i].c ===
+                        neighbour.c
+                    ){
+
+                        index =
+                        i;
+
+                        break;
+                    }
+                }
+
+
+                if(
+                    index >=
+                    0 &&
+
+                    index <
+                    current.length -
+                    2
+                ){
+
+                    current =
+
+                    current
+                    .slice(
+                        0,
+                        index + 1
+                    )
+
+                    .concat(
+
+                        current
+                        .slice(
+                            index + 1
+                        )
+                        .reverse()
+                    );
+
+
+                    changed =
+                    true;
+
+
+                    break;
+                }
+            }
+
+
+            if(
+                !changed &&
+                random() <
+                .35
+            ){
+
+                current.reverse();
+            }
+        }
+    }
+
+
+    return current;
+}
+
+
+/* =========================================================
+   COUNT TURN
+
+   DIGUNAKAN SUPAYA STAGE TINGGI
+   PILIH PATTERN YANG LEBIH BERSELEKOH.
+   ========================================================= */
+
+function countTurns(
+    path
+){
+
+    let turns =
+    0;
+
+
+    for(
+        let i=2;
+        i<path.length;
+        i++
+    ){
+
+        const a =
+        path[
+            i - 2
+        ];
+
+
+        const b =
+        path[
+            i - 1
+        ];
+
+
+        const c =
+        path[i];
+
+
+        const d1r =
+        b.r -
+        a.r;
+
+
+        const d1c =
+        b.c -
+        a.c;
+
+
+        const d2r =
+        c.r -
+        b.r;
+
+
+        const d2c =
+        c.c -
+        b.c;
+
+
+        if(
+            d1r !==
+            d2r ||
+
+            d1c !==
+            d2c
+        ){
+
+            turns++;
+        }
+    }
+
+
+    return turns;
 }
 
 
@@ -1120,7 +1453,8 @@ extends Phaser.Scene{
 
 
         /*
-        SIMPAN PATTERN YANG PERNAH DIGUNA
+        SEMUA PATTERN YANG DAH DIGUNA
+        DISIMPAN DI SINI.
         */
 
         this.usedPatternSignatures =
@@ -1482,7 +1816,7 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   SYMBOL SAHAJA
+   SYMBOL
    ========================================================= */
 
     createSymbol(){
@@ -1687,9 +2021,10 @@ extends Phaser.Scene{
    DIFFICULTY
 
    SETIAP STAGE:
-   +1 PENGHALANG
-
-   GRID JUGA MAKIN BESAR.
+   - grid makin besar
+   - penghalang bertambah
+   - mutasi laluan bertambah
+   - selekoh bertambah
    ========================================================= */
 
     getSettings(){
@@ -1698,152 +2033,280 @@ extends Phaser.Scene{
         this.stageIndex;
 
 
-        let rows;
-
-        let cols;
-
-        let label;
-
-
         if(
             stage <
             5
         ){
 
-            rows =
-            5;
+            return{
+
+                rows:5,
+
+                cols:5,
+
+                barriers:
+                3 +
+                stage,
+
+                mutations:
+                4 +
+                stage *
+                2,
+
+                label:
+                stage <
+                2
+                ? "MUDAH"
+                : "MUDAH +"
+
+            };
+        }
 
 
-            cols =
-            5;
-
-
-            label =
-            stage < 2
-            ? "MUDAH"
-            : "MUDAH +";
-
-        }else if(
+        if(
             stage <
             10
         ){
 
-            rows =
-            5;
+            return{
+
+                rows:5,
+
+                cols:6,
+
+                barriers:
+                7 +
+                (
+                    stage -
+                    5
+                ),
+
+                mutations:
+                14 +
+                (
+                    stage -
+                    5
+                ) *
+                3,
+
+                label:
+                "SEDERHANA"
+
+            };
+        }
 
 
-            cols =
-            6;
-
-
-            label =
-            "SEDERHANA";
-
-        }else if(
+        if(
             stage <
             15
         ){
 
-            rows =
-            6;
+            return{
+
+                rows:6,
+
+                cols:6,
+
+                barriers:
+                10 +
+                (
+                    stage -
+                    10
+                ),
+
+                mutations:
+                28 +
+                (
+                    stage -
+                    10
+                ) *
+                4,
+
+                label:
+                "MENCABAR"
+
+            };
+        }
 
 
-            cols =
-            6;
-
-
-            label =
-            "MENCABAR";
-
-        }else if(
+        if(
             stage <
             20
         ){
 
-            rows =
-            6;
+            return{
 
+                rows:6,
 
-            cols =
-            7;
+                cols:7,
 
+                barriers:
+                13 +
+                (
+                    stage -
+                    15
+                ),
 
-            label =
-            "SUKAR";
+                mutations:
+                48 +
+                (
+                    stage -
+                    15
+                ) *
+                5,
 
-        }else{
+                label:
+                "SUKAR"
 
-            rows =
-            7;
-
-
-            cols =
-            7;
-
-
-            label =
-            "SANGAT SUKAR";
+            };
         }
 
 
         return{
 
-            rows:
-            rows,
+            rows:7,
 
-            cols:
-            cols,
-
-
-            /*
-            STAGE 1 = 3
-            STAGE 2 = 4
-            ...
-            STAGE 25 = 27
-            */
+            cols:7,
 
             barriers:
-            3 +
-            stage,
-
-
-            /*
-            Semakin tinggi stage,
-            semakin banyak penghalang
-            masuk bahagian tengah.
-            */
-
-            centreRatio:
-            Math.min(
-                .78,
-                .34 +
-                stage *
-                .018
+            16 +
+            (
+                stage -
+                20
             ),
 
+            mutations:
+            72 +
+            (
+                stage -
+                20
+            ) *
+            6,
 
             label:
-            label
+            "SANGAT SUKAR"
 
         };
     }
 
 
 /* =========================================================
+   BUAT HAMILTONIAN PATH YANG MAKIN BERSELEKOH
+   ========================================================= */
+
+    makePath(
+        random,
+        settings
+    ){
+
+        let bestPath =
+        null;
+
+
+        let bestTurns =
+        -1;
+
+
+        const tries =
+        6 +
+        Math.floor(
+            this.stageIndex /
+            4
+        );
+
+
+        for(
+            let tryIndex=0;
+            tryIndex<tries;
+            tryIndex++
+        ){
+
+            let path =
+            basicSnake(
+
+                this.rows,
+
+                this.cols,
+
+                random() <
+                .5
+            );
+
+
+            path =
+            mutateHamiltonian(
+
+                path,
+
+                this.rows,
+
+                this.cols,
+
+                random,
+
+                settings.mutations +
+                tryIndex *
+                2
+            );
+
+
+            const turns =
+            countTurns(
+                path
+            );
+
+
+            if(
+                turns >
+                bestTurns
+            ){
+
+                bestTurns =
+                turns;
+
+
+                bestPath =
+                path;
+            }
+        }
+
+
+        return bestPath;
+    }
+
+
+/* =========================================================
    PATTERN SIGNATURE
 
-   PATTERN SAMA TAK BOLEH BERULANG.
+   BUKAN SEKADAR PENGHALANG.
+
+   KESELURUHAN SUSUNAN SAFE PATH
+   + BARRIER DISIMPAN.
+
+   JADI PATTERN SEBELUM TAK BOLEH BERULANG.
    ========================================================= */
 
     patternSignature(){
 
-        const barriers =
+        const barrierKeys =
         this.barriers
         .map(
-            b=>
-            b.key
+            barrier=>
+            barrier.key
         )
         .sort();
+
+
+        const pathKeys =
+        this.safePath
+        .map(
+            cell=>
+            cellKey(
+                cell.r,
+                cell.c
+            )
+        )
+        .join(">");
 
 
         return(
@@ -1852,29 +2315,17 @@ extends Phaser.Scene{
             "x" +
             this.cols +
 
-            "|S:" +
-            cellKey(
-                this.startCell.r,
-                this.startCell.c
-            ) +
+            "|PATH:" +
+            pathKeys +
 
-            "|P:" +
-            cellKey(
-                this.portalCell.r,
-                this.portalCell.c
-            ) +
-
-            "|B:" +
-            barriers.join(";")
+            "|BARRIER:" +
+            barrierKeys.join(";")
         );
     }
 
 
 /* =========================================================
-   GENERATE PATTERN
-
-   RINGAN.
-   TIADA RECURSIVE GENERATOR.
+   GENERATE SATU PATTERN
    ========================================================= */
 
     generatePattern(
@@ -1898,50 +2349,39 @@ extends Phaser.Scene{
         );
 
 
-        const mode =
-        (
-            this.stageIndex *
-            5 +
+        /* =================================================
+           BINA PATH YANG BERBEZA
+           ================================================= */
 
-            attempt *
-            3 +
+        this.safePath =
+        this.makePath(
 
-            Math.floor(
-                random() *
-                16
-            )
-        ) %
-        16;
+            random,
 
-
-        const safePath =
-        makeSafePath(
-
-            this.rows,
-
-            this.cols,
-
-            mode
+            settings
         );
 
 
         this.startCell =
         {
-            ...safePath[0]
+            ...this.safePath[0]
         };
 
 
         this.portalCell =
         {
-            ...safePath[
-                safePath.length -
+            ...this.safePath[
+                this.safePath.length -
                 1
             ]
         };
 
 
         /* =================================================
-           EDGE YANG WAJIB KEKAL TERBUKA
+           EDGE YANG DIGUNAKAN SAFE PATH
+
+           BARRIER TAK BOLEH DILETAK PADA EDGE INI.
+           JADI PUZZLE SENTIASA BOLEH SIAP.
            ================================================= */
 
         const safeEdges =
@@ -1950,7 +2390,7 @@ extends Phaser.Scene{
 
         for(
             let i=1;
-            i<safePath.length;
+            i<this.safePath.length;
             i++
         ){
 
@@ -1958,12 +2398,12 @@ extends Phaser.Scene{
 
                 edgeKey(
 
-                    safePath[
+                    this.safePath[
                         i -
                         1
                     ],
 
-                    safePath[
+                    this.safePath[
                         i
                     ]
                 )
@@ -1972,8 +2412,7 @@ extends Phaser.Scene{
 
 
         /* =================================================
-           SEMUA TEMPAT YANG BOLEH
-           DILETAK PENGHALANG
+           CARI SEMUA EDGE LAIN
            ================================================= */
 
         const candidates =
@@ -2036,8 +2475,7 @@ extends Phaser.Scene{
                                 ...next
                             },
 
-                            key:
-                            k
+                            key:k
 
                         });
                     }
@@ -2081,8 +2519,7 @@ extends Phaser.Scene{
                                 ...next
                             },
 
-                            key:
-                            k
+                            key:k
 
                         });
                     }
@@ -2091,74 +2528,103 @@ extends Phaser.Scene{
         }
 
 
-        /* =================================================
-           CANDIDATE TENGAH
-           ================================================= */
-
-        const centre =
-        candidates.filter(
-            edge=>{
-
-                const middleRow =
-                (
-                    edge.a.r +
-                    edge.b.r
-                ) /
-                2;
-
-
-                const middleCol =
-                (
-                    edge.a.c +
-                    edge.b.c
-                ) /
-                2;
-
-
-                return(
-
-                    middleRow >=
-                    1 &&
-
-                    middleRow <=
-                    this.rows -
-                    2 &&
-
-                    middleCol >=
-                    1 &&
-
-                    middleCol <=
-                    this.cols -
-                    2
-                );
-            }
-        );
-
-
-        const outer =
-        candidates.filter(
-            edge=>
-            !centre.includes(
-                edge
-            )
-        );
-
-
-        shuffle(
-            centre,
-            random
-        );
-
-
-        shuffle(
-            outer,
-            random
-        );
-
-
         shuffle(
             candidates,
             random
+        );
+
+
+        /* =================================================
+           STAGE TINGGI BIAS KE BAHAGIAN TENGAH
+
+           Tapi masih disebarkan,
+           bukan semua berkumpul.
+           ================================================= */
+
+        const centreX =
+        (
+            this.cols -
+            1
+        ) /
+        2;
+
+
+        const centreY =
+        (
+            this.rows -
+            1
+        ) /
+        2;
+
+
+        for(
+            const barrier
+            of candidates
+        ){
+
+            const middleX =
+            (
+                barrier.a.c +
+                barrier.b.c
+            ) /
+            2;
+
+
+            const middleY =
+            (
+                barrier.a.r +
+                barrier.b.r
+            ) /
+            2;
+
+
+            const distance =
+            Math.hypot(
+
+                middleX -
+                centreX,
+
+                middleY -
+                centreY
+            );
+
+
+            const centreBonus =
+            Math.max(
+
+                0,
+
+                1 -
+                distance /
+                Math.max(
+                    this.rows,
+                    this.cols
+                )
+            );
+
+
+            barrier.score =
+
+            random()
+
+            +
+
+            centreBonus *
+            (
+                .25 +
+                this.stageIndex *
+                .012
+            );
+        }
+
+
+        candidates.sort(
+            (
+                a,
+                b
+            )=>
+            b.score -
+            a.score
         );
 
 
@@ -2170,83 +2636,99 @@ extends Phaser.Scene{
         new Set();
 
 
-        const centreWanted =
+        const target =
         Math.min(
 
-            centre.length,
+            settings.barriers,
 
-            Math.round(
-                settings.barriers *
-                settings.centreRatio
-            )
+            candidates.length
         );
 
 
         /* =================================================
-           TENGAH DULU
-           ================================================= */
-
-        for(
-            let i=0;
-            i<centreWanted;
-            i++
-        ){
-
-            const barrier =
-            centre[i];
-
-
-            if(
-                barrier &&
-
-                !this.barrierSet.has(
-                    barrier.key
-                )
-            ){
-
-                this.barriers.push(
-                    barrier
-                );
-
-
-                this.barrierSet.add(
-                    barrier.key
-                );
-            }
-        }
-
-
-        /* =================================================
-           LEPAS TU BAHAGIAN LAIN
+           PILIH BARRIER DAN CUBA SEBARKAN
            ================================================= */
 
         for(
             const barrier
-            of outer
+            of candidates
         ){
 
             if(
                 this.barriers.length >=
-                settings.barriers
+                target
             ){
 
                 break;
             }
 
 
-            if(
-                this.barrierSet.has(
-                    barrier.key
-                )
+            let tooNear =
+            0;
+
+
+            for(
+                const chosen
+                of this.barriers
             ){
 
-                continue;
+                const ax =
+                (
+                    barrier.a.c +
+                    barrier.b.c
+                ) /
+                2;
+
+
+                const ay =
+                (
+                    barrier.a.r +
+                    barrier.b.r
+                ) /
+                2;
+
+
+                const bx =
+                (
+                    chosen.a.c +
+                    chosen.b.c
+                ) /
+                2;
+
+
+                const by =
+                (
+                    chosen.a.r +
+                    chosen.b.r
+                ) /
+                2;
+
+
+                if(
+                    Math.abs(
+                        ax -
+                        bx
+                    )
+                    +
+                    Math.abs(
+                        ay -
+                        by
+                    )
+                    <
+                    1.15
+                ){
+
+                    tooNear++;
+                }
             }
 
 
             if(
+                tooNear >
+                0 &&
+
                 random() <
-                .16
+                .62
             ){
 
                 continue;
@@ -2265,7 +2747,8 @@ extends Phaser.Scene{
 
 
         /* =================================================
-           PASTIKAN JUMLAH CUKUP
+           JIKA TAK CUKUP,
+           ISI BAKI TANPA FILTER JARAK.
            ================================================= */
 
         for(
@@ -2275,7 +2758,7 @@ extends Phaser.Scene{
 
             if(
                 this.barriers.length >=
-                settings.barriers
+                target
             ){
 
                 break;
@@ -2305,7 +2788,10 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   BUILD UNIQUE STAGE
+   BUILD STAGE UNIK
+
+   CUBA SEHINGGA DAPAT PATTERN
+   YANG BELUM PERNAH DIGUNAKAN.
    ========================================================= */
 
     buildStage(){
@@ -2330,14 +2816,9 @@ extends Phaser.Scene{
         "";
 
 
-        /*
-        Cuba pattern lain jika signature
-        pernah digunakan.
-        */
-
         for(
             let attempt=0;
-            attempt<120;
+            attempt<160;
             attempt++
         ){
 
@@ -2364,8 +2845,7 @@ extends Phaser.Scene{
         }
 
 
-        this.usedPatternSignatures
-        .add(
+        this.usedPatternSignatures.add(
             signature
         );
 
@@ -2424,6 +2904,7 @@ extends Phaser.Scene{
 
         this.buildStage();
 
+
         this.calculateBoard();
 
 
@@ -2470,7 +2951,7 @@ extends Phaser.Scene{
 /* =========================================================
    RESET
 
-   PATTERN TAK BERUBAH.
+   RESET TAK TUKAR PATTERN.
    ========================================================= */
 
     resetStage(){
@@ -2666,7 +3147,7 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   PLAYER POSITION
+   SYMBOL POSITION
 
    TAK ADA TWEEN.
    TAK ADA GEGAR.
@@ -2719,8 +3200,6 @@ extends Phaser.Scene{
         20;
 
 
-        /* SHADOW */
-
         this.boardG
         .fillStyle(
             0x173c4e,
@@ -2750,8 +3229,6 @@ extends Phaser.Scene{
             28
         );
 
-
-        /* BOARD */
 
         this.boardG
         .fillStyle(
@@ -2940,7 +3417,7 @@ extends Phaser.Scene{
 
 
         /* =================================================
-           LINE
+           USER LINE
            ================================================= */
 
         if(
@@ -3060,8 +3537,6 @@ extends Phaser.Scene{
 
 /* =========================================================
    DRAW BARRIER
-
-   BARRIER HANYA DI ANTARA PETAK.
    ========================================================= */
 
     drawBarrier(
@@ -3367,11 +3842,6 @@ extends Phaser.Scene{
                 }
 
 
-                /*
-                DRAG MESTI START
-                PADA SYMBOL.
-                */
-
                 if(
                     touched.r !==
                     this.currentCell.r ||
@@ -3461,11 +3931,6 @@ extends Phaser.Scene{
                     )
                 );
 
-
-                /*
-                SAMPLE DRAG SUPAYA
-                TAK LOMPAT GRID.
-                */
 
                 for(
                     let i=1;
@@ -3959,28 +4424,25 @@ extends Phaser.Scene{
         );
 
 
-        const x =
-        (
-            pointA.x +
-            pointB.x
-        ) /
-        2;
-
-
-        const y =
-        (
-            pointA.y +
-            pointB.y
-        ) /
-        2;
-
-
         const flash =
         this.add.circle(
-            x,
-            y,
+
+            (
+                pointA.x +
+                pointB.x
+            ) /
+            2,
+
+            (
+                pointA.y +
+                pointB.y
+            ) /
+            2,
+
             15,
+
             0xff4f4f,
+
             .70
         )
         .setDepth(
@@ -4115,7 +4577,8 @@ extends Phaser.Scene{
 /* =========================================================
    QUESTION PANEL
 
-   TAK ADA FULLSCREEN DARK OVERLAY.
+   PANEL SAHAJA.
+   TAK ADA FULLSCREEN OVERLAY.
    ========================================================= */
 
     showQuestion(){
@@ -4411,7 +4874,7 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   ANSWER
+   CHECK ANSWER
    ========================================================= */
 
     checkAnswer(
@@ -4773,12 +5236,13 @@ extends Phaser.Scene{
 /* =========================================================
    START GAME
 
-   PENTING:
-   TIADA LOADING OVERLAY
-   TIADA ERROR OVERLAY
-   TIADA FULLSCREEN COVER
-   TIADA BLOCKED CELL
-   TIADA RECURSIVE GENERATOR
+   JANGAN TAMBAH:
+   - loading overlay
+   - error overlay
+   - fullscreen cover
+   - blocked-cell system
+   - recursive generator berat
+
    ========================================================= */
 
 new Phaser.Game({
