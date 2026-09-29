@@ -85,7 +85,8 @@ body{
     rgba(30,72,92,.18);
 }
 
-#game{
+#game,
+#game canvas{
     width:100%;
     height:100%;
 }
@@ -93,9 +94,6 @@ body{
 #game canvas{
 
     display:block!important;
-
-    width:100%!important;
-    height:100%!important;
 
     touch-action:none;
 
@@ -127,7 +125,6 @@ body{
 <div id="game-shell">
     <div id="game"></div>
 </div>
-
 
 <script>
 
@@ -463,14 +460,14 @@ function cellKey(r,c){
 
 function edgeKey(a,b){
 
-    const first =
+    const x =
     cellKey(
         a.r,
         a.c
     );
 
 
-    const second =
+    const y =
     cellKey(
         b.r,
         b.c
@@ -478,9 +475,9 @@ function edgeKey(a,b){
 
 
     return(
-        first < second
-        ? first + "|" + second
-        : second + "|" + first
+        x < y
+        ? x + "|" + y
+        : y + "|" + x
     );
 }
 
@@ -502,7 +499,8 @@ function makeRandom(seed){
         Math.imul(
             t ^
             (
-                t >>> 15
+                t >>>
+                15
             ),
             t | 1
         );
@@ -513,7 +511,8 @@ function makeRandom(seed){
         Math.imul(
             t ^
             (
-                t >>> 7
+                t >>>
+                7
             ),
             t | 61
         );
@@ -523,9 +522,11 @@ function makeRandom(seed){
             (
                 t ^
                 (
-                    t >>> 14
+                    t >>>
+                    14
                 )
-            ) >>> 0
+            ) >>>
+            0
         ) /
         4294967296;
     };
@@ -571,12 +572,12 @@ function shuffle(
 
 
 /* =========================================================
-   SAFE FULL GRID ROUTE
+   SAFE FULL GRID PATH
 
    HANYA DIGUNAKAN UNTUK PASTIKAN
-   PENGHALANG TAK BOLEH BUAT GAME MUSTAHIL.
+   PENGHALANG TAK BUAT GAME MUSTAHIL.
 
-   USER TAK DIPAKSA IKUT LALUAN INI.
+   PLAYER TIDAK DIPAKSA IKUT LALUAN INI.
    ========================================================= */
 
 function makeSafePath(
@@ -589,12 +590,11 @@ function makeSafePath(
     [];
 
 
-    /* =====================================================
-       TYPE A = HORIZONTAL SNAKE
-       ===================================================== */
+    /* HORIZONTAL */
 
     if(
-        mode % 2 ===
+        mode %
+        2 ===
         0
     ){
 
@@ -605,7 +605,8 @@ function makeSafePath(
         ){
 
             if(
-                r % 2 ===
+                r %
+                2 ===
                 0
             ){
 
@@ -639,9 +640,7 @@ function makeSafePath(
 
     }else{
 
-        /* =================================================
-           TYPE B = VERTICAL SNAKE
-           ================================================= */
+        /* VERTICAL */
 
         for(
             let c=0;
@@ -650,7 +649,8 @@ function makeSafePath(
         ){
 
             if(
-                c % 2 ===
+                c %
+                2 ===
                 0
             ){
 
@@ -684,56 +684,57 @@ function makeSafePath(
     }
 
 
-    /* MIRROR LEFT RIGHT */
+    /* MIRROR KIRI KANAN */
 
     if(
-        mode & 2
+        mode &
+        2
     ){
 
         path =
         path.map(
-            cell=>({
+            p=>({
 
-                r:
-                cell.r,
+                r:p.r,
 
                 c:
                 cols -
                 1 -
-                cell.c
+                p.c
 
             })
         );
     }
 
 
-    /* MIRROR TOP BOTTOM */
+    /* MIRROR ATAS BAWAH */
 
     if(
-        mode & 4
+        mode &
+        4
     ){
 
         path =
         path.map(
-            cell=>({
+            p=>({
 
                 r:
                 rows -
                 1 -
-                cell.r,
+                p.r,
 
-                c:
-                cell.c
+                c:p.c
 
             })
         );
     }
 
 
-    /* REVERSE START DAN PORTAL */
+    /* REVERSE */
 
     if(
-        mode & 8
+        mode &
+        8
     ){
 
         path.reverse();
@@ -788,13 +789,13 @@ class SoundBox{
         }
 
 
-        const AudioContext =
+        const AC =
         window.AudioContext ||
         window.webkitAudioContext;
 
 
         if(
-            !AudioContext
+            !AC
         ){
 
             return;
@@ -802,7 +803,7 @@ class SoundBox{
 
 
         this.ctx =
-        new AudioContext();
+        new AC();
 
 
         this.master =
@@ -865,13 +866,15 @@ class SoundBox{
 
         gain.gain.exponentialRampToValueAtTime(
             volume,
-            now + .01
+            now +
+            .01
         );
 
 
         gain.gain.exponentialRampToValueAtTime(
             .0001,
-            now + duration
+            now +
+            duration
         );
 
 
@@ -1008,8 +1011,8 @@ class SoundBox{
         }
 
 
-        const notes = [
-
+        const notes =
+        [
             261.63,
             329.63,
             392,
@@ -1019,7 +1022,6 @@ class SoundBox{
             349.23,
             392,
             349.23
-
         ];
 
 
@@ -1113,22 +1115,16 @@ extends Phaser.Scene{
 
 
         this.sessionSeed =
-        Date.now() >>> 0;
+        Date.now() >>>
+        0;
 
 
         /*
-        SIMPAN SEMUA PATTERN YANG DAH DIGUNA.
-
-        Pattern baru tak dibenarkan sama
-        dengan mana-mana pattern sebelumnya.
+        SIMPAN PATTERN YANG PERNAH DIGUNA
         */
 
         this.usedPatternSignatures =
         new Set();
-
-
-        this.previousPatternSignature =
-        null;
 
 
         this.bgG =
@@ -1172,8 +1168,7 @@ extends Phaser.Scene{
 
 
         this.startStage(
-            0,
-            true
+            0
         );
     }
 
@@ -1487,7 +1482,7 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   SYMBOL
+   SYMBOL SAHAJA
    ========================================================= */
 
     createSymbol(){
@@ -1691,12 +1686,10 @@ extends Phaser.Scene{
 /* =========================================================
    DIFFICULTY
 
-   SETIAP STAGE MAKIN SUSAH.
+   SETIAP STAGE:
+   +1 PENGHALANG
 
-   Bilangan penghalang bertambah pada
-   SETIAP stage.
-
-   Stage 6,11,16,21 grid bertambah besar.
+   GRID JUGA MAKIN BESAR.
    ========================================================= */
 
     getSettings(){
@@ -1705,148 +1698,133 @@ extends Phaser.Scene{
         this.stageIndex;
 
 
-        if(
-            stage <=
-            4
-        ){
+        let rows;
 
-            return{
+        let cols;
 
-                rows:5,
-
-                cols:5,
-
-                barriers:
-                3 +
-                stage,
-
-                centreRatio:
-                .35 +
-                stage *
-                .06,
-
-                label:
-                stage < 2
-                ? "MUDAH"
-                : "MUDAH +"
-            };
-        }
+        let label;
 
 
         if(
-            stage <=
-            9
+            stage <
+            5
         ){
 
-            return{
-
-                rows:5,
-
-                cols:6,
-
-                barriers:
-                7 +
-                (
-                    stage -
-                    5
-                ),
-
-                centreRatio:
-                .48 +
-                (
-                    stage -
-                    5
-                ) *
-                .05,
-
-                label:
-                "SEDERHANA"
-            };
-        }
+            rows =
+            5;
 
 
-        if(
-            stage <=
-            14
+            cols =
+            5;
+
+
+            label =
+            stage < 2
+            ? "MUDAH"
+            : "MUDAH +";
+
+        }else if(
+            stage <
+            10
         ){
 
-            return{
-
-                rows:6,
-
-                cols:6,
-
-                barriers:
-                10 +
-                (
-                    stage -
-                    10
-                ),
-
-                centreRatio:
-                .55 +
-                (
-                    stage -
-                    10
-                ) *
-                .04,
-
-                label:
-                "MENCABAR"
-            };
-        }
+            rows =
+            5;
 
 
-        if(
-            stage <=
-            19
+            cols =
+            6;
+
+
+            label =
+            "SEDERHANA";
+
+        }else if(
+            stage <
+            15
         ){
 
-            return{
+            rows =
+            6;
 
-                rows:6,
 
-                cols:7,
+            cols =
+            6;
 
-                barriers:
-                13 +
-                (
-                    stage -
-                    15
-                ),
 
-                centreRatio:
-                .62 +
-                (
-                    stage -
-                    15
-                ) *
-                .035,
+            label =
+            "MENCABAR";
 
-                label:
-                "SUKAR"
-            };
+        }else if(
+            stage <
+            20
+        ){
+
+            rows =
+            6;
+
+
+            cols =
+            7;
+
+
+            label =
+            "SUKAR";
+
+        }else{
+
+            rows =
+            7;
+
+
+            cols =
+            7;
+
+
+            label =
+            "SANGAT SUKAR";
         }
 
 
         return{
 
-            rows:7,
+            rows:
+            rows,
 
-            cols:7,
+            cols:
+            cols,
+
+
+            /*
+            STAGE 1 = 3
+            STAGE 2 = 4
+            ...
+            STAGE 25 = 27
+            */
 
             barriers:
-            16 +
-            (
-                stage -
-                20
-            ),
+            3 +
+            stage,
+
+
+            /*
+            Semakin tinggi stage,
+            semakin banyak penghalang
+            masuk bahagian tengah.
+            */
 
             centreRatio:
-            .72,
+            Math.min(
+                .78,
+                .34 +
+                stage *
+                .018
+            ),
+
 
             label:
-            "SANGAT SUKAR"
+            label
+
         };
     }
 
@@ -1854,17 +1832,16 @@ extends Phaser.Scene{
 /* =========================================================
    PATTERN SIGNATURE
 
-   Digunakan untuk memastikan pattern baru
-   tak sama dengan pattern yang pernah muncul.
+   PATTERN SAMA TAK BOLEH BERULANG.
    ========================================================= */
 
-    createPatternSignature(){
+    patternSignature(){
 
-        const barrierKeys =
+        const barriers =
         this.barriers
         .map(
-            barrier=>
-            barrier.key
+            b=>
+            b.key
         )
         .sort();
 
@@ -1888,17 +1865,19 @@ extends Phaser.Scene{
             ) +
 
             "|B:" +
-            barrierKeys.join(";")
+            barriers.join(";")
         );
     }
 
 
 /* =========================================================
-   GENERATE ONE PATTERN
+   GENERATE PATTERN
+
+   RINGAN.
+   TIADA RECURSIVE GENERATOR.
    ========================================================= */
 
     generatePattern(
-        seed,
         settings,
         attempt
     ){
@@ -1907,24 +1886,26 @@ extends Phaser.Scene{
         makeRandom(
 
             (
-                seed +
-                attempt *
-                92821 +
+                this.sessionSeed +
+
                 this.stageIndex *
-                104729
-            ) >>> 0
+                100003 +
+
+                attempt *
+                92821
+            ) >>>
+            0
         );
 
-
-        /*
-        Cuba guna mode berbeza setiap attempt.
-        */
 
         const mode =
         (
             this.stageIndex *
+            5 +
+
+            attempt *
             3 +
-            attempt +
+
             Math.floor(
                 random() *
                 16
@@ -1933,7 +1914,7 @@ extends Phaser.Scene{
         16;
 
 
-        this.safePath =
+        const safePath =
         makeSafePath(
 
             this.rows,
@@ -1946,23 +1927,21 @@ extends Phaser.Scene{
 
         this.startCell =
         {
-            ...this.safePath[0]
+            ...safePath[0]
         };
 
 
         this.portalCell =
         {
-            ...this.safePath[
-                this.safePath.length -
+            ...safePath[
+                safePath.length -
                 1
             ]
         };
 
 
         /* =================================================
-           EDGE LALUAN SELAMAT
-
-           Edge ini tak boleh ditutup.
+           EDGE YANG WAJIB KEKAL TERBUKA
            ================================================= */
 
         const safeEdges =
@@ -1971,7 +1950,7 @@ extends Phaser.Scene{
 
         for(
             let i=1;
-            i<this.safePath.length;
+            i<safePath.length;
             i++
         ){
 
@@ -1979,11 +1958,12 @@ extends Phaser.Scene{
 
                 edgeKey(
 
-                    this.safePath[
-                        i-1
+                    safePath[
+                        i -
+                        1
                     ],
 
-                    this.safePath[
+                    safePath[
                         i
                     ]
                 )
@@ -1992,7 +1972,8 @@ extends Phaser.Scene{
 
 
         /* =================================================
-           SEMUA TEMPAT YANG BOLEH LETAK BARRIER
+           SEMUA TEMPAT YANG BOLEH
+           DILETAK PENGHALANG
            ================================================= */
 
         const candidates =
@@ -2055,7 +2036,8 @@ extends Phaser.Scene{
                                 ...next
                             },
 
-                            key:k
+                            key:
+                            k
 
                         });
                     }
@@ -2099,7 +2081,8 @@ extends Phaser.Scene{
                                 ...next
                             },
 
-                            key:k
+                            key:
+                            k
 
                         });
                     }
@@ -2109,27 +2092,25 @@ extends Phaser.Scene{
 
 
         /* =================================================
-           BAHAGIAN TENGAH
-
-           Stage tinggi lebih banyak barrier tengah.
+           CANDIDATE TENGAH
            ================================================= */
 
-        const centreCandidates =
+        const centre =
         candidates.filter(
-            barrier=>{
+            edge=>{
 
                 const middleRow =
                 (
-                    barrier.a.r +
-                    barrier.b.r
+                    edge.a.r +
+                    edge.b.r
                 ) /
                 2;
 
 
                 const middleCol =
                 (
-                    barrier.a.c +
-                    barrier.b.c
+                    edge.a.c +
+                    edge.b.c
                 ) /
                 2;
 
@@ -2154,23 +2135,23 @@ extends Phaser.Scene{
         );
 
 
-        const outerCandidates =
+        const outer =
         candidates.filter(
-            barrier=>
-            !centreCandidates.includes(
-                barrier
+            edge=>
+            !centre.includes(
+                edge
             )
         );
 
 
         shuffle(
-            centreCandidates,
+            centre,
             random
         );
 
 
         shuffle(
-            outerCandidates,
+            outer,
             random
         );
 
@@ -2189,10 +2170,10 @@ extends Phaser.Scene{
         new Set();
 
 
-        const middleWanted =
+        const centreWanted =
         Math.min(
 
-            centreCandidates.length,
+            centre.length,
 
             Math.round(
                 settings.barriers *
@@ -2202,21 +2183,22 @@ extends Phaser.Scene{
 
 
         /* =================================================
-           AMBIL BARRIER TENGAH DULU
+           TENGAH DULU
            ================================================= */
 
         for(
             let i=0;
-            i<middleWanted;
+            i<centreWanted;
             i++
         ){
 
             const barrier =
-            centreCandidates[i];
+            centre[i];
 
 
             if(
                 barrier &&
+
                 !this.barrierSet.has(
                     barrier.key
                 )
@@ -2235,14 +2217,12 @@ extends Phaser.Scene{
 
 
         /* =================================================
-           CAMPUR BARRIER LUAR
-
-           Supaya pattern tak tertumpu satu kawasan.
+           LEPAS TU BAHAGIAN LAIN
            ================================================= */
 
         for(
             const barrier
-            of outerCandidates
+            of outer
         ){
 
             if(
@@ -2264,13 +2244,9 @@ extends Phaser.Scene{
             }
 
 
-            /*
-            Random skip bagi variasi pattern.
-            */
-
             if(
                 random() <
-                .18
+                .16
             ){
 
                 continue;
@@ -2289,7 +2265,7 @@ extends Phaser.Scene{
 
 
         /* =================================================
-           JIKA MASIH TAK CUKUP
+           PASTIKAN JUMLAH CUKUP
            ================================================= */
 
         for(
@@ -2330,10 +2306,6 @@ extends Phaser.Scene{
 
 /* =========================================================
    BUILD UNIQUE STAGE
-
-   PATTERN TAK BOLEH SAMA DENGAN:
-   - stage sebelum
-   - mana-mana stage yang dah muncul
    ========================================================= */
 
     buildStage(){
@@ -2354,39 +2326,22 @@ extends Phaser.Scene{
         settings.label;
 
 
-        const baseSeed =
-        (
-            this.sessionSeed +
-
-            this.stageIndex *
-            100003
-        ) >>> 0;
-
-
         let signature =
-        null;
-
-
-        let foundUnique =
-        false;
+        "";
 
 
         /*
-        Cuba sehingga 100 pattern berbeza.
-
-        Sistem ini ringan sebab tak guna
-        recursive pathfinding.
+        Cuba pattern lain jika signature
+        pernah digunakan.
         */
 
         for(
             let attempt=0;
-            attempt<100;
+            attempt<120;
             attempt++
         ){
 
             this.generatePattern(
-
-                baseSeed,
 
                 settings,
 
@@ -2395,90 +2350,22 @@ extends Phaser.Scene{
 
 
             signature =
-            this.createPatternSignature();
+            this.patternSignature();
 
 
             if(
-                signature !==
-                this.previousPatternSignature &&
-
                 !this.usedPatternSignatures.has(
                     signature
                 )
             ){
-
-                foundUnique =
-                true;
-
 
                 break;
             }
         }
 
 
-        /*
-        Sangat sukar sampai sini sebab kombinasi
-        barrier sangat banyak.
-
-        Tapi kalau berlaku, tukar seed sekali lagi.
-        */
-
-        if(
-            !foundUnique
-        ){
-
-            const fallbackSeed =
-            (
-                Date.now() +
-
-                this.stageIndex *
-                99991
-            ) >>> 0;
-
-
-            for(
-                let attempt=100;
-                attempt<200;
-                attempt++
-            ){
-
-                this.generatePattern(
-
-                    fallbackSeed,
-
-                    settings,
-
-                    attempt
-                );
-
-
-                signature =
-                this.createPatternSignature();
-
-
-                if(
-                    signature !==
-                    this.previousPatternSignature &&
-
-                    !this.usedPatternSignatures.has(
-                        signature
-                    )
-                ){
-
-                    foundUnique =
-                    true;
-
-                    break;
-                }
-            }
-        }
-
-
-        this.previousPatternSignature =
-        signature;
-
-
-        this.usedPatternSignatures.add(
+        this.usedPatternSignatures
+        .add(
             signature
         );
 
@@ -2537,7 +2424,6 @@ extends Phaser.Scene{
 
         this.buildStage();
 
-
         this.calculateBoard();
 
 
@@ -2584,9 +2470,7 @@ extends Phaser.Scene{
 /* =========================================================
    RESET
 
-   RESET TAK TUKAR PATTERN.
-
-   USER CUBA SEMULA PUZZLE YANG SAMA.
+   PATTERN TAK BERUBAH.
    ========================================================= */
 
     resetStage(){
@@ -2784,8 +2668,8 @@ extends Phaser.Scene{
 /* =========================================================
    PLAYER POSITION
 
-   TERUS SNAP.
    TAK ADA TWEEN.
+   TAK ADA GEGAR.
    ========================================================= */
 
     placePlayer(){
@@ -2835,6 +2719,8 @@ extends Phaser.Scene{
         20;
 
 
+        /* SHADOW */
+
         this.boardG
         .fillStyle(
             0x173c4e,
@@ -2864,6 +2750,8 @@ extends Phaser.Scene{
             28
         );
 
+
+        /* BOARD */
 
         this.boardG
         .fillStyle(
@@ -2923,7 +2811,7 @@ extends Phaser.Scene{
 
 
         /* =================================================
-           SEMUA CELL SENTIASA ADA
+           SEMUA GRID SENTIASA ADA
            ================================================= */
 
         for(
@@ -3052,7 +2940,7 @@ extends Phaser.Scene{
 
 
         /* =================================================
-           PLAYER LINE
+           LINE
            ================================================= */
 
         if(
@@ -3171,14 +3059,16 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   BARRIER
+   DRAW BARRIER
+
+   BARRIER HANYA DI ANTARA PETAK.
    ========================================================= */
 
     drawBarrier(
         barrier
     ){
 
-        const pointA =
+        const a =
         this.cellCenter(
 
             barrier.a.r,
@@ -3187,7 +3077,7 @@ extends Phaser.Scene{
         );
 
 
-        const pointB =
+        const b =
         this.cellCenter(
 
             barrier.b.r,
@@ -3198,16 +3088,16 @@ extends Phaser.Scene{
 
         const middleX =
         (
-            pointA.x +
-            pointB.x
+            a.x +
+            b.x
         ) /
         2;
 
 
         const middleY =
         (
-            pointA.y +
-            pointB.y
+            a.y +
+            b.y
         ) /
         2;
 
@@ -3225,7 +3115,7 @@ extends Phaser.Scene{
         .50;
 
 
-        /* VERTICAL BARRIER */
+        /* VERTICAL */
 
         if(
             barrier.a.r ===
@@ -3325,7 +3215,7 @@ extends Phaser.Scene{
 
         }else{
 
-            /* HORIZONTAL BARRIER */
+            /* HORIZONTAL */
 
             this.barrierG
             .fillStyle(
@@ -3478,7 +3368,7 @@ extends Phaser.Scene{
 
 
                 /*
-                DRAG MESTI BERMULA
+                DRAG MESTI START
                 PADA SYMBOL.
                 */
 
@@ -3543,9 +3433,11 @@ extends Phaser.Scene{
                 Phaser.Math.Distance.Between(
 
                     startX,
+
                     startY,
 
                     endX,
+
                     endY
                 );
 
@@ -3570,6 +3462,11 @@ extends Phaser.Scene{
                 );
 
 
+                /*
+                SAMPLE DRAG SUPAYA
+                TAK LOMPAT GRID.
+                */
+
                 for(
                     let i=1;
                     i<=steps;
@@ -3585,7 +3482,9 @@ extends Phaser.Scene{
                     Phaser.Math.Linear(
 
                         startX,
+
                         endX,
+
                         ratio
                     );
 
@@ -3594,7 +3493,9 @@ extends Phaser.Scene{
                     Phaser.Math.Linear(
 
                         startY,
+
                         endY,
+
                         ratio
                     );
 
@@ -3706,7 +3607,7 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   FORWARD + UNDO
+   MOVE + UNDO
    ========================================================= */
 
     tryMove(
@@ -3787,7 +3688,7 @@ extends Phaser.Scene{
 
 
         /* =================================================
-           CELL DAH DILALUI
+           PETAK DAH LALU
            ================================================= */
 
         if(
@@ -3831,7 +3732,7 @@ extends Phaser.Scene{
 
 
         /* =================================================
-           PORTAL LAST
+           PORTAL MESTI LAST
            ================================================= */
 
         if(
@@ -4162,7 +4063,7 @@ extends Phaser.Scene{
             this.statusText
             .setText(
                 remaining +
-                " petak lagi. Pattern akan makin susah."
+                " petak lagi. Stage seterusnya lebih susah."
             );
 
         }else if(
@@ -4214,7 +4115,7 @@ extends Phaser.Scene{
 /* =========================================================
    QUESTION PANEL
 
-   TAK ADA DARK FULLSCREEN OVERLAY.
+   TAK ADA FULLSCREEN DARK OVERLAY.
    ========================================================= */
 
     showQuestion(){
@@ -4589,14 +4490,6 @@ extends Phaser.Scene{
 
                     }else{
 
-                        /*
-                        STAGE BARU =
-                        PATTERN BARU.
-
-                        buildStage() akan pastikan
-                        signature belum pernah digunakan.
-                        */
-
                         this.startStage(
                             this.stageIndex +
                             1
@@ -4807,7 +4700,7 @@ extends Phaser.Scene{
         )
         .setInteractive({
             useHandCursor:true
-        );
+        });
 
 
         const replayText =
@@ -4856,20 +4749,12 @@ extends Phaser.Scene{
 
 
                 this.sessionSeed =
-                Date.now() >>> 0;
+                Date.now() >>>
+                0;
 
-
-                /*
-                MAIN SEMULA =
-                BINA 25 PATTERN BARU.
-                */
 
                 this.usedPatternSignatures
                 .clear();
-
-
-                this.previousPatternSignature =
-                null;
 
 
                 layer.destroy();
@@ -4888,13 +4773,12 @@ extends Phaser.Scene{
 /* =========================================================
    START GAME
 
-   TIADA:
-   - loading overlay
-   - error overlay
-   - fullscreen dark layer masa mula
-   - blocked cell
-   - recursive puzzle generator
-
+   PENTING:
+   TIADA LOADING OVERLAY
+   TIADA ERROR OVERLAY
+   TIADA FULLSCREEN COVER
+   TIADA BLOCKED CELL
+   TIADA RECURSIVE GENERATOR
    ========================================================= */
 
 new Phaser.Game({
