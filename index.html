@@ -11,7 +11,7 @@ maximum-scale=1,
 user-scalable=no,
 viewport-fit=cover">
 
-<title>Water Hop Frog - Set 2</title>
+<title>Label The Frogs - Set 2</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
@@ -27,17 +27,20 @@ body{
     padding:0;
     width:100%;
     min-height:100%;
+
     background:
         linear-gradient(
             135deg,
-            #c9f3ff,
-            #e9fbff,
-            #bceaf4
+            #63d8ff,
+            #d7f8ff,
+            #7cddff
         );
+
     font-family:
         "Trebuchet MS",
         Arial,
         sans-serif;
+
     overscroll-behavior:none;
 }
 
@@ -50,9 +53,9 @@ body{
     align-items:flex-start;
 
     padding:
-        max(4px, env(safe-area-inset-top))
+        max(4px,env(safe-area-inset-top))
         3px
-        max(4px, env(safe-area-inset-bottom));
+        max(4px,env(safe-area-inset-bottom));
 
     touch-action:none;
 }
@@ -60,22 +63,22 @@ body{
 #game-shell{
     width:min(
         98vw,
-        780px,
-        calc(97svh * 0.709)
+        820px,
+        calc(97svh * .75)
     );
 
-    aspect-ratio:780 / 1100;
+    aspect-ratio:820 / 1090;
 
     position:relative;
 
+    background:#72d7f6;
+
     border-radius:18px;
+
     overflow:hidden;
 
     box-shadow:
-        0 12px 35px rgba(0,70,100,.22),
-        0 2px 8px rgba(0,0,0,.15);
-
-    background:#3fbad5;
+        0 12px 34px rgba(0,74,105,.25);
 }
 
 #game{
@@ -89,22 +92,28 @@ canvas{
     height:100% !important;
 }
 
-@media (max-width:500px){
+@media(max-width:520px){
+
     #game-shell{
         width:min(
             99vw,
-            calc(98svh * 0.709)
+            calc(98svh * .75)
         );
 
-        border-radius:11px;
+        border-radius:10px;
     }
 }
 
-@media (orientation:landscape) and (max-height:650px){
+@media(
+    orientation:landscape
+)
+and
+(max-height:650px){
+
     #game-shell{
         width:min(
             94vw,
-            calc(95svh * 0.709)
+            calc(95svh * .75)
         );
     }
 }
@@ -122,517 +131,545 @@ canvas{
 
 "use strict";
 
+
 /* =========================================================
-   SOALAN SET 2
+   QUESTIONS
 ========================================================= */
 
 const QUESTIONS = [
 
 {
-    tp:"TP2",
-    q:"Jika titisan air masih kekal pada mainan plastik, mainan plastik ialah objek yang ____.",
-    options:[
-        "Menghasilkan air",
-        "Tidak menyerap air",
-        "Menyerap air",
-        "Menjadi kain"
-    ],
-    answer:"B"
+tp:"TP2",
+q:"Jika titisan air masih kekal pada mainan plastik, mainan plastik ialah objek yang ____.",
+options:[
+"Menghasilkan air",
+"Tidak menyerap air",
+"Menyerap air",
+"Menjadi kain"
+],
+answer:"B"
 },
 
 {
-    tp:"TP2",
-    q:"Antara pasangan berikut, yang manakah menunjukkan satu menyerap air dan satu tidak menyerap air?",
-    options:[
-        "Kain lap dan gelas kaca",
-        "Klip kertas dan straw",
-        "Tisu dan sapu tangan",
-        "Mop dan alas kaki"
-    ],
-    answer:"A"
+tp:"TP2",
+q:"Antara pasangan berikut, yang manakah menunjukkan satu menyerap air dan satu tidak menyerap air?",
+options:[
+"Kain lap dan gelas kaca",
+"Klip kertas dan straw",
+"Tisu dan sapu tangan",
+"Mop dan alas kaki"
+],
+answer:"A"
 },
 
 {
-    tp:"TP1",
-    q:"Dalam aktiviti perbandingan, objek yang menyerap air paling tinggi ialah ____.",
-    options:[
-        "Sudu logam",
-        "Gelas kaca",
-        "Tisu dapur",
-        "Kertas surat khabar"
-    ],
-    answer:"C"
+tp:"TP1",
+q:"Dalam aktiviti perbandingan, objek yang menyerap air paling tinggi ialah ____.",
+options:[
+"Sudu logam",
+"Gelas kaca",
+"Tisu dapur",
+"Kertas surat khabar"
+],
+answer:"C"
 },
 
 {
-    tp:"TP2",
-    q:"Surat khabar menyerap air paling rendah dalam aktiviti perbandingan. Apakah maksudnya?",
-    options:[
-        "Ia tidak boleh menyerap air langsung",
-        "Keupayaannya menyerap air paling rendah antara bahan yang diuji",
-        "Ia menyerap paling banyak air",
-        "Ia ialah objek logam"
-    ],
-    answer:"B"
+tp:"TP2",
+q:"Surat khabar menyerap air paling rendah dalam aktiviti perbandingan. Apakah maksudnya?",
+options:[
+"Ia tidak boleh menyerap air langsung",
+"Keupayaannya menyerap air paling rendah antara bahan yang diuji",
+"Ia menyerap paling banyak air",
+"Ia ialah objek logam"
+],
+answer:"B"
 },
 
 {
-    tp:"TP1",
-    q:"Kain lap ialah objek yang ____ air.",
-    options:[
-        "Menghasilkan",
-        "Menolak",
-        "Tidak menyerap",
-        "Menyerap"
-    ],
-    answer:"D"
+tp:"TP1",
+q:"Kain lap ialah objek yang ____ air.",
+options:[
+"Menghasilkan",
+"Menolak",
+"Tidak menyerap",
+"Menyerap"
+],
+answer:"D"
 },
 
 {
-    tp:"TP1",
-    q:"Bahan kertas manakah yang boleh menyerap air?",
-    options:[
-        "Straw",
-        "Kertas surat khabar",
-        "Mainan plastik",
-        "Klip kertas"
-    ],
-    answer:"B"
+tp:"TP1",
+q:"Bahan kertas manakah yang boleh menyerap air?",
+options:[
+"Straw",
+"Kertas surat khabar",
+"Mainan plastik",
+"Klip kertas"
+],
+answer:"B"
 },
 
 {
-    tp:"TP1",
-    q:"Antara bahan yang diuji bersama kain dan tisu dapur ialah ____.",
-    options:[
-        "Pemadam",
-        "Klip kertas",
-        "Surat khabar",
-        "Mainan plastik"
-    ],
-    answer:"C"
+tp:"TP1",
+q:"Antara bahan yang diuji bersama kain dan tisu dapur ialah ____.",
+options:[
+"Pemadam",
+"Klip kertas",
+"Surat khabar",
+"Mainan plastik"
+],
+answer:"C"
 },
 
 {
-    tp:"TP1",
-    q:"Keupayaan menyerap air bermaksud ____.",
-    options:[
-        "Kebolehan menyerap air",
-        "Kebolehan mengeluarkan bunyi",
-        "Kebolehan mengubah warna",
-        "Kebolehan menghasilkan air"
-    ],
-    answer:"A"
+tp:"TP1",
+q:"Keupayaan menyerap air bermaksud ____.",
+options:[
+"Kebolehan menyerap air",
+"Kebolehan mengeluarkan bunyi",
+"Kebolehan mengubah warna",
+"Kebolehan menghasilkan air"
+],
+answer:"A"
 },
 
 {
-    tp:"TP1",
-    q:"Alas kaki dalam contoh dapur dikelaskan sebagai objek yang ____.",
-    options:[
-        "Menyimpan udara",
-        "Tidak boleh menyerap air",
-        "Menghasilkan air",
-        "Boleh menyerap air"
-    ],
-    answer:"D"
+tp:"TP1",
+q:"Alas kaki dalam contoh dapur dikelaskan sebagai objek yang ____.",
+options:[
+"Menyimpan udara",
+"Tidak boleh menyerap air",
+"Menghasilkan air",
+"Boleh menyerap air"
+],
+answer:"D"
 },
 
 {
-    tp:"TP2",
-    q:"Mop dan sudu logam diuji dengan air. Pengelasan yang betul ialah ____.",
-    options:[
-        "Mop menyerap air, sudu logam tidak menyerap air",
-        "Kedua-duanya menyerap air",
-        "Kedua-duanya tidak menyerap air",
-        "Sudu logam menyerap air, mop tidak menyerap air"
-    ],
-    answer:"A"
+tp:"TP2",
+q:"Mop dan sudu logam diuji dengan air. Pengelasan yang betul ialah ____.",
+options:[
+"Mop menyerap air, sudu logam tidak menyerap air",
+"Kedua-duanya menyerap air",
+"Kedua-duanya tidak menyerap air",
+"Sudu logam menyerap air, mop tidak menyerap air"
+],
+answer:"A"
 },
 
 {
-    tp:"TP2",
-    q:"Jika air meresap masuk ke dalam sesuatu objek, objek itu ____.",
-    options:[
-        "Menghasilkan air",
-        "Tidak menyerap air",
-        "Menyerap air",
-        "Menolak air"
-    ],
-    answer:"C"
+tp:"TP2",
+q:"Jika air meresap masuk ke dalam sesuatu objek, objek itu ____.",
+options:[
+"Menghasilkan air",
+"Tidak menyerap air",
+"Menyerap air",
+"Menolak air"
+],
+answer:"C"
 },
 
 {
-    tp:"TP2",
-    q:"Ali hendak mengelaskan tisu dapur dan gelas kaca. Pengelasan yang betul ialah ____.",
-    options:[
-        "Kedua-duanya menyerap air",
-        "Kedua-duanya tidak menyerap air",
-        "Gelas kaca menyerap air, tisu dapur tidak menyerap air",
-        "Tisu dapur menyerap air, gelas kaca tidak menyerap air"
-    ],
-    answer:"D"
+tp:"TP2",
+q:"Ali hendak mengelaskan tisu dapur dan gelas kaca. Pengelasan yang betul ialah ____.",
+options:[
+"Kedua-duanya menyerap air",
+"Kedua-duanya tidak menyerap air",
+"Gelas kaca menyerap air, tisu dapur tidak menyerap air",
+"Tisu dapur menyerap air, gelas kaca tidak menyerap air"
+],
+answer:"D"
 },
 
 {
-    tp:"TP2",
-    q:"Payung plastik dan kasut getah mempunyai persamaan dari segi kegunaan kerana kedua-duanya membantu ____.",
-    options:[
-        "Menyerap tumpahan air",
-        "Mengelakkan air membasahi kita",
-        "Mengelap luka",
-        "Mengeringkan jag"
-    ],
-    answer:"B"
+tp:"TP2",
+q:"Payung plastik dan kasut getah mempunyai persamaan dari segi kegunaan kerana kedua-duanya membantu ____.",
+options:[
+"Menyerap tumpahan air",
+"Mengelakkan air membasahi kita",
+"Mengelap luka",
+"Mengeringkan jag"
+],
+answer:"B"
 },
 
 {
-    tp:"TP1",
-    q:"Objek tidak menyerap air sesuai digunakan untuk ____.",
-    options:[
-        "Mengelap luka",
-        "Menyerap tumpahan",
-        "Menghalang air daripada menembusi",
-        "Mengelap peluh"
-    ],
-    answer:"C"
+tp:"TP1",
+q:"Objek tidak menyerap air sesuai digunakan untuk ____.",
+options:[
+"Mengelap luka",
+"Menyerap tumpahan",
+"Menghalang air daripada menembusi",
+"Mengelap peluh"
+],
+answer:"C"
 },
 
 {
-    tp:"TP2",
-    q:"Seorang murid memilih sudu logam untuk mengelap tumpahan air. Mengapakah pilihan itu kurang sesuai?",
-    options:[
-        "Sudu logam ialah mop",
-        "Sudu logam tidak menyerap air",
-        "Sudu logam menyerap terlalu banyak air",
-        "Sudu logam ialah tisu"
-    ],
-    answer:"B"
+tp:"TP2",
+q:"Seorang murid memilih sudu logam untuk mengelap tumpahan air. Mengapakah pilihan itu kurang sesuai?",
+options:[
+"Sudu logam ialah mop",
+"Sudu logam tidak menyerap air",
+"Sudu logam menyerap terlalu banyak air",
+"Sudu logam ialah tisu"
+],
+answer:"B"
 },
 
 {
-    tp:"TP1",
-    q:"Kasut getah perlu tidak menyerap air supaya ____.",
-    options:[
-        "Kaki menyerap air",
-        "Kasut mengelap lantai",
-        "Kasut menjadi kain",
-        "Kaki kekal lebih kering"
-    ],
-    answer:"D"
+tp:"TP1",
+q:"Kasut getah perlu tidak menyerap air supaya ____.",
+options:[
+"Kaki menyerap air",
+"Kasut mengelap lantai",
+"Kasut menjadi kain",
+"Kaki kekal lebih kering"
+],
+answer:"D"
 },
 
 {
-    tp:"TP1",
-    q:"Cermin kaca pada kereta penting kerana dapat ____.",
-    options:[
-        "Mengelakkan kita terkena air hujan",
-        "Menyerap semua air hujan",
-        "Mengeringkan tangan",
-        "Mengelap luka"
-    ],
-    answer:"A"
+tp:"TP1",
+q:"Cermin kaca pada kereta penting kerana dapat ____.",
+options:[
+"Mengelakkan kita terkena air hujan",
+"Menyerap semua air hujan",
+"Mengeringkan tangan",
+"Mengelap luka"
+],
+answer:"A"
 },
 
 {
-    tp:"TP1",
-    q:"Apakah kegunaan tuala selepas mandi?",
-    options:[
-        "Menghalang hujan",
-        "Mengeringkan badan",
-        "Menyimpan air",
-        "Menadah air hujan"
-    ],
-    answer:"B"
+tp:"TP1",
+q:"Apakah kegunaan tuala selepas mandi?",
+options:[
+"Menghalang hujan",
+"Mengeringkan badan",
+"Menyimpan air",
+"Menadah air hujan"
+],
+answer:"B"
 },
 
 {
-    tp:"TP2",
-    q:"Jika mahu mengelap tumpahan air, ciri objek yang diperlukan ialah ____.",
-    options:[
-        "Boleh menyerap air",
-        "Mempunyai permukaan kaca",
-        "Diperbuat daripada logam",
-        "Tidak boleh menyerap air"
-    ],
-    answer:"A"
+tp:"TP2",
+q:"Jika mahu mengelap tumpahan air, ciri objek yang diperlukan ialah ____.",
+options:[
+"Boleh menyerap air",
+"Mempunyai permukaan kaca",
+"Diperbuat daripada logam",
+"Tidak boleh menyerap air"
+],
+answer:"A"
 },
 
 {
-    tp:"TP2",
-    q:"Hujan turun dan seseorang mahu mengelakkan badannya terkena air. Apakah objek yang sesuai?",
-    options:[
-        "Tisu dapur",
-        "Kain lap",
-        "Payung plastik",
-        "Surat khabar"
-    ],
-    answer:"C"
+tp:"TP2",
+q:"Hujan turun dan seseorang mahu mengelakkan badannya terkena air. Apakah objek yang sesuai?",
+options:[
+"Tisu dapur",
+"Kain lap",
+"Payung plastik",
+"Surat khabar"
+],
+answer:"C"
 },
 
 {
-    tp:"TP2",
-    q:"Kain lap dan mop mempunyai persamaan dari segi kegunaan kerana kedua-duanya ____.",
-    options:[
-        "Tidak menyerap air",
-        "Diperbuat daripada kaca",
-        "Digunakan untuk menadah hujan",
-        "Digunakan untuk menyerap dan mengelap air"
-    ],
-    answer:"D"
+tp:"TP2",
+q:"Kain lap dan mop mempunyai persamaan dari segi kegunaan kerana kedua-duanya ____.",
+options:[
+"Tidak menyerap air",
+"Diperbuat daripada kaca",
+"Digunakan untuk menadah hujan",
+"Digunakan untuk menyerap dan mengelap air"
+],
+answer:"D"
 },
 
 {
-    tp:"TP2",
-    q:"Air tertumpah di lantai. Objek manakah paling sesuai digunakan untuk membersihkannya?",
-    options:[
-        "Mop",
-        "Payung plastik",
-        "Tong besi",
-        "Cermin kaca"
-    ],
-    answer:"A"
+tp:"TP2",
+q:"Air tertumpah di lantai. Objek manakah paling sesuai digunakan untuk membersihkannya?",
+options:[
+"Mop",
+"Payung plastik",
+"Tong besi",
+"Cermin kaca"
+],
+answer:"A"
 },
 
 {
-    tp:"TP1",
-    q:"Mop mini direka untuk meniru fungsi mop sebenar, iaitu ____.",
-    options:[
-        "Menyimpan air dalam tong",
-        "Menyerap dan mengelap air",
-        "Menghalang hujan",
-        "Menjadi cermin"
-    ],
-    answer:"B"
+tp:"TP1",
+q:"Mop mini direka untuk meniru fungsi mop sebenar, iaitu ____.",
+options:[
+"Menyimpan air dalam tong",
+"Menyerap dan mengelap air",
+"Menghalang hujan",
+"Menjadi cermin"
+],
+answer:"B"
 },
 
 {
-    tp:"TP1",
-    q:"Payung plastik perlu tidak menyerap air supaya ____.",
-    options:[
-        "Payung menjadi tisu",
-        "Payung menyerap semua hujan",
-        "Payung mengelap peluh",
-        "Air hujan tidak menembusi payung dengan mudah"
-    ],
-    answer:"D"
+tp:"TP1",
+q:"Payung plastik perlu tidak menyerap air supaya ____.",
+options:[
+"Payung menjadi tisu",
+"Payung menyerap semua hujan",
+"Payung mengelap peluh",
+"Air hujan tidak menembusi payung dengan mudah"
+],
+answer:"D"
 },
 
 {
-    tp:"TP2",
-    q:"Ibu mahu mengeringkan jag yang basah. Apakah objek yang sesuai?",
-    options:[
-        "Sudu logam",
-        "Straw",
-        "Kain lap",
-        "Pinggan plastik"
-    ],
-    answer:"C"
+tp:"TP2",
+q:"Ibu mahu mengeringkan jag yang basah. Apakah objek yang sesuai?",
+options:[
+"Sudu logam",
+"Straw",
+"Kain lap",
+"Pinggan plastik"
+],
+answer:"C"
 }
 
 ];
 
 
 /* =========================================================
-   AUDIO - WEB AUDIO
-   Tiada fail audio luar
+   AUDIO
 ========================================================= */
 
-class GameAudio {
+class GameAudio{
 
-    constructor(){
-        this.ctx = null;
-        this.enabled = true;
-        this.started = false;
-        this.musicTimer = null;
-        this.musicIndex = 0;
+constructor(){
 
-        this.musicNotes = [
-            261.63,
-            329.63,
-            392.00,
-            329.63,
-            293.66,
-            349.23,
-            440.00,
-            349.23
-        ];
+    this.ctx=null;
+    this.started=false;
+    this.enabled=true;
+    this.musicTimer=null;
+    this.noteIndex=0;
+
+    this.notes=[
+        261.63,
+        329.63,
+        392,
+        329.63,
+        293.66,
+        349.23,
+        440,
+        392
+    ];
+}
+
+
+init(){
+
+    if(!this.enabled){
+        return;
     }
 
-    init(){
-        if(!this.enabled) return;
+    if(!this.ctx){
 
-        if(!this.ctx){
-            const AC =
-                window.AudioContext ||
-                window.webkitAudioContext;
+        const AC=
+            window.AudioContext ||
+            window.webkitAudioContext;
 
-            if(!AC) return;
-
-            this.ctx = new AC();
+        if(!AC){
+            return;
         }
 
-        if(this.ctx.state === "suspended"){
-            this.ctx.resume();
-        }
-
-        if(!this.started){
-            this.started = true;
-            this.startMusic();
-        }
+        this.ctx=
+            new AC();
     }
 
-    tone(
-        frequency,
-        duration = 0.12,
-        type = "sine",
-        volume = 0.04,
-        delay = 0
+    if(
+        this.ctx.state ===
+        "suspended"
     ){
-        if(!this.enabled || !this.ctx) return;
+        this.ctx.resume();
+    }
 
-        const now =
-            this.ctx.currentTime + delay;
+    if(!this.started){
 
-        const osc =
-            this.ctx.createOscillator();
+        this.started=true;
 
-        const gain =
-            this.ctx.createGain();
+        this.startMusic();
+    }
+}
 
-        osc.type = type;
 
-        osc.frequency.setValueAtTime(
+tone(
+frequency,
+duration=.1,
+type="sine",
+volume=.04,
+delay=0
+){
+
+    if(
+        !this.enabled ||
+        !this.ctx
+    ){
+        return;
+    }
+
+    const now=
+        this.ctx.currentTime+
+        delay;
+
+    const osc=
+        this.ctx.createOscillator();
+
+    const gain=
+        this.ctx.createGain();
+
+    osc.type=type;
+
+    osc.frequency
+        .setValueAtTime(
             frequency,
             now
         );
 
-        gain.gain.setValueAtTime(
-            0.0001,
+    gain.gain
+        .setValueAtTime(
+            .0001,
             now
         );
 
-        gain.gain.exponentialRampToValueAtTime(
+    gain.gain
+        .exponentialRampToValueAtTime(
             volume,
-            now + 0.015
+            now+.015
         );
 
-        gain.gain.exponentialRampToValueAtTime(
-            0.0001,
-            now + duration
+    gain.gain
+        .exponentialRampToValueAtTime(
+            .0001,
+            now+duration
         );
 
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
+    osc.connect(gain);
 
-        osc.start(now);
-        osc.stop(now + duration + 0.03);
+    gain.connect(
+        this.ctx.destination
+    );
+
+    osc.start(now);
+
+    osc.stop(
+        now+
+        duration+
+        .04
+    );
+}
+
+
+tap(){
+
+    this.tone(
+        430,
+        .07,
+        "sine",
+        .045
+    );
+
+    this.tone(
+        620,
+        .07,
+        "sine",
+        .025,
+        .05
+    );
+}
+
+
+correct(){
+
+    this.tone(
+        523.25,
+        .12,
+        "sine",
+        .05
+    );
+
+    this.tone(
+        659.25,
+        .13,
+        "sine",
+        .05,
+        .1
+    );
+
+    this.tone(
+        783.99,
+        .19,
+        "sine",
+        .05,
+        .2
+    );
+}
+
+
+wrong(){
+
+    this.tone(
+        220,
+        .15,
+        "triangle",
+        .045
+    );
+
+    this.tone(
+        165,
+        .18,
+        "triangle",
+        .035,
+        .12
+    );
+}
+
+
+finish(){
+
+    [
+        523.25,
+        659.25,
+        783.99,
+        1046.5
+    ]
+    .forEach(
+        (note,i)=>{
+
+            this.tone(
+                note,
+                .22,
+                "sine",
+                .05,
+                i*.13
+            );
+        }
+    );
+}
+
+
+startMusic(){
+
+    if(
+        this.musicTimer
+    ){
+        return;
     }
 
-    jump(){
-        this.tone(
-            300,
-            0.11,
-            "sine",
-            0.055
-        );
-
-        this.tone(
-            440,
-            0.10,
-            "sine",
-            0.04,
-            0.07
-        );
-    }
-
-    splash(){
-        this.tone(
-            130,
-            0.12,
-            "triangle",
-            0.04
-        );
-
-        this.tone(
-            90,
-            0.15,
-            "sine",
-            0.025,
-            0.05
-        );
-    }
-
-    correct(){
-
-        this.tone(
-            523.25,
-            0.12,
-            "sine",
-            0.05
-        );
-
-        this.tone(
-            659.25,
-            0.14,
-            "sine",
-            0.05,
-            0.10
-        );
-
-        this.tone(
-            783.99,
-            0.19,
-            "sine",
-            0.05,
-            0.20
-        );
-    }
-
-    wrong(){
-
-        this.tone(
-            210,
-            0.14,
-            "triangle",
-            0.045
-        );
-
-        this.tone(
-            155,
-            0.20,
-            "triangle",
-            0.035,
-            0.12
-        );
-    }
-
-    finish(){
-
-        const notes = [
-            523.25,
-            659.25,
-            783.99,
-            1046.50
-        ];
-
-        notes.forEach(
-            (note,index)=>{
-                this.tone(
-                    note,
-                    0.25,
-                    "sine",
-                    0.055,
-                    index * 0.13
-                );
-            }
-        );
-    }
-
-    startMusic(){
-
-        if(this.musicTimer) return;
-
-        this.musicTimer =
-            setInterval(()=>{
+    this.musicTimer=
+        setInterval(
+            ()=>{
 
                 if(
                     !this.enabled ||
@@ -641,2827 +678,2853 @@ class GameAudio {
                     return;
                 }
 
-                const note =
-                    this.musicNotes[
-                        this.musicIndex %
-                        this.musicNotes.length
+                const note=
+                    this.notes[
+                        this.noteIndex %
+                        this.notes.length
                     ];
 
-                this.musicIndex++;
+                this.noteIndex++;
 
                 this.tone(
                     note,
-                    0.35,
+                    .28,
                     "sine",
-                    0.012
+                    .009
                 );
 
-            }, 650);
-    }
-
-    toggle(){
-
-        this.enabled =
-            !this.enabled;
-
-        if(this.enabled){
-            this.init();
-        }
-
-        return this.enabled;
-    }
+            },
+            690
+        );
 }
 
-const audio =
+
+toggle(){
+
+    this.enabled=
+        !this.enabled;
+
+    if(this.enabled){
+        this.init();
+    }
+
+    return this.enabled;
+}
+
+}
+
+const audio=
     new GameAudio();
 
 
 /* =========================================================
-   PHASER SCENE
+   GAME
 ========================================================= */
 
-class WaterHopScene extends Phaser.Scene {
+class FrogLabelGame
+extends Phaser.Scene{
 
-    constructor(){
+constructor(){
 
-        super({
-            key:"WaterHopScene"
-        });
+    super(
+        "FrogLabelGame"
+    );
 
-        this.questionIndex = 0;
-        this.correctCount = 0;
-        this.wrongCount = 0;
+    this.questionIndex=0;
 
-        this.locked = false;
-        this.finished = false;
+    this.correctCount=0;
 
-        this.pads = [];
-        this.padTweens = [];
+    this.wrongCount=0;
 
-        this.frog = null;
-        this.frogStartX = 390;
-        this.frogStartY = 985;
+    this.frogs=[];
 
-        this.frogShadow = null;
+    this.locked=false;
 
-        this.questionText = null;
-        this.answerTexts = [];
+    this.finished=false;
 
-        this.feedbackText = null;
+    this.answerTexts=[];
 
-        this.progressGraphics = null;
-        this.progressText = null;
+    this.frogAreaTop=530;
 
-        this.scoreText = null;
-
-        this.soundButton = null;
-
-        this.restartButton = null;
-
-        this.decorBubbles = [];
-    }
+    this.frogAreaBottom=1010;
+}
 
 
 /* =========================================================
    CREATE
 ========================================================= */
 
-    create(){
+create(){
 
-        this.cameras.main.setBackgroundColor(
-            "#3fc1d7"
-        );
+    this.buildBackground();
 
-        this.buildWaterBackground();
+    this.buildHeader();
 
-        this.buildTopHeader();
+    this.buildQuestionCard();
 
-        this.buildQuestionPanel();
+    this.buildPlayBoard();
 
-        this.buildPondDecor();
+    this.buildStatus();
 
-        this.buildStartPad();
+    this.renderQuestion();
 
-        this.buildAnswerPads();
+    this.input.on(
+        "pointerdown",
+        ()=>audio.init()
+    );
 
-        this.buildFrog();
-
-        this.buildFeedback();
-
-        this.renderQuestion();
-
-        this.input.on(
-            "pointerdown",
-            ()=>{
-                audio.init();
-            }
-        );
-
-        this.input.keyboard?.on(
-            "keydown-A",
-            ()=>this.keyboardAnswer("A")
-        );
-
-        this.input.keyboard?.on(
-            "keydown-B",
-            ()=>this.keyboardAnswer("B")
-        );
-
-        this.input.keyboard?.on(
-            "keydown-C",
-            ()=>this.keyboardAnswer("C")
-        );
-
-        this.input.keyboard?.on(
-            "keydown-D",
-            ()=>this.keyboardAnswer("D")
-        );
-    }
+}
 
 
 /* =========================================================
-   WATER BACKGROUND
+   BACKGROUND
 ========================================================= */
 
-    buildWaterBackground(){
+buildBackground(){
 
-        const bg =
+    const bg=
+        this.add.graphics();
+
+    bg.fillGradientStyle(
+        0x22b8ec,
+        0x27b9ed,
+        0x078dc8,
+        0x087db8,
+        1
+    );
+
+    bg.fillRect(
+        0,
+        0,
+        820,
+        1090
+    );
+
+
+    /* blue decorative rays */
+
+    const rays=
+        this.add.graphics();
+
+    rays.fillStyle(
+        0xffffff,
+        .07
+    );
+
+    rays.fillTriangle(
+        0,80,
+        220,170,
+        0,210
+    );
+
+    rays.fillTriangle(
+        820,80,
+        600,180,
+        820,235
+    );
+
+    rays.fillTriangle(
+        0,700,
+        190,790,
+        0,870
+    );
+
+    rays.fillTriangle(
+        820,680,
+        620,790,
+        820,870
+    );
+
+
+    /* lower waves */
+
+    for(
+        let y=880;
+        y<1090;
+        y+=50
+    ){
+
+        const wave=
             this.add.graphics();
 
-        bg.fillGradientStyle(
-            0x46c6df,
-            0x46c6df,
-            0x218fb8,
-            0x218fb8,
-            1
-        );
-
-        bg.fillRect(
-            0,
-            0,
-            780,
-            1100
-        );
-
-        /* Water strips */
-
-        const water =
-            this.add.graphics();
-
-        water.lineStyle(
-            3,
+        wave.lineStyle(
+            4,
             0xffffff,
-            0.13
+            .08
         );
+
+        wave.beginPath();
 
         for(
-            let y = 525;
-            y < 1100;
-            y += 42
+            let x=-20;
+            x<=840;
+            x+=40
         ){
 
-            for(
-                let x = -30;
-                x < 800;
-                x += 95
-            ){
+            const yy=
+                y+
+                Math.sin(
+                    x*.035
+                )*8;
 
-                water.beginPath();
+            if(x===-20){
 
-                water.moveTo(
+                wave.moveTo(
                     x,
-                    y
+                    yy
                 );
 
-                water.lineTo(
-                    x + 23,
-                    y - 5
-                );
+            }else{
 
-                water.lineTo(
-                    x + 48,
-                    y
-                );
-
-                water.lineTo(
-                    x + 73,
-                    y - 5
-                );
-
-                water.strokePath();
-            }
-        }
-
-
-        /* Light patches */
-
-        for(let i=0;i<12;i++){
-
-            const patch =
-                this.add.ellipse(
-                    Phaser.Math.Between(
-                        30,
-                        750
-                    ),
-                    Phaser.Math.Between(
-                        520,
-                        1080
-                    ),
-                    Phaser.Math.Between(
-                        60,
-                        140
-                    ),
-                    Phaser.Math.Between(
-                        8,
-                        18
-                    ),
-                    0xffffff,
-                    0.07
-                );
-
-            this.tweens.add({
-                targets:patch,
-                alpha:{
-                    from:0.03,
-                    to:0.13
-                },
-                scaleX:{
-                    from:0.8,
-                    to:1.2
-                },
-                duration:
-                    Phaser.Math.Between(
-                        1800,
-                        3300
-                    ),
-                yoyo:true,
-                repeat:-1,
-                delay:
-                    Phaser.Math.Between(
-                        0,
-                        1200
-                    )
-            });
-        }
-
-
-        /* Bubbles */
-
-        for(let i=0;i<18;i++){
-
-            const radius =
-                Phaser.Math.Between(
-                    3,
-                    8
-                );
-
-            const bubble =
-                this.add.circle(
-                    Phaser.Math.Between(
-                        20,
-                        760
-                    ),
-                    Phaser.Math.Between(
-                        550,
-                        1080
-                    ),
-                    radius,
-                    0xffffff,
-                    0.16
-                );
-
-            bubble.setStrokeStyle(
-                1.5,
-                0xffffff,
-                0.28
-            );
-
-            this.decorBubbles.push(
-                bubble
-            );
-
-            this.animateBubble(
-                bubble
-            );
-        }
-    }
-
-
-    animateBubble(bubble){
-
-        const startY =
-            Phaser.Math.Between(
-                650,
-                1100
-            );
-
-        bubble.y = startY;
-
-        bubble.x =
-            Phaser.Math.Between(
-                25,
-                755
-            );
-
-        bubble.alpha =
-            Phaser.Math.FloatBetween(
-                0.08,
-                0.24
-            );
-
-        this.tweens.add({
-
-            targets:bubble,
-
-            y:
-                Phaser.Math.Between(
-                    500,
-                    570
-                ),
-
-            x:
-                bubble.x +
-                Phaser.Math.Between(
-                    -50,
-                    50
-                ),
-
-            alpha:0,
-
-            duration:
-                Phaser.Math.Between(
-                    2800,
-                    5200
-                ),
-
-            delay:
-                Phaser.Math.Between(
-                    0,
-                    1800
-                ),
-
-            ease:"Sine.easeInOut",
-
-            onComplete:()=>{
-                this.animateBubble(
-                    bubble
+                wave.lineTo(
+                    x,
+                    yy
                 );
             }
-        });
+        }
+
+        wave.strokePath();
     }
+}
 
 
 /* =========================================================
    HEADER
 ========================================================= */
 
-    buildTopHeader(){
+buildHeader(){
 
-        const header =
-            this.add.graphics();
+    const h=
+        this.add.graphics();
 
-        header.fillStyle(
-            0x073b57,
-            0.96
-        );
+    h.fillStyle(
+        0x075677,
+        .97
+    );
 
-        header.fillRoundedRect(
-            15,
-            12,
-            750,
-            75,
-            22
-        );
+    h.fillRoundedRect(
+        16,
+        15,
+        788,
+        72,
+        22
+    );
 
-        header.fillStyle(
-            0x0c5872,
-            1
-        );
+    h.fillStyle(
+        0x0f7899,
+        1
+    );
 
-        header.fillRoundedRect(
-            22,
-            19,
-            736,
-            60,
-            17
-        );
-
-
-        /* Home */
-
-        const home =
-            this.add.text(
-                42,
-                48,
-                "⌂",
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"37px",
-                    fontStyle:"bold",
-                    color:"#ffffff"
-                }
-            )
-            .setOrigin(
-                0.5
-            )
-            .setInteractive({
-                useHandCursor:true
-            });
-
-        home.on(
-            "pointerdown",
-            ()=>{
-                window.location.href =
-                    "index.html";
-            }
-        );
+    h.fillRoundedRect(
+        24,
+        22,
+        772,
+        57,
+        17
+    );
 
 
+    const home=
         this.add.text(
-            85,
-            32,
-            "WATER HOP FROG",
+            48,
+            50,
+            "⌂",
             {
                 fontFamily:
-                    "Trebuchet MS, Arial",
-                fontSize:"26px",
+                    "Arial",
+                fontSize:"38px",
                 fontStyle:"bold",
                 color:"#ffffff"
             }
+        )
+        .setOrigin(.5)
+        .setInteractive({
+            useHandCursor:true
+        });
+
+    home.on(
+        "pointerdown",
+        ()=>{
+
+            window.location.href=
+                "index.html";
+        }
+    );
+
+
+    this.add.text(
+        87,
+        31,
+        "LABEL THE FROGS!",
+        {
+            fontFamily:
+                "Trebuchet MS, Arial",
+            fontSize:"27px",
+            fontStyle:"bold",
+            color:"#ffffff"
+        }
+    );
+
+
+    this.add.text(
+        87,
+        59,
+        "Objek Menyerap Air • SET 2",
+        {
+            fontFamily:
+                "Trebuchet MS, Arial",
+            fontSize:"15px",
+            color:"#d1f7ff"
+        }
+    );
+
+
+    this.soundButton=
+        this.add.text(
+            755,
+            51,
+            "🔊",
+            {
+                fontFamily:
+                    "Arial",
+                fontSize:"28px"
+            }
+        )
+        .setOrigin(.5)
+        .setInteractive({
+            useHandCursor:true
+        });
+
+
+    this.soundButton.on(
+        "pointerdown",
+        ()=>{
+
+            audio.init();
+
+            const on=
+                audio.toggle();
+
+            this.soundButton
+                .setText(
+                    on ?
+                    "🔊" :
+                    "🔇"
+                );
+        }
+    );
+
+}
+
+
+/* =========================================================
+   QUESTION
+========================================================= */
+
+buildQuestionCard(){
+
+    const shadow=
+        this.add.graphics();
+
+    shadow.fillStyle(
+        0x003e58,
+        .19
+    );
+
+    shadow.fillRoundedRect(
+        30,
+        107,
+        770,
+        392,
+        27
+    );
+
+
+    const card=
+        this.add.graphics();
+
+    card.fillStyle(
+        0xfff3d1,
+        1
+    );
+
+    card.fillRoundedRect(
+        20,
+        98,
+        770,
+        390,
+        27
+    );
+
+    card.lineStyle(
+        5,
+        0xffffff,
+        .9
+    );
+
+    card.strokeRoundedRect(
+        20,
+        98,
+        770,
+        390,
+        27
+    );
+
+
+    /* doodles */
+
+    const doodle=
+        this.add.graphics();
+
+    doodle.lineStyle(
+        2,
+        0xc89d50,
+        .16
+    );
+
+    doodle.strokeCircle(
+        735,
+        145,
+        27
+    );
+
+    doodle.strokeCircle(
+        700,
+        435,
+        19
+    );
+
+    doodle.strokeRect(
+        47,
+        405,
+        43,
+        35
+    );
+
+    doodle.lineBetween(
+        52,
+        175,
+        85,
+        145
+    );
+
+    doodle.lineBetween(
+        85,
+        145,
+        103,
+        187
+    );
+
+
+    this.progressText=
+        this.add.text(
+            44,
+            117,
+            "",
+            {
+                fontFamily:
+                    "Trebuchet MS, Arial",
+                fontSize:"18px",
+                fontStyle:"bold",
+                color:"#74602e"
+            }
+        );
+
+
+    this.scoreText=
+        this.add.text(
+            764,
+            117,
+            "",
+            {
+                fontFamily:
+                    "Trebuchet MS, Arial",
+                fontSize:"17px",
+                fontStyle:"bold",
+                color:"#74602e"
+            }
+        )
+        .setOrigin(
+            1,
+            0
+        );
+
+
+    this.progressBar=
+        this.add.graphics();
+
+
+    this.questionText=
+        this.add.text(
+            44,
+            164,
+            "",
+            {
+                fontFamily:
+                    "Trebuchet MS, Arial",
+                fontSize:"25px",
+                fontStyle:"bold",
+                color:"#382f1c",
+
+                wordWrap:{
+                    width:715,
+                    useAdvancedWrap:true
+                },
+
+                lineSpacing:3
+            }
+        );
+
+
+    const positions=[
+        [43,305],
+        [411,305],
+        [43,387],
+        [411,387]
+    ];
+
+    const letters=[
+        "A",
+        "B",
+        "C",
+        "D"
+    ];
+
+
+    for(
+        let i=0;
+        i<4;
+        i++
+    ){
+
+        const x=
+            positions[i][0];
+
+        const y=
+            positions[i][1];
+
+
+        const box=
+            this.add.graphics();
+
+        box.fillStyle(
+            0xffffff,
+            .80
+        );
+
+        box.fillRoundedRect(
+            x,
+            y,
+            345,
+            70,
+            14
+        );
+
+        box.lineStyle(
+            2,
+            0xd9bd79,
+            .7
+        );
+
+        box.strokeRoundedRect(
+            x,
+            y,
+            345,
+            70,
+            14
+        );
+
+
+        this.add.circle(
+            x+31,
+            y+35,
+            21,
+            0xf49b24,
+            1
         );
 
 
         this.add.text(
-            85,
-            60,
-            "Objek Menyerap Air • SET 2",
+            x+31,
+            y+35,
+            letters[i],
             {
                 fontFamily:
                     "Trebuchet MS, Arial",
-                fontSize:"16px",
-                color:"#bfefff"
+                fontSize:"22px",
+                fontStyle:"bold",
+                color:"#ffffff"
             }
-        );
+        )
+        .setOrigin(.5);
 
 
-        this.soundButton =
+        const text=
             this.add.text(
-                726,
-                49,
-                "🔊",
-                {
-                    fontFamily:"Arial",
-                    fontSize:"28px"
-                }
-            )
-            .setOrigin(
-                0.5
-            )
-            .setInteractive({
-                useHandCursor:true
-            });
-
-        this.soundButton.on(
-            "pointerdown",
-            ()=>{
-
-                audio.init();
-
-                const enabled =
-                    audio.toggle();
-
-                this.soundButton.setText(
-                    enabled ?
-                    "🔊" :
-                    "🔇"
-                );
-            }
-        );
-    }
-
-
-/* =========================================================
-   QUESTION PANEL
-========================================================= */
-
-    buildQuestionPanel(){
-
-        const shadow =
-            this.add.graphics();
-
-        shadow.fillStyle(
-            0x00394c,
-            0.18
-        );
-
-        shadow.fillRoundedRect(
-            28,
-            105,
-            730,
-            390,
-            28
-        );
-
-
-        const panel =
-            this.add.graphics();
-
-        panel.fillStyle(
-            0xffffff,
-            0.97
-        );
-
-        panel.fillRoundedRect(
-            20,
-            96,
-            730,
-            390,
-            28
-        );
-
-        panel.lineStyle(
-            4,
-            0x9ce9f4,
-            1
-        );
-
-        panel.strokeRoundedRect(
-            20,
-            96,
-            730,
-            390,
-            28
-        );
-
-
-        this.progressGraphics =
-            this.add.graphics();
-
-
-        this.progressText =
-            this.add.text(
-                42,
-                121,
+                x+62,
+                y+10,
                 "",
                 {
                     fontFamily:
                         "Trebuchet MS, Arial",
-                    fontSize:"18px",
+                    fontSize:"16px",
                     fontStyle:"bold",
-                    color:"#17647a"
-                }
-            );
-
-
-        this.scoreText =
-            this.add.text(
-                730,
-                121,
-                "",
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"17px",
-                    fontStyle:"bold",
-                    color:"#17647a"
-                }
-            )
-            .setOrigin(
-                1,
-                0
-            );
-
-
-        this.questionText =
-            this.add.text(
-                42,
-                170,
-                "",
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"27px",
-                    fontStyle:"bold",
-                    color:"#153b48",
+                    color:"#403821",
 
                     wordWrap:{
-                        width:690,
+                        width:270,
                         useAdvancedWrap:true
                     },
 
-                    lineSpacing:4
+                    lineSpacing:0
                 }
             );
 
-
-        const choicePositions = [
-            [42, 315],
-            [397,315],
-            [42,395],
-            [397,395]
-        ];
-
-        const letters = [
-            "A",
-            "B",
-            "C",
-            "D"
-        ];
-
-        for(let i=0;i<4;i++){
-
-            const choiceBg =
-                this.add.graphics();
-
-            choiceBg.fillStyle(
-                0xeafaff,
-                1
-            );
-
-            choiceBg.fillRoundedRect(
-                choicePositions[i][0],
-                choicePositions[i][1],
-                330,
-                68,
-                14
-            );
-
-            choiceBg.lineStyle(
-                2,
-                0xb2e7f1,
-                1
-            );
-
-            choiceBg.strokeRoundedRect(
-                choicePositions[i][0],
-                choicePositions[i][1],
-                330,
-                68,
-                14
-            );
-
-
-            const letterCircle =
-                this.add.circle(
-                    choicePositions[i][0] + 29,
-                    choicePositions[i][1] + 34,
-                    20,
-                    0x1887a6,
-                    1
-                );
-
-
-            this.add.text(
-                choicePositions[i][0] + 29,
-                choicePositions[i][1] + 34,
-                letters[i],
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"22px",
-                    fontStyle:"bold",
-                    color:"#ffffff"
-                }
-            )
-            .setOrigin(
-                0.5
-            );
-
-
-            const t =
-                this.add.text(
-                    choicePositions[i][0] + 58,
-                    choicePositions[i][1] + 10,
-                    "",
-                    {
-                        fontFamily:
-                            "Trebuchet MS, Arial",
-                        fontSize:"17px",
-                        fontStyle:"bold",
-                        color:"#244a58",
-
-                        wordWrap:{
-                            width:258,
-                            useAdvancedWrap:true
-                        },
-
-                        lineSpacing:0
-                    }
-                );
-
-            this.answerTexts.push(
-                t
-            );
-        }
+        this.answerTexts.push(
+            text
+        );
     }
+
+}
 
 
 /* =========================================================
-   POND DECORATION
+   BOARD
 ========================================================= */
 
-    buildPondDecor(){
+buildPlayBoard(){
 
-        /* banks */
+    const boardShadow=
+        this.add.graphics();
 
-        const banks =
-            this.add.graphics();
+    boardShadow.fillStyle(
+        0x014f70,
+        .22
+    );
 
-        banks.fillStyle(
-            0x2f8f52,
-            0.95
-        );
-
-        banks.fillEllipse(
-            -25,
-            790,
-            140,
-            690
-        );
-
-        banks.fillEllipse(
-            805,
-            790,
-            140,
-            690
-        );
-
-        banks.fillStyle(
-            0x66bb61,
-            0.85
-        );
-
-        banks.fillEllipse(
-            8,
-            760,
-            75,
-            630
-        );
-
-        banks.fillEllipse(
-            772,
-            760,
-            75,
-            630
-        );
+    boardShadow.fillRoundedRect(
+        41,
+        520,
+        748,
+        525,
+        24
+    );
 
 
-        /* Stones */
+    const board=
+        this.add.graphics();
 
-        for(let i=0;i<8;i++){
+    board.fillStyle(
+        0xf8e2ae,
+        1
+    );
 
-            const side =
-                i % 2 === 0 ?
-                1 :
-                0;
+    board.fillRoundedRect(
+        29,
+        508,
+        758,
+        525,
+        24
+    );
 
-            const x =
-                side ?
-                Phaser.Math.Between(
-                    8,
-                    48
-                ) :
-                Phaser.Math.Between(
-                    730,
-                    772
-                );
+    board.lineStyle(
+        7,
+        0xffffff,
+        .85
+    );
 
-            const y =
-                Phaser.Math.Between(
-                    550,
-                    1070
-                );
-
-            this.add.ellipse(
-                x,
-                y,
-                Phaser.Math.Between(
-                    24,
-                    48
-                ),
-                Phaser.Math.Between(
-                    15,
-                    26
-                ),
-                Phaser.Math.RND.pick([
-                    0xb9c3a1,
-                    0x8ba087,
-                    0xd5caaa
-                ]),
-                0.9
-            );
-        }
+    board.strokeRoundedRect(
+        29,
+        508,
+        758,
+        525,
+        24
+    );
 
 
-        /* Reeds */
+    /* inner paper edge */
 
-        const reeds =
-            this.add.graphics();
+    board.lineStyle(
+        3,
+        0xd6a85d,
+        .42
+    );
 
-        reeds.lineStyle(
-            6,
-            0x277c43,
-            1
-        );
+    board.strokeRoundedRect(
+        43,
+        522,
+        730,
+        496,
+        17
+    );
 
-        const reedData = [
-            [33,590],
-            [55,710],
-            [28,900],
-            [747,620],
-            [725,820],
-            [752,995]
-        ];
 
-        reedData.forEach(
-            ([x,y])=>{
+    /* faint doodles */
 
-                reeds.lineBetween(
-                    x,
-                    y,
-                    x - 8,
-                    y - 60
-                );
+    const d=
+        this.add.graphics();
 
-                reeds.lineBetween(
-                    x + 8,
-                    y,
-                    x + 18,
-                    y - 72
-                );
+    d.lineStyle(
+        2,
+        0xa98246,
+        .12
+    );
 
-                reeds.lineBetween(
-                    x - 5,
-                    y,
-                    x - 25,
-                    y - 48
-                );
+    d.strokeCircle(
+        95,
+        945,
+        46
+    );
+
+    d.strokeCircle(
+        720,
+        875,
+        34
+    );
+
+    d.strokeRect(
+        655,
+        555,
+        50,
+        35
+    );
+
+    d.lineBetween(
+        83,
+        575,
+        123,
+        545
+    );
+
+    d.lineBetween(
+        123,
+        545,
+        148,
+        589
+    );
+
+}
+
+
+/* =========================================================
+   STATUS BAR
+========================================================= */
+
+buildStatus(){
+
+    this.statusBox=
+        this.add.graphics();
+
+    this.statusBox.fillStyle(
+        0xf18c13,
+        1
+    );
+
+    this.statusBox.fillRoundedRect(
+        185,
+        1000,
+        450,
+        62,
+        18
+    );
+
+    this.statusBox.lineStyle(
+        4,
+        0xffc74b,
+        1
+    );
+
+    this.statusBox.strokeRoundedRect(
+        185,
+        1000,
+        450,
+        62,
+        18
+    );
+
+
+    this.statusText=
+        this.add.text(
+            410,
+            1031,
+            "Tekan katak untuk tukar label",
+            {
+                fontFamily:
+                    "Trebuchet MS, Arial",
+                fontSize:"20px",
+                fontStyle:"bold",
+                color:"#ffffff",
+                stroke:"#6c3900",
+                strokeThickness:4
             }
-        );
+        )
+        .setOrigin(.5)
+        .setDepth(200);
+
+}
 
 
-        /* small floating flowers */
+/* =========================================================
+   RENDER QUESTION
+========================================================= */
 
-        this.makeFlower(
-            100,
-            610,
-            0xffa7cf
-        );
+renderQuestion(){
 
-        this.makeFlower(
-            690,
-            790,
-            0xfff0a0
-        );
-
-        this.makeFlower(
-            110,
-            1020,
-            0xffffff
-        );
-
-        this.makeFlower(
-            675,
-            1015,
-            0xffc3de
-        );
-    }
-
-
-    makeFlower(
-        x,
-        y,
-        colour
+    if(
+        this.questionIndex >=
+        QUESTIONS.length
     ){
 
-        const c =
-            this.add.container(
-                x,
-                y
-            );
+        this.completeGame();
 
-        for(let i=0;i<6;i++){
-
-            const angle =
-                Phaser.Math.DegToRad(
-                    i * 60
-                );
-
-            const px =
-                Math.cos(angle) * 11;
-
-            const py =
-                Math.sin(angle) * 11;
-
-            c.add(
-                this.add.ellipse(
-                    px,
-                    py,
-                    16,
-                    11,
-                    colour,
-                    0.95
-                )
-            );
-        }
-
-        c.add(
-            this.add.circle(
-                0,
-                0,
-                7,
-                0xffcf4a,
-                1
-            )
-        );
-
-        this.tweens.add({
-            targets:c,
-            angle:{
-                from:-5,
-                to:5
-            },
-            duration:
-                Phaser.Math.Between(
-                    1800,
-                    2600
-                ),
-            yoyo:true,
-            repeat:-1
-        });
+        return;
     }
 
 
-/* =========================================================
-   START LILY
-========================================================= */
-
-    buildStartPad(){
-
-        const shadow =
-            this.add.ellipse(
-                this.frogStartX + 4,
-                this.frogStartY + 18,
-                145,
-                48,
-                0x064458,
-                0.24
-            );
-
-        const leaf =
-            this.add.ellipse(
-                this.frogStartX,
-                this.frogStartY,
-                155,
-                73,
-                0x318b4d,
-                1
-            );
-
-        leaf.setStrokeStyle(
-            6,
-            0x1e6c3b,
-            1
-        );
-
-        this.add.ellipse(
-            this.frogStartX - 15,
-            this.frogStartY - 9,
-            80,
-            24,
-            0x58b96a,
-            0.65
-        );
-
-        const vein =
-            this.add.graphics();
-
-        vein.lineStyle(
-            3,
-            0x1e6c3b,
-            0.7
-        );
-
-        vein.lineBetween(
-            this.frogStartX,
-            this.frogStartY,
-            this.frogStartX - 54,
-            this.frogStartY - 15
-        );
-
-        vein.lineBetween(
-            this.frogStartX,
-            this.frogStartY,
-            this.frogStartX + 50,
-            this.frogStartY + 7
-        );
-    }
+    this.locked=false;
 
 
-/* =========================================================
-   ANSWER LILY PADS
-========================================================= */
-
-    buildAnswerPads(){
-
-        this.destroyAnswerPads();
-
-        const positions = [
-
-            {
-                x:175,
-                y:650
-            },
-
-            {
-                x:605,
-                y:665
-            },
-
-            {
-                x:235,
-                y:825
-            },
-
-            {
-                x:550,
-                y:840
-            }
-
+    const q=
+        QUESTIONS[
+            this.questionIndex
         ];
 
 
-        Phaser.Utils.Array.Shuffle(
-            positions
-        );
-
-        const letters = [
-            "A",
-            "B",
-            "C",
-            "D"
-        ];
+    this.questionText.setText(
+        `${this.questionIndex+1}. [${q.tp}] ${q.q}`
+    );
 
 
-        for(let i=0;i<4;i++){
-
-            const position =
-                positions[i];
-
-            const jitterX =
-                Phaser.Math.Between(
-                    -20,
-                    20
-                );
-
-            const jitterY =
-                Phaser.Math.Between(
-                    -10,
-                    10
-                );
-
-            const pad =
-                this.createAnswerPad(
-                    letters[i],
-                    position.x + jitterX,
-                    position.y + jitterY
-                );
-
-            this.pads.push(
-                pad
-            );
-        }
-    }
-
-
-    createAnswerPad(
-        letter,
-        x,
-        y
+    for(
+        let i=0;
+        i<4;
+        i++
     ){
 
-        const container =
-            this.add.container(
-                x,
-                y
-            );
-
-        container.letter =
-            letter;
-
-        container.baseX =
-            x;
-
-        container.baseY =
-            y;
-
-        container.setDepth(
-            20
-        );
-
-
-        const shadow =
-            this.add.ellipse(
-                5,
-                14,
-                132,
-                45,
-                0x003d4f,
-                0.26
-            );
-
-
-        const leaf =
-            this.add.ellipse(
-                0,
-                0,
-                142,
-                74,
-                0x42a95f,
-                1
-            );
-
-        leaf.setStrokeStyle(
-            5,
-            0x176f3c,
-            1
-        );
-
-
-        const shine =
-            this.add.ellipse(
-                -17,
-                -12,
-                76,
-                20,
-                0x80d77f,
-                0.55
-            );
-
-
-        const notch =
-            this.add.triangle(
-                53,
-                -7,
-
-                0,
-                -17,
-
-                35,
-                0,
-
-                0,
-                17,
-
-                0x229050,
-                1
-            );
-
-
-        const vein =
-            this.add.graphics();
-
-        vein.lineStyle(
-            3,
-            0x176f3c,
-            0.75
-        );
-
-        vein.lineBetween(
-            -3,
-            0,
-            -48,
-            -14
-        );
-
-        vein.lineBetween(
-            -3,
-            0,
-            -36,
-            18
-        );
-
-        vein.lineBetween(
-            -3,
-            0,
-            38,
-            12
-        );
-
-
-        const letterCircle =
-            this.add.circle(
-                0,
-                -2,
-                30,
-                0xffffff,
-                0.93
-            );
-
-        letterCircle.setStrokeStyle(
-            4,
-            0x166887,
-            1
-        );
-
-
-        const letterText =
-            this.add.text(
-                0,
-                -1,
-                letter,
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"39px",
-                    fontStyle:"bold",
-                    color:"#12647c"
-                }
-            )
-            .setOrigin(
-                0.5
-            );
-
-
-        container.add([
-            shadow,
-            leaf,
-            shine,
-            notch,
-            vein,
-            letterCircle,
-            letterText
-        ]);
-
-
-        container.leaf =
-            leaf;
-
-        container.letterCircle =
-            letterCircle;
-
-        container.letterText =
-            letterText;
-
-
-        container.setSize(
-            160,
-            100
-        );
-
-        container.setInteractive(
-            new Phaser.Geom.Ellipse(
-                0,
-                0,
-                170,
-                110
-            ),
-            Phaser.Geom.Ellipse.Contains
-        );
-
-
-        container.on(
-            "pointerdown",
-            ()=>{
-
-                audio.init();
-
-                this.chooseAnswer(
-                    letter,
-                    container
-                );
-            }
-        );
-
-
-        container.on(
-            "pointerover",
-            ()=>{
-
-                if(
-                    !this.locked &&
-                    !this.finished
-                ){
-
-                    this.tweens.add({
-                        targets:container,
-                        scaleX:1.08,
-                        scaleY:1.08,
-                        duration:100
-                    });
-                }
-            }
-        );
-
-
-        container.on(
-            "pointerout",
-            ()=>{
-
-                if(
-                    !this.locked &&
-                    !this.finished
-                ){
-
-                    this.tweens.add({
-                        targets:container,
-                        scaleX:1,
-                        scaleY:1,
-                        duration:100
-                    });
-                }
-            }
-        );
-
-
-        const bob =
-            this.tweens.add({
-
-                targets:container,
-
-                y:
-                    y +
-                    Phaser.Math.Between(
-                        7,
-                        13
-                    ),
-
-                angle:
-                    Phaser.Math.Between(
-                        -3,
-                        3
-                    ),
-
-                duration:
-                    Phaser.Math.Between(
-                        1200,
-                        1900
-                    ),
-
-                ease:"Sine.easeInOut",
-
-                yoyo:true,
-
-                repeat:-1,
-
-                delay:
-                    Phaser.Math.Between(
-                        0,
-                        700
-                    )
-            });
-
-        this.padTweens.push(
-            bob
-        );
-
-        return container;
-    }
-
-
-    destroyAnswerPads(){
-
-        this.padTweens.forEach(
-            tween=>{
-
-                if(tween){
-                    tween.stop();
-                }
-            }
-        );
-
-        this.padTweens = [];
-
-        this.pads.forEach(
-            pad=>{
-
-                if(
-                    pad &&
-                    pad.scene
-                ){
-                    pad.destroy();
-                }
-            }
-        );
-
-        this.pads = [];
-    }
-
-
-/* =========================================================
-   FROG
-========================================================= */
-
-    buildFrog(){
-
-        this.frogShadow =
-            this.add.ellipse(
-                this.frogStartX,
-                this.frogStartY + 24,
-                82,
-                22,
-                0x003644,
-                0.30
-            )
-            .setDepth(
-                28
-            );
-
-
-        const frog =
-            this.add.container(
-                this.frogStartX,
-                this.frogStartY - 20
-            )
-            .setDepth(
-                35
-            );
-
-
-        /* back legs */
-
-        const leftLeg =
-            this.add.ellipse(
-                -32,
-                20,
-                42,
-                24,
-                0x43b74c,
-                1
-            )
-            .setRotation(
-                -0.35
-            );
-
-        const rightLeg =
-            this.add.ellipse(
-                32,
-                20,
-                42,
-                24,
-                0x43b74c,
-                1
-            )
-            .setRotation(
-                0.35
-            );
-
-
-        /* body */
-
-        const body =
-            this.add.ellipse(
-                0,
-                7,
-                72,
-                61,
-                0x4fc85a,
-                1
-            );
-
-        body.setStrokeStyle(
-            4,
-            0x227f39,
-            1
-        );
-
-
-        /* head */
-
-        const head =
-            this.add.ellipse(
-                0,
-                -20,
-                80,
-                59,
-                0x5ad966,
-                1
-            );
-
-        head.setStrokeStyle(
-            4,
-            0x227f39,
-            1
-        );
-
-
-        /* eyes */
-
-        const eyeL =
-            this.add.circle(
-                -24,
-                -44,
-                16,
-                0x63dd6c,
-                1
-            );
-
-        eyeL.setStrokeStyle(
-            3,
-            0x227f39,
-            1
-        );
-
-
-        const eyeR =
-            this.add.circle(
-                24,
-                -44,
-                16,
-                0x63dd6c,
-                1
-            );
-
-        eyeR.setStrokeStyle(
-            3,
-            0x227f39,
-            1
-        );
-
-
-        const eyeWhiteL =
-            this.add.circle(
-                -24,
-                -45,
-                10,
-                0xffffff,
-                1
-            );
-
-        const eyeWhiteR =
-            this.add.circle(
-                24,
-                -45,
-                10,
-                0xffffff,
-                1
-            );
-
-
-        const pupilL =
-            this.add.circle(
-                -23,
-                -44,
-                5,
-                0x18352b,
-                1
-            );
-
-        const pupilR =
-            this.add.circle(
-                23,
-                -44,
-                5,
-                0x18352b,
-                1
-            );
-
-
-        /* cheeks */
-
-        const cheekL =
-            this.add.circle(
-                -29,
-                -16,
-                7,
-                0xff91a5,
-                0.75
-            );
-
-        const cheekR =
-            this.add.circle(
-                29,
-                -16,
-                7,
-                0xff91a5,
-                0.75
-            );
-
-
-        /* mouth */
-
-        const mouth =
-            this.add.graphics();
-
-        mouth.lineStyle(
-            3,
-            0x175c35,
-            1
-        );
-
-        mouth.beginPath();
-
-        mouth.moveTo(
-            -11,
-            -8
-        );
-
-        mouth.lineTo(
-            0,
-            -3
-        );
-
-        mouth.lineTo(
-            11,
-            -8
-        );
-
-        mouth.strokePath();
-
-
-        /* front feet */
-
-        const armL =
-            this.add.ellipse(
-                -24,
-                25,
-                14,
-                30,
-                0x55ce5e,
-                1
-            )
-            .setRotation(
-                0.30
-            );
-
-        const armR =
-            this.add.ellipse(
-                24,
-                25,
-                14,
-                30,
-                0x55ce5e,
-                1
-            )
-            .setRotation(
-                -0.30
-            );
-
-
-        frog.add([
-            leftLeg,
-            rightLeg,
-            body,
-            head,
-            eyeL,
-            eyeR,
-            eyeWhiteL,
-            eyeWhiteR,
-            pupilL,
-            pupilR,
-            cheekL,
-            cheekR,
-            mouth,
-            armL,
-            armR
-        ]);
-
-
-        this.frog =
-            frog;
-
-
-        this.tweens.add({
-
-            targets:this.frog,
-
-            scaleY:{
-                from:0.98,
-                to:1.03
-            },
-
-            scaleX:{
-                from:1.02,
-                to:0.98
-            },
-
-            duration:700,
-
-            yoyo:true,
-
-            repeat:-1,
-
-            ease:"Sine.easeInOut"
-        });
-    }
-
-
-/* =========================================================
-   FEEDBACK
-========================================================= */
-
-    buildFeedback(){
-
-        this.feedbackText =
-            this.add.text(
-                390,
-                540,
-                "Pilih daun teratai A, B, C atau D",
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"21px",
-                    fontStyle:"bold",
-                    color:"#ffffff",
-
-                    backgroundColor:
-                        "rgba(5,80,105,0.76)",
-
-                    padding:{
-                        x:18,
-                        y:9
-                    }
-                }
-            )
-            .setOrigin(
-                0.5
-            )
-            .setDepth(
-                60
-            );
-    }
-
-
-/* =========================================================
-   QUESTION RENDER
-========================================================= */
-
-    renderQuestion(){
-
-        if(
-            this.questionIndex >=
-            QUESTIONS.length
-        ){
-            this.completeGame();
-            return;
-        }
-
-
-        const data =
-            QUESTIONS[
-                this.questionIndex
-            ];
-
-
-        this.questionText.setText(
-            `${this.questionIndex + 1}. [${data.tp}] ${data.q}`
-        );
-
-
-        for(let i=0;i<4;i++){
-
-            this.answerTexts[i]
-                .setText(
-                    data.options[i]
-                );
-        }
-
-
-        this.updateProgress();
-
-        this.feedbackText
+        this.answerTexts[i]
             .setText(
-                "Pilih daun teratai A, B, C atau D"
-            )
-            .setColor(
-                "#ffffff"
-            )
-            .setBackgroundColor(
-                "rgba(5,80,105,0.76)"
+                q.options[i]
             );
-
-
-        this.resetPadColours();
     }
+
+
+    this.progressText
+        .setText(
+            `SOALAN ${this.questionIndex+1} / 25`
+        );
+
+
+    this.scoreText
+        .setText(
+            `✓ ${this.correctCount}   ✦ ${this.wrongCount}`
+        );
+
+
+    this.drawProgress();
+
+
+    this.statusText
+        .setText(
+            "Tekan katak untuk tukar label"
+        );
+
+
+    this.createFrogLevel();
+
+}
 
 
 /* =========================================================
    PROGRESS
 ========================================================= */
 
-    updateProgress(){
+drawProgress(){
 
-        const current =
-            Math.min(
-                this.questionIndex + 1,
-                QUESTIONS.length
-            );
+    const x=44;
+    const y=148;
+    const w=715;
+    const h=9;
 
-        this.progressText.setText(
-            `SOALAN ${current} / ${QUESTIONS.length}`
-        );
-
-
-        this.scoreText.setText(
-            `✓ ${this.correctCount}   ✦ Salah ${this.wrongCount}`
-        );
+    const value=
+        this.questionIndex /
+        QUESTIONS.length;
 
 
-        const barX = 42;
-        const barY = 151;
-        const barW = 688;
-        const barH = 10;
-
-        const progress =
-            this.questionIndex /
-            QUESTIONS.length;
+    this.progressBar.clear();
 
 
-        this.progressGraphics.clear();
+    this.progressBar.fillStyle(
+        0xe1cfa0,
+        1
+    );
+
+    this.progressBar.fillRoundedRect(
+        x,
+        y,
+        w,
+        h,
+        5
+    );
 
 
-        this.progressGraphics.fillStyle(
-            0xd5edf3,
+    if(
+        value > 0
+    ){
+
+        this.progressBar.fillStyle(
+            0x51b765,
             1
         );
 
-        this.progressGraphics.fillRoundedRect(
-            barX,
-            barY,
-            barW,
-            barH,
+        this.progressBar.fillRoundedRect(
+            x,
+            y,
+            w*value,
+            h,
             5
         );
-
-
-        if(progress > 0){
-
-            this.progressGraphics.fillStyle(
-                0x28af70,
-                1
-            );
-
-            this.progressGraphics.fillRoundedRect(
-                barX,
-                barY,
-                barW * progress,
-                barH,
-                5
-            );
-        }
     }
+
+}
 
 
 /* =========================================================
-   KEYBOARD
+   HOW MANY FROGS
 ========================================================= */
 
-    keyboardAnswer(letter){
+getFrogCount(){
 
-        if(
-            this.locked ||
-            this.finished
-        ){
-            return;
-        }
+    const q=
+        this.questionIndex+1;
 
-        const pad =
-            this.pads.find(
-                p =>
-                    p.letter === letter
-            );
 
-        if(pad){
-            this.chooseAnswer(
-                letter,
-                pad
-            );
-        }
+    if(q<=3){
+        return 6;
     }
+
+    if(q<=6){
+        return 8;
+    }
+
+    if(q<=9){
+        return 10;
+    }
+
+    if(q<=12){
+        return 12;
+    }
+
+    if(q<=15){
+        return 14;
+    }
+
+    if(q<=18){
+        return 16;
+    }
+
+    if(q<=21){
+        return 18;
+    }
+
+    if(q<=23){
+        return 20;
+    }
+
+    return 24;
+
+}
 
 
 /* =========================================================
-   CHOOSE ANSWER
+   CREATE FROG LEVEL
 ========================================================= */
 
-    chooseAnswer(
-        letter,
-        pad
+createFrogLevel(){
+
+    this.destroyFrogs();
+
+
+    const count=
+        this.getFrogCount();
+
+
+    const config=
+        this.getGridConfig(
+            count
+        );
+
+
+    const labels=[
+        "A",
+        "B",
+        "C",
+        "D"
+    ];
+
+
+    let index=0;
+
+
+    for(
+        let row=0;
+        row<config.rows;
+        row++
     ){
 
-        if(
-            this.locked ||
-            this.finished
+        const itemsThisRow=
+            Math.min(
+                config.cols,
+                count-index
+            );
+
+
+        const rowWidth=
+            (itemsThisRow-1)*
+            config.gapX;
+
+
+        const startX=
+            410-
+            rowWidth/2;
+
+
+        for(
+            let col=0;
+            col<itemsThisRow;
+            col++
         ){
-            return;
+
+            if(
+                index >= count
+            ){
+                break;
+            }
+
+
+            const x=
+                startX+
+                col*
+                config.gapX;
+
+
+            const y=
+                config.startY+
+                row*
+                config.gapY;
+
+
+            const randomLabel=
+                Phaser.Utils.Array.GetRandom(
+                    labels
+                );
+
+
+            const frog=
+                this.createFrog(
+                    x,
+                    y,
+                    config.scale,
+                    randomLabel,
+                    index
+                );
+
+
+            this.frogs.push(
+                frog
+            );
+
+
+            index++;
         }
+    }
 
 
-        this.locked = true;
+    /*
+    prevent accidental completed board at start
+    */
 
-        audio.init();
-        audio.jump();
+    const allSame=
+        this.getUniformLabel();
 
+    if(allSame){
 
-        const data =
-            QUESTIONS[
-                this.questionIndex
+        const last=
+            this.frogs[
+                this.frogs.length-1
             ];
 
+        last.label=
+            allSame==="A" ?
+            "B" :
+            "A";
 
-        const isCorrect =
-            letter === data.answer;
-
-
-        this.jumpFrogTo(
-            pad.x,
-            pad.y - 23,
-
-            ()=>{
-
-                if(isCorrect){
-
-                    this.handleCorrect(
-                        pad
-                    );
-
-                }else{
-
-                    this.handleWrong(
-                        pad
-                    );
-                }
-            }
+        this.updateFrogLabel(
+            last
         );
     }
 
+}
+
 
 /* =========================================================
-   FROG JUMP
+   GRID
 ========================================================= */
 
-    jumpFrogTo(
-        targetX,
-        targetY,
-        callback
-    ){
+getGridConfig(count){
 
-        const startX =
-            this.frog.x;
+    if(count<=6){
 
-        const startY =
-            this.frog.y;
+        return{
+            cols:3,
+            rows:2,
+            gapX:190,
+            gapY:180,
+            startY:655,
+            scale:1.15
+        };
 
-        const startShadowX =
-            this.frogShadow.x;
-
-        const startShadowY =
-            this.frogShadow.y;
-
-
-        const duration =
-            520;
-
-
-        this.tweens.addCounter({
-
-            from:0,
-            to:1,
-
-            duration,
-
-            ease:"Sine.easeInOut",
-
-            onUpdate:(tween)=>{
-
-                const t =
-                    tween.getValue();
-
-                const arc =
-                    Math.sin(
-                        Math.PI * t
-                    ) * 105;
-
-
-                this.frog.x =
-                    Phaser.Math.Linear(
-                        startX,
-                        targetX,
-                        t
-                    );
-
-                this.frog.y =
-                    Phaser.Math.Linear(
-                        startY,
-                        targetY,
-                        t
-                    ) - arc;
-
-
-                this.frogShadow.x =
-                    Phaser.Math.Linear(
-                        startShadowX,
-                        targetX,
-                        t
-                    );
-
-                this.frogShadow.y =
-                    Phaser.Math.Linear(
-                        startShadowY,
-                        targetY + 43,
-                        t
-                    );
-
-
-                const shadowScale =
-                    1 -
-                    Math.sin(
-                        Math.PI * t
-                    ) * 0.45;
-
-                this.frogShadow.setScale(
-                    shadowScale
-                );
-
-
-                const frogScale =
-                    1 +
-                    Math.sin(
-                        Math.PI * t
-                    ) * 0.10;
-
-                this.frog.setScale(
-                    frogScale
-                );
-            },
-
-            onComplete:()=>{
-
-                this.frog.setScale(
-                    1
-                );
-
-                this.frogShadow.setScale(
-                    1
-                );
-
-                audio.splash();
-
-                this.createSplash(
-                    targetX,
-                    targetY + 28
-                );
-
-                if(callback){
-                    callback();
-                }
-            }
-        });
     }
 
 
+    if(count<=8){
+
+        return{
+            cols:4,
+            rows:2,
+            gapX:160,
+            gapY:185,
+            startY:655,
+            scale:1.05
+        };
+
+    }
+
+
+    if(count<=12){
+
+        return{
+            cols:4,
+            rows:3,
+            gapX:155,
+            gapY:140,
+            startY:620,
+            scale:.90
+        };
+
+    }
+
+
+    if(count<=16){
+
+        return{
+            cols:4,
+            rows:4,
+            gapX:153,
+            gapY:110,
+            startY:590,
+            scale:.74
+        };
+
+    }
+
+
+    if(count<=20){
+
+        return{
+            cols:5,
+            rows:4,
+            gapX:126,
+            gapY:108,
+            startY:590,
+            scale:.70
+        };
+
+    }
+
+
+    return{
+        cols:6,
+        rows:4,
+        gapX:105,
+        gapY:108,
+        startY:590,
+        scale:.65
+    };
+
+}
+
+
 /* =========================================================
-   SPLASH
+   CREATE ONE FROG
 ========================================================= */
 
-    createSplash(
-        x,
-        y
+createFrog(
+x,
+y,
+scale,
+label,
+index
+){
+
+    const frog=
+        this.add.container(
+            x,
+            y
+        )
+        .setScale(scale)
+        .setDepth(50);
+
+
+    frog.label=
+        label;
+
+    frog.index=
+        index;
+
+
+    /*
+    shadow
+    */
+
+    const shadow=
+        this.add.ellipse(
+            0,
+            43,
+            103,
+            25,
+            0x725b34,
+            .22
+        );
+
+
+    /*
+    rear legs
+    */
+
+    const legL=
+        this.add.ellipse(
+            -39,
+            26,
+            53,
+            28,
+            0x8ec900,
+            1
+        )
+        .setRotation(-.12);
+
+    legL.setStrokeStyle(
+        3,
+        0x213500,
+        1
+    );
+
+
+    const legR=
+        this.add.ellipse(
+            39,
+            26,
+            53,
+            28,
+            0x8ec900,
+            1
+        )
+        .setRotation(.12);
+
+    legR.setStrokeStyle(
+        3,
+        0x213500,
+        1
+    );
+
+
+    /*
+    body
+    */
+
+    const body=
+        this.add.ellipse(
+            0,
+            12,
+            84,
+            72,
+            0x9bd800,
+            1
+        );
+
+    body.setStrokeStyle(
+        4,
+        0x213500,
+        1
+    );
+
+
+    /*
+    belly
+    */
+
+    const belly=
+        this.add.ellipse(
+            10,
+            16,
+            55,
+            49,
+            0xe3f84e,
+            1
+        );
+
+    belly.setStrokeStyle(
+        2,
+        0x719900,
+        1
+    );
+
+
+    /*
+    head
+    */
+
+    const head=
+        this.add.ellipse(
+            0,
+            -28,
+            76,
+            52,
+            0x9bd800,
+            1
+        );
+
+    head.setStrokeStyle(
+        4,
+        0x213500,
+        1
+    );
+
+
+    /*
+    eyes
+    */
+
+    const eyeL=
+        this.add.circle(
+            -22,
+            -54,
+            16,
+            0xffffff,
+            1
+        );
+
+    eyeL.setStrokeStyle(
+        3,
+        0x111111,
+        1
+    );
+
+
+    const eyeR=
+        this.add.circle(
+            20,
+            -51,
+            13,
+            0xffffff,
+            1
+        );
+
+    eyeR.setStrokeStyle(
+        3,
+        0x111111,
+        1
+    );
+
+
+    const pupilL=
+        this.add.circle(
+            -20,
+            -53,
+            5,
+            0x111111,
+            1
+        );
+
+
+    const pupilR=
+        this.add.circle(
+            19,
+            -50,
+            4,
+            0x111111,
+            1
+        );
+
+
+    /*
+    nose
+    */
+
+    const nose1=
+        this.add.circle(
+            -8,
+            -31,
+            2,
+            0x3d6e00,
+            1
+        );
+
+    const nose2=
+        this.add.circle(
+            8,
+            -31,
+            2,
+            0x3d6e00,
+            1
+        );
+
+
+    /*
+    smile
+    */
+
+    const mouth=
+        this.add.graphics();
+
+    mouth.lineStyle(
+        2.5,
+        0x173300,
+        1
+    );
+
+    mouth.beginPath();
+
+    mouth.arc(
+        0,
+        -27,
+        18,
+        Phaser.Math.DegToRad(30),
+        Phaser.Math.DegToRad(150)
+    );
+
+    mouth.strokePath();
+
+
+    /*
+    front arms
+    */
+
+    const armL=
+        this.add.ellipse(
+            -23,
+            21,
+            15,
+            32,
+            0x8fcf00,
+            1
+        )
+        .setRotation(.25);
+
+
+    const armR=
+        this.add.ellipse(
+            27,
+            20,
+            15,
+            32,
+            0x8fcf00,
+            1
+        )
+        .setRotation(-.25);
+
+
+    /*
+    label plate
+    */
+
+    const labelCircle=
+        this.add.circle(
+            8,
+            15,
+            20,
+            0xffffff,
+            .97
+        );
+
+    labelCircle.setStrokeStyle(
+        3,
+        0x1d4363,
+        1
+    );
+
+
+    const labelText=
+        this.add.text(
+            8,
+            15,
+            label,
+            {
+                fontFamily:
+                    "Trebuchet MS, Arial",
+                fontSize:"23px",
+                fontStyle:"bold",
+                color:"#124b70"
+            }
+        )
+        .setOrigin(.5);
+
+
+    /*
+    feet
+    */
+
+    const footL=
+        this.add.ellipse(
+            -30,
+            39,
+            37,
+            13,
+            0x90cc00,
+            1
+        );
+
+    footL.setStrokeStyle(
+        2,
+        0x213500,
+        1
+    );
+
+
+    const footR=
+        this.add.ellipse(
+            30,
+            39,
+            37,
+            13,
+            0x90cc00,
+            1
+        );
+
+    footR.setStrokeStyle(
+        2,
+        0x213500,
+        1
+    );
+
+
+    frog.add([
+        shadow,
+        legL,
+        legR,
+        body,
+        belly,
+        head,
+        eyeL,
+        eyeR,
+        pupilL,
+        pupilR,
+        nose1,
+        nose2,
+        mouth,
+        armL,
+        armR,
+        labelCircle,
+        labelText,
+        footL,
+        footR
+    ]);
+
+
+    frog.bodyPart=
+        body;
+
+    frog.headPart=
+        head;
+
+    frog.legL=
+        legL;
+
+    frog.legR=
+        legR;
+
+    frog.armL=
+        armL;
+
+    frog.armR=
+        armR;
+
+    frog.labelCircle=
+        labelCircle;
+
+    frog.labelText=
+        labelText;
+
+
+    frog.setSize(
+        115,
+        125
+    );
+
+
+    frog.setInteractive(
+        new Phaser.Geom.Rectangle(
+            -57,
+            -70,
+            115,
+            125
+        ),
+        Phaser.Geom.Rectangle.Contains
+    );
+
+
+    frog.on(
+        "pointerdown",
+        ()=>{
+
+            if(
+                this.locked ||
+                this.finished
+            ){
+                return;
+            }
+
+            audio.init();
+
+            audio.tap();
+
+            this.changeFrogLabel(
+                frog
+            );
+        }
+    );
+
+
+    frog.on(
+        "pointerover",
+        ()=>{
+
+            if(
+                !this.locked &&
+                !this.finished
+            ){
+
+                this.tweens.add({
+                    targets:frog,
+                    scaleX:
+                        scale*1.06,
+                    scaleY:
+                        scale*1.06,
+                    duration:80
+                });
+            }
+        }
+    );
+
+
+    frog.on(
+        "pointerout",
+        ()=>{
+
+            if(
+                !this.locked &&
+                !this.finished
+            ){
+
+                this.tweens.add({
+                    targets:frog,
+                    scaleX:scale,
+                    scaleY:scale,
+                    duration:80
+                });
+            }
+        }
+    );
+
+
+    /*
+    idle movement
+    */
+
+    const idleDelay=
+        Phaser.Math.Between(
+            0,
+            900
+        );
+
+
+    frog.idleTween=
+        this.tweens.add({
+
+            targets:frog,
+
+            y:y+
+                Phaser.Math.Between(
+                    2,
+                    5
+                ),
+
+            angle:
+                Phaser.Math.FloatBetween(
+                    -1.5,
+                    1.5
+                ),
+
+            duration:
+                Phaser.Math.Between(
+                    950,
+                    1500
+                ),
+
+            delay:
+                idleDelay,
+
+            yoyo:true,
+
+            repeat:-1,
+
+            ease:
+                "Sine.easeInOut"
+        });
+
+
+    return frog;
+
+}
+
+
+/* =========================================================
+   CHANGE LABEL
+========================================================= */
+
+changeFrogLabel(frog){
+
+    const order=[
+        "A",
+        "B",
+        "C",
+        "D"
+    ];
+
+
+    const current=
+        order.indexOf(
+            frog.label
+        );
+
+
+    frog.label=
+        order[
+            (current+1) %
+            4
+        ];
+
+
+    this.updateFrogLabel(
+        frog
+    );
+
+
+    /*
+    bounce
+    */
+
+    const sx=
+        frog.scaleX;
+
+    const sy=
+        frog.scaleY;
+
+
+    this.tweens.add({
+
+        targets:frog,
+
+        scaleX:
+            sx*1.12,
+
+        scaleY:
+            sy*.88,
+
+        duration:80,
+
+        yoyo:true,
+
+        ease:
+            "Quad.easeOut"
+    });
+
+
+    /*
+    little pop particles
+    */
+
+    this.createLabelPop(
+        frog.x,
+        frog.y
+    );
+
+
+    this.checkBoard();
+
+}
+
+
+/* =========================================================
+   UPDATE LABEL GRAPHICS
+========================================================= */
+
+updateFrogLabel(frog){
+
+    frog.labelText
+        .setText(
+            frog.label
+        );
+
+
+    let colour=
+        0xffffff;
+
+    let border=
+        0x1d4363;
+
+    let text=
+        "#124b70";
+
+
+    if(
+        frog.label==="A"
     ){
 
-        for(let i=0;i<10;i++){
+        colour=
+            0xdaf3ff;
 
-            const drop =
-                this.add.circle(
-                    x +
-                    Phaser.Math.Between(
-                        -18,
-                        18
-                    ),
+        border=
+            0x278bc6;
 
-                    y,
-
-                    Phaser.Math.Between(
-                        3,
-                        6
-                    ),
-
-                    0xd8f9ff,
-                    0.9
-                )
-                .setDepth(
-                    45
-                );
+        text=
+            "#12689c";
+    }
 
 
-            const targetX =
-                drop.x +
+    if(
+        frog.label==="B"
+    ){
+
+        colour=
+            0xffe7f6;
+
+        border=
+            0xd457ad;
+
+        text=
+            "#9e287d";
+    }
+
+
+    if(
+        frog.label==="C"
+    ){
+
+        colour=
+            0xfff3bd;
+
+        border=
+            0xd9a21d;
+
+        text=
+            "#946900";
+    }
+
+
+    if(
+        frog.label==="D"
+    ){
+
+        colour=
+            0xe1ffd4;
+
+        border=
+            0x5fa643;
+
+        text=
+            "#3c7b26";
+    }
+
+
+    frog.labelCircle
+        .setFillStyle(
+            colour,
+            1
+        );
+
+
+    frog.labelCircle
+        .setStrokeStyle(
+            3,
+            border,
+            1
+        );
+
+
+    frog.labelText
+        .setColor(
+            text
+        );
+
+}
+
+
+/* =========================================================
+   LABEL POP
+========================================================= */
+
+createLabelPop(x,y){
+
+    for(
+        let i=0;
+        i<5;
+        i++
+    ){
+
+        const p=
+            this.add.circle(
+                x+
                 Phaser.Math.Between(
-                    -55,
-                    55
-                );
+                    -15,
+                    15
+                ),
 
-            const targetY =
-                drop.y -
+                y+
                 Phaser.Math.Between(
-                    25,
-                    70
-                );
+                    -10,
+                    10
+                ),
 
+                Phaser.Math.Between(
+                    3,
+                    5
+                ),
 
-            this.tweens.add({
+                Phaser.Math.RND.pick([
+                    0xffffff,
+                    0xffdc66,
+                    0xff8cdc,
+                    0x9ceaff
+                ]),
 
-                targets:drop,
-
-                x:targetX,
-                y:targetY,
-
-                alpha:0,
-
-                scale:0.3,
-
-                duration:
-                    Phaser.Math.Between(
-                        330,
-                        550
-                    ),
-
-                ease:"Quad.easeOut",
-
-                onComplete:()=>{
-                    drop.destroy();
-                }
-            });
-        }
-
-
-        const ring =
-            this.add.ellipse(
-                x,
-                y + 10,
-                40,
-                13,
-                0xffffff,
-                0
+                .9
             )
-            .setStrokeStyle(
-                3,
-                0xd9fbff,
-                0.7
-            )
-            .setDepth(
-                26
-            );
+            .setDepth(150);
 
 
         this.tweens.add({
 
-            targets:ring,
+            targets:p,
 
-            scaleX:2.8,
-            scaleY:2.2,
+            x:
+                p.x+
+                Phaser.Math.Between(
+                    -30,
+                    30
+                ),
+
+            y:
+                p.y-
+                Phaser.Math.Between(
+                    20,
+                    55
+                ),
 
             alpha:0,
 
-            duration:600,
+            scale:.2,
+
+            duration:
+                Phaser.Math.Between(
+                    260,
+                    430
+                ),
 
             onComplete:()=>{
-                ring.destroy();
+
+                p.destroy();
             }
         });
     }
+
+}
+
+
+/* =========================================================
+   CHECK IF ALL SAME
+========================================================= */
+
+getUniformLabel(){
+
+    if(
+        this.frogs.length===0
+    ){
+        return null;
+    }
+
+
+    const first=
+        this.frogs[0].label;
+
+
+    for(
+        let i=1;
+        i<this.frogs.length;
+        i++
+    ){
+
+        if(
+            this.frogs[i].label !==
+            first
+        ){
+
+            return null;
+        }
+    }
+
+
+    return first;
+
+}
+
+
+/* =========================================================
+   CHECK BOARD
+========================================================= */
+
+checkBoard(){
+
+    const same=
+        this.getUniformLabel();
+
+
+    if(!same){
+
+        const counts={
+            A:0,
+            B:0,
+            C:0,
+            D:0
+        };
+
+
+        this.frogs.forEach(
+            frog=>{
+
+                counts[
+                    frog.label
+                ]++;
+            }
+        );
+
+
+        const highest=
+            Object.entries(
+                counts
+            )
+            .sort(
+                (a,b)=>
+                    b[1]-a[1]
+            )[0];
+
+
+        if(
+            highest[1] >=
+            Math.ceil(
+                this.frogs.length*.7
+            )
+        ){
+
+            this.statusText
+                .setText(
+                    `${highest[1]}/${this.frogs.length} katak sudah label ${highest[0]}`
+                );
+
+        }else{
+
+            this.statusText
+                .setText(
+                    "Samakan semua label katak"
+                );
+        }
+
+
+        return;
+    }
+
+
+    this.locked=true;
+
+
+    const q=
+        QUESTIONS[
+            this.questionIndex
+        ];
+
+
+    if(
+        same ===
+        q.answer
+    ){
+
+        this.handleCorrect(
+            same
+        );
+
+    }else{
+
+        this.handleWrong(
+            same
+        );
+    }
+
+}
 
 
 /* =========================================================
    CORRECT
 ========================================================= */
 
-    handleCorrect(pad){
+handleCorrect(label){
 
-        this.correctCount++;
+    this.correctCount++;
 
-        audio.correct();
+    audio.correct();
 
 
-        pad.leaf.setFillStyle(
-            0x55c96d,
-            1
-        );
-
-        pad.letterCircle.setFillStyle(
-            0xeaffef,
-            1
-        );
-
-        pad.letterCircle.setStrokeStyle(
-            5,
-            0x159447,
-            1
-        );
-
-        pad.letterText.setColor(
-            "#11813b"
+    this.scoreText
+        .setText(
+            `✓ ${this.correctCount}   ✦ ${this.wrongCount}`
         );
 
 
-        this.feedbackText
-            .setText(
-                "BETUL! Katak berjaya melompat! ✓"
-            )
-            .setColor(
-                "#ffffff"
-            )
-            .setBackgroundColor(
-                "rgba(20,139,74,0.92)"
-            );
-
-
-        this.createStars(
-            pad.x,
-            pad.y - 45
+    this.statusText
+        .setText(
+            `BETUL! Semua katak ialah ${label} ✓`
         );
 
 
-        this.updateProgress();
+    this.frogs.forEach(
+        frog=>{
+
+            frog.bodyPart
+                .setFillStyle(
+                    0x85da27,
+                    1
+                );
+
+            frog.headPart
+                .setFillStyle(
+                    0xa6ef38,
+                    1
+                );
 
 
-        this.time.delayedCall(
-            850,
-            ()=>{
+            this.tweens.add({
 
-                this.questionIndex++;
+                targets:frog,
+
+                y:
+                    frog.y-18,
+
+                duration:
+                    Phaser.Math.Between(
+                        180,
+                        280
+                    ),
+
+                delay:
+                    Phaser.Math.Between(
+                        0,
+                        250
+                    ),
+
+                yoyo:true,
+
+                ease:
+                    "Quad.easeOut"
+            });
+        }
+    );
 
 
-                if(
-                    this.questionIndex >=
-                    QUESTIONS.length
-                ){
-
-                    this.completeGame();
-                    return;
-                }
+    this.createCelebration(
+        false
+    );
 
 
-                this.resetFrogInstant();
+    this.time.delayedCall(
+        1100,
+        ()=>{
 
-                this.buildAnswerPads();
+            this.questionIndex++;
 
-                this.renderQuestion();
 
-                this.locked = false;
+            if(
+                this.questionIndex >=
+                QUESTIONS.length
+            ){
+
+                this.completeGame();
+
+                return;
             }
-        );
-    }
+
+
+            this.renderQuestion();
+        }
+    );
+
+}
 
 
 /* =========================================================
    WRONG
 ========================================================= */
 
-    handleWrong(pad){
+handleWrong(label){
 
-        this.wrongCount++;
+    this.wrongCount++;
 
-        audio.wrong();
+    audio.wrong();
 
 
-        pad.leaf.setFillStyle(
-            0xd95a58,
-            1
-        );
-
-        pad.letterCircle.setFillStyle(
-            0xffeeee,
-            1
-        );
-
-        pad.letterCircle.setStrokeStyle(
-            5,
-            0xd23737,
-            1
-        );
-
-        pad.letterText.setColor(
-            "#c12f2f"
+    this.scoreText
+        .setText(
+            `✓ ${this.correctCount}   ✦ ${this.wrongCount}`
         );
 
 
-        this.feedbackText
-            .setText(
-                "Belum tepat. Katak patah balik, cuba lagi!"
-            )
-            .setColor(
-                "#ffffff"
-            )
-            .setBackgroundColor(
-                "rgba(192,57,57,0.92)"
-            );
-
-
-        this.updateProgress();
-
-
-        this.time.delayedCall(
-            500,
-            ()=>{
-
-                audio.jump();
-
-                this.jumpFrogTo(
-                    this.frogStartX,
-                    this.frogStartY - 20,
-
-                    ()=>{
-
-                        this.frogShadow.setPosition(
-                            this.frogStartX,
-                            this.frogStartY + 24
-                        );
-
-
-                        this.resetPadColours();
-
-
-                        this.feedbackText
-                            .setText(
-                                "Cuba lagi! Pilih A, B, C atau D"
-                            )
-                            .setColor(
-                                "#ffffff"
-                            )
-                            .setBackgroundColor(
-                                "rgba(5,80,105,0.76)"
-                            );
-
-
-                        this.locked = false;
-                    }
-                );
-            }
-        );
-    }
-
-
-/* =========================================================
-   PAD COLOURS
-========================================================= */
-
-    resetPadColours(){
-
-        this.pads.forEach(
-            pad=>{
-
-                if(
-                    !pad ||
-                    !pad.scene
-                ){
-                    return;
-                }
-
-                pad.leaf.setFillStyle(
-                    0x42a95f,
-                    1
-                );
-
-                pad.letterCircle.setFillStyle(
-                    0xffffff,
-                    0.93
-                );
-
-                pad.letterCircle.setStrokeStyle(
-                    4,
-                    0x166887,
-                    1
-                );
-
-                pad.letterText.setColor(
-                    "#12647c"
-                );
-            }
-        );
-    }
-
-
-/* =========================================================
-   RESET FROG
-========================================================= */
-
-    resetFrogInstant(){
-
-        this.frog.setPosition(
-            this.frogStartX,
-            this.frogStartY - 20
+    this.statusText
+        .setText(
+            `Label ${label} belum tepat. Tukar semula katak!`
         );
 
-        this.frog.setScale(
-            1
-        );
 
-        this.frog.angle =
-            0;
+    this.frogs.forEach(
+        frog=>{
 
-
-        this.frogShadow.setPosition(
-            this.frogStartX,
-            this.frogStartY + 24
-        );
-
-        this.frogShadow.setScale(
-            1
-        );
-    }
-
-
-/* =========================================================
-   STARS
-========================================================= */
-
-    createStars(
-        x,
-        y
-    ){
-
-        for(let i=0;i<10;i++){
-
-            const star =
-                this.add.star(
-                    x +
-                    Phaser.Math.Between(
-                        -45,
-                        45
-                    ),
-
-                    y +
-                    Phaser.Math.Between(
-                        -15,
-                        20
-                    ),
-
-                    5,
-                    4,
-                    9,
-
-                    Phaser.Math.RND.pick([
-                        0xffe064,
-                        0xffffff,
-                        0xc4ff7b
-                    ]),
-
-                    1
-                )
-                .setDepth(
-                    70
-                );
-
+            const oldX=
+                frog.x;
 
             this.tweens.add({
 
-                targets:star,
+                targets:frog,
 
                 x:
-                    star.x +
+                    oldX+
                     Phaser.Math.Between(
-                        -55,
-                        55
+                        -5,
+                        5
                     ),
 
-                y:
-                    star.y -
-                    Phaser.Math.Between(
-                        40,
-                        100
-                    ),
+                duration:50,
 
-                alpha:0,
+                yoyo:true,
 
-                scale:1.8,
-
-                angle:
-                    Phaser.Math.Between(
-                        -180,
-                        180
-                    ),
-
-                duration:
-                    Phaser.Math.Between(
-                        550,
-                        850
-                    ),
-
-                ease:"Quad.easeOut",
+                repeat:3,
 
                 onComplete:()=>{
-                    star.destroy();
+
+                    frog.x=
+                        oldX;
                 }
             });
         }
-    }
+    );
+
+
+    this.time.delayedCall(
+        650,
+        ()=>{
+
+            this.locked=false;
+
+            this.statusText
+                .setText(
+                    "Cuba lagi. Samakan semua label."
+                );
+        }
+    );
+
+}
 
 
 /* =========================================================
-   COMPLETE GAME
+   DESTROY FROGS
 ========================================================= */
 
-    completeGame(){
+destroyFrogs(){
 
-        this.finished = true;
-        this.locked = true;
+    this.frogs.forEach(
+        frog=>{
 
-        audio.finish();
+            if(
+                frog.idleTween
+            ){
 
-
-        this.updateProgress();
-
-
-        this.progressGraphics.clear();
-
-        this.progressGraphics.fillStyle(
-            0xd5edf3,
-            1
-        );
-
-        this.progressGraphics.fillRoundedRect(
-            42,
-            151,
-            688,
-            10,
-            5
-        );
-
-        this.progressGraphics.fillStyle(
-            0x28af70,
-            1
-        );
-
-        this.progressGraphics.fillRoundedRect(
-            42,
-            151,
-            688,
-            10,
-            5
-        );
-
-
-        this.progressText.setText(
-            "SELESAI 25 / 25"
-        );
-
-
-        this.scoreText.setText(
-            `✓ 25   ✦ Salah ${this.wrongCount}`
-        );
-
-
-        this.questionText
-            .setText(
-                "TAHNIAH! 🐸\n\nKatak berjaya menyeberangi kolam dan anda telah menjawab semua 25 soalan."
-            )
-            .setColor(
-                "#126340"
-            );
-
-
-        this.answerTexts.forEach(
-            t=>t.setText("")
-        );
-
-
-        this.feedbackText
-            .setText(
-                "MISI WATER HOP FROG SELESAI! ★"
-            )
-            .setColor(
-                "#ffffff"
-            )
-            .setBackgroundColor(
-                "rgba(17,137,73,0.94)"
-            );
-
-
-        this.createCelebration();
-
-
-        if(this.restartButton){
-            this.restartButton.destroy();
-        }
-
-
-        this.restartButton =
-            this.add.text(
-                390,
-                405,
-                "↻  MAIN SEMULA",
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"22px",
-                    fontStyle:"bold",
-                    color:"#ffffff",
-
-                    backgroundColor:
-                        "#158957",
-
-                    padding:{
-                        x:24,
-                        y:13
-                    }
-                }
-            )
-            .setOrigin(
-                0.5
-            )
-            .setDepth(
-                100
-            )
-            .setInteractive({
-                useHandCursor:true
-            });
-
-
-        this.restartButton.on(
-            "pointerdown",
-            ()=>{
-
-                audio.init();
-
-                this.restartGame();
+                frog.idleTween.stop();
             }
-        );
-    }
+
+
+            if(
+                frog &&
+                frog.scene
+            ){
+
+                frog.destroy();
+            }
+        }
+    );
+
+
+    this.frogs=[];
+
+}
 
 
 /* =========================================================
    CELEBRATION
 ========================================================= */
 
-    createCelebration(){
+createCelebration(big=false){
 
-        for(let i=0;i<34;i++){
+    const amount=
+        big ? 55 : 24;
 
-            const item =
-                this.add.circle(
+
+    for(
+        let i=0;
+        i<amount;
+        i++
+    ){
+
+        const star=
+            this.add.star(
+                Phaser.Math.Between(
+                    70,
+                    750
+                ),
+
+                big ?
                     Phaser.Math.Between(
-                        80,
-                        700
+                        550,
+                        850
+                    )
+                    :
+                    Phaser.Math.Between(
+                        610,
+                        930
                     ),
 
-                    Phaser.Math.Between(
-                        520,
-                        720
-                    ),
+                5,
 
-                    Phaser.Math.Between(
-                        4,
-                        8
-                    ),
+                3,
 
-                    Phaser.Math.RND.pick([
-                        0xffe263,
-                        0xff8bb1,
-                        0xffffff,
-                        0x7cff9b,
-                        0x89edff
-                    ]),
+                Phaser.Math.Between(
+                    6,
+                    10
+                ),
 
-                    1
-                )
-                .setDepth(
-                    90
-                );
+                Phaser.Math.RND.pick([
+                    0xffd83d,
+                    0xff75cf,
+                    0xffffff,
+                    0x9fff55,
+                    0x5ce8ff
+                ]),
+
+                1
+            )
+            .setDepth(190);
 
 
-            this.tweens.add({
+        this.tweens.add({
 
-                targets:item,
+            targets:star,
 
-                y:
-                    Phaser.Math.Between(
-                        850,
-                        1080
-                    ),
+            y:
+                star.y-
+                Phaser.Math.Between(
+                    80,
+                    180
+                ),
 
-                x:
-                    item.x +
-                    Phaser.Math.Between(
-                        -100,
-                        100
-                    ),
+            x:
+                star.x+
+                Phaser.Math.Between(
+                    -70,
+                    70
+                ),
 
-                angle:
-                    Phaser.Math.Between(
-                        -360,
-                        360
-                    ),
+            alpha:0,
 
-                alpha:0,
+            angle:
+                Phaser.Math.Between(
+                    -250,
+                    250
+                ),
 
-                duration:
-                    Phaser.Math.Between(
-                        1500,
-                        2800
-                    ),
+            scale:
+                Phaser.Math.FloatBetween(
+                    1.3,
+                    2
+                ),
 
-                delay:
-                    Phaser.Math.Between(
-                        0,
-                        700
-                    ),
+            duration:
+                Phaser.Math.Between(
+                    700,
+                    1300
+                ),
 
-                ease:"Sine.easeIn",
+            onComplete:()=>{
 
-                onComplete:()=>{
-                    item.destroy();
-                }
-            });
-        }
+                star.destroy();
+            }
+        });
     }
 
-
-/* =========================================================
-   RESTART
-========================================================= */
-
-    restartGame(){
-
-        this.questionIndex = 0;
-        this.correctCount = 0;
-        this.wrongCount = 0;
-
-        this.finished = false;
-        this.locked = false;
-
-
-        if(this.restartButton){
-
-            this.restartButton.destroy();
-
-            this.restartButton =
-                null;
-        }
-
-
-        this.resetFrogInstant();
-
-        this.buildAnswerPads();
-
-        this.renderQuestion();
-    }
 }
 
 
 /* =========================================================
-   PHASER CONFIG
+   COMPLETE
 ========================================================= */
 
-const config = {
+completeGame(){
 
-    type:Phaser.AUTO,
+    this.finished=true;
 
-    parent:"game",
+    this.locked=true;
 
-    width:780,
-    height:1100,
+    audio.finish();
 
-    backgroundColor:"#35aeca",
 
-    transparent:false,
+    this.destroyFrogs();
 
-    antialias:true,
 
-    roundPixels:false,
+    this.progressBar.clear();
+
+
+    this.progressBar.fillStyle(
+        0xe1cfa0,
+        1
+    );
+
+    this.progressBar.fillRoundedRect(
+        44,
+        148,
+        715,
+        9,
+        5
+    );
+
+
+    this.progressBar.fillStyle(
+        0x51b765,
+        1
+    );
+
+    this.progressBar.fillRoundedRect(
+        44,
+        148,
+        715,
+        9,
+        5
+    );
+
+
+    this.progressText
+        .setText(
+            "SELESAI 25 / 25"
+        );
+
+
+    this.scoreText
+        .setText(
+            `✓ 25   ✦ ${this.wrongCount}`
+        );
+
+
+    this.questionText
+        .setText(
+            "TAHNIAH! 🐸\n\nSemua 25 soalan telah selesai."
+        )
+        .setColor(
+            "#317623"
+        );
+
+
+    this.answerTexts
+        .forEach(
+            text=>
+                text.setText("")
+        );
+
+
+    this.statusText
+        .setText(
+            "MISI LABEL THE FROGS SELESAI!"
+        );
+
+
+    this.createBigFrog(
+        410,
+        755
+    );
+
+
+    this.createCelebration(
+        true
+    );
+
+
+    const restart=
+        this.add.text(
+            410,
+            920,
+            "↻  MAIN SEMULA",
+            {
+                fontFamily:
+                    "Trebuchet MS, Arial",
+                fontSize:"24px",
+                fontStyle:"bold",
+                color:"#ffffff",
+
+                backgroundColor:
+                    "#dd7a08",
+
+                padding:{
+                    x:24,
+                    y:14
+                }
+            }
+        )
+        .setOrigin(.5)
+        .setDepth(250)
+        .setInteractive({
+            useHandCursor:true
+        });
+
+
+    restart.on(
+        "pointerdown",
+        ()=>{
+
+            restart.destroy();
+
+            this.finished=false;
+
+            this.locked=false;
+
+            this.questionIndex=0;
+
+            this.correctCount=0;
+
+            this.wrongCount=0;
+
+            this.renderQuestion();
+        }
+    );
+
+}
+
+
+/* =========================================================
+   BIG END FROG
+========================================================= */
+
+createBigFrog(x,y){
+
+    const frog=
+        this.add.container(
+            x,
+            y
+        )
+        .setDepth(100);
+
+
+    const shadow=
+        this.add.ellipse(
+            0,
+            91,
+            190,
+            35,
+            0x775c30,
+            .2
+        );
+
+
+    const legL=
+        this.add.ellipse(
+            -75,
+            55,
+            95,
+            45,
+            0x8ec900
+        );
+
+    legL.setStrokeStyle(
+        5,
+        0x223500
+    );
+
+
+    const legR=
+        this.add.ellipse(
+            75,
+            55,
+            95,
+            45,
+            0x8ec900
+        );
+
+    legR.setStrokeStyle(
+        5,
+        0x223500
+    );
+
+
+    const body=
+        this.add.ellipse(
+            0,
+            27,
+            155,
+            135,
+            0x9bd800
+        );
+
+    body.setStrokeStyle(
+        6,
+        0x223500
+    );
+
+
+    const belly=
+        this.add.ellipse(
+            17,
+            35,
+            105,
+            90,
+            0xe4f84d
+        );
+
+
+    const head=
+        this.add.ellipse(
+            0,
+            -47,
+            145,
+            100,
+            0x9bd800
+        );
+
+    head.setStrokeStyle(
+        6,
+        0x223500
+    );
+
+
+    const eye1=
+        this.add.circle(
+            -42,
+            -92,
+            31,
+            0xffffff
+        );
+
+    eye1.setStrokeStyle(
+        5,
+        0x111111
+    );
+
+
+    const eye2=
+        this.add.circle(
+            38,
+            -86,
+            28,
+            0xffffff
+        );
+
+    eye2.setStrokeStyle(
+        5,
+        0x111111
+    );
+
+
+    this.add.circle;
+
+
+    const pupil1=
+        this.add.circle(
+            -37,
+            -90,
+            10,
+            0x111111
+        );
+
+
+    const pupil2=
+        this.add.circle(
+            34,
+            -84,
+            9,
+            0x111111
+        );
+
+
+    const mouth=
+        this.add.graphics();
+
+    mouth.lineStyle(
+        6,
+        0x203400
+    );
+
+    mouth.beginPath();
+
+    mouth.arc(
+        0,
+        -43,
+        42,
+        Phaser.Math.DegToRad(25),
+        Phaser.Math.DegToRad(155)
+    );
+
+    mouth.strokePath();
+
+
+    frog.add([
+        shadow,
+        legL,
+        legR,
+        body,
+        belly,
+        head,
+        eye1,
+        eye2,
+        pupil1,
+        pupil2,
+        mouth
+    ]);
+
+
+    this.tweens.add({
+
+        targets:frog,
+
+        y:y-8,
+
+        angle:{
+            from:-1.5,
+            to:1.5
+        },
+
+        duration:900,
+
+        yoyo:true,
+
+        repeat:-1,
+
+        ease:
+            "Sine.easeInOut"
+    });
+
+}
+
+}
+
+
+/* =========================================================
+   CONFIG
+========================================================= */
+
+const config={
+
+    type:
+        Phaser.AUTO,
+
+    parent:
+        "game",
+
+    width:
+        820,
+
+    height:
+        1090,
+
+    backgroundColor:
+        "#18a6d8",
+
+    antialias:
+        true,
+
+    transparent:
+        false,
 
     render:{
-        antialias:true,
-        pixelArt:false,
-        powerPreference:"high-performance"
+
+        antialias:
+            true,
+
+        pixelArt:
+            false,
+
+        roundPixels:
+            false,
+
+        powerPreference:
+            "high-performance"
     },
 
     scale:{
-        mode:Phaser.Scale.FIT,
-        autoCenter:Phaser.Scale.CENTER_BOTH,
-        width:780,
-        height:1100
+
+        mode:
+            Phaser.Scale.FIT,
+
+        autoCenter:
+            Phaser.Scale.CENTER_BOTH,
+
+        width:
+            820,
+
+        height:
+            1090
     },
 
     input:{
-        activePointers:3
+
+        activePointers:
+            4
     },
 
     scene:[
-        WaterHopScene
+        FrogLabelGame
     ]
 };
 
 
-const game =
-    new Phaser.Game(
-        config
-    );
+new Phaser.Game(
+    config
+);
 
 
 /* =========================================================
-   PREVENT ACCIDENTAL MOBILE GESTURES
+   MOBILE
 ========================================================= */
 
 document.addEventListener(
     "touchmove",
-    function(e){
+    e=>{
 
         if(
             e.target.closest &&
-            e.target.closest("#game-shell")
+            e.target.closest(
+                "#game-shell"
+            )
         ){
+
             e.preventDefault();
         }
 
@@ -3474,14 +3537,18 @@ document.addEventListener(
 
 document.addEventListener(
     "contextmenu",
-    function(e){
+    e=>{
 
         if(
             e.target.closest &&
-            e.target.closest("#game-shell")
+            e.target.closest(
+                "#game-shell"
+            )
         ){
+
             e.preventDefault();
         }
+
     }
 );
 
