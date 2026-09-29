@@ -2,4269 +2,2163 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 
-<meta
-name="viewport"
-content="width=device-width,
-initial-scale=1,
-maximum-scale=1,
-user-scalable=no,
-viewport-fit=cover">
-
-<title>Water Machine Gun Aquarium - Set 1</title>
+<title>Water Machine Gun • Akuarium Sains</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <style>
-
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
 }
 
-html,
 body{
     margin:0;
-    padding:0;
-    width:100%;
-    min-height:100%;
-
-    font-family:
-    "Trebuchet MS",
-    Arial,
-    sans-serif;
-
-    background:
-    linear-gradient(
-        135deg,
-        #d7f3ff,
-        #eefcff,
-        #cfeaf6
-    );
-
-    overscroll-behavior:none;
-}
-
-body{
-    min-height:100vh;
     min-height:100svh;
-
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-
-    padding:
-    max(3px,env(safe-area-inset-top))
-    3px
-    max(3px,env(safe-area-inset-bottom));
-
-    touch-action:none;
+    padding:16px 8px;
+    background:radial-gradient(ellipse at top,#e7fcff,#b8dce9);
+    color:#173d51;
+    font-family:"Trebuchet MS",Arial,sans-serif;
 }
 
-#game-shell{
+button,a{
+    touch-action:manipulation;
+}
 
-    width:min(
-        98vw,
-        760px,
-        calc(97svh * .645)
-    );
+button{
+    font:inherit;
+    cursor:pointer;
+}
 
-    aspect-ratio:800/1240;
+button:focus-visible,
+a:focus-visible{
+    outline:3px solid #faac45;
+    outline-offset:3px;
+}
 
-    border:2px solid #173c53;
-
-    border-radius:18px;
-
-    overflow:hidden;
-
-    background:#dff7ff;
-
+.shell{
+    max-width:610px;
+    margin:auto;
+    border:1px solid #fff;
+    border-radius:26px;
+    padding:15px;
+    background:linear-gradient(160deg,#f4fcff,#d8eff5);
     box-shadow:
-    0 10px 24px
-    rgba(20,60,80,.16);
+        0 18px 60px #16475a29,
+        inset 0 0 0 5px #ffffff50;
+}
+
+.top{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    margin-bottom:13px;
+}
+
+.icon{
+    display:grid;
+    place-items:center;
+    flex:none;
+    width:40px;
+    height:40px;
+    background:#fff;
+    border:1px solid #c5dfe7;
+    border-radius:13px;
+    color:#24556a;
+    text-decoration:none;
+    font-size:23px;
+}
+
+.title{
+    flex:1;
+}
+
+.title small{
+    display:block;
+    letter-spacing:2px;
+    font-size:10px;
+    font-weight:bold;
+    color:#498195;
+    margin-bottom:3px;
+}
+
+.title h1{
+    font-size:clamp(15px,3.6vw,22px);
+    margin:0;
+    letter-spacing:-.5px;
+}
+
+.card{
+    background:#fff;
+    border:1px solid #c9e2eb;
+    border-radius:19px;
+    padding:15px;
+    box-shadow:0 5px 0 #bedbe54d;
+}
+
+.meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:11px;
+    font-weight:bold;
+    letter-spacing:1px;
+    color:#277b96;
+}
+
+.count{
+    background:#e8f7fc;
+    padding:6px 10px;
+    border-radius:9px;
+    letter-spacing:0;
+}
+
+.track{
+    height:5px;
+    background:#e7f1f5;
+    border-radius:9px;
+    overflow:hidden;
+    margin:10px 0 13px;
+}
+
+.fill{
+    height:100%;
+    width:0;
+    background:linear-gradient(90deg,#29b6ca,#67d9ba);
+    transition:width .3s;
+}
+
+#question{
+    font-size:clamp(16px,3.9vw,20px);
+    line-height:1.36;
+    margin:0 0 14px;
+    min-height:54px;
+}
+
+.answers{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+}
+
+.answer{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:9px 8px;
+    min-height:54px;
+    border:1px solid #dbe9ed;
+    border-radius:11px;
+    background:#f7fbfd;
+    font-size:clamp(12px,2.95vw,15px);
+    line-height:1.25;
+}
+
+.letter{
+    display:grid;
+    place-items:center;
+    flex:none;
+    width:27px;
+    height:29px;
+    border-radius:9px;
+    background:var(--c);
+    color:#163e51;
+    font-weight:900;
+}
+
+.answer.good{
+    background:#def8e7;
+    border-color:#62c88b;
+}
+
+.answer.bad{
+    background:#ffe6e4;
+    border-color:#ee948d;
+}
+
+.info{
+    height:36px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-weight:bold;
+    text-align:center;
+    color:#548196;
+}
+
+.tank-frame{
+    border-radius:19px;
+    border:5px solid #225d73;
+    background:#167da0;
+    overflow:hidden;
+    box-shadow:
+        0 5px 0 #133e53,
+        0 9px 15px #22546c21;
+    position:relative;
 }
 
 #game{
     width:100%;
-    height:100%;
-}
-
-canvas{
-    display:block;
-
-    width:100% !important;
-    height:100% !important;
-
+    aspect-ratio:720/690;
     touch-action:none;
 }
 
-@media(max-width:600px){
+canvas{
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+    touch-action:none;
+}
 
+.console{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top:17px;
+    padding:11px 13px;
+    border-radius:17px;
+    background:linear-gradient(#fff,#edf7fa);
+    border:1px solid #bddbe5;
+}
+
+.stat{
+    flex:none;
+    text-align:center;
+    min-width:43px;
+}
+
+.stat small{
+    display:block;
+    font-size:9px;
+    letter-spacing:1px;
+    color:#638393;
+}
+
+.stat strong{
+    font-size:24px;
+    color:#216f87;
+}
+
+.stat.miss strong{
+    color:#b5825f;
+}
+
+.help{
+    flex:1;
+    font-size:11px;
+    color:#537b8d;
+    line-height:1.5;
+}
+
+.help b{
+    display:block;
+    color:#214f65;
+    font-size:12px;
+}
+
+.fire{
+    user-select:none;
+    touch-action:none;
+    flex:none;
+    min-height:61px;
+    width:115px;
+    border:1px solid #00667e;
+    border-radius:17px;
+    background:linear-gradient(#37c3d4,#1492b2);
+    box-shadow:
+        0 5px 0 #166078,
+        inset 0 2px 0 #a7f5ff;
+    color:white;
+    text-shadow:0 1px 1px #145b72;
+    font-weight:900;
+    font-size:15px;
+}
+
+.fire small{
+    display:block;
+    font-size:9px;
+    letter-spacing:1px;
+    margin-top:4px;
+    font-weight:normal;
+}
+
+.fire.held{
+    transform:translateY(3px);
+    box-shadow:0 2px 0 #166078;
+    background:#178ba7;
+}
+
+.foot{
+    margin:13px 0 0;
+    text-align:center;
+    font-size:10px;
+    color:#658998;
+    letter-spacing:.3px;
+}
+
+#restart{
+    display:none;
+    border:0;
+    background:#1d8da7;
+    color:white;
+    padding:7px 18px;
+    border-radius:9px;
+    font-weight:bold;
+}
+
+svg{
+    width:21px;
+    height:21px;
+}
+
+@media(max-width:430px){
     body{
-        padding:2px;
+        padding:6px;
     }
 
-    #game-shell{
+    .shell{
+        padding:10px;
+        border-radius:20px;
+    }
 
-        width:min(
-            99vw,
-            calc(99svh * .645)
-        );
+    .card{
+        padding:12px;
+    }
 
-        border-radius:13px;
+    .top{
+        gap:8px;
+    }
+
+    .console{
+        gap:8px;
+        padding:10px;
+    }
+
+    .fire{
+        width:98px;
+    }
+
+    .help{
+        font-size:10px;
+    }
+
+    .help b{
+        font-size:11px;
+    }
+
+    .stat{
+        min-width:34px;
+    }
+
+    .answer{
+        padding:8px 6px;
+        gap:6px;
     }
 }
 
+@media(prefers-reduced-motion:reduce){
+    .fill{
+        transition:none;
+    }
+}
 </style>
 </head>
 
 <body>
 
-<div id="game-shell">
-    <div id="game"></div>
-</div>
+<main class="shell">
+
+    <header class="top">
+
+        <a
+            class="icon"
+            href="index.html"
+            aria-label="Halaman utama"
+        >
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <path d="m3 11 9-8 9 8M5 9v12h5v-7h4v7h5V9"/>
+            </svg>
+        </a>
+
+        <div class="title">
+            <small>AKUARIUM SAINS • SET 1</small>
+            <h1>Water Machine Gun</h1>
+        </div>
+
+        <button
+            class="icon"
+            id="sound"
+            aria-label="Matikan bunyi"
+            aria-pressed="true"
+        >♪</button>
+
+    </header>
+
+    <section class="card">
+
+        <div class="meta">
+            <span id="label">MISI MENYERAP AIR</span>
+            <span class="count" id="count">01 / 25</span>
+        </div>
+
+        <div class="track">
+            <div class="fill" id="progress"></div>
+        </div>
+
+        <h2 id="question"></h2>
+
+        <div class="answers" id="answers"></div>
+
+    </section>
+
+    <div class="info">
+        <span id="status" role="status">
+            Laras sasaran, kemudian tahan TEMBAK.
+        </span>
+
+        <button id="restart">↻ MAIN SEMULA</button>
+    </div>
+
+    <div class="tank-frame">
+        <div
+            id="game"
+            aria-label="Akuarium dengan ikan jawapan A B C D"
+        ></div>
+    </div>
+
+    <div class="console">
+
+        <div class="stat">
+            <small>BETUL</small>
+            <strong id="score">0</strong>
+        </div>
+
+        <div class="stat miss">
+            <small>SALAH</small>
+            <strong id="wrong">0</strong>
+        </div>
+
+        <div class="help">
+            <b>Kawal sasaran</b>
+            Sentuh &amp; seret dalam air<br>
+            PC: tetikus / WASD + Space
+        </div>
+
+        <button class="fire" id="fire">
+            TEMBAK
+            <small>TAHAN UNTUK AIR</small>
+        </button>
+
+    </div>
+
+    <p class="foot">
+        25 soalan • Objek menyerap air &amp; tidak menyerap air
+    </p>
+
+</main>
 
 <script>
-
 (() => {
-
 "use strict";
 
-
 /* =========================================================
-   QUESTIONS
+   SOALAN
 ========================================================= */
 
-const QUESTIONS=[
-
-{
-q:"Sudu logam dikelaskan sebagai objek yang ____.",
-a:[
-"Tidak boleh menyerap air",
-"Boleh menyerap air",
-"Menyimpan air di dalam kain",
-"Menghasilkan air"
-],
-c:0
-},
-
-{
-q:"Mengapakah saiz objek disamakan dalam aktiviti membandingkan keupayaan menyerap air?",
-a:[
-"Supaya air menjadi panas",
-"Supaya objek berubah warna",
-"Supaya perbandingan lebih adil",
-"Supaya bahan menjadi logam"
-],
-c:2
-},
-
-{
-q:"Mop dikelaskan sebagai objek yang ____.",
-a:[
-"Menghasilkan air",
-"Boleh menyerap air",
-"Tidak boleh menyerap air",
-"Menolak udara"
-],
-c:1
-},
-
-{
-q:"Pilih objek yang boleh menyerap air daripada senarai berikut.",
-a:[
-"Mainan plastik",
-"Pemadam",
-"Klip kertas",
-"Sapu tangan"
-],
-c:3
-},
-
-{
-q:"Jika air kekal sebagai titisan di atas sesuatu objek, objek itu kemungkinan ____.",
-a:[
-"Tidak menyerap air",
-"Menghasilkan air",
-"Menyerap air",
-"Menjadi lembut"
-],
-c:0
-},
-
-{
-q:"Objek plastik manakah yang tidak boleh menyerap air?",
-a:[
-"Kain lap",
-"Kertas surat khabar",
-"Tisu",
-"Mainan plastik"
-],
-c:3
-},
-
-{
-q:"Air berwarna dititiskan pada tisu dan titisan itu hilang. Apakah kesimpulan yang betul?",
-a:[
-"Tisu menolak air",
-"Tisu tidak menyerap air",
-"Tisu menyerap air",
-"Tisu menghasilkan air"
-],
-c:2
-},
-
-{
-q:"Tisu dapur, mop dan alas kaki dimasukkan dalam satu kumpulan kerana semuanya ____.",
-a:[
-"Boleh menyerap air",
-"Diperbuat daripada kaca",
-"Tidak boleh menyerap air",
-"Diperbuat daripada logam"
-],
-c:0
-},
-
-{
-q:"Pilih objek yang tidak boleh menyerap air daripada senarai berikut.",
-a:[
-"Sapu tangan",
-"Klip kertas",
-"Tisu",
-"Kain lap"
-],
-c:1
-},
-
-{
-q:"Apakah maksud objek menyerap air?",
-a:[
-"Objek yang boleh menyerap air",
-"Objek yang menolak semua air",
-"Objek yang menghasilkan air",
-"Objek yang tidak boleh menyerap air"
-],
-c:0
-},
-
-{
-q:"Tisu dapur dikelaskan sebagai objek yang ____.",
-a:[
-"Menyimpan udara",
-"Tidak boleh menyerap air",
-"Menghasilkan air",
-"Boleh menyerap air"
-],
-c:3
-},
-
-{
-q:"Gelas kaca, sudu logam dan pinggan plastik dimasukkan dalam satu kumpulan kerana semuanya ____.",
-a:[
-"Diperbuat daripada kain",
-"Boleh menyerap air",
-"Tidak boleh menyerap air",
-"Diperbuat daripada kertas"
-],
-c:2
-},
-
-{
-q:"Siti mahu memilih objek yang boleh menyerap tumpahan air. Antara berikut, yang sesuai ialah ____.",
-a:[
-"Gelas kaca",
-"Sudu logam",
-"Pinggan plastik",
-"Kain lap"
-],
-c:3
-},
-
-{
-q:"Apakah kegunaan mop?",
-a:[
-"Melindungi kaki daripada hujan",
-"Menyerap dan mengelap air di lantai",
-"Menjadi cermin kereta",
-"Menadah air hujan"
-],
-c:1
-},
-
-{
-q:"Kain lap membantu mengeringkan jag kerana kain lap ____.",
-a:[
-"Menyerap air",
-"Menghasilkan air",
-"Diperbuat daripada kaca",
-"Tidak menyerap air"
-],
-c:0
-},
-
-{
-q:"Tisu dan tuala mempunyai kepentingan yang serupa kerana kedua-duanya boleh ____.",
-a:[
-"Menjadi kaca",
-"Menghalang hujan seperti payung",
-"Menyerap air",
-"Menadah hujan"
-],
-c:2
-},
-
-{
-q:"Mengapakah tong besi sesuai menyimpan air hujan?",
-a:[
-"Kerana digunakan untuk mengelap peluh",
-"Kerana tidak menyerap air",
-"Kerana menyerap semua air",
-"Kerana diperbuat daripada tisu"
-],
-c:1
-},
-
-{
-q:"Objek menyerap air sesuai digunakan untuk ____.",
-a:[
-"Menghalang hujan dengan payung",
-"Menadah air dalam tong",
-"Membuat cermin kereta",
-"Mengeringkan permukaan basah"
-],
-c:3
-},
-
-{
-q:"Kasut getah penting kerana dapat ____.",
-a:[
-"Mengelakkan kaki daripada basah",
-"Menyerap air ke dalam kasut",
-"Menyerap peluh dari muka",
-"Mengelap meja"
-],
-c:0
-},
-
-{
-q:"Mop digunakan pada lantai basah kerana mop ____.",
-a:[
-"Tidak menyerap air",
-"Menyerap air",
-"Menjadi licin",
-"Menghasilkan air"
-],
-c:1
-},
-
-{
-q:"Jika mahu membuat penghadang hujan, ciri objek yang diperlukan ialah ____.",
-a:[
-"Tidak menyerap air",
-"Mudah basah",
-"Menyerap air dengan banyak",
-"Diperbuat daripada tisu"
-],
-c:0
-},
-
-{
-q:"Jika objek digunakan untuk melindungi daripada hujan, objek itu sebaiknya ____.",
-a:[
-"Menyerap peluh",
-"Mudah basah",
-"Tidak menyerap air",
-"Menyerap air"
-],
-c:2
-},
-
-{
-q:"Apakah kegunaan kain lap?",
-a:[
-"Melindungi kaki",
-"Menjadi payung",
-"Menadah hujan",
-"Mengelap dan menyerap air"
-],
-c:3
-},
-
-{
-q:"Air hujan mahu dikumpulkan dan disimpan. Objek manakah sesuai?",
-a:[
-"Tisu",
-"Tong besi",
-"Mop",
-"Sapu tangan"
-],
-c:1
-},
-
-{
-q:"Seorang murid mahu mengelap cecair pada luka. Apakah objek yang sesuai berdasarkan contoh buku?",
-a:[
-"Klip kertas",
-"Mainan plastik",
-"Bebola kapas",
-"Sudu logam"
-],
-c:2
-}
-
+const QUESTIONS = [
+    [
+        "Sudu logam dikelaskan sebagai objek yang ____.",
+        [
+            "Tidak boleh menyerap air",
+            "Boleh menyerap air",
+            "Menyimpan air di dalam kain",
+            "Menghasilkan air"
+        ],
+        0
+    ],
+    [
+        "Mengapakah saiz objek disamakan dalam aktiviti membandingkan keupayaan menyerap air?",
+        [
+            "Supaya air menjadi panas",
+            "Supaya objek berubah warna",
+            "Supaya perbandingan lebih adil",
+            "Supaya bahan menjadi logam"
+        ],
+        2
+    ],
+    [
+        "Mop dikelaskan sebagai objek yang ____.",
+        [
+            "Menghasilkan air",
+            "Boleh menyerap air",
+            "Tidak boleh menyerap air",
+            "Menolak udara"
+        ],
+        1
+    ],
+    [
+        "Pilih objek yang boleh menyerap air daripada senarai berikut.",
+        [
+            "Mainan plastik",
+            "Pemadam",
+            "Klip kertas",
+            "Sapu tangan"
+        ],
+        3
+    ],
+    [
+        "Jika air kekal sebagai titisan di atas sesuatu objek, objek itu kemungkinan ____.",
+        [
+            "Tidak menyerap air",
+            "Menghasilkan air",
+            "Menyerap air",
+            "Menjadi lembut"
+        ],
+        0
+    ],
+    [
+        "Objek plastik manakah yang tidak boleh menyerap air?",
+        [
+            "Kain lap",
+            "Kertas surat khabar",
+            "Tisu",
+            "Mainan plastik"
+        ],
+        3
+    ],
+    [
+        "Air berwarna dititiskan pada tisu dan titisan itu hilang. Apakah kesimpulan yang betul?",
+        [
+            "Tisu menolak air",
+            "Tisu tidak menyerap air",
+            "Tisu menyerap air",
+            "Tisu menghasilkan air"
+        ],
+        2
+    ],
+    [
+        "Tisu dapur, mop dan alas kaki dimasukkan dalam satu kumpulan kerana semuanya ____.",
+        [
+            "Boleh menyerap air",
+            "Diperbuat daripada kaca",
+            "Tidak boleh menyerap air",
+            "Diperbuat daripada logam"
+        ],
+        0
+    ],
+    [
+        "Pilih objek yang tidak boleh menyerap air daripada senarai berikut.",
+        [
+            "Sapu tangan",
+            "Klip kertas",
+            "Tisu",
+            "Kain lap"
+        ],
+        1
+    ],
+    [
+        "Apakah maksud objek menyerap air?",
+        [
+            "Objek yang boleh menyerap air",
+            "Objek yang menolak semua air",
+            "Objek yang menghasilkan air",
+            "Objek yang tidak boleh menyerap air"
+        ],
+        0
+    ],
+    [
+        "Tisu dapur dikelaskan sebagai objek yang ____.",
+        [
+            "Menyimpan udara",
+            "Tidak boleh menyerap air",
+            "Menghasilkan air",
+            "Boleh menyerap air"
+        ],
+        3
+    ],
+    [
+        "Gelas kaca, sudu logam dan pinggan plastik dimasukkan dalam satu kumpulan kerana semuanya ____.",
+        [
+            "Diperbuat daripada kain",
+            "Boleh menyerap air",
+            "Tidak boleh menyerap air",
+            "Diperbuat daripada kertas"
+        ],
+        2
+    ],
+    [
+        "Siti mahu memilih objek yang boleh menyerap tumpahan air. Antara berikut, yang sesuai ialah ____.",
+        [
+            "Gelas kaca",
+            "Sudu logam",
+            "Pinggan plastik",
+            "Kain lap"
+        ],
+        3
+    ],
+    [
+        "Apakah kegunaan mop?",
+        [
+            "Melindungi kaki daripada hujan",
+            "Menyerap dan mengelap air di lantai",
+            "Menjadi cermin kereta",
+            "Menadah air hujan"
+        ],
+        1
+    ],
+    [
+        "Kain lap membantu mengeringkan jag kerana kain lap ____.",
+        [
+            "Menyerap air",
+            "Menghasilkan air",
+            "Diperbuat daripada kaca",
+            "Tidak menyerap air"
+        ],
+        0
+    ],
+    [
+        "Tisu dan tuala mempunyai kepentingan yang serupa kerana kedua-duanya boleh ____.",
+        [
+            "Menjadi kaca",
+            "Menghalang hujan seperti payung",
+            "Menyerap air",
+            "Menadah hujan"
+        ],
+        2
+    ],
+    [
+        "Mengapakah tong besi sesuai menyimpan air hujan?",
+        [
+            "Kerana digunakan untuk mengelap peluh",
+            "Kerana tidak menyerap air",
+            "Kerana menyerap semua air",
+            "Kerana diperbuat daripada tisu"
+        ],
+        1
+    ],
+    [
+        "Objek menyerap air sesuai digunakan untuk ____.",
+        [
+            "Menghalang hujan dengan payung",
+            "Menadah air dalam tong",
+            "Membuat cermin kereta",
+            "Mengeringkan permukaan basah"
+        ],
+        3
+    ],
+    [
+        "Kasut getah penting kerana dapat ____.",
+        [
+            "Mengelakkan kaki daripada basah",
+            "Menyerap air ke dalam kasut",
+            "Menyerap peluh dari muka",
+            "Mengelap meja"
+        ],
+        0
+    ],
+    [
+        "Mop digunakan pada lantai basah kerana mop ____.",
+        [
+            "Tidak menyerap air",
+            "Menyerap air",
+            "Menjadi licin",
+            "Menghasilkan air"
+        ],
+        1
+    ],
+    [
+        "Jika mahu membuat penghadang hujan, ciri objek yang diperlukan ialah ____.",
+        [
+            "Tidak menyerap air",
+            "Mudah basah",
+            "Menyerap air dengan banyak",
+            "Diperbuat daripada tisu"
+        ],
+        0
+    ],
+    [
+        "Jika objek digunakan untuk melindungi daripada hujan, objek itu sebaiknya ____.",
+        [
+            "Menyerap peluh",
+            "Mudah basah",
+            "Tidak menyerap air",
+            "Menyerap air"
+        ],
+        2
+    ],
+    [
+        "Apakah kegunaan kain lap?",
+        [
+            "Melindungi kaki",
+            "Menjadi payung",
+            "Menadah hujan",
+            "Mengelap dan menyerap air"
+        ],
+        3
+    ],
+    [
+        "Air hujan mahu dikumpulkan dan disimpan. Objek manakah sesuai?",
+        [
+            "Tisu",
+            "Tong besi",
+            "Mop",
+            "Sapu tangan"
+        ],
+        1
+    ],
+    [
+        "Seorang murid mahu mengelap cecair pada luka. Apakah objek yang sesuai berdasarkan contoh buku?",
+        [
+            "Klip kertas",
+            "Mainan plastik",
+            "Bebola kapas",
+            "Sudu logam"
+        ],
+        2
+    ]
 ];
-
 
 /* =========================================================
-   CONSTANT
+   TETAPAN
 ========================================================= */
 
-const W=800;
-const H=1240;
+const $ = id => document.getElementById(id);
 
-const LETTERS=[
-    "A",
-    "B",
-    "C",
-    "D"
+const LETTERS = "ABCD";
+
+const COLORS = [
+    0xff997d,
+    0xffd166,
+    0x77dfba,
+    0xbea4ef
 ];
 
-const TANK={
-
-    left:44,
-    right:756,
-
-    top:414,
-    bottom:1010
-
-};
-
-const FISH_COLORS=[
-
-    0xff846f,
-    0xf1c84d,
-    0x72d099,
-    0xb28be0
-
+const CSS = [
+    "#ffb19b",
+    "#ffe098",
+    "#a1ebce",
+    "#d4c0f6"
 ];
-
-const FISH_DARK=[
-
-    0xd55f50,
-    0xcda62f,
-    0x4ca974,
-    0x8664b3
-
-];
-
 
 /* =========================================================
    AUDIO
 ========================================================= */
 
-let audioCtx=null;
+let ctx;
+let enabled = true;
+let musicTimer = null;
+let step = 0;
 
-let musicTimer=null;
-
-let musicOn=true;
-
-
-function ensureAudio(){
-
-    if(!audioCtx){
-
-        audioCtx=
-        new(
+function audio(){
+    try{
+        ctx ??= new (
             window.AudioContext ||
             window.webkitAudioContext
         )();
-    }
 
-    if(
-        audioCtx.state===
-        "suspended"
-    ){
+        if(ctx.state === "suspended"){
+            ctx.resume();
+        }
 
-        audioCtx.resume();
+        if(!musicTimer){
+            musicTimer = setInterval(() => {
+                if(!document.hidden && enabled){
+                    const notes = [
+                        262,330,392,494,
+                        440,392,330,294
+                    ];
+
+                    beep(
+                        notes[step++ % notes.length],
+                        .24,
+                        .012,
+                        "sine"
+                    );
+                }
+            },520);
+        }
+    }catch(error){
+        // Permainan kekal berjalan jika audio tidak tersedia.
     }
 }
 
-
-function tone(
+function beep(
     frequency,
-    duration=.05,
-    type="sine",
-    volume=.02,
-    delay=0
+    duration = .07,
+    volume = .035,
+    type = "sine",
+    delay = 0
 ){
-
-    ensureAudio();
-
-    const oscillator=
-    audioCtx.createOscillator();
-
-    const gain=
-    audioCtx.createGain();
-
-    const t=
-    audioCtx.currentTime+
-    delay;
-
-
-    oscillator.type=
-    type;
-
-
-    oscillator.frequency
-    .setValueAtTime(
-        frequency,
-        t
-    );
-
-
-    gain.gain
-    .setValueAtTime(
-        volume,
-        t
-    );
-
-
-    gain.gain
-    .exponentialRampToValueAtTime(
-        .0001,
-        t+
-        duration
-    );
-
-
-    oscillator.connect(
-        gain
-    );
-
-
-    gain.connect(
-        audioCtx.destination
-    );
-
-
-    oscillator.start(t);
-
-    oscillator.stop(
-        t+
-        duration+
-        .02
-    );
-}
-
-
-function gunSound(){
-
-    tone(
-        620,
-        .035,
-        "sine",
-        .018
-    );
-
-    tone(
-        810,
-        .025,
-        "sine",
-        .012,
-        .02
-    );
-}
-
-
-function correctSound(){
-
-    tone(
-        650,
-        .08,
-        "triangle",
-        .035
-    );
-
-    tone(
-        880,
-        .10,
-        "triangle",
-        .03,
-        .08
-    );
-
-    tone(
-        1080,
-        .12,
-        "triangle",
-        .025,
-        .16
-    );
-}
-
-
-function wrongSound(){
-
-    tone(
-        180,
-        .12,
-        "sawtooth",
-        .026
-    );
-
-    tone(
-        135,
-        .13,
-        "sawtooth",
-        .022,
-        .07
-    );
-}
-
-
-function startMusic(){
-
-    if(
-        musicTimer
-    ){
-
+    if(!ctx || !enabled || ctx.state !== "running"){
         return;
     }
 
+    const oscillator = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const time = ctx.currentTime + delay;
 
-    ensureAudio();
-
-
-    const notes=[
-
-        262,
-        330,
-        392,
-        330,
-        294,
-        349,
-        440,
-        349
-
-    ];
-
-
-    let i=0;
-
-
-    musicTimer=
-    setInterval(
-        ()=>{
-
-            if(
-                musicOn
-            ){
-
-                tone(
-                    notes[
-                        i%
-                        notes.length
-                    ],
-                    .16,
-                    "triangle",
-                    .005
-                );
-
-                i++;
-            }
-
-        },
-        560
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(
+        frequency,
+        time
     );
+
+    gain.gain.setValueAtTime(.0001,time);
+
+    gain.gain.exponentialRampToValueAtTime(
+        volume,
+        time + .006
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        .0001,
+        time + duration
+    );
+
+    oscillator.connect(gain);
+    gain.connect(ctx.destination);
+
+    oscillator.start(time);
+    oscillator.stop(time + duration + .02);
+
+    oscillator.onended = () => {
+        oscillator.disconnect();
+        gain.disconnect();
+    };
 }
 
+$("sound").onclick = () => {
+    enabled = !enabled;
+
+    $("sound").textContent = enabled ? "♪" : "×";
+
+    $("sound").setAttribute(
+        "aria-pressed",
+        String(enabled)
+    );
+
+    $("sound").setAttribute(
+        "aria-label",
+        enabled ? "Matikan bunyi" : "Hidupkan bunyi"
+    );
+
+    if(enabled){
+        audio();
+    }
+};
 
 /* =========================================================
-   GAME SCENE
+   SEMAK PHASER
 ========================================================= */
 
-class AquariumScene
-extends Phaser.Scene{
-
-
-constructor(){
-
-    super(
-        "AquariumScene"
-    );
+if(typeof Phaser === "undefined"){
+    $("status").textContent =
+        "Sambungan internet diperlukan untuk memuatkan Phaser. Muat semula halaman.";
+    return;
 }
 
-
 /* =========================================================
-   CREATE
+   GAME
 ========================================================= */
 
-create(){
+class Aquarium extends Phaser.Scene{
 
-    this.qIndex=0;
-
-    this.score=0;
-
-    this.wrong=0;
-
-    this.locked=false;
-
-    this.finished=false;
-
-
-    this.fishes=[];
-
-    this.bullets=[];
-
-    this.bubbles=[];
-
-
-    this.fireHeld=false;
-
-    this.lastFire=0;
-
-    this.fireDelay=90;
-
-
-    /*
-    MULTI TOUCH
-
-    pointer 1:
-    aim
-
-    pointer 2:
-    fire
-    */
-
-    this.input.addPointer(
-        3
-    );
-
-
-    this.drawBackground();
-
-    this.createHUD();
-
-    this.createQuestionPanel();
-
-    this.createAquarium();
-
-    this.createGun();
-
-    this.createCrosshair();
-
-    this.createControls();
-
-
-    for(
-        let i=0;
-        i<4;
-        i++
-    ){
-
-        this.createFish(
-            i
-        );
+    constructor(){
+        super("Aquarium");
     }
 
+    create(){
+        this.q = 0;
+        this.score = 0;
+        this.wrong = 0;
 
-    this.createKeyboard();
+        this.locked = false;
+        this.finished = false;
 
-    this.loadQuestion();
+        this.touchFire = false;
+        this.spaceBlocked = false;
+        this.lastShot = -1000;
 
+        this.aim = {
+            x:360,
+            y:240
+        };
 
-    this.input.once(
-        "pointerdown",
-        ()=>{
+        this.fishes = [];
+        this.bullets = [];
+        this.bubbles = [];
 
-            ensureAudio();
+        this.input.addPointer(3);
 
-            startMusic();
+        this.background();
+        this.makeGun();
+
+        for(let i = 0; i < 4; i++){
+            this.makeFish(i);
         }
-    );
-}
 
+        this.makeAim();
 
-/* =========================================================
-   BACKGROUND
-========================================================= */
+        this.keys = this.input.keyboard.addKeys(
+            "W,A,S,D,UP,DOWN,LEFT,RIGHT,SPACE"
+        );
 
-drawBackground(){
+        this.input.on("pointerdown",pointer => {
+            audio();
+            this.setAim(pointer.x,pointer.y);
+        });
 
-    this.add.rectangle(
-        W/2,
-        H/2,
-        W,
-        H,
-        0xe7f9ff
-    );
+        this.input.on("pointermove",pointer => {
+            if(
+                pointer.isDown ||
+                pointer === this.input.mousePointer
+            ){
+                this.setAim(pointer.x,pointer.y);
+            }
+        });
 
+        this.load();
+        this.bindControls();
+    }
 
-    const g=
-    this.add.graphics();
+    /* =====================================================
+       BENTUK PANEL
+    ===================================================== */
 
+    round(x,y,width,height,radius,color,stroke){
+        const graphics = this.add.graphics();
 
-    g.fillStyle(
-        0xd7f2fc,
-        1
-    );
+        graphics.fillStyle(color,1);
 
+        graphics.fillRoundedRect(
+            x,y,width,height,radius
+        );
 
-    g.fillRoundedRect(
-        14,
-        14,
-        W-28,
-        H-28,
-        28
-    );
+        if(stroke){
+            graphics.lineStyle(2,stroke,1);
 
-
-    g.lineStyle(
-        3,
-        0x214861,
-        1
-    );
-
-
-    g.strokeRoundedRect(
-        14,
-        14,
-        W-28,
-        H-28,
-        28
-    );
-}
-
-
-/* =========================================================
-   HUD
-========================================================= */
-
-createHUD(){
-
-    const home=
-    this.add.rectangle(
-        48,
-        47,
-        44,
-        44,
-        0xffffff
-    )
-    .setStrokeStyle(
-        2,
-        0x23495f
-    )
-    .setInteractive();
-
-
-    this.add.text(
-        48,
-        46,
-        "⌂",
-        {
-            fontSize:"29px",
-            fontStyle:"bold",
-            color:"#17384d"
+            graphics.strokeRoundedRect(
+                x,y,width,height,radius
+            );
         }
-    )
-    .setOrigin(.5);
 
+        return graphics;
+    }
 
-    home.on(
-        "pointerdown",
-        ()=>{
+    /* =====================================================
+       AKUARIUM
+    ===================================================== */
 
-            window.location.href=
-            "index.html";
+    background(){
+        const texture = this.textures.createCanvas(
+            "water",
+            720,
+            690
+        );
+
+        const context = texture.context;
+
+        const gradient = context.createLinearGradient(
+            0,0,0,600
+        );
+
+        gradient.addColorStop(0,"#78dfec");
+        gradient.addColorStop(.32,"#239fbf");
+        gradient.addColorStop(1,"#155c83");
+
+        context.fillStyle = gradient;
+        context.fillRect(0,0,720,690);
+
+        texture.refresh();
+
+        this.add.image(0,0,"water").setOrigin(0);
+
+        // Sinar cahaya dalam air.
+        const rays = this.add.graphics();
+
+        rays.fillStyle(0xe3ffff,.10);
+
+        rays.fillTriangle(
+            60,0,
+            180,0,
+            300,530
+        );
+
+        rays.fillTriangle(
+            380,0,
+            465,0,
+            580,550
+        );
+
+        rays.fillTriangle(
+            570,0,
+            605,0,
+            690,490
+        );
+
+        this.tweens.add({
+            targets:rays,
+            alpha:.45,
+            duration:3700,
+            yoyo:true,
+            repeat:-1
+        });
+
+        // Latar dasar akuarium.
+        const hills = this.add.graphics();
+
+        hills.fillStyle(0x186780,.42);
+
+        for(let i = 0; i < 8; i++){
+            hills.fillEllipse(
+                i * 110,
+                510,
+                210,
+                170
+            );
         }
-    );
 
+        hills.fillStyle(0xdac18d,1);
+        hills.fillEllipse(350,614,920,178);
 
-    this.add.text(
-        82,
-        47,
-        "WATER MACHINE GUN",
-        {
-            fontSize:"24px",
-            fontStyle:"bold",
-            color:"#17384d"
+        hills.fillStyle(0xf3d7a1,1);
+        hills.fillEllipse(190,599,570,102);
+
+        hills.fillStyle(0xf8e1b4,.6);
+        hills.fillEllipse(90,585,420,58);
+
+        // Butiran pasir.
+        for(let i = 0; i < 70; i++){
+            this.add.ellipse(
+                Phaser.Math.Between(12,708),
+                Phaser.Math.Between(565,618),
+                Phaser.Math.Between(2,7),
+                3,
+                0xa48761,
+                .45
+            );
         }
-    )
-    .setOrigin(
-        0,
-        .5
-    );
 
+        // Tumbuhan air.
+        const plantPositions = [
+            [35,126],
+            [74,97],
+            [117,70],
+            [601,78],
+            [652,118],
+            [695,147]
+        ];
 
-    this.counter=
-    this.add.text(
-        700,
-        47,
-        "1/25",
-        {
-            fontSize:"22px",
-            fontStyle:"bold",
-            color:"#17384d"
+        for(const [x,height] of plantPositions){
+            const plant = this.add.container(x,572);
+
+            for(let j = 0; j < 3; j++){
+                const leaf = this.add.ellipse(
+                    (j - 1) * 15,
+                    -height / 2 + Math.abs(j - 1) * 12,
+                    20,
+                    height - Math.abs(j - 1) * 20,
+                    [0x247f78,0x38aa91,0x61c79a][j]
+                );
+
+                leaf.setRotation((j - 1) * .24);
+                plant.add(leaf);
+            }
+
+            this.tweens.add({
+                targets:plant,
+                angle:4,
+                duration:1800 + x,
+                yoyo:true,
+                repeat:-1
+            });
         }
-    )
-    .setOrigin(
-        1,
-        .5
-    );
 
+        // Batu.
+        const rocks = [
+            [171,566,64],
+            [207,577,42],
+            [551,572,74]
+        ];
 
-    const soundButton=
-    this.add.rectangle(
-        744,
-        47,
-        40,
-        40,
-        0xffffff
-    )
-    .setStrokeStyle(
-        2,
-        0x23495f
-    )
-    .setInteractive();
-
-
-    this.soundText=
-    this.add.text(
-        744,
-        47,
-        "♪",
-        {
-            fontSize:"24px",
-            fontStyle:"bold",
-            color:"#17384d"
-        }
-    )
-    .setOrigin(.5);
-
-
-    soundButton.on(
-        "pointerdown",
-        ()=>{
-
-            ensureAudio();
-
-
-            musicOn=
-            !musicOn;
-
-
-            this.soundText.setText(
-                musicOn
-                ?
-                "♪"
-                :
-                "×"
+        for(const [x,y,width] of rocks){
+            this.add.ellipse(
+                x,y + 8,
+                width,29,
+                0x204f66,.2
             );
 
+            this.add.ellipse(
+                x,y,
+                width,35,
+                0x6e9caa
+            );
 
-            if(
-                musicOn
-            ){
-
-                startMusic();
-            }
+            this.add.ellipse(
+                x - 8,y - 7,
+                width * .65,15,
+                0x9bbfc6
+            );
         }
-    );
 
+        // Peti hiasan.
+        this.round(
+            467,539,
+            58,37,
+            5,
+            0x9c744b,
+            0x5e5544
+        );
 
-    this.add.rectangle(
-        400,
-        83,
-        620,
-        14,
-        0xbad7e4
-    )
-    .setStrokeStyle(
-        2,
-        0x557c8e
-    );
-
-
-    this.progress=
-    this.add.rectangle(
-        92,
-        83,
-        616,
-        10,
-        0x4bbadf
-    )
-    .setOrigin(
-        0,
-        .5
-    )
-    .setScale(
-        0,
-        1
-    );
-}
-
-
-/* =========================================================
-   QUESTION PANEL
-========================================================= */
-
-createQuestionPanel(){
-
-    this.add.rectangle(
-        400,
-        239,
-        710,
-        278,
-        0xffffff
-    )
-    .setStrokeStyle(
-        3,
-        0x24516a
-    );
-
-
-    this.qLabel=
-    this.add.text(
-        66,
-        108,
-        "SOALAN 1",
-        {
-            fontSize:"18px",
-            fontStyle:"bold",
-            color:"#2488ab"
-        }
-    );
-
-
-    this.question=
-    this.add.text(
-        66,
-        139,
-        "",
-        {
-            fontSize:"22px",
-            fontStyle:"bold",
-            color:"#17384d",
-
-            lineSpacing:3,
-
-            wordWrap:{
-                width:666
-            }
-        }
-    );
-
-
-    this.answerTexts=[];
-
-
-    const positions=[
-
-        [72,266],
-
-        [403,266],
-
-        [72,326],
-
-        [403,326]
-
-    ];
-
-
-    for(
-        let i=0;
-        i<4;
-        i++
-    ){
+        this.round(
+            463,533,
+            66,15,
+            5,
+            0xc7995a,
+            0x5e5544
+        );
 
         this.add.rectangle(
-            positions[i][0]+146,
-            positions[i][1],
-            292,
-            49,
-            0xf4fafc
-        )
-        .setStrokeStyle(
-            2,
-            0xa5cad8
+            496,550,
+            10,17,
+            0xfbe29b
         );
 
+        // Buih.
+        for(let i = 0; i < 23; i++){
+            const bubble = this.add.circle(
+                Phaser.Math.Between(15,705),
+                Phaser.Math.Between(35,560),
+                Phaser.Math.Between(3,8),
+                0xc7faff,
+                .06
+            );
 
-        this.add.circle(
-            positions[i][0]+20,
-            positions[i][1],
-            18,
-            [
-                0x63c8e8,
-                0xffc75a,
-                0x7fd4a0,
-                0xd19ae8
-            ][i]
-        )
-        .setStrokeStyle(
-            2,
-            0x315970
-        );
+            bubble.setStrokeStyle(
+                1.5,
+                0xc8faff,
+                .48
+            );
 
+            bubble.speed = Phaser.Math.Between(18,42);
+            bubble.phase = Math.random() * 6;
+
+            this.bubbles.push(bubble);
+        }
+
+        // Pantulan kaca.
+        const glass = this.add.graphics();
+
+        glass.lineStyle(3,0xe4ffff,.4);
+        glass.beginPath();
+        glass.moveTo(13,70);
+        glass.lineTo(13,260);
+        glass.strokePath();
+
+        glass.lineStyle(6,0xe4ffff,.15);
+        glass.beginPath();
+        glass.moveTo(24,81);
+        glass.lineTo(24,190);
+        glass.strokePath();
+
+        glass.lineStyle(2,0xf3ffff,.35);
+        glass.beginPath();
+        glass.moveTo(18,14);
+        glass.lineTo(701,14);
+        glass.strokePath();
 
         this.add.text(
-            positions[i][0]+20,
-            positions[i][1],
-            LETTERS[i],
+            23,28,
+            "AQUA LAB",
             {
-                fontSize:"19px",
+                fontFamily:"Arial",
+                fontSize:"14px",
                 fontStyle:"bold",
-                color:"#17384d"
+                color:"#ddfbff",
+                letterSpacing:3
             }
-        )
-        .setOrigin(.5);
+        ).setAlpha(.8);
 
-
-        const text=
         this.add.text(
-            positions[i][0]+46,
-            positions[i][1],
-            "",
+            696,28,
+            "● LIVE",
             {
-                fontSize:"15px",
-                fontStyle:"bold",
-                color:"#24485d",
-
-                wordWrap:{
-                    width:232
-                }
+                fontFamily:"Arial",
+                fontSize:"12px",
+                color:"#caffed"
             }
-        )
-        .setOrigin(
+        ).setOrigin(1,0);
+
+        // Tapak mesin.
+        this.round(
+            0,620,
+            720,70,
             0,
+            0x16445c
+        );
+
+        this.add.rectangle(
+            360,621,
+            720,5,
+            0x6bb4c5
+        );
+
+        for(let i = 0; i < 8; i++){
+            this.round(
+                30 + i * 13,
+                643,
+                6,20,
+                3,
+                0x317087
+            );
+        }
+
+        this.add.text(
+            690,646,
+            "WATER SYSTEM\nAUTO • 11 / SEC",
+            {
+                fontFamily:"Arial",
+                fontSize:"11px",
+                color:"#8dc5d5",
+                align:"right",
+                lineSpacing:4
+            }
+        ).setOrigin(1,0);
+    }
+
+    /* =====================================================
+       IKAN
+    ===================================================== */
+
+    makeFish(index){
+        const fish = this.add.container(
+            140 + index * 140,
+            100 + index * 124
+        ).setDepth(10);
+
+        const art = this.add.container(0,0);
+
+        const tail = this.add.graphics();
+
+        tail.fillStyle(COLORS[index]);
+
+        tail.fillTriangle(
+            -44,0,
+            -88,-30,
+            -82,30
+        );
+
+        tail.lineStyle(2,0x255d6c,.45);
+        tail.beginPath();
+        tail.moveTo(-48,0);
+        tail.lineTo(-80,-20);
+        tail.moveTo(-48,0);
+        tail.lineTo(-78,18);
+        tail.strokePath();
+
+        const fin = this.add.ellipse(
+            -9,-28,
+            50,24,
+            COLORS[index]
+        ).setRotation(-.35);
+
+        const body = this.add.ellipse(
+            0,0,
+            112,70,
+            COLORS[index]
+        ).setStrokeStyle(2,0x28586a);
+
+        const shade = this.add.ellipse(
+            -4,17,
+            85,28,
+            0xad664e,
+            .16
+        );
+
+        const shine = this.add.ellipse(
+            -10,-19,
+            65,16,
+            0xffffff,
+            .36
+        ).setRotation(-.12);
+
+        const side = this.add.ellipse(
+            -25,14,
+            28,15,
+            0xffffff,
+            .27
+        ).setRotation(-.5);
+
+        const eyeWhite = this.add.circle(
+            35,-10,
+            11,
+            0xfffef3
+        );
+
+        const eye = this.add.circle(
+            39,-9,
+            5,
+            0x153950
+        );
+
+        const eyeShine = this.add.circle(
+            40,-11,
+            1.8,
+            0xffffff
+        );
+
+        const cheek = this.add.ellipse(
+            38,8,
+            13,7,
+            0xe16f69,
             .5
         );
 
-
-        this.answerTexts.push(
-            text
-        );
-    }
-
-
-    this.status=
-    this.add.text(
-        400,
-        382,
-        "Gerakkan sasaran dan tahan TEMBAK.",
-        {
-            fontSize:"17px",
-            fontStyle:"bold",
-            color:"#4b7185"
-        }
-    )
-    .setOrigin(.5);
-
-
-    /*
-    SMALL RESTART BUTTON
-
-    NO OVERLAY
-    */
-
-    this.restartButton=
-    this.add.rectangle(
-        400,
-        382,
-        235,
-        40,
-        0x45afd4
-    )
-    .setStrokeStyle(
-        2,
-        0x1c617e
-    )
-    .setInteractive()
-    .setVisible(false);
-
-
-    this.restartText=
-    this.add.text(
-        400,
-        382,
-        "MAIN SEMULA",
-        {
-            fontSize:"18px",
-            fontStyle:"bold",
-            color:"#ffffff"
-        }
-    )
-    .setOrigin(.5)
-    .setVisible(false);
-
-
-    this.restartButton.on(
-        "pointerdown",
-        ()=>{
-
-            this.restartGame();
-        }
-    );
-}
-
-
-/* =========================================================
-   AQUARIUM
-========================================================= */
-
-createAquarium(){
-
-    const tank=
-    this.add.graphics();
-
-
-    /*
-    WATER
-    */
-
-    tank.fillStyle(
-        0x4db7dc,
-        1
-    );
-
-
-    tank.fillRoundedRect(
-        TANK.left,
-        TANK.top,
-
-        TANK.right-
-        TANK.left,
-
-        TANK.bottom-
-        TANK.top,
-
-        20
-    );
-
-
-    /*
-    DEEP WATER
-    */
-
-    tank.fillStyle(
-        0x287ca7,
-        .18
-    );
-
-
-    tank.fillRect(
-        TANK.left+4,
-        TANK.top+280,
-
-        TANK.right-
-        TANK.left-8,
-
-        292
-    );
-
-
-    /*
-    GLASS
-    */
-
-    tank.lineStyle(
-        8,
-        0x1d4961,
-        1
-    );
-
-
-    tank.strokeRoundedRect(
-        TANK.left,
-        TANK.top,
-
-        TANK.right-
-        TANK.left,
-
-        TANK.bottom-
-        TANK.top,
-
-        20
-    );
-
-
-    tank.lineStyle(
-        4,
-        0xffffff,
-        .35
-    );
-
-
-    tank.beginPath();
-
-
-    tank.moveTo(
-        TANK.left+18,
-        TANK.top+26
-    );
-
-
-    tank.lineTo(
-        TANK.left+18,
-        TANK.bottom-30
-    );
-
-
-    tank.strokePath();
-
-
-    /*
-    LIGHT RAYS
-    */
-
-    const rays=
-    this.add.graphics();
-
-
-    rays.fillStyle(
-        0xffffff,
-        .055
-    );
-
-
-    rays.fillTriangle(
-        100,
-        TANK.top+5,
-
-        260,
-        TANK.top+5,
-
-        370,
-        TANK.bottom-80
-    );
-
-
-    rays.fillTriangle(
-        430,
-        TANK.top+5,
-
-        545,
-        TANK.top+5,
-
-        680,
-        TANK.bottom-90
-    );
-
-
-    /*
-    SAND
-    */
-
-    const sand=
-    this.add.graphics();
-
-
-    sand.fillStyle(
-        0xe2c37a,
-        1
-    );
-
-
-    sand.fillRect(
-        TANK.left+4,
-        TANK.bottom-70,
-
-        TANK.right-
-        TANK.left-8,
-
-        66
-    );
-
-
-    sand.fillStyle(
-        0xc9a15c,
-        1
-    );
-
-
-    for(
-        let i=0;
-        i<60;
-        i++
-    ){
-
-        sand.fillCircle(
-
-            Phaser.Math.Between(
-                55,
-                745
-            ),
-
-            Phaser.Math.Between(
-                TANK.bottom-62,
-                TANK.bottom-12
-            ),
-
-            Phaser.Math.Between(
-                1,
-                4
-            )
-        );
-    }
-
-
-    this.createTankPlants();
-
-    this.createBubbles();
-
-
-    /*
-    INTERACTIVE AIM AREA
-
-    INVISIBLE.
-    DOES NOT COVER GAME VISUALLY.
-    */
-
-    this.aimArea=
-    this.add.rectangle(
-        400,
-
-        (
-            TANK.top+
-            TANK.bottom
-        )/
-        2,
-
-        TANK.right-
-        TANK.left-
-        12,
-
-        TANK.bottom-
-        TANK.top-
-        12,
-
-        0xffffff,
-        0
-    )
-    .setInteractive();
-
-
-    /*
-    TAP OR DRAG TO AIM
-    */
-
-    this.aimArea.on(
-        "pointerdown",
-        pointer=>{
-
-            this.setAim(
-                pointer.x,
-                pointer.y
-            );
-        }
-    );
-
-
-    this.aimArea.on(
-        "pointermove",
-        pointer=>{
-
-            if(
-                pointer.isDown
-            ){
-
-                this.setAim(
-                    pointer.x,
-                    pointer.y
-                );
+        art.add([
+            tail,
+            fin,
+            body,
+            shade,
+            shine,
+            side,
+            eyeWhite,
+            eye,
+            eyeShine,
+            cheek
+        ]);
+
+        const mouth = this.add.graphics();
+
+        mouth.lineStyle(2,0x31566a);
+        mouth.beginPath();
+        mouth.moveTo(49,9);
+        mouth.lineTo(54,7);
+        mouth.strokePath();
+
+        art.add(mouth);
+
+        const badge = this.add.circle(
+            -5,0,
+            22,
+            0xffffff
+        ).setStrokeStyle(2,0x366172);
+
+        const letter = this.add.text(
+            -5,0,
+            LETTERS[index],
+            {
+                fontFamily:"Arial",
+                fontSize:"27px",
+                fontStyle:"bold",
+                color:"#18425b"
             }
-        }
-    );
-}
+        ).setOrigin(.5);
 
+        fish.add([
+            art,
+            badge,
+            letter
+        ]);
 
-/* =========================================================
-   PLANTS
-========================================================= */
+        Object.assign(fish,{
+            art,
+            tail,
+            body,
+            badge,
+            index,
+            phase:Math.random() * 6,
+            speed:50 + index * 5,
+            dir:index % 2 ? 1 : -1,
+            baseY:110 + index * 124
+        });
 
-createTankPlants(){
+        this.fishes.push(fish);
+    }
 
-    const xs=[
+    /* =====================================================
+       WATER MACHINE GUN
+    ===================================================== */
 
-        90,
-        135,
-        180,
+    makeGun(){
+        this.add.ellipse(
+            360,654,
+            160,29,
+            0x081e32,
+            .38
+        ).setDepth(19);
 
-        595,
-        650,
-        705
+        this.gun = this.add.container(
+            360,632
+        ).setDepth(20);
 
-    ];
+        this.rotor = this.add.container(0,0);
 
+        const tank = this.add.ellipse(
+            -39,8,
+            39,68,
+            0x7cdaed
+        ).setStrokeStyle(3,0x153e55);
 
-    xs.forEach(
-        (x,index)=>{
+        const tankShine = this.add.ellipse(
+            -46,0,
+            8,37,
+            0xcaffff,
+            .65
+        );
 
-            const plant=
-            this.add.container(
-                x,
-                TANK.bottom-68
-            );
+        const barrel = this.add.rectangle(
+            0,-58,
+            30,91,
+            0x246e87
+        ).setStrokeStyle(3,0x123a51);
 
+        const stripe = this.add.rectangle(
+            -7,-63,
+            6,70,
+            0x65bfd1
+        );
 
-            const stem=
-            this.add.rectangle(
-                0,
-                -34,
-                7,
-                72,
-                0x237d52
-            )
-            .setOrigin(
-                .5,
-                1
-            );
+        const collar = this.add.rectangle(
+            0,-96,
+            46,21,
+            0x58c8d7
+        ).setStrokeStyle(3,0x153e55);
 
+        const tip = this.add.rectangle(
+            0,-112,
+            28,13,
+            0x0b354e
+        ).setStrokeStyle(2,0x82d8e4);
 
-            const l1=
-            this.add.ellipse(
-                -12,
-                -40,
-                17,
-                44,
-                0x45a96d
-            )
-            .setRotation(
-                -.55
-            );
+        const body = this.add.ellipse(
+            0,2,
+            85,71,
+            0x329fc0
+        ).setStrokeStyle(3,0x153e55);
 
+        const inner = this.add.ellipse(
+            0,-1,
+            56,49,
+            0x65d2df
+        ).setStrokeStyle(2,0x2e728d);
 
-            const l2=
-            this.add.ellipse(
+        this.rotor.add([
+            tank,
+            tankShine,
+            barrel,
+            stripe,
+            collar,
+            tip,
+            body,
+            inner,
+            this.add.circle(
+                0,-2,
                 12,
-                -54,
-                17,
-                47,
-                0x59b879
+                0xc4faf2
+            ),
+            this.add.circle(
+                0,-2,
+                5,
+                0x2585a0
             )
-            .setRotation(
-                .55
-            );
+        ]);
 
+        this.gun.add(this.rotor);
 
-            const l3=
-            this.add.ellipse(
-                -9,
-                -69,
-                14,
-                37,
-                0x3b9861
-            )
-            .setRotation(
-                -.45
-            );
-
-
-            plant.add([
-                stem,
-                l1,
-                l2,
-                l3
-            ]);
-
-
-            plant.setScale(
-                Phaser.Math.FloatBetween(
-                    .8,
-                    1.15
-                )
-            );
-
-
-            this.tweens.add({
-
-                targets:
-                plant,
-
-                angle:
-                index%2===0
-                ?
-                -4
-                :
-                4,
-
-                duration:
-                Phaser.Math.Between(
-                    1300,
-                    1800
-                ),
-
-                yoyo:
-                true,
-
-                repeat:
-                -1,
-
-                ease:
-                "Sine.easeInOut"
-
-            });
-        }
-    );
-
-
-    /*
-    ROCKS
-    */
-
-    const rocks=
-    this.add.graphics();
-
-
-    const r=[
-
-        [250,950,35,20],
-
-        [290,957,25,15],
-
-        [500,955,38,21],
-
-        [545,960,28,16]
-
-    ];
-
-
-    r.forEach(
-        item=>{
-
-            rocks.fillStyle(
-                0x718793,
-                1
-            );
-
-
-            rocks.fillEllipse(
-                item[0],
-                item[1],
-                item[2]*2,
-                item[3]*2
-            );
-
-
-            rocks.fillStyle(
-                0xa0afb7,
-                .5
-            );
-
-
-            rocks.fillEllipse(
-                item[0]-7,
-                item[1]-6,
-                item[2],
-                item[3]/1.3
-            );
-        }
-    );
-}
-
-
-/* =========================================================
-   BUBBLES
-========================================================= */
-
-createBubbles(){
-
-    for(
-        let i=0;
-        i<26;
-        i++
-    ){
-
-        const b=
-        this.add.circle(
-
-            Phaser.Math.Between(
-                60,
-                740
-            ),
-
-            Phaser.Math.Between(
-                TANK.top+50,
-                TANK.bottom-90
-            ),
-
-            Phaser.Math.Between(
-                3,
-                7
-            ),
-
-            0xe3faff,
-            .32
+        this.add.ellipse(
+            360,656,
+            70,26,
+            0x194e68
         )
-        .setStrokeStyle(
-            2,
-            0xffffff,
-            .45
-        );
+        .setStrokeStyle(2,0x6cbccc)
+        .setDepth(21);
+    }
 
+    /* =====================================================
+       SASARAN
+    ===================================================== */
 
-        b.speed=
-        Phaser.Math.FloatBetween(
-            14,
-            35
-        );
+    makeAim(){
+        this.cross = this.add.graphics().setDepth(40);
 
+        this.cross.lineStyle(2,0x0e5678,.6);
+        this.cross.strokeCircle(0,0,24);
 
-        b.phase=
-        Math.random()*
-        Math.PI*
-        2;
+        this.cross.lineStyle(2,0xffffff,.95);
+        this.cross.strokeCircle(0,0,21);
 
+        for(let i = 0; i < 4; i++){
+            const angle = i * Math.PI / 2;
 
-        b.wave=
-        Phaser.Math.FloatBetween(
-            1,
-            2
-        );
+            this.cross.beginPath();
 
+            this.cross.moveTo(
+                Math.cos(angle) * 16,
+                Math.sin(angle) * 16
+            );
 
-        this.bubbles.push(
-            b
+            this.cross.lineTo(
+                Math.cos(angle) * 31,
+                Math.sin(angle) * 31
+            );
+
+            this.cross.strokePath();
+        }
+
+        this.cross.fillStyle(0xffffff);
+        this.cross.fillCircle(0,0,3);
+
+        this.cross.setPosition(
+            this.aim.x,
+            this.aim.y
         );
     }
-}
 
-
-/* =========================================================
-   FISH
-========================================================= */
-
-createFish(index){
-
-    const fish=
-    this.add.container(
-        150+
-        index*
-        150,
-
-        525+
-        index*
-        110
-    );
-
-
-    const art=
-    this.add.container(
-        0,
-        0
-    );
-
-
-    /*
-    TAIL
-    */
-
-    const tail=
-    this.add.triangle(
-
-        -61,
-        0,
-
-        -18,
-        0,
-
-        20,
-        -34,
-
-        20,
-        34,
-
-        FISH_DARK[index]
-    );
-
-
-    /*
-    BODY
-    */
-
-    const body=
-    this.add.ellipse(
-        0,
-        0,
-        112,
-        67,
-        FISH_COLORS[index]
-    )
-    .setStrokeStyle(
-        3,
-        0x173f55
-    );
-
-
-    /*
-    TOP FIN
-    */
-
-    const topFin=
-    this.add.triangle(
-
-        -4,
-        -30,
-
-        -19,
-        3,
-
-        5,
-        -28,
-
-        24,
-        3,
-
-        FISH_DARK[index]
-    );
-
-
-    /*
-    BOTTOM FIN
-    */
-
-    const bottomFin=
-    this.add.triangle(
-
-        0,
-        30,
-
-        -10,
-        -2,
-
-        17,
-        27,
-
-        27,
-        -2,
-
-        FISH_DARK[index]
-    );
-
-
-    /*
-    EYE
-    */
-
-    const eyeWhite=
-    this.add.circle(
-        34,
-        -10,
-        9,
-        0xffffff
-    );
-
-
-    const eye=
-    this.add.circle(
-        38,
-        -10,
-        4,
-        0x111820
-    );
-
-
-    const mouth=
-    this.add.ellipse(
-        49,
-        10,
-        10,
-        5,
-        0x173f55
-    );
-
-
-    const spot1=
-    this.add.circle(
-        -18,
-        -12,
-        7,
-        FISH_DARK[index],
-        .48
-    );
-
-
-    const spot2=
-    this.add.circle(
-        -28,
-        10,
-        5,
-        FISH_DARK[index],
-        .48
-    );
-
-
-    art.add([
-
-        tail,
-        topFin,
-        bottomFin,
-        body,
-        spot1,
-        spot2,
-        eyeWhite,
-        eye,
-        mouth
-
-    ]);
-
-
-    /*
-    LETTER BADGE
-    */
-
-    const badge=
-    this.add.circle(
-        0,
-        0,
-        24,
-        0xffffff,
-        .94
-    )
-    .setStrokeStyle(
-        3,
-        0x173f55
-    );
-
-
-    const letter=
-    this.add.text(
-        0,
-        0,
-        LETTERS[index],
-        {
-            fontSize:"27px",
-            fontStyle:"bold",
-            color:"#17384d"
+    setAim(x,y){
+        if(this.finished || y > 586){
+            return;
         }
-    )
-    .setOrigin(.5);
 
-
-    fish.add([
-
-        art,
-        badge,
-        letter
-
-    ]);
-
-
-    fish.art=
-    art;
-
-
-    fish.tail=
-    tail;
-
-
-    fish.body=
-    body;
-
-
-    fish.badge=
-    badge;
-
-
-    fish.index=
-    index;
-
-
-    fish.baseColor=
-    FISH_COLORS[index];
-
-
-    fish.direction=
-    index%2===0
-    ?
-    1
-    :
-    -1;
-
-
-    fish.speed=
-    Phaser.Math.FloatBetween(
-        45,
-        73
-    );
-
-
-    fish.baseY=
-    525+
-    index*
-    110;
-
-
-    fish.waveAmp=
-    Phaser.Math.FloatBetween(
-        12,
-        25
-    );
-
-
-    fish.waveSpeed=
-    Phaser.Math.FloatBetween(
-        .0015,
-        .0023
-    );
-
-
-    fish.phase=
-    Math.random()*
-    Math.PI*
-    2;
-
-
-    fish.speedTimer=
-    0;
-
-
-    fish.nextSpeedChange=
-    Phaser.Math.Between(
-        2300,
-        4600
-    );
-
-
-    fish.hitRadius=
-    54;
-
-
-    art.scaleX=
-    fish.direction;
-
-
-    /*
-    TAIL ANIMATION
-    */
-
-    this.tweens.add({
-
-        targets:
-        tail,
-
-        scaleY:
-        .65,
-
-        duration:
-        Phaser.Math.Between(
-            130,
-            210
-        ),
-
-        yoyo:
-        true,
-
-        repeat:
-        -1,
-
-        ease:
-        "Sine.easeInOut"
-
-    });
-
-
-    this.fishes.push(
-        fish
-    );
-}
-
-
-/* =========================================================
-   CROSSHAIR
-========================================================= */
-
-createCrosshair(){
-
-    this.aimX=
-    400;
-
-
-    this.aimY=
-    650;
-
-
-    this.crosshair=
-    this.add.container(
-        this.aimX,
-        this.aimY
-    )
-    .setDepth(
-        50
-    );
-
-
-    const g=
-    this.add.graphics();
-
-
-    g.lineStyle(
-        3,
-        0xffffff,
-        .92
-    );
-
-
-    g.strokeCircle(
-        0,
-        0,
-        27
-    );
-
-
-    g.beginPath();
-
-
-    g.moveTo(
-        -39,
-        0
-    );
-
-
-    g.lineTo(
-        -16,
-        0
-    );
-
-
-    g.moveTo(
-        16,
-        0
-    );
-
-
-    g.lineTo(
-        39,
-        0
-    );
-
-
-    g.moveTo(
-        0,
-        -39
-    );
-
-
-    g.lineTo(
-        0,
-        -16
-    );
-
-
-    g.moveTo(
-        0,
-        16
-    );
-
-
-    g.lineTo(
-        0,
-        39
-    );
-
-
-    g.strokePath();
-
-
-    const center=
-    this.add.circle(
-        0,
-        0,
-        5,
-        0x1e718f
-    )
-    .setStrokeStyle(
-        2,
-        0xffffff
-    );
-
-
-    this.crosshair.add([
-        g,
-        center
-    ]);
-}
-
-
-/* =========================================================
-   MACHINE GUN
-========================================================= */
-
-createGun(){
-
-    this.gun=
-    this.add.container(
-        400,
-        1084
-    );
-
-
-    /*
-    WATER TANK
-    */
-
-    const waterTank=
-    this.add.ellipse(
-        -42,
-        25,
-        60,
-        82,
-        0x91e5f5
-    )
-    .setStrokeStyle(
-        3,
-        0x173f55
-    );
-
-
-    /*
-    MACHINE GUN BODY
-    */
-
-    const body=
-    this.add.rectangle(
-        0,
-        10,
-        135,
-        56,
-        0x4eb6d9
-    )
-    .setStrokeStyle(
-        3,
-        0x173f55
-    );
-
-
-    /*
-    REAR
-    */
-
-    const rear=
-    this.add.rectangle(
-        -73,
-        10,
-        30,
-        40,
-        0x307b9b
-    )
-    .setStrokeStyle(
-        3,
-        0x173f55
-    );
-
-
-    /*
-    GRIP
-    */
-
-    const grip=
-    this.add.rectangle(
-        24,
-        54,
-        34,
-        66,
-        0x256f91
-    )
-    .setStrokeStyle(
-        3,
-        0x173f55
-    );
-
-
-    /*
-    NOZZLE GROUP
-
-    rotates manually
-    */
-
-    this.nozzle=
-    this.add.container(
-        0,
-        0
-    );
-
-
-    const barrel=
-    this.add.rectangle(
-        0,
-        -55,
-        24,
-        120,
-        0x398eaf
-    )
-    .setOrigin(
-        .5,
-        1
-    )
-    .setStrokeStyle(
-        3,
-        0x173f55
-    );
-
-
-    const barrel2=
-    this.add.rectangle(
-        0,
-        -108,
-        40,
-        26,
-        0x246b89
-    )
-    .setStrokeStyle(
-        3,
-        0x173f55
-    );
-
-
-    const nozzleTip=
-    this.add.rectangle(
-        0,
-        -126,
-        29,
-        20,
-        0x173f55
-    );
-
-
-    this.nozzle.add([
-
-        barrel,
-        barrel2,
-        nozzleTip
-
-    ]);
-
-
-    this.gun.add([
-
-        waterTank,
-        rear,
-        body,
-        grip,
-        this.nozzle
-
-    ]);
-
-
-    /*
-    SCORE
-    */
-
-    this.scoreText=
-    this.add.text(
-        96,
-        1088,
-        "SKOR\n0",
-        {
-            fontSize:"18px",
-            fontStyle:"bold",
-            align:"center",
-            color:"#17384d"
-        }
-    )
-    .setOrigin(.5);
-
-
-    this.wrongText=
-    this.add.text(
-        704,
-        1088,
-        "SALAH\n0",
-        {
-            fontSize:"18px",
-            fontStyle:"bold",
-            align:"center",
-            color:"#17384d"
-        }
-    )
-    .setOrigin(.5);
-}
-
-
-/* =========================================================
-   CONTROLS
-========================================================= */
-
-createControls(){
-
-    /*
-    FIRE BUTTON
-    */
-
-    this.fireShadow=
-    this.add.circle(
-        668,
-        1171,
-        58,
-        0x17384d,
-        .22
-    );
-
-
-    this.fireButton=
-    this.add.circle(
-        668,
-        1164,
-        56,
-        0x36a9d0
-    )
-    .setStrokeStyle(
-        4,
-        0x174f6a
-    )
-    .setInteractive();
-
-
-    this.fireText=
-    this.add.text(
-        668,
-        1164,
-        "TEMBAK",
-        {
-            fontSize:"18px",
-            fontStyle:"bold",
-            color:"#ffffff"
-        }
-    )
-    .setOrigin(.5);
-
-
-    this.fireButton.on(
-        "pointerdown",
-        ()=>{
-
-            if(
-                this.finished
-            ){
-
+        this.aim.x = Phaser.Math.Clamp(
+            x,
+            39,
+            681
+        );
+
+        this.aim.y = Phaser.Math.Clamp(
+            y,
+            65,
+            553
+        );
+
+        this.cross.setPosition(
+            this.aim.x,
+            this.aim.y
+        );
+    }
+
+    /* =====================================================
+       KAWALAN
+    ===================================================== */
+
+    bindControls(){
+        const button = $("fire");
+
+        button.onpointerdown = event => {
+            event.preventDefault();
+
+            if(this.finished){
                 return;
             }
 
+            audio();
 
-            ensureAudio();
-
-            startMusic();
-
-
-            this.fireHeld=
-            true;
-
-
-            this.fireButton
-            .setFillStyle(
-                0x1786b1
+            button.setPointerCapture(
+                event.pointerId
             );
 
+            this.firePointer = event.pointerId;
+            this.touchFire = true;
 
-            this.fireButton
-            .setScale(
-                .94
-            );
-        }
-    );
+            button.classList.add("held");
+        };
 
-
-    this.fireButton.on(
-        "pointerup",
-        ()=>{
-
-            this.stopFireButton();
-        }
-    );
-
-
-    this.fireButton.on(
-        "pointerout",
-        ()=>{
-
-            this.stopFireButton();
-        }
-    );
-
-
-    /*
-    AIM LABEL
-    */
-
-    this.add.text(
-        132,
-        1140,
-        "KAWAL SASARAN",
-        {
-            fontSize:"15px",
-            fontStyle:"bold",
-            color:"#31596d"
-        }
-    )
-    .setOrigin(.5);
-
-
-    this.add.text(
-        132,
-        1172,
-        "Drag dalam akuarium",
-        {
-            fontSize:"14px",
-            color:"#527486"
-        }
-    )
-    .setOrigin(.5);
-
-
-    /*
-    FIRE RATE INDICATOR
-    */
-
-    this.add.text(
-        400,
-        1172,
-        "MACHINE GUN",
-        {
-            fontSize:"16px",
-            fontStyle:"bold",
-            color:"#31596d"
-        }
-    )
-    .setOrigin(.5);
-
-
-    this.add.text(
-        400,
-        1200,
-        "Tahan TEMBAK",
-        {
-            fontSize:"14px",
-            color:"#527486"
-        }
-    )
-    .setOrigin(.5);
-}
-
-
-/* =========================================================
-   STOP FIRE
-========================================================= */
-
-stopFireButton(){
-
-    this.fireHeld=
-    false;
-
-
-    this.fireButton
-    .setFillStyle(
-        0x36a9d0
-    );
-
-
-    this.fireButton
-    .setScale(
-        1
-    );
-}
-
-
-/* =========================================================
-   SET AIM
-========================================================= */
-
-setAim(x,y){
-
-    if(
-        this.finished
-    ){
-
-        return;
-    }
-
-
-    this.aimX=
-    Phaser.Math.Clamp(
-        x,
-        TANK.left+30,
-        TANK.right-30
-    );
-
-
-    this.aimY=
-    Phaser.Math.Clamp(
-        y,
-        TANK.top+35,
-        TANK.bottom-35
-    );
-
-
-    this.crosshair.setPosition(
-        this.aimX,
-        this.aimY
-    );
-}
-
-
-/* =========================================================
-   KEYBOARD
-========================================================= */
-
-createKeyboard(){
-
-    this.keys=
-    this.input.keyboard.addKeys({
-
-        up:
-        Phaser.Input.Keyboard.KeyCodes.UP,
-
-        down:
-        Phaser.Input.Keyboard.KeyCodes.DOWN,
-
-        left:
-        Phaser.Input.Keyboard.KeyCodes.LEFT,
-
-        right:
-        Phaser.Input.Keyboard.KeyCodes.RIGHT,
-
-        w:
-        Phaser.Input.Keyboard.KeyCodes.W,
-
-        a:
-        Phaser.Input.Keyboard.KeyCodes.A,
-
-        s:
-        Phaser.Input.Keyboard.KeyCodes.S,
-
-        d:
-        Phaser.Input.Keyboard.KeyCodes.D,
-
-        fire:
-        Phaser.Input.Keyboard.KeyCodes.SPACE
-
-    });
-}
-
-
-/* =========================================================
-   LOAD QUESTION
-========================================================= */
-
-loadQuestion(){
-
-    this.finished=
-    false;
-
-
-    this.locked=
-    false;
-
-
-    this.fireHeld=
-    false;
-
-
-    this.restartButton
-    .setVisible(
-        false
-    );
-
-
-    this.restartText
-    .setVisible(
-        false
-    );
-
-
-    this.status
-    .setVisible(
-        true
-    );
-
-
-    const item=
-    QUESTIONS[
-        this.qIndex
-    ];
-
-
-    this.qLabel.setText(
-        "SOALAN "+
-        (
-            this.qIndex+
-            1
-        )
-    );
-
-
-    this.question.setText(
-        item.q
-    );
-
-
-    for(
-        let i=0;
-        i<4;
-        i++
-    ){
-
-        this.answerTexts[i]
-        .setText(
-            item.a[i]
-        );
-    }
-
-
-    this.counter.setText(
-
-        (
-            this.qIndex+
-            1
-        )
-
-        +
-
-        "/25"
-
-    );
-
-
-    this.progress.setScale(
-
-        this.qIndex/
-        QUESTIONS.length,
-
-        1
-    );
-
-
-    this.status
-    .setText(
-        "Gerakkan sasaran dan tahan TEMBAK."
-    )
-    .setColor(
-        "#4b7185"
-    );
-
-
-    /*
-    CLEAR BULLETS
-    */
-
-    this.clearBullets();
-
-
-    /*
-    RANDOM FISH LANES
-    */
-
-    const lanes=[
-
-        515,
-        625,
-        735,
-        845
-
-    ];
-
-
-    Phaser.Utils.Array.Shuffle(
-        lanes
-    );
-
-
-    this.fishes.forEach(
-        (fish,index)=>{
-
-            fish.x=
-            Phaser.Math.Between(
-                130,
-                670
-            );
-
-
-            fish.baseY=
-            lanes[index];
-
-
-            fish.y=
-            fish.baseY;
-
-
-            fish.speed=
-            Phaser.Math.FloatBetween(
-                44,
-                78
-            );
-
-
-            fish.direction=
-            Math.random()<.5
-            ?
-            -1
-            :
-            1;
-
-
-            fish.art.scaleX=
-            fish.direction;
-
-
-            fish.body
-            .setFillStyle(
-                fish.baseColor,
-                1
-            );
-
-
-            fish.badge
-            .setFillStyle(
-                0xffffff,
-                .94
-            );
-
-
-            fish.setScale(
-                1
-            );
-        }
-    );
-}
-
-
-/* =========================================================
-   FIRE MACHINE GUN
-========================================================= */
-
-fireWater(){
-
-    if(
-        this.locked ||
-        this.finished
-    ){
-
-        return;
-    }
-
-
-    /*
-    GUN POSITION
-    */
-
-    const muzzleX=
-    this.gun.x;
-
-
-    const muzzleY=
-    this.gun.y-
-    126;
-
-
-    const dx=
-    this.aimX-
-    muzzleX;
-
-
-    const dy=
-    this.aimY-
-    muzzleY;
-
-
-    const distance=
-    Math.sqrt(
-        dx*dx+
-        dy*dy
-    )
-    ||
-    1;
-
-
-    const vx=
-    dx/
-    distance;
-
-
-    const vy=
-    dy/
-    distance;
-
-
-    /*
-    SMALL SPREAD
-
-    MACHINE GUN WATER
-    */
-
-    const spread=
-    Phaser.Math.FloatBetween(
-        -.025,
-        .025
-    );
-
-
-    const cos=
-    Math.cos(
-        spread
-    );
-
-
-    const sin=
-    Math.sin(
-        spread
-    );
-
-
-    const sx=
-    vx*cos-
-    vy*sin;
-
-
-    const sy=
-    vx*sin+
-    vy*cos;
-
-
-    const bullet=
-    this.add.circle(
-        muzzleX+
-        sx*
-        20,
-
-        muzzleY+
-        sy*
-        20,
-
-        7,
-        0xdffbff
-    )
-    .setStrokeStyle(
-        2,
-        0x168ab7
-    )
-    .setDepth(
-        45
-    );
-
-
-    this.bullets.push({
-
-        sprite:
-        bullet,
-
-        vx:
-        sx,
-
-        vy:
-        sy,
-
-        speed:
-        850,
-
-        life:
-        0
-
-    });
-
-
-    /*
-    MUZZLE WATER
-    */
-
-    const splash=
-    this.add.circle(
-        muzzleX+
-        sx*
-        25,
-
-        muzzleY+
-        sy*
-        25,
-
-        11,
-        0xdffaff,
-        .65
-    )
-    .setDepth(
-        44
-    );
-
-
-    this.tweens.add({
-
-        targets:
-        splash,
-
-        scale:
-        .2,
-
-        alpha:
-        0,
-
-        duration:
-        120,
-
-        onComplete:
-        ()=>{
-
-            splash.destroy();
-        }
-
-    });
-
-
-    /*
-    RECOIL
-    */
-
-    this.gun.y=
-    1088;
-
-
-    this.tweens.add({
-
-        targets:
-        this.gun,
-
-        y:
-        1084,
-
-        duration:
-        55,
-
-        ease:
-        "Quad.easeOut"
-
-    });
-
-
-    gunSound();
-}
-
-
-/* =========================================================
-   CHECK HIT
-========================================================= */
-
-checkBulletHit(
-    bullet,
-    bulletIndex
-){
-
-    for(
-        let i=0;
-        i<this.fishes.length;
-        i++
-    ){
-
-        const fish=
-        this.fishes[i];
-
-
-        const dx=
-        bullet.sprite.x-
-        fish.x;
-
-
-        const dy=
-        bullet.sprite.y-
-        fish.y;
-
-
-        const distance=
-        Math.sqrt(
-            dx*dx+
-            dy*dy
-        );
-
-
-        if(
-            distance<
-            fish.hitRadius
-        ){
-
-            const x=
-            bullet.sprite.x;
-
-            const y=
-            bullet.sprite.y;
-
-
-            bullet.sprite.destroy();
-
-
-            this.bullets.splice(
-                bulletIndex,
-                1
-            );
-
-
-            this.waterSplash(
-                x,
-                y
-            );
-
-
-            this.hitFish(
-                fish
-            );
-
-
-            return true;
-        }
-    }
-
-
-    return false;
-}
-
-
-/* =========================================================
-   HIT FISH
-========================================================= */
-
-hitFish(fish){
-
-    if(
-        this.locked ||
-        this.finished
-    ){
-
-        return;
-    }
-
-
-    /*
-    TEMPORARILY STOP SHOOTING
-    AFTER HIT
-    */
-
-    this.fireHeld=
-    false;
-
-
-    this.stopFireButton();
-
-
-    this.clearBullets();
-
-
-    const correct=
-    QUESTIONS[
-        this.qIndex
-    ].c;
-
-
-    if(
-        fish.index===
-        correct
-    ){
-
-        this.correctAnswer(
-            fish
-        );
-
-    }else{
-
-        this.wrongAnswer(
-            fish
-        );
-    }
-}
-
-
-/* =========================================================
-   CORRECT
-========================================================= */
-
-correctAnswer(fish){
-
-    this.locked=
-    true;
-
-
-    this.score++;
-
-
-    this.scoreText.setText(
-        "SKOR\n"+
-        this.score
-    );
-
-
-    correctSound();
-
-
-    fish.body
-    .setFillStyle(
-        0x69e28d,
-        1
-    );
-
-
-    fish.badge
-    .setFillStyle(
-        0xc9f7d5,
-        1
-    );
-
-
-    this.status
-    .setText(
-        "BETUL! Ikan "+
-        LETTERS[
-            fish.index
-        ]+
-        " berjaya ditembak."
-    )
-    .setColor(
-        "#24794a"
-    );
-
-
-    this.correctBurst(
-        fish.x,
-        fish.y
-    );
-
-
-    this.tweens.add({
-
-        targets:
-        fish,
-
-        scaleX:
-        1.18,
-
-        scaleY:
-        1.18,
-
-        duration:
-        140,
-
-        yoyo:
-        true,
-
-        repeat:
-        1
-
-    });
-
-
-    this.time.delayedCall(
-        850,
-        ()=>{
-
-            this.qIndex++;
-
-
+        const stop = event => {
             if(
-                this.qIndex>=
-                QUESTIONS.length
+                event &&
+                event.pointerId !== this.firePointer
             ){
-
-                this.finishGame();
-
-            }else{
-
-                this.loadQuestion();
-            }
-        }
-    );
-}
-
-
-/* =========================================================
-   WRONG
-========================================================= */
-
-wrongAnswer(fish){
-
-    this.locked=
-    true;
-
-
-    this.wrong++;
-
-
-    this.wrongText.setText(
-        "SALAH\n"+
-        this.wrong
-    );
-
-
-    wrongSound();
-
-
-    fish.body
-    .setFillStyle(
-        0xff7777,
-        1
-    );
-
-
-    fish.badge
-    .setFillStyle(
-        0xffcccc,
-        1
-    );
-
-
-    this.status
-    .setText(
-        "Belum tepat. Laraskan sasaran dan cuba lagi."
-    )
-    .setColor(
-        "#aa3b3b"
-    );
-
-
-    const originalX=
-    fish.x;
-
-
-    this.tweens.add({
-
-        targets:
-        fish,
-
-        x:
-        originalX+
-        10,
-
-        duration:
-        55,
-
-        yoyo:
-        true,
-
-        repeat:
-        4,
-
-        onComplete:
-        ()=>{
-
-            fish.body
-            .setFillStyle(
-                fish.baseColor,
-                1
-            );
-
-
-            fish.badge
-            .setFillStyle(
-                0xffffff,
-                .94
-            );
-
-
-            this.locked=
-            false;
-
-
-            this.status
-            .setText(
-                "Cuba lagi. Kawal sasaran dan tahan TEMBAK."
-            )
-            .setColor(
-                "#4b7185"
-            );
-        }
-
-    });
-}
-
-
-/* =========================================================
-   WATER SPLASH
-========================================================= */
-
-waterSplash(x,y){
-
-    for(
-        let i=0;
-        i<12;
-        i++
-    ){
-
-        const p=
-        this.add.circle(
-
-            x,
-            y,
-
-            Phaser.Math.Between(
-                3,
-                7
-            ),
-
-            0xe5fbff
-        )
-        .setDepth(
-            60
-        );
-
-
-        const angle=
-        Math.random()*
-        Math.PI*
-        2;
-
-
-        const distance=
-        Phaser.Math.Between(
-            20,
-            56
-        );
-
-
-        this.tweens.add({
-
-            targets:
-            p,
-
-            x:
-            x+
-            Math.cos(angle)*
-            distance,
-
-            y:
-            y+
-            Math.sin(angle)*
-            distance,
-
-            alpha:
-            0,
-
-            scale:
-            .2,
-
-            duration:
-            Phaser.Math.Between(
-                280,
-                470
-            ),
-
-            onComplete:
-            ()=>{
-
-                p.destroy();
+                return;
             }
 
+            this.touchFire = false;
+            this.firePointer = null;
+
+            button.classList.remove("held");
+        };
+
+        button.onpointerup = stop;
+        button.onpointercancel = stop;
+        button.onlostpointercapture = stop;
+
+        this.resetInput = () => {
+            stop();
+            this.spaceBlocked = true;
+            this.keys.SPACE.reset();
+        };
+
+        window.addEventListener(
+            "blur",
+            this.resetInput
+        );
+
+        document.addEventListener(
+            "visibilitychange",
+            () => {
+                if(document.hidden){
+                    this.resetInput();
+                }
+            }
+        );
+
+        $("restart").onclick = () => {
+            this.q = 0;
+            this.score = 0;
+            this.wrong = 0;
+            this.finished = false;
+
+            $("score").textContent = "0";
+            $("wrong").textContent = "0";
+
+            $("restart").style.display = "none";
+            $("status").style.display = "";
+
+            this.load();
+        };
+    }
+
+    /* =====================================================
+       PAPAR SOALAN
+    ===================================================== */
+
+    load(){
+        this.locked = false;
+
+        this.stopFire();
+        this.clearBullets();
+
+        const item = QUESTIONS[this.q];
+
+        $("label").textContent =
+            "SOALAN " +
+            String(this.q + 1).padStart(2,"0");
+
+        $("count").textContent =
+            String(this.q + 1).padStart(2,"0") +
+            " / 25";
+
+        $("progress").style.width =
+            this.q / 25 * 100 + "%";
+
+        $("question").textContent = item[0];
+
+        $("answers").replaceChildren();
+
+        item[1].forEach((answer,index) => {
+            const row = document.createElement("div");
+            row.className = "answer";
+
+            const letter = document.createElement("span");
+            letter.className = "letter";
+
+            letter.style.setProperty(
+                "--c",
+                CSS[index]
+            );
+
+            letter.textContent = LETTERS[index];
+
+            const text = document.createElement("span");
+            text.textContent = answer;
+
+            row.append(letter,text);
+
+            $("answers").append(row);
+        });
+
+        this.status(
+            "Laras sasaran, kemudian tahan TEMBAK."
+        );
+
+        const lanes = Phaser.Utils.Array.Shuffle([
+            115,
+            233,
+            351,
+            469
+        ]);
+
+        this.fishes.forEach((fish,index) => {
+            fish.x = Phaser.Math.Between(115,605);
+
+            fish.baseY = lanes[index];
+            fish.y = fish.baseY;
+
+            fish.dir = Math.random() < .5 ? -1 : 1;
+            fish.art.scaleX = fish.dir;
+
+            fish.body.setFillStyle(COLORS[index]);
+            fish.badge.setFillStyle(0xffffff);
         });
     }
-}
 
+    status(text,color = "#548196"){
+        $("status").textContent = text;
+        $("status").style.color = color;
+    }
 
-/* =========================================================
-   CORRECT PARTICLES
-========================================================= */
+    stopFire(){
+        this.touchFire = false;
+        this.spaceBlocked = true;
 
-correctBurst(x,y){
+        $("fire").classList.remove("held");
+    }
 
-    for(
-        let i=0;
-        i<10;
-        i++
-    ){
+    clearBullets(){
+        for(const bullet of this.bullets){
+            bullet.s.destroy();
+        }
 
-        const p=
-        this.add.circle(
-            x,
-            y,
-            6,
-            0x6ce598
+        this.bullets = [];
+    }
+
+    /* =====================================================
+       TEMBAKAN AIR
+    ===================================================== */
+
+    shoot(){
+        const angle = Math.atan2(
+            this.aim.y - this.gun.y,
+            this.aim.x - this.gun.x
         );
 
+        const x =
+            this.gun.x +
+            Math.cos(angle) * 119;
 
-        const a=
-        Math.PI*
-        2*
-        i/
-        10;
+        const y =
+            this.gun.y +
+            Math.sin(angle) * 119;
 
+        const spreadAngle =
+            angle +
+            Phaser.Math.FloatBetween(-.012,.012);
+
+        const sprite = this.add.ellipse(
+            x,y,
+            8,19,
+            0xddfbff
+        )
+        .setStrokeStyle(1,0x73dbe8)
+        .setRotation(spreadAngle + Math.PI / 2)
+        .setDepth(30);
+
+        this.bullets.push({
+            s:sprite,
+            vx:Math.cos(spreadAngle) * 860,
+            vy:Math.sin(spreadAngle) * 860,
+            life:0
+        });
+
+        beep(650,.04,.018);
+
+        const flash = this.add.circle(
+            x,y,
+            10,
+            0xd9ffff,
+            .65
+        ).setDepth(31);
 
         this.tweens.add({
-
-            targets:
-            p,
-
-            x:
-            x+
-            Math.cos(a)*
-            55,
-
-            y:
-            y+
-            Math.sin(a)*
-            55,
-
-            alpha:
-            0,
-
-            duration:
-            430,
-
-            onComplete:
-            ()=>{
-
-                p.destroy();
-            }
-
+            targets:flash,
+            scale:1.8,
+            alpha:0,
+            duration:90,
+            onComplete:() => flash.destroy()
         });
-    }
-}
 
-
-/* =========================================================
-   CLEAR BULLETS
-========================================================= */
-
-clearBullets(){
-
-    this.bullets.forEach(
-        bullet=>{
-
-            if(
-                bullet.sprite &&
-                bullet.sprite.active
-            ){
-
-                bullet.sprite.destroy();
-            }
-        }
-    );
-
-
-    this.bullets=[];
-}
-
-
-/* =========================================================
-   FINISH
-========================================================= */
-
-finishGame(){
-
-    /*
-    NO OVERLAY.
-    AQUARIUM STILL VISIBLE.
-    FISH STILL SWIM.
-    */
-
-    this.finished=
-    true;
-
-
-    this.locked=
-    true;
-
-
-    this.fireHeld=
-    false;
-
-
-    this.stopFireButton();
-
-
-    this.clearBullets();
-
-
-    this.progress
-    .setScale(
-        1,
-        1
-    );
-
-
-    this.counter
-    .setText(
-        "25/25"
-    );
-
-
-    this.qLabel
-    .setText(
-        "SELESAI"
-    );
-
-
-    this.question
-    .setText(
-        "Tahniah! Semua 25 soalan Water Machine Gun telah selesai."
-    );
-
-
-    this.answerTexts[0]
-    .setText(
-        "Skor: "+
-        this.score+
-        " / 25"
-    );
-
-
-    this.answerTexts[1]
-    .setText(
-        "Salah: "+
-        this.wrong
-    );
-
-
-    this.answerTexts[2]
-    .setText(
-        " "
-    );
-
-
-    this.answerTexts[3]
-    .setText(
-        " "
-    );
-
-
-    this.status
-    .setVisible(
-        false
-    );
-
-
-    this.restartButton
-    .setVisible(
-        true
-    );
-
-
-    this.restartText
-    .setVisible(
-        true
-    );
-}
-
-
-/* =========================================================
-   RESTART
-========================================================= */
-
-restartGame(){
-
-    this.qIndex=
-    0;
-
-
-    this.score=
-    0;
-
-
-    this.wrong=
-    0;
-
-
-    this.finished=
-    false;
-
-
-    this.locked=
-    false;
-
-
-    this.scoreText
-    .setText(
-        "SKOR\n0"
-    );
-
-
-    this.wrongText
-    .setText(
-        "SALAH\n0"
-    );
-
-
-    this.status
-    .setVisible(
-        true
-    );
-
-
-    this.setAim(
-        400,
-        650
-    );
-
-
-    this.loadQuestion();
-}
-
-
-/* =========================================================
-   UPDATE
-========================================================= */
-
-update(time,delta){
-
-    const dt=
-    delta/
-    1000;
-
-
-    /* =====================================================
-       KEYBOARD AIM CONTROL
-    ===================================================== */
-
-    if(
-        !this.finished
-    ){
-
-        let moveX=0;
-
-        let moveY=0;
-
-
-        if(
-            this.keys.left.isDown ||
-            this.keys.a.isDown
-        ){
-
-            moveX-=1;
-        }
-
-
-        if(
-            this.keys.right.isDown ||
-            this.keys.d.isDown
-        ){
-
-            moveX+=1;
-        }
-
-
-        if(
-            this.keys.up.isDown ||
-            this.keys.w.isDown
-        ){
-
-            moveY-=1;
-        }
-
-
-        if(
-            this.keys.down.isDown ||
-            this.keys.s.isDown
-        ){
-
-            moveY+=1;
-        }
-
-
-        if(
-            moveX!==0 ||
-            moveY!==0
-        ){
-
-            this.setAim(
-
-                this.aimX+
-                moveX*
-                280*
-                dt,
-
-                this.aimY+
-                moveY*
-                280*
-                dt
-            );
-        }
-
-
-        /*
-        SPACE FIRE
-        */
-
-        if(
-            this.keys.fire.isDown
-        ){
-
-            this.fireHeld=
-            true;
-
-        }else if(
-            !this.fireButton.input ||
-            !this.fireButton.input.enabled
-        ){
-
-            this.fireHeld=
-            false;
-        }
+        this.rotor.y = 3;
     }
 
-
-    /* =====================================================
-       AIM MACHINE GUN
-    ===================================================== */
-
-    const muzzleX=
-    this.gun.x;
-
-
-    const muzzleY=
-    this.gun.y;
-
-
-    const angle=
-    Math.atan2(
-
-        this.aimY-
-        muzzleY,
-
-        this.aimX-
-        muzzleX
-
-    )
-    +
-    Math.PI/
-    2;
-
-
-    this.nozzle.rotation=
-    angle;
-
-
-    /* =====================================================
-       MACHINE GUN FIRE
-    ===================================================== */
-
-    if(
-        this.fireHeld &&
-        !this.locked &&
-        !this.finished
-    ){
-
-        if(
-            time-
-            this.lastFire>=
-            this.fireDelay
-        ){
-
-            this.lastFire=
-            time;
-
-
-            this.fireWater();
-        }
-    }
-
-
-    /* =====================================================
-       FISH MOVEMENT
-    ===================================================== */
-
-    this.fishes.forEach(
-        fish=>{
-
-            fish.speedTimer+=
-            delta;
-
-
-            if(
-                fish.speedTimer>=
-                fish.nextSpeedChange
-            ){
-
-                fish.speedTimer=
-                0;
-
-
-                fish.nextSpeedChange=
-                Phaser.Math.Between(
-                    2300,
-                    4700
-                );
-
-
-                fish.speed=
-                Phaser.Math.FloatBetween(
-                    40,
-                    80
-                );
-            }
-
-
-            fish.x+=
-
-            fish.direction*
-            fish.speed*
-            dt;
-
-
-            /*
-            NATURAL WAVE
-            */
-
-            fish.y=
-
-            fish.baseY
-
-            +
-
-            Math.sin(
-                time*
-                fish.waveSpeed+
-                fish.phase
-            )
-
-            *
-
-            fish.waveAmp
-
-            +
-
-            Math.sin(
-                time*
-                .004+
-                fish.phase
-            )
-
-            *
-
-            4;
-
-
-            /*
-            TURN AT WALL
-            */
-
-            if(
-                fish.x>
-                690
-            ){
-
-                fish.x=
-                690;
-
-
-                fish.direction=
-                -1;
-
-
-                fish.art.scaleX=
-                -1;
-
-            }else if(
-                fish.x<
-                110
-            ){
-
-                fish.x=
-                110;
-
-
-                fish.direction=
-                1;
-
-
-                fish.art.scaleX=
-                1;
-            }
-
-
-            /*
-            SLIGHT BODY TILT
-            */
-
-            fish.rotation=
-
-            Math.sin(
-                time*
-                fish.waveSpeed+
-                fish.phase
-            )
-
-            *
-
-            .035;
-        }
-    );
-
-
-    /* =====================================================
-       BUBBLES
-    ===================================================== */
-
-    this.bubbles.forEach(
-        b=>{
-
-            b.y-=
-
-            b.speed*
-            dt;
-
-
-            b.x+=
-
-            Math.sin(
-                time*
-                .001*
-                b.wave+
-                b.phase
-            )
-
-            *
-
-            .1;
-
-
-            if(
-                b.y<
-                TANK.top+
-                20
-            ){
-
-                b.y=
-
-                TANK.bottom-
-
-                Phaser.Math.Between(
-                    75,
-                    115
-                );
-
-
-                b.x=
-
-                Phaser.Math.Between(
-                    60,
-                    740
-                );
-            }
-        }
-    );
-
-
-    /* =====================================================
-       WATER BULLETS
-    ===================================================== */
-
-    for(
-        let i=
-        this.bullets.length-
-        1;
-
-        i>=0;
-
-        i--
-    ){
-
-        const bullet=
-        this.bullets[i];
-
-
-        if(
-            !bullet.sprite ||
-            !bullet.sprite.active
-        ){
-
-            this.bullets.splice(
-                i,
-                1
-            );
-
-
-            continue;
-        }
-
-
-        bullet.life+=
-        delta;
-
-
-        bullet.sprite.x+=
-
-        bullet.vx*
-        bullet.speed*
-        dt;
-
-
-        bullet.sprite.y+=
-
-        bullet.vy*
-        bullet.speed*
-        dt;
-
-
-        /*
-        WATER TRAIL
-        */
-
-        if(
-            Math.random()<.34
-        ){
-
-            const trail=
-            this.add.circle(
-
-                bullet.sprite.x,
-
-                bullet.sprite.y,
-
-                Phaser.Math.Between(
-                    2,
-                    4
-                ),
-
-                0xe4fbff,
-                .7
-            )
-            .setDepth(
-                42
-            );
-
+    splash(x,y,color){
+        for(let i = 0; i < 10; i++){
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Phaser.Math.Between(20,58);
+
+            const particle = this.add.circle(
+                x,y,
+                Phaser.Math.Between(3,6),
+                color
+            ).setDepth(35);
 
             this.tweens.add({
+                targets:particle,
 
-                targets:
-                trail,
+                x:x + Math.cos(angle) * distance,
+                y:y + Math.sin(angle) * distance,
 
-                alpha:
-                0,
+                alpha:0,
+                scale:.2,
+                duration:360,
 
-                scale:
-                .2,
-
-                duration:
-                150,
-
-                onComplete:
-                ()=>{
-
-                    trail.destroy();
-                }
-
+                onComplete:() => particle.destroy()
             });
         }
+    }
 
+    /* =====================================================
+       KENA IKAN
+    ===================================================== */
 
-        /*
-        COLLISION
-        */
-
-        if(
-            this.checkBulletHit(
-                bullet,
-                i
-            )
-        ){
-
-            continue;
+    hit(fish){
+        if(this.locked || this.finished){
+            return;
         }
 
+        this.locked = true;
 
-        /*
-        DELETE OUTSIDE TANK
-        */
+        this.stopFire();
+        this.clearBullets();
+
+        const correct =
+            fish.index === QUESTIONS[this.q][2];
+
+        fish.body.setFillStyle(
+            correct ? 0x65e4a5 : 0xf6837b
+        );
+
+        fish.badge.setFillStyle(
+            correct ? 0xd6ffe7 : 0xffd5cf
+        );
+
+        $("answers")
+            .children[fish.index]
+            .classList.add(correct ? "good" : "bad");
+
+        this.splash(
+            fish.x,
+            fish.y,
+            correct ? 0xa4ffd2 : 0xd9faff
+        );
+
+        if(correct){
+            this.score++;
+
+            $("score").textContent = this.score;
+
+            this.status(
+                "Betul! Ikan " +
+                LETTERS[fish.index] +
+                " berjaya ditembak.",
+                "#238060"
+            );
+
+            beep(660,.12,.04,"triangle");
+            beep(880,.15,.035,"triangle",.1);
+            beep(1100,.18,.03,"triangle",.2);
+
+        }else{
+            this.wrong++;
+
+            $("wrong").textContent = this.wrong;
+
+            this.status(
+                "Belum tepat. Laraskan sasaran dan cuba lagi.",
+                "#b4534f"
+            );
+
+            beep(180,.16,.025,"triangle");
+        }
+
+        this.time.delayedCall(
+            correct ? 850 : 650,
+            () => {
+                if(correct){
+                    this.q++;
+
+                    if(this.q === QUESTIONS.length){
+                        this.finish();
+                    }else{
+                        this.load();
+                    }
+
+                }else{
+                    fish.body.setFillStyle(
+                        COLORS[fish.index]
+                    );
+
+                    fish.badge.setFillStyle(0xffffff);
+
+                    $("answers")
+                        .children[fish.index]
+                        .classList.remove("bad");
+
+                    this.locked = false;
+                }
+            }
+        );
+    }
+
+    /* =====================================================
+       SELESAI
+    ===================================================== */
+
+    finish(){
+        this.finished = true;
+
+        this.stopFire();
+        this.clearBullets();
+
+        $("progress").style.width = "100%";
+
+        $("label").textContent = "MISI SELESAI";
+
+        $("question").textContent =
+            "Tahniah! Semua 25 soalan telah selesai.";
+
+        $("answers").replaceChildren();
+
+        const results = [
+            "Betul: 25 / 25",
+            "Percubaan salah: " + this.wrong
+        ];
+
+        for(const text of results){
+            const element = document.createElement("div");
+
+            element.className = "answer good";
+            element.textContent = text;
+
+            $("answers").append(element);
+        }
+
+        $("status").style.display = "none";
+        $("restart").style.display = "inline-block";
+    }
+
+    /* =====================================================
+       UPDATE
+    ===================================================== */
+
+    update(time,delta){
+        const dt = Math.min(delta,35) / 1000;
+
+        if(!this.keys){
+            return;
+        }
+
+        // Kawalan papan kekunci.
+        const moveX =
+            (
+                this.keys.D.isDown ||
+                this.keys.RIGHT.isDown
+                ? 1 : 0
+            ) -
+            (
+                this.keys.A.isDown ||
+                this.keys.LEFT.isDown
+                ? 1 : 0
+            );
+
+        const moveY =
+            (
+                this.keys.S.isDown ||
+                this.keys.DOWN.isDown
+                ? 1 : 0
+            ) -
+            (
+                this.keys.W.isDown ||
+                this.keys.UP.isDown
+                ? 1 : 0
+            );
+
+        if(moveX || moveY){
+            this.setAim(
+                this.aim.x + moveX * 290 * dt,
+
+                Phaser.Math.Clamp(
+                    this.aim.y + moveY * 290 * dt,
+                    65,
+                    553
+                )
+            );
+        }
+
+        if(!this.keys.SPACE.isDown){
+            this.spaceBlocked = false;
+        }
+
+        // Muncung ikut arah sasaran.
+        this.rotor.rotation =
+            Math.atan2(
+                this.aim.y - this.gun.y,
+                this.aim.x - this.gun.x
+            ) + Math.PI / 2;
+
+        this.rotor.y *= .65;
+
+        // Tembakan berterusan semasa butang ditahan.
+        const keyboardFire =
+            this.keys.SPACE.isDown &&
+            !this.spaceBlocked;
 
         if(
-            bullet.sprite.x<
-            TANK.left-20 ||
-
-            bullet.sprite.x>
-            TANK.right+20 ||
-
-            bullet.sprite.y<
-            TANK.top-20 ||
-
-            bullet.sprite.y>
-            TANK.bottom+30 ||
-
-            bullet.life>
-            1800
+            !this.locked &&
+            !this.finished &&
+            (this.touchFire || keyboardFire) &&
+            time - this.lastShot >= 90
         ){
+            audio();
 
-            bullet.sprite.destroy();
+            this.lastShot = time;
+            this.shoot();
+        }
 
+        // Pergerakan ikan.
+        for(const fish of this.fishes){
+            fish.x += fish.dir * fish.speed * dt;
 
-            this.bullets.splice(
-                i,
-                1
+            fish.y =
+                fish.baseY +
+                Math.sin(
+                    time * .0018 + fish.phase
+                ) * 13;
+
+            fish.rotation =
+                Math.sin(
+                    time * .002 + fish.phase
+                ) * .025;
+
+            if(fish.x > 617){
+                fish.x = 617;
+                fish.dir = -1;
+            }
+
+            if(fish.x < 103){
+                fish.x = 103;
+                fish.dir = 1;
+            }
+
+            fish.art.scaleX = Phaser.Math.Linear(
+                fish.art.scaleX,
+                fish.dir,
+                .12
             );
+
+            fish.tail.scaleY =
+                .8 +
+                Math.sin(
+                    time * .015 + fish.phase
+                ) * .18;
+        }
+
+        // Buih bergerak ke atas.
+        for(const bubble of this.bubbles){
+            bubble.y -= bubble.speed * dt;
+
+            bubble.x +=
+                Math.sin(
+                    time * .001 + bubble.phase
+                ) * dt * 6;
+
+            if(bubble.y < 12){
+                bubble.y = 560;
+                bubble.x = Phaser.Math.Between(15,705);
+            }
+        }
+
+        // Gerakkan air dan semak perlanggaran.
+        for(let i = this.bullets.length - 1; i >= 0; i--){
+            const bullet = this.bullets[i];
+
+            const oldX = bullet.s.x;
+            const oldY = bullet.s.y;
+
+            bullet.s.x += bullet.vx * dt;
+            bullet.s.y += bullet.vy * dt;
+            bullet.life += dt;
+
+            let target = null;
+            let best = 2;
+
+            // Semakan laluan peluru supaya air yang laju
+            // tidak melangkaui badan ikan.
+            for(const fish of this.fishes){
+                const dx = bullet.s.x - oldX;
+                const dy = bullet.s.y - oldY;
+
+                const t = Phaser.Math.Clamp(
+                    (
+                        (fish.x - oldX) * dx +
+                        (fish.y - oldY) * dy
+                    ) / (dx * dx + dy * dy || 1),
+                    0,
+                    1
+                );
+
+                const ellipseX =
+                    (oldX + dx * t - fish.x) / 58;
+
+                const ellipseY =
+                    (oldY + dy * t - fish.y) / 36;
+
+                if(
+                    ellipseX * ellipseX +
+                    ellipseY * ellipseY < 1 &&
+                    t < best
+                ){
+                    target = fish;
+                    best = t;
+                }
+            }
+
+            if(target){
+                this.hit(target);
+                break;
+            }
+
+            if(
+                bullet.life > 1.5 ||
+                bullet.s.x < 0 ||
+                bullet.s.x > 720 ||
+                bullet.s.y < 0
+            ){
+                bullet.s.destroy();
+                this.bullets.splice(i,1);
+            }
         }
     }
 }
 
-}
-
-
 /* =========================================================
-   START GAME
+   MULAKAN GAME
 ========================================================= */
 
-if(
-    typeof Phaser===
-    "undefined"
-){
+new Phaser.Game({
+    type:Phaser.AUTO,
 
-    document.getElementById(
-        "game"
-    ).innerHTML=
+    parent:"game",
 
-    '<div style="'+
-    'padding:16px;'+
-    'font:700 16px Arial;'+
-    'color:#17384d;'+
-    '">'+
-    'Phaser tidak berjaya dimuatkan. Refresh halaman.'+
-    '</div>';
+    width:720,
+    height:690,
 
-}else{
+    backgroundColor:"#248fac",
 
+    scene:Aquarium,
 
-    new Phaser.Game({
+    scale:{
+        mode:Phaser.Scale.FIT,
+        autoCenter:Phaser.Scale.CENTER_BOTH
+    },
 
-        type:
-        Phaser.AUTO,
+    render:{
+        antialias:true,
+        roundPixels:false
+    },
 
-        parent:
-        "game",
-
-        width:
-        W,
-
-        height:
-        H,
-
-        backgroundColor:
-        "#dff7ff",
-
-        scene:[
-            AquariumScene
-        ],
-
-        scale:{
-
-            mode:
-            Phaser.Scale.FIT,
-
-            autoCenter:
-            Phaser.Scale.CENTER_BOTH,
-
-            width:
-            W,
-
-            height:
-            H
-        },
-
-        render:{
-
-            antialias:
-            true,
-
-            pixelArt:
-            false,
-
-            roundPixels:
-            true
-        }
-
-    });
-
-}
-
+    input:{
+        activePointers:4
+    }
+});
 
 })();
-
 </script>
 
 </body>
