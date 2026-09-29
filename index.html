@@ -28,20 +28,21 @@ body{
     width:100%;
     min-height:100%;
 
-    background:
-        linear-gradient(
-            135deg,
-            #63d8ff,
-            #d7f8ff,
-            #7cddff
-        );
-
     font-family:
-        "Trebuchet MS",
-        Arial,
-        sans-serif;
+    "Trebuchet MS",
+    Arial,
+    sans-serif;
+
+    background:
+    linear-gradient(
+        135deg,
+        #55d4ff,
+        #dff9ff,
+        #66dafa
+    );
 
     overscroll-behavior:none;
+    touch-action:none;
 }
 
 body{
@@ -53,32 +54,31 @@ body{
     align-items:flex-start;
 
     padding:
-        max(4px,env(safe-area-inset-top))
-        3px
-        max(4px,env(safe-area-inset-bottom));
-
-    touch-action:none;
+    max(3px,env(safe-area-inset-top))
+    3px
+    max(3px,env(safe-area-inset-bottom));
 }
 
 #game-shell{
     width:min(
         98vw,
         820px,
-        calc(97svh * .75)
+        calc(97svh * .752)
     );
 
     aspect-ratio:820 / 1090;
 
-    position:relative;
+    background:#24aee0;
 
-    background:#72d7f6;
-
-    border-radius:18px;
+    border-radius:16px;
 
     overflow:hidden;
 
+    position:relative;
+
     box-shadow:
-        0 12px 34px rgba(0,74,105,.25);
+    0 12px 32px
+    rgba(0,65,90,.25);
 }
 
 #game{
@@ -87,9 +87,9 @@ body{
 }
 
 canvas{
-    display:block;
     width:100% !important;
     height:100% !important;
+    display:block;
 }
 
 @media(max-width:520px){
@@ -97,10 +97,10 @@ canvas{
     #game-shell{
         width:min(
             99vw,
-            calc(98svh * .75)
+            calc(98svh * .752)
         );
 
-        border-radius:10px;
+        border-radius:9px;
     }
 }
 
@@ -113,7 +113,7 @@ and
     #game-shell{
         width:min(
             94vw,
-            calc(95svh * .75)
+            calc(95svh * .752)
         );
     }
 }
@@ -123,7 +123,7 @@ and
 <body>
 
 <div id="game-shell">
-    <div id="game"></div>
+<div id="game"></div>
 </div>
 
 <script>
@@ -136,7 +136,7 @@ and
    QUESTIONS
 ========================================================= */
 
-const QUESTIONS = [
+const QUESTIONS=[
 
 {
 tp:"TP2",
@@ -450,10 +450,14 @@ class GameAudio{
 constructor(){
 
     this.ctx=null;
-    this.started=false;
+
     this.enabled=true;
+
+    this.started=false;
+
     this.musicTimer=null;
-    this.noteIndex=0;
+
+    this.musicIndex=0;
 
     this.notes=[
         261.63,
@@ -477,23 +481,26 @@ init(){
     if(!this.ctx){
 
         const AC=
-            window.AudioContext ||
-            window.webkitAudioContext;
+        window.AudioContext ||
+        window.webkitAudioContext;
 
         if(!AC){
             return;
         }
 
         this.ctx=
-            new AC();
+        new AC();
     }
 
+
     if(
-        this.ctx.state ===
+        this.ctx.state===
         "suspended"
     ){
+
         this.ctx.resume();
     }
+
 
     if(!this.started){
 
@@ -506,9 +513,9 @@ init(){
 
 tone(
 frequency,
-duration=.1,
+duration=.07,
 type="sine",
-volume=.04,
+volume=.025,
 delay=0
 ){
 
@@ -516,44 +523,54 @@ delay=0
         !this.enabled ||
         !this.ctx
     ){
+
         return;
     }
 
+
     const now=
-        this.ctx.currentTime+
-        delay;
+    this.ctx.currentTime+
+    delay;
+
 
     const osc=
-        this.ctx.createOscillator();
+    this.ctx.createOscillator();
+
 
     const gain=
-        this.ctx.createGain();
+    this.ctx.createGain();
+
 
     osc.type=type;
 
+
     osc.frequency
-        .setValueAtTime(
-            frequency,
-            now
-        );
+    .setValueAtTime(
+        frequency,
+        now
+    );
+
 
     gain.gain
-        .setValueAtTime(
-            .0001,
-            now
-        );
+    .setValueAtTime(
+        .0001,
+        now
+    );
+
 
     gain.gain
-        .exponentialRampToValueAtTime(
-            volume,
-            now+.015
-        );
+    .exponentialRampToValueAtTime(
+        volume,
+        now+.008
+    );
+
 
     gain.gain
-        .exponentialRampToValueAtTime(
-            .0001,
-            now+duration
-        );
+    .exponentialRampToValueAtTime(
+        .0001,
+        now+duration
+    );
+
 
     osc.connect(gain);
 
@@ -561,12 +578,13 @@ delay=0
         this.ctx.destination
     );
 
+
     osc.start(now);
 
     osc.stop(
         now+
         duration+
-        .04
+        .02
     );
 }
 
@@ -574,18 +592,10 @@ delay=0
 tap(){
 
     this.tone(
-        430,
-        .07,
+        560,
+        .035,
         "sine",
-        .045
-    );
-
-    this.tone(
-        620,
-        .07,
-        "sine",
-        .025,
-        .05
+        .018
     );
 }
 
@@ -594,25 +604,25 @@ correct(){
 
     this.tone(
         523.25,
-        .12,
+        .09,
         "sine",
-        .05
+        .04
     );
 
     this.tone(
         659.25,
-        .13,
+        .1,
         "sine",
-        .05,
-        .1
+        .04,
+        .075
     );
 
     this.tone(
         783.99,
-        .19,
+        .13,
         "sine",
-        .05,
-        .2
+        .04,
+        .15
     );
 }
 
@@ -620,39 +630,40 @@ correct(){
 wrong(){
 
     this.tone(
-        220,
-        .15,
+        210,
+        .1,
         "triangle",
-        .045
+        .03
     );
 
     this.tone(
-        165,
-        .18,
+        160,
+        .12,
         "triangle",
-        .035,
-        .12
+        .025,
+        .08
     );
 }
 
 
 finish(){
 
-    [
+    const notes=[
         523.25,
         659.25,
         783.99,
         1046.5
-    ]
-    .forEach(
-        (note,i)=>{
+    ];
+
+    notes.forEach(
+        (note,index)=>{
 
             this.tone(
                 note,
-                .22,
+                .18,
                 "sine",
-                .05,
-                i*.13
+                .045,
+                index*.1
             );
         }
     );
@@ -664,71 +675,82 @@ startMusic(){
     if(
         this.musicTimer
     ){
+
         return;
     }
 
+
     this.musicTimer=
-        setInterval(
-            ()=>{
+    setInterval(
+        ()=>{
 
-                if(
-                    !this.enabled ||
-                    !this.ctx
-                ){
-                    return;
-                }
+            if(
+                !this.enabled ||
+                !this.ctx
+            ){
 
-                const note=
-                    this.notes[
-                        this.noteIndex %
-                        this.notes.length
-                    ];
+                return;
+            }
 
-                this.noteIndex++;
 
-                this.tone(
-                    note,
-                    .28,
-                    "sine",
-                    .009
-                );
+            const note=
+            this.notes[
+                this.musicIndex%
+                this.notes.length
+            ];
 
-            },
-            690
-        );
+
+            this.musicIndex++;
+
+
+            this.tone(
+                note,
+                .24,
+                "sine",
+                .007
+            );
+
+        },
+        720
+    );
 }
 
 
 toggle(){
 
     this.enabled=
-        !this.enabled;
+    !this.enabled;
+
 
     if(this.enabled){
+
         this.init();
     }
+
 
     return this.enabled;
 }
 
 }
 
+
 const audio=
-    new GameAudio();
+new GameAudio();
 
 
 /* =========================================================
-   GAME
+   SCENE
 ========================================================= */
 
-class FrogLabelGame
-extends Phaser.Scene{
+class FrogLabelGame extends Phaser.Scene{
+
 
 constructor(){
 
     super(
         "FrogLabelGame"
     );
+
 
     this.questionIndex=0;
 
@@ -744,15 +766,10 @@ constructor(){
 
     this.answerTexts=[];
 
-    this.frogAreaTop=530;
+    this.restartButton=null;
 
-    this.frogAreaBottom=1010;
 }
 
-
-/* =========================================================
-   CREATE
-========================================================= */
 
 create(){
 
@@ -768,11 +785,14 @@ create(){
 
     this.renderQuestion();
 
+
     this.input.on(
         "pointerdown",
-        ()=>audio.init()
-    );
+        ()=>{
 
+            audio.init();
+        }
+    );
 }
 
 
@@ -783,15 +803,17 @@ create(){
 buildBackground(){
 
     const bg=
-        this.add.graphics();
+    this.add.graphics();
+
 
     bg.fillGradientStyle(
-        0x22b8ec,
-        0x27b9ed,
-        0x078dc8,
-        0x087db8,
+        0x21b9ec,
+        0x21b9ec,
+        0x087fb9,
+        0x087fb9,
         1
     );
+
 
     bg.fillRect(
         0,
@@ -801,90 +823,55 @@ buildBackground(){
     );
 
 
-    /* blue decorative rays */
+    const decor=
+    this.add.graphics();
 
-    const rays=
-        this.add.graphics();
 
-    rays.fillStyle(
+    decor.fillStyle(
         0xffffff,
         .07
     );
 
-    rays.fillTriangle(
-        0,80,
-        220,170,
-        0,210
-    );
 
-    rays.fillTriangle(
-        820,80,
-        600,180,
-        820,235
-    );
-
-    rays.fillTriangle(
-        0,700,
-        190,790,
-        0,870
-    );
-
-    rays.fillTriangle(
-        820,680,
-        620,790,
-        820,870
+    decor.fillTriangle(
+        0,
+        80,
+        220,
+        165,
+        0,
+        220
     );
 
 
-    /* lower waves */
+    decor.fillTriangle(
+        820,
+        90,
+        610,
+        180,
+        820,
+        230
+    );
 
-    for(
-        let y=880;
-        y<1090;
-        y+=50
-    ){
 
-        const wave=
-            this.add.graphics();
+    decor.fillTriangle(
+        0,
+        700,
+        170,
+        790,
+        0,
+        880
+    );
 
-        wave.lineStyle(
-            4,
-            0xffffff,
-            .08
-        );
 
-        wave.beginPath();
+    decor.fillTriangle(
+        820,
+        690,
+        640,
+        790,
+        820,
+        890
+    );
 
-        for(
-            let x=-20;
-            x<=840;
-            x+=40
-        ){
-
-            const yy=
-                y+
-                Math.sin(
-                    x*.035
-                )*8;
-
-            if(x===-20){
-
-                wave.moveTo(
-                    x,
-                    yy
-                );
-
-            }else{
-
-                wave.lineTo(
-                    x,
-                    yy
-                );
-            }
-        }
-
-        wave.strokePath();
-    }
 }
 
 
@@ -894,15 +881,17 @@ buildBackground(){
 
 buildHeader(){
 
-    const h=
-        this.add.graphics();
+    const panel=
+    this.add.graphics();
 
-    h.fillStyle(
-        0x075677,
-        .97
+
+    panel.fillStyle(
+        0x075778,
+        .98
     );
 
-    h.fillRoundedRect(
+
+    panel.fillRoundedRect(
         16,
         15,
         788,
@@ -910,12 +899,14 @@ buildHeader(){
         22
     );
 
-    h.fillStyle(
-        0x0f7899,
+
+    panel.fillStyle(
+        0x0f799b,
         1
     );
 
-    h.fillRoundedRect(
+
+    panel.fillRoundedRect(
         24,
         22,
         772,
@@ -925,40 +916,41 @@ buildHeader(){
 
 
     const home=
-        this.add.text(
-            48,
-            50,
-            "⌂",
-            {
-                fontFamily:
-                    "Arial",
-                fontSize:"38px",
-                fontStyle:"bold",
-                color:"#ffffff"
-            }
-        )
-        .setOrigin(.5)
-        .setInteractive({
-            useHandCursor:true
-        });
+    this.add.text(
+        49,
+        50,
+        "⌂",
+        {
+            fontFamily:"Arial",
+            fontSize:"38px",
+            fontStyle:"bold",
+            color:"#ffffff"
+        }
+    )
+    .setOrigin(.5)
+    .setInteractive({
+        useHandCursor:true
+    });
+
 
     home.on(
         "pointerdown",
         ()=>{
 
             window.location.href=
-                "index.html";
+            "index.html";
         }
     );
 
 
     this.add.text(
         87,
-        31,
+        30,
         "LABEL THE FROGS!",
         {
             fontFamily:
-                "Trebuchet MS, Arial",
+            "Trebuchet MS, Arial",
+
             fontSize:"27px",
             fontStyle:"bold",
             color:"#ffffff"
@@ -972,45 +964,44 @@ buildHeader(){
         "Objek Menyerap Air • SET 2",
         {
             fontFamily:
-                "Trebuchet MS, Arial",
+            "Trebuchet MS, Arial",
+
             fontSize:"15px",
-            color:"#d1f7ff"
+            color:"#d8f8ff"
         }
     );
 
 
     this.soundButton=
-        this.add.text(
-            755,
-            51,
-            "🔊",
-            {
-                fontFamily:
-                    "Arial",
-                fontSize:"28px"
-            }
-        )
-        .setOrigin(.5)
-        .setInteractive({
-            useHandCursor:true
-        });
+    this.add.text(
+        755,
+        51,
+        "🔊",
+        {
+            fontFamily:"Arial",
+            fontSize:"28px"
+        }
+    )
+    .setOrigin(.5)
+    .setInteractive({
+        useHandCursor:true
+    });
 
 
     this.soundButton.on(
         "pointerdown",
         ()=>{
 
-            audio.init();
+            const active=
+            audio.toggle();
 
-            const on=
-                audio.toggle();
 
             this.soundButton
-                .setText(
-                    on ?
-                    "🔊" :
-                    "🔇"
-                );
+            .setText(
+                active ?
+                "🔊" :
+                "🔇"
+            );
         }
     );
 
@@ -1018,37 +1009,41 @@ buildHeader(){
 
 
 /* =========================================================
-   QUESTION
+   QUESTION CARD
 ========================================================= */
 
 buildQuestionCard(){
 
     const shadow=
-        this.add.graphics();
+    this.add.graphics();
+
 
     shadow.fillStyle(
-        0x003e58,
-        .19
+        0x00415b,
+        .2
     );
+
 
     shadow.fillRoundedRect(
         30,
-        107,
+        108,
         770,
-        392,
+        390,
         27
     );
 
 
-    const card=
-        this.add.graphics();
+    const panel=
+    this.add.graphics();
 
-    card.fillStyle(
-        0xfff3d1,
+
+    panel.fillStyle(
+        0xfff1cb,
         1
     );
 
-    card.fillRoundedRect(
+
+    panel.fillRoundedRect(
         20,
         98,
         770,
@@ -1056,13 +1051,15 @@ buildQuestionCard(){
         27
     );
 
-    card.lineStyle(
+
+    panel.lineStyle(
         5,
         0xffffff,
         .9
     );
 
-    card.strokeRoundedRect(
+
+    panel.strokeRoundedRect(
         20,
         98,
         770,
@@ -1071,109 +1068,100 @@ buildQuestionCard(){
     );
 
 
-    /* doodles */
-
     const doodle=
-        this.add.graphics();
+    this.add.graphics();
+
 
     doodle.lineStyle(
         2,
-        0xc89d50,
-        .16
+        0xb68b47,
+        .12
     );
 
-    doodle.strokeCircle(
-        735,
-        145,
-        27
-    );
 
     doodle.strokeCircle(
-        700,
-        435,
-        19
+        723,
+        149,
+        26
     );
+
+
+    doodle.strokeCircle(
+        695,
+        442,
+        20
+    );
+
 
     doodle.strokeRect(
-        47,
-        405,
-        43,
-        35
-    );
-
-    doodle.lineBetween(
-        52,
-        175,
-        85,
-        145
-    );
-
-    doodle.lineBetween(
-        85,
-        145,
-        103,
-        187
+        53,
+        410,
+        42,
+        31
     );
 
 
     this.progressText=
-        this.add.text(
-            44,
-            117,
-            "",
-            {
-                fontFamily:
-                    "Trebuchet MS, Arial",
-                fontSize:"18px",
-                fontStyle:"bold",
-                color:"#74602e"
-            }
-        );
+    this.add.text(
+        44,
+        117,
+        "",
+        {
+            fontFamily:
+            "Trebuchet MS, Arial",
+
+            fontSize:"18px",
+            fontStyle:"bold",
+            color:"#715d2e"
+        }
+    );
 
 
     this.scoreText=
-        this.add.text(
-            764,
-            117,
-            "",
-            {
-                fontFamily:
-                    "Trebuchet MS, Arial",
-                fontSize:"17px",
-                fontStyle:"bold",
-                color:"#74602e"
-            }
-        )
-        .setOrigin(
-            1,
-            0
-        );
+    this.add.text(
+        762,
+        117,
+        "",
+        {
+            fontFamily:
+            "Trebuchet MS, Arial",
+
+            fontSize:"17px",
+            fontStyle:"bold",
+            color:"#715d2e"
+        }
+    )
+    .setOrigin(
+        1,
+        0
+    );
 
 
     this.progressBar=
-        this.add.graphics();
+    this.add.graphics();
 
 
     this.questionText=
-        this.add.text(
-            44,
-            164,
-            "",
-            {
-                fontFamily:
-                    "Trebuchet MS, Arial",
-                fontSize:"25px",
-                fontStyle:"bold",
-                color:"#382f1c",
+    this.add.text(
+        44,
+        164,
+        "",
+        {
+            fontFamily:
+            "Trebuchet MS, Arial",
 
-                wordWrap:{
-                    width:715,
-                    useAdvancedWrap:true
-                },
+            fontSize:"25px",
+            fontStyle:"bold",
+            color:"#372f1c",
 
-                lineSpacing:3
-            }
-        );
+            wordWrap:{
+                width:715,
+                useAdvancedWrap:true
+            },
+
+            lineSpacing:3
+        }
+    );
 
 
     const positions=[
@@ -1182,6 +1170,7 @@ buildQuestionCard(){
         [43,387],
         [411,387]
     ];
+
 
     const letters=[
         "A",
@@ -1198,19 +1187,22 @@ buildQuestionCard(){
     ){
 
         const x=
-            positions[i][0];
+        positions[i][0];
+
 
         const y=
-            positions[i][1];
+        positions[i][1];
 
 
         const box=
-            this.add.graphics();
+        this.add.graphics();
+
 
         box.fillStyle(
             0xffffff,
-            .80
+            .82
         );
+
 
         box.fillRoundedRect(
             x,
@@ -1220,11 +1212,13 @@ buildQuestionCard(){
             14
         );
 
+
         box.lineStyle(
             2,
-            0xd9bd79,
-            .7
+            0xd8bb76,
+            .75
         );
+
 
         box.strokeRoundedRect(
             x,
@@ -1239,8 +1233,7 @@ buildQuestionCard(){
             x+31,
             y+35,
             21,
-            0xf49b24,
-            1
+            0xf49a20
         );
 
 
@@ -1250,7 +1243,8 @@ buildQuestionCard(){
             letters[i],
             {
                 fontFamily:
-                    "Trebuchet MS, Arial",
+                "Trebuchet MS, Arial",
+
                 fontSize:"22px",
                 fontStyle:"bold",
                 color:"#ffffff"
@@ -1259,29 +1253,30 @@ buildQuestionCard(){
         .setOrigin(.5);
 
 
-        const text=
-            this.add.text(
-                x+62,
-                y+10,
-                "",
-                {
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-                    fontSize:"16px",
-                    fontStyle:"bold",
-                    color:"#403821",
+        const answerText=
+        this.add.text(
+            x+62,
+            y+10,
+            "",
+            {
+                fontFamily:
+                "Trebuchet MS, Arial",
 
-                    wordWrap:{
-                        width:270,
-                        useAdvancedWrap:true
-                    },
+                fontSize:"16px",
+                fontStyle:"bold",
+                color:"#403820",
 
-                    lineSpacing:0
+                wordWrap:{
+                    width:270,
+                    useAdvancedWrap:true
                 }
-            );
+            }
+        );
 
-        this.answerTexts.push(
-            text
+
+        this.answerTexts
+        .push(
+            answerText
         );
     }
 
@@ -1289,20 +1284,22 @@ buildQuestionCard(){
 
 
 /* =========================================================
-   BOARD
+   PLAY BOARD
 ========================================================= */
 
 buildPlayBoard(){
 
-    const boardShadow=
-        this.add.graphics();
+    const shadow=
+    this.add.graphics();
 
-    boardShadow.fillStyle(
+
+    shadow.fillStyle(
         0x014f70,
         .22
     );
 
-    boardShadow.fillRoundedRect(
+
+    shadow.fillRoundedRect(
         41,
         520,
         748,
@@ -1312,12 +1309,14 @@ buildPlayBoard(){
 
 
     const board=
-        this.add.graphics();
+    this.add.graphics();
+
 
     board.fillStyle(
-        0xf8e2ae,
+        0xf7dfa7,
         1
     );
+
 
     board.fillRoundedRect(
         29,
@@ -1327,11 +1326,13 @@ buildPlayBoard(){
         24
     );
 
+
     board.lineStyle(
         7,
         0xffffff,
-        .85
+        .88
     );
+
 
     board.strokeRoundedRect(
         29,
@@ -1342,13 +1343,12 @@ buildPlayBoard(){
     );
 
 
-    /* inner paper edge */
-
     board.lineStyle(
         3,
-        0xd6a85d,
-        .42
+        0xd5a65c,
+        .40
     );
+
 
     board.strokeRoundedRect(
         43,
@@ -1359,107 +1359,107 @@ buildPlayBoard(){
     );
 
 
-    /* faint doodles */
-
     const d=
-        this.add.graphics();
+    this.add.graphics();
+
 
     d.lineStyle(
         2,
-        0xa98246,
-        .12
+        0xa57e40,
+        .10
     );
 
+
     d.strokeCircle(
-        95,
-        945,
-        46
+        100,
+        930,
+        44
     );
+
 
     d.strokeCircle(
         720,
         875,
-        34
-    );
-
-    d.strokeRect(
-        655,
-        555,
-        50,
         35
     );
 
-    d.lineBetween(
-        83,
-        575,
-        123,
-        545
-    );
 
-    d.lineBetween(
-        123,
-        545,
-        148,
-        589
+    d.strokeRect(
+        665,
+        555,
+        48,
+        34
     );
 
 }
 
 
 /* =========================================================
-   STATUS BAR
+   STATUS
 ========================================================= */
 
 buildStatus(){
 
-    this.statusBox=
-        this.add.graphics();
+    this.statusPanel=
+    this.add.graphics();
 
-    this.statusBox.fillStyle(
-        0xf18c13,
+
+    this.statusPanel
+    .fillStyle(
+        0xf38a10,
         1
     );
 
-    this.statusBox.fillRoundedRect(
-        185,
-        1000,
-        450,
-        62,
-        18
+
+    this.statusPanel
+    .fillRoundedRect(
+        170,
+        994,
+        480,
+        65,
+        19
     );
 
-    this.statusBox.lineStyle(
+
+    this.statusPanel
+    .lineStyle(
         4,
-        0xffc74b,
+        0xffc64d,
         1
     );
 
-    this.statusBox.strokeRoundedRect(
-        185,
-        1000,
-        450,
-        62,
-        18
+
+    this.statusPanel
+    .strokeRoundedRect(
+        170,
+        994,
+        480,
+        65,
+        19
     );
 
 
     this.statusText=
-        this.add.text(
-            410,
-            1031,
-            "Tekan katak untuk tukar label",
-            {
-                fontFamily:
-                    "Trebuchet MS, Arial",
-                fontSize:"20px",
-                fontStyle:"bold",
-                color:"#ffffff",
-                stroke:"#6c3900",
-                strokeThickness:4
-            }
-        )
-        .setOrigin(.5)
-        .setDepth(200);
+    this.add.text(
+        410,
+        1027,
+        "",
+        {
+            fontFamily:
+            "Trebuchet MS, Arial",
+
+            fontSize:"19px",
+            fontStyle:"bold",
+            color:"#ffffff",
+
+            stroke:"#6d3900",
+            strokeThickness:4,
+
+            align:"center"
+        }
+    )
+    .setOrigin(.5)
+    .setDepth(300);
 
 }
 
@@ -1471,7 +1471,7 @@ buildStatus(){
 renderQuestion(){
 
     if(
-        this.questionIndex >=
+        this.questionIndex>=
         QUESTIONS.length
     ){
 
@@ -1484,14 +1484,15 @@ renderQuestion(){
     this.locked=false;
 
 
-    const q=
-        QUESTIONS[
-            this.questionIndex
-        ];
+    const data=
+    QUESTIONS[
+        this.questionIndex
+    ];
 
 
-    this.questionText.setText(
-        `${this.questionIndex+1}. [${q.tp}] ${q.q}`
+    this.questionText
+    .setText(
+        `${this.questionIndex+1}. [${data.tp}] ${data.q}`
     );
 
 
@@ -1502,31 +1503,31 @@ renderQuestion(){
     ){
 
         this.answerTexts[i]
-            .setText(
-                q.options[i]
-            );
+        .setText(
+            data.options[i]
+        );
     }
 
 
     this.progressText
-        .setText(
-            `SOALAN ${this.questionIndex+1} / 25`
-        );
+    .setText(
+        `SOALAN ${this.questionIndex+1} / 25`
+    );
 
 
     this.scoreText
-        .setText(
-            `✓ ${this.correctCount}   ✦ ${this.wrongCount}`
-        );
+    .setText(
+        `✓ ${this.correctCount}   ✦ ${this.wrongCount}`
+    );
 
 
     this.drawProgress();
 
 
     this.statusText
-        .setText(
-            "Tekan katak untuk tukar label"
-        );
+    .setText(
+        "Tap katak dengan cepat untuk tukar label"
+    );
 
 
     this.createFrogLevel();
@@ -1535,7 +1536,7 @@ renderQuestion(){
 
 
 /* =========================================================
-   PROGRESS
+   PROGRESS BAR
 ========================================================= */
 
 drawProgress(){
@@ -1545,20 +1546,24 @@ drawProgress(){
     const w=715;
     const h=9;
 
+
     const value=
-        this.questionIndex /
-        QUESTIONS.length;
+    this.questionIndex/
+    QUESTIONS.length;
 
 
     this.progressBar.clear();
 
 
-    this.progressBar.fillStyle(
-        0xe1cfa0,
+    this.progressBar
+    .fillStyle(
+        0xe2cfa0,
         1
     );
 
-    this.progressBar.fillRoundedRect(
+
+    this.progressBar
+    .fillRoundedRect(
         x,
         y,
         w,
@@ -1568,15 +1573,18 @@ drawProgress(){
 
 
     if(
-        value > 0
+        value>0
     ){
 
-        this.progressBar.fillStyle(
-            0x51b765,
+        this.progressBar
+        .fillStyle(
+            0x54ba68,
             1
         );
 
-        this.progressBar.fillRoundedRect(
+
+        this.progressBar
+        .fillRoundedRect(
             x,
             y,
             w*value,
@@ -1589,46 +1597,54 @@ drawProgress(){
 
 
 /* =========================================================
-   HOW MANY FROGS
+   NUMBER OF FROGS
 ========================================================= */
 
 getFrogCount(){
 
     const q=
-        this.questionIndex+1;
+    this.questionIndex+1;
 
 
     if(q<=3){
         return 6;
     }
 
+
     if(q<=6){
         return 8;
     }
+
 
     if(q<=9){
         return 10;
     }
 
+
     if(q<=12){
         return 12;
     }
+
 
     if(q<=15){
         return 14;
     }
 
+
     if(q<=18){
         return 16;
     }
+
 
     if(q<=21){
         return 18;
     }
 
+
     if(q<=23){
         return 20;
     }
+
 
     return 24;
 
@@ -1636,7 +1652,84 @@ getFrogCount(){
 
 
 /* =========================================================
-   CREATE FROG LEVEL
+   GRID CONFIG
+========================================================= */
+
+getGridConfig(count){
+
+    if(count<=6){
+
+        return{
+            cols:3,
+            gapX:190,
+            gapY:180,
+            startY:655,
+            scale:1.13
+        };
+    }
+
+
+    if(count<=8){
+
+        return{
+            cols:4,
+            gapX:160,
+            gapY:185,
+            startY:655,
+            scale:1.03
+        };
+    }
+
+
+    if(count<=12){
+
+        return{
+            cols:4,
+            gapX:155,
+            gapY:140,
+            startY:620,
+            scale:.89
+        };
+    }
+
+
+    if(count<=16){
+
+        return{
+            cols:4,
+            gapX:153,
+            gapY:110,
+            startY:590,
+            scale:.74
+        };
+    }
+
+
+    if(count<=20){
+
+        return{
+            cols:5,
+            gapX:126,
+            gapY:108,
+            startY:590,
+            scale:.69
+        };
+    }
+
+
+    return{
+        cols:6,
+        gapX:105,
+        gapY:108,
+        startY:590,
+        scale:.64
+    };
+
+}
+
+
+/* =========================================================
+   CREATE LEVEL
 ========================================================= */
 
 createFrogLevel(){
@@ -1645,13 +1738,13 @@ createFrogLevel(){
 
 
     const count=
-        this.getFrogCount();
+    this.getFrogCount();
 
 
     const config=
-        this.getGridConfig(
-            count
-        );
+    this.getGridConfig(
+        count
+    );
 
 
     const labels=[
@@ -1662,71 +1755,73 @@ createFrogLevel(){
     ];
 
 
+    const rows=
+    Math.ceil(
+        count/config.cols
+    );
+
+
     let index=0;
 
 
     for(
         let row=0;
-        row<config.rows;
+        row<rows;
         row++
     ){
 
-        const itemsThisRow=
-            Math.min(
-                config.cols,
-                count-index
-            );
+        const remaining=
+        count-index;
+
+
+        const rowCount=
+        Math.min(
+            config.cols,
+            remaining
+        );
 
 
         const rowWidth=
-            (itemsThisRow-1)*
-            config.gapX;
+        (rowCount-1)*
+        config.gapX;
 
 
         const startX=
-            410-
-            rowWidth/2;
+        410-rowWidth/2;
 
 
         for(
             let col=0;
-            col<itemsThisRow;
+            col<rowCount;
             col++
         ){
 
-            if(
-                index >= count
-            ){
-                break;
-            }
-
-
             const x=
-                startX+
-                col*
-                config.gapX;
+            startX+
+            col*
+            config.gapX;
 
 
             const y=
-                config.startY+
-                row*
-                config.gapY;
+            config.startY+
+            row*
+            config.gapY;
 
 
-            const randomLabel=
-                Phaser.Utils.Array.GetRandom(
-                    labels
-                );
+            const label=
+            Phaser.Utils.Array
+            .GetRandom(
+                labels
+            );
 
 
             const frog=
-                this.createFrog(
-                    x,
-                    y,
-                    config.scale,
-                    randomLabel,
-                    index
-                );
+            this.createFrog(
+                x,
+                y,
+                config.scale,
+                label
+            );
 
 
             this.frogs.push(
@@ -1740,23 +1835,26 @@ createFrogLevel(){
 
 
     /*
-    prevent accidental completed board at start
+    Elak semua sama secara kebetulan
     */
 
-    const allSame=
-        this.getUniformLabel();
+    const uniform=
+    this.getUniformLabel();
 
-    if(allSame){
+
+    if(uniform){
 
         const last=
-            this.frogs[
-                this.frogs.length-1
-            ];
+        this.frogs[
+            this.frogs.length-1
+        ];
+
 
         last.label=
-            allSame==="A" ?
-            "B" :
-            "A";
+        uniform==="A"
+        ? "B"
+        : "A";
+
 
         this.updateFrogLabel(
             last
@@ -1767,332 +1865,207 @@ createFrogLevel(){
 
 
 /* =========================================================
-   GRID
-========================================================= */
-
-getGridConfig(count){
-
-    if(count<=6){
-
-        return{
-            cols:3,
-            rows:2,
-            gapX:190,
-            gapY:180,
-            startY:655,
-            scale:1.15
-        };
-
-    }
-
-
-    if(count<=8){
-
-        return{
-            cols:4,
-            rows:2,
-            gapX:160,
-            gapY:185,
-            startY:655,
-            scale:1.05
-        };
-
-    }
-
-
-    if(count<=12){
-
-        return{
-            cols:4,
-            rows:3,
-            gapX:155,
-            gapY:140,
-            startY:620,
-            scale:.90
-        };
-
-    }
-
-
-    if(count<=16){
-
-        return{
-            cols:4,
-            rows:4,
-            gapX:153,
-            gapY:110,
-            startY:590,
-            scale:.74
-        };
-
-    }
-
-
-    if(count<=20){
-
-        return{
-            cols:5,
-            rows:4,
-            gapX:126,
-            gapY:108,
-            startY:590,
-            scale:.70
-        };
-
-    }
-
-
-    return{
-        cols:6,
-        rows:4,
-        gapX:105,
-        gapY:108,
-        startY:590,
-        scale:.65
-    };
-
-}
-
-
-/* =========================================================
-   CREATE ONE FROG
+   CREATE FROG
 ========================================================= */
 
 createFrog(
 x,
 y,
 scale,
-label,
-index
+label
 ){
 
     const frog=
-        this.add.container(
-            x,
-            y
-        )
-        .setScale(scale)
-        .setDepth(50);
+    this.add.container(
+        x,
+        y
+    )
+    .setScale(scale)
+    .setDepth(70);
+
+
+    frog.baseScale=
+    scale;
 
 
     frog.label=
-        label;
+    label;
 
-    frog.index=
-        index;
-
-
-    /*
-    shadow
-    */
 
     const shadow=
-        this.add.ellipse(
-            0,
-            43,
-            103,
-            25,
-            0x725b34,
-            .22
-        );
-
-
-    /*
-    rear legs
-    */
-
-    const legL=
-        this.add.ellipse(
-            -39,
-            26,
-            53,
-            28,
-            0x8ec900,
-            1
-        )
-        .setRotation(-.12);
-
-    legL.setStrokeStyle(
-        3,
-        0x213500,
-        1
+    this.add.ellipse(
+        0,
+        45,
+        106,
+        24,
+        0x72582f,
+        .20
     );
 
 
-    const legR=
-        this.add.ellipse(
-            39,
-            26,
-            53,
-            28,
-            0x8ec900,
-            1
-        )
-        .setRotation(.12);
+    const leftBackLeg=
+    this.add.ellipse(
+        -39,
+        27,
+        54,
+        29,
+        0x90cc00
+    )
+    .setRotation(-.12);
 
-    legR.setStrokeStyle(
+
+    leftBackLeg
+    .setStrokeStyle(
         3,
-        0x213500,
-        1
+        0x243600
     );
 
 
-    /*
-    body
-    */
+    const rightBackLeg=
+    this.add.ellipse(
+        39,
+        27,
+        54,
+        29,
+        0x90cc00
+    )
+    .setRotation(.12);
+
+
+    rightBackLeg
+    .setStrokeStyle(
+        3,
+        0x243600
+    );
+
 
     const body=
-        this.add.ellipse(
-            0,
-            12,
-            84,
-            72,
-            0x9bd800,
-            1
-        );
+    this.add.ellipse(
+        0,
+        12,
+        84,
+        72,
+        0x9bd800
+    );
+
 
     body.setStrokeStyle(
         4,
-        0x213500,
-        1
+        0x243600
     );
 
 
-    /*
-    belly
-    */
-
     const belly=
-        this.add.ellipse(
-            10,
-            16,
-            55,
-            49,
-            0xe3f84e,
-            1
-        );
+    this.add.ellipse(
+        10,
+        16,
+        55,
+        49,
+        0xe5fa51
+    );
+
 
     belly.setStrokeStyle(
         2,
-        0x719900,
-        1
+        0x729b00
     );
 
 
-    /*
-    head
-    */
-
     const head=
-        this.add.ellipse(
-            0,
-            -28,
-            76,
-            52,
-            0x9bd800,
-            1
-        );
+    this.add.ellipse(
+        0,
+        -28,
+        77,
+        53,
+        0x9bd800
+    );
+
 
     head.setStrokeStyle(
         4,
-        0x213500,
-        1
+        0x243600
     );
 
 
-    /*
-    eyes
-    */
+    const leftEye=
+    this.add.circle(
+        -22,
+        -54,
+        16,
+        0xffffff
+    );
 
-    const eyeL=
-        this.add.circle(
-            -22,
-            -54,
-            16,
-            0xffffff,
-            1
-        );
 
-    eyeL.setStrokeStyle(
+    leftEye.setStrokeStyle(
         3,
-        0x111111,
-        1
+        0x111111
     );
 
 
-    const eyeR=
-        this.add.circle(
-            20,
-            -51,
-            13,
-            0xffffff,
-            1
-        );
+    const rightEye=
+    this.add.circle(
+        20,
+        -51,
+        13,
+        0xffffff
+    );
 
-    eyeR.setStrokeStyle(
+
+    rightEye.setStrokeStyle(
         3,
-        0x111111,
-        1
+        0x111111
     );
 
 
-    const pupilL=
-        this.add.circle(
-            -20,
-            -53,
-            5,
-            0x111111,
-            1
-        );
+    const leftPupil=
+    this.add.circle(
+        -20,
+        -53,
+        5,
+        0x111111
+    );
 
 
-    const pupilR=
-        this.add.circle(
-            19,
-            -50,
-            4,
-            0x111111,
-            1
-        );
+    const rightPupil=
+    this.add.circle(
+        19,
+        -50,
+        4,
+        0x111111
+    );
 
-
-    /*
-    nose
-    */
 
     const nose1=
-        this.add.circle(
-            -8,
-            -31,
-            2,
-            0x3d6e00,
-            1
-        );
+    this.add.circle(
+        -8,
+        -31,
+        2,
+        0x3e6c00
+    );
+
 
     const nose2=
-        this.add.circle(
-            8,
-            -31,
-            2,
-            0x3d6e00,
-            1
-        );
+    this.add.circle(
+        8,
+        -31,
+        2,
+        0x3e6c00
+    );
 
-
-    /*
-    smile
-    */
 
     const mouth=
-        this.add.graphics();
+    this.add.graphics();
+
 
     mouth.lineStyle(
         2.5,
-        0x173300,
+        0x183300,
         1
     );
 
+
     mouth.beginPath();
+
 
     mouth.arc(
         0,
@@ -2102,284 +2075,201 @@ index
         Phaser.Math.DegToRad(150)
     );
 
+
     mouth.strokePath();
 
 
-    /*
-    front arms
-    */
-
-    const armL=
-        this.add.ellipse(
-            -23,
-            21,
-            15,
-            32,
-            0x8fcf00,
-            1
-        )
-        .setRotation(.25);
+    const leftArm=
+    this.add.ellipse(
+        -23,
+        21,
+        15,
+        32,
+        0x8fcf00
+    )
+    .setRotation(.25);
 
 
-    const armR=
-        this.add.ellipse(
-            27,
-            20,
-            15,
-            32,
-            0x8fcf00,
-            1
-        )
-        .setRotation(-.25);
+    const rightArm=
+    this.add.ellipse(
+        27,
+        20,
+        15,
+        32,
+        0x8fcf00
+    )
+    .setRotation(-.25);
 
-
-    /*
-    label plate
-    */
 
     const labelCircle=
-        this.add.circle(
-            8,
-            15,
-            20,
-            0xffffff,
-            .97
-        );
+    this.add.circle(
+        8,
+        15,
+        21,
+        0xffffff
+    );
+
 
     labelCircle.setStrokeStyle(
         3,
-        0x1d4363,
-        1
+        0x1e4665
     );
 
 
     const labelText=
-        this.add.text(
-            8,
-            15,
-            label,
-            {
-                fontFamily:
-                    "Trebuchet MS, Arial",
-                fontSize:"23px",
-                fontStyle:"bold",
-                color:"#124b70"
-            }
-        )
-        .setOrigin(.5);
+    this.add.text(
+        8,
+        15,
+        label,
+        {
+            fontFamily:
+            "Trebuchet MS, Arial",
+
+            fontSize:"24px",
+            fontStyle:"bold",
+            color:"#134e73"
+        }
+    )
+    .setOrigin(.5);
 
 
-    /*
-    feet
-    */
-
-    const footL=
-        this.add.ellipse(
-            -30,
-            39,
-            37,
-            13,
-            0x90cc00,
-            1
-        );
-
-    footL.setStrokeStyle(
-        2,
-        0x213500,
-        1
+    const leftFoot=
+    this.add.ellipse(
+        -30,
+        39,
+        38,
+        13,
+        0x91cc00
     );
 
 
-    const footR=
-        this.add.ellipse(
-            30,
-            39,
-            37,
-            13,
-            0x90cc00,
-            1
-        );
-
-    footR.setStrokeStyle(
+    leftFoot.setStrokeStyle(
         2,
-        0x213500,
-        1
+        0x243600
+    );
+
+
+    const rightFoot=
+    this.add.ellipse(
+        30,
+        39,
+        38,
+        13,
+        0x91cc00
+    );
+
+
+    rightFoot.setStrokeStyle(
+        2,
+        0x243600
     );
 
 
     frog.add([
         shadow,
-        legL,
-        legR,
+        leftBackLeg,
+        rightBackLeg,
         body,
         belly,
         head,
-        eyeL,
-        eyeR,
-        pupilL,
-        pupilR,
+        leftEye,
+        rightEye,
+        leftPupil,
+        rightPupil,
         nose1,
         nose2,
         mouth,
-        armL,
-        armR,
+        leftArm,
+        rightArm,
         labelCircle,
         labelText,
-        footL,
-        footR
+        leftFoot,
+        rightFoot
     ]);
 
 
     frog.bodyPart=
-        body;
+    body;
+
 
     frog.headPart=
-        head;
+    head;
 
-    frog.legL=
-        legL;
-
-    frog.legR=
-        legR;
-
-    frog.armL=
-        armL;
-
-    frog.armR=
-        armR;
 
     frog.labelCircle=
-        labelCircle;
+    labelCircle;
+
 
     frog.labelText=
-        labelText;
+    labelText;
 
+
+    /*
+    BESARKAN HIT AREA
+    Mudah tap dekat phone.
+    */
 
     frog.setSize(
-        115,
-        125
+        145,
+        145
     );
 
 
     frog.setInteractive(
         new Phaser.Geom.Rectangle(
-            -57,
-            -70,
-            115,
-            125
+            -72,
+            -72,
+            145,
+            145
         ),
         Phaser.Geom.Rectangle.Contains
     );
 
 
+    /*
+    TIADA POINTER OVER TWEEN.
+    TIADA DELAY.
+    TIADA COOLDOWN.
+    */
+
     frog.on(
         "pointerdown",
-        ()=>{
+        (
+            pointer,
+            localX,
+            localY,
+            event
+        )=>{
 
             if(
                 this.locked ||
                 this.finished
             ){
+
                 return;
             }
+
+
+            if(event){
+
+                event.stopPropagation();
+            }
+
 
             audio.init();
 
             audio.tap();
 
-            this.changeFrogLabel(
+
+            /*
+            TERUS TUKAR LABEL.
+            */
+
+            this.changeFrogLabelInstant(
                 frog
             );
         }
     );
-
-
-    frog.on(
-        "pointerover",
-        ()=>{
-
-            if(
-                !this.locked &&
-                !this.finished
-            ){
-
-                this.tweens.add({
-                    targets:frog,
-                    scaleX:
-                        scale*1.06,
-                    scaleY:
-                        scale*1.06,
-                    duration:80
-                });
-            }
-        }
-    );
-
-
-    frog.on(
-        "pointerout",
-        ()=>{
-
-            if(
-                !this.locked &&
-                !this.finished
-            ){
-
-                this.tweens.add({
-                    targets:frog,
-                    scaleX:scale,
-                    scaleY:scale,
-                    duration:80
-                });
-            }
-        }
-    );
-
-
-    /*
-    idle movement
-    */
-
-    const idleDelay=
-        Phaser.Math.Between(
-            0,
-            900
-        );
-
-
-    frog.idleTween=
-        this.tweens.add({
-
-            targets:frog,
-
-            y:y+
-                Phaser.Math.Between(
-                    2,
-                    5
-                ),
-
-            angle:
-                Phaser.Math.FloatBetween(
-                    -1.5,
-                    1.5
-                ),
-
-            duration:
-                Phaser.Math.Between(
-                    950,
-                    1500
-                ),
-
-            delay:
-                idleDelay,
-
-            yoyo:true,
-
-            repeat:-1,
-
-            ease:
-                "Sine.easeInOut"
-        });
 
 
     return frog;
@@ -2388,31 +2278,64 @@ index
 
 
 /* =========================================================
-   CHANGE LABEL
+   INSTANT LABEL CHANGE
 ========================================================= */
 
-changeFrogLabel(frog){
+changeFrogLabelInstant(
+frog
+){
 
-    const order=[
-        "A",
-        "B",
-        "C",
-        "D"
-    ];
+    /*
+    Tidak guna tween.
+    Tidak guna delayedCall.
+    Tidak guna cooldown.
+    */
+
+    if(
+        this.locked ||
+        this.finished
+    ){
+
+        return;
+    }
 
 
-    const current=
-        order.indexOf(
-            frog.label
-        );
+    switch(
+        frog.label
+    ){
+
+        case "A":
+
+            frog.label="B";
+
+            break;
 
 
-    frog.label=
-        order[
-            (current+1) %
-            4
-        ];
+        case "B":
 
+            frog.label="C";
+
+            break;
+
+
+        case "C":
+
+            frog.label="D";
+
+            break;
+
+
+        default:
+
+            frog.label="A";
+
+            break;
+    }
+
+
+    /*
+    Update visual terus pada frame yang sama.
+    */
 
     this.updateFrogLabel(
         frog
@@ -2420,44 +2343,8 @@ changeFrogLabel(frog){
 
 
     /*
-    bounce
+    Semak board terus.
     */
-
-    const sx=
-        frog.scaleX;
-
-    const sy=
-        frog.scaleY;
-
-
-    this.tweens.add({
-
-        targets:frog,
-
-        scaleX:
-            sx*1.12,
-
-        scaleY:
-            sy*.88,
-
-        duration:80,
-
-        yoyo:true,
-
-        ease:
-            "Quad.easeOut"
-    });
-
-
-    /*
-    little pop particles
-    */
-
-    this.createLabelPop(
-        frog.x,
-        frog.y
-    );
-
 
     this.checkBoard();
 
@@ -2465,193 +2352,114 @@ changeFrogLabel(frog){
 
 
 /* =========================================================
-   UPDATE LABEL GRAPHICS
+   LABEL VISUAL
 ========================================================= */
 
-updateFrogLabel(frog){
+updateFrogLabel(
+frog
+){
 
     frog.labelText
-        .setText(
-            frog.label
-        );
+    .setText(
+        frog.label
+    );
 
 
-    let colour=
-        0xffffff;
+    let fill=
+    0xffffff;
+
 
     let border=
-        0x1d4363;
+    0x1e4665;
 
-    let text=
-        "#124b70";
+
+    let textColor=
+    "#134e73";
 
 
     if(
         frog.label==="A"
     ){
 
-        colour=
-            0xdaf3ff;
+        fill=
+        0xdaf3ff;
 
         border=
-            0x278bc6;
+        0x278ac4;
 
-        text=
-            "#12689c";
+        textColor=
+        "#12699c";
     }
 
 
-    if(
+    else if(
         frog.label==="B"
     ){
 
-        colour=
-            0xffe7f6;
+        fill=
+        0xffe3f5;
 
         border=
-            0xd457ad;
+        0xd652ad;
 
-        text=
-            "#9e287d";
+        textColor=
+        "#9c267b";
     }
 
 
-    if(
+    else if(
         frog.label==="C"
     ){
 
-        colour=
-            0xfff3bd;
+        fill=
+        0xfff3bb;
 
         border=
-            0xd9a21d;
+        0xd89e17;
 
-        text=
-            "#946900";
+        textColor=
+        "#946700";
     }
 
 
-    if(
-        frog.label==="D"
-    ){
+    else{
 
-        colour=
-            0xe1ffd4;
+        fill=
+        0xe0ffd3;
 
         border=
-            0x5fa643;
+        0x5ba33e;
 
-        text=
-            "#3c7b26";
+        textColor=
+        "#387725";
     }
 
 
     frog.labelCircle
-        .setFillStyle(
-            colour,
-            1
-        );
+    .setFillStyle(
+        fill,
+        1
+    );
 
 
     frog.labelCircle
-        .setStrokeStyle(
-            3,
-            border,
-            1
-        );
+    .setStrokeStyle(
+        3,
+        border,
+        1
+    );
 
 
     frog.labelText
-        .setColor(
-            text
-        );
+    .setColor(
+        textColor
+    );
 
 }
 
 
 /* =========================================================
-   LABEL POP
-========================================================= */
-
-createLabelPop(x,y){
-
-    for(
-        let i=0;
-        i<5;
-        i++
-    ){
-
-        const p=
-            this.add.circle(
-                x+
-                Phaser.Math.Between(
-                    -15,
-                    15
-                ),
-
-                y+
-                Phaser.Math.Between(
-                    -10,
-                    10
-                ),
-
-                Phaser.Math.Between(
-                    3,
-                    5
-                ),
-
-                Phaser.Math.RND.pick([
-                    0xffffff,
-                    0xffdc66,
-                    0xff8cdc,
-                    0x9ceaff
-                ]),
-
-                .9
-            )
-            .setDepth(150);
-
-
-        this.tweens.add({
-
-            targets:p,
-
-            x:
-                p.x+
-                Phaser.Math.Between(
-                    -30,
-                    30
-                ),
-
-            y:
-                p.y-
-                Phaser.Math.Between(
-                    20,
-                    55
-                ),
-
-            alpha:0,
-
-            scale:.2,
-
-            duration:
-                Phaser.Math.Between(
-                    260,
-                    430
-                ),
-
-            onComplete:()=>{
-
-                p.destroy();
-            }
-        });
-    }
-
-}
-
-
-/* =========================================================
-   CHECK IF ALL SAME
+   CHECK SAME LABEL
 ========================================================= */
 
 getUniformLabel(){
@@ -2659,12 +2467,13 @@ getUniformLabel(){
     if(
         this.frogs.length===0
     ){
+
         return null;
     }
 
 
-    const first=
-        this.frogs[0].label;
+    const label=
+    this.frogs[0].label;
 
 
     for(
@@ -2675,7 +2484,7 @@ getUniformLabel(){
 
         if(
             this.frogs[i].label !==
-            first
+            label
         ){
 
             return null;
@@ -2683,100 +2492,156 @@ getUniformLabel(){
     }
 
 
-    return first;
+    return label;
 
 }
 
 
 /* =========================================================
-   CHECK BOARD
+   BOARD CHECK
 ========================================================= */
 
 checkBoard(){
 
-    const same=
-        this.getUniformLabel();
+    const uniform=
+    this.getUniformLabel();
 
 
-    if(!same){
+    if(!uniform){
 
-        const counts={
-            A:0,
-            B:0,
-            C:0,
-            D:0
-        };
-
-
-        this.frogs.forEach(
-            frog=>{
-
-                counts[
-                    frog.label
-                ]++;
-            }
-        );
-
-
-        const highest=
-            Object.entries(
-                counts
-            )
-            .sort(
-                (a,b)=>
-                    b[1]-a[1]
-            )[0];
-
-
-        if(
-            highest[1] >=
-            Math.ceil(
-                this.frogs.length*.7
-            )
-        ){
-
-            this.statusText
-                .setText(
-                    `${highest[1]}/${this.frogs.length} katak sudah label ${highest[0]}`
-                );
-
-        }else{
-
-            this.statusText
-                .setText(
-                    "Samakan semua label katak"
-                );
-        }
-
+        this.updateLiveStatus();
 
         return;
     }
 
 
-    this.locked=true;
-
-
-    const q=
-        QUESTIONS[
-            this.questionIndex
-        ];
+    const data=
+    QUESTIONS[
+        this.questionIndex
+    ];
 
 
     if(
-        same ===
-        q.answer
+        uniform===
+        data.answer
     ){
 
+        /*
+        Hanya jawapan betul dikunci.
+        */
+
+        this.locked=true;
+
+
         this.handleCorrect(
-            same
+            uniform
         );
 
     }else{
 
-        this.handleWrong(
-            same
+        /*
+        JAWAPAN SALAH TIDAK LOCK.
+        User boleh tap serta-merta.
+        */
+
+        this.handleWrongInstant(
+            uniform
         );
     }
+
+}
+
+
+/* =========================================================
+   LIVE STATUS
+========================================================= */
+
+updateLiveStatus(){
+
+    const counts={
+        A:0,
+        B:0,
+        C:0,
+        D:0
+    };
+
+
+    this.frogs.forEach(
+        frog=>{
+
+            counts[
+                frog.label
+            ]++;
+        }
+    );
+
+
+    const highest=
+    Object.entries(
+        counts
+    )
+    .sort(
+        (a,b)=>
+        b[1]-a[1]
+    )[0];
+
+
+    if(
+        highest[1]>=
+        Math.ceil(
+            this.frogs.length*.55
+        )
+    ){
+
+        this.statusText
+        .setText(
+            `${highest[1]}/${this.frogs.length} katak label ${highest[0]}`
+        );
+
+    }else{
+
+        this.statusText
+        .setText(
+            "Samakan semua label katak"
+        );
+    }
+
+}
+
+
+/* =========================================================
+   WRONG - NO DELAY
+========================================================= */
+
+handleWrongInstant(
+label
+){
+
+    this.wrongCount++;
+
+
+    audio.wrong();
+
+
+    this.scoreText
+    .setText(
+        `✓ ${this.correctCount}   ✦ ${this.wrongCount}`
+    );
+
+
+    this.statusText
+    .setText(
+        `${label} belum tepat! Tap terus untuk ubah.`
+    );
+
+
+    /*
+    PENTING:
+    Tiada this.locked=true
+    Tiada delayedCall
+    Tiada tween blocking
+    User terus boleh tekan katak.
+    */
 
 }
 
@@ -2785,83 +2650,58 @@ checkBoard(){
    CORRECT
 ========================================================= */
 
-handleCorrect(label){
+handleCorrect(
+label
+){
 
     this.correctCount++;
+
 
     audio.correct();
 
 
     this.scoreText
-        .setText(
-            `✓ ${this.correctCount}   ✦ ${this.wrongCount}`
-        );
+    .setText(
+        `✓ ${this.correctCount}   ✦ ${this.wrongCount}`
+    );
 
 
     this.statusText
-        .setText(
-            `BETUL! Semua katak ialah ${label} ✓`
-        );
+    .setText(
+        `BETUL! Semua katak ${label} ✓`
+    );
 
 
     this.frogs.forEach(
         frog=>{
 
             frog.bodyPart
-                .setFillStyle(
-                    0x85da27,
-                    1
-                );
+            .setFillStyle(
+                0x7fda29
+            );
+
 
             frog.headPart
-                .setFillStyle(
-                    0xa6ef38,
-                    1
-                );
-
-
-            this.tweens.add({
-
-                targets:frog,
-
-                y:
-                    frog.y-18,
-
-                duration:
-                    Phaser.Math.Between(
-                        180,
-                        280
-                    ),
-
-                delay:
-                    Phaser.Math.Between(
-                        0,
-                        250
-                    ),
-
-                yoyo:true,
-
-                ease:
-                    "Quad.easeOut"
-            });
+            .setFillStyle(
+                0xa8ed3d
+            );
         }
     );
 
 
-    this.createCelebration(
-        false
-    );
-
+    /*
+    Transition lebih cepat.
+    */
 
     this.time.delayedCall(
-        1100,
+        450,
         ()=>{
 
             this.questionIndex++;
 
 
             if(
-                this.questionIndex >=
+                this.questionIndex>=
                 QUESTIONS.length
             ){
 
@@ -2879,78 +2719,6 @@ handleCorrect(label){
 
 
 /* =========================================================
-   WRONG
-========================================================= */
-
-handleWrong(label){
-
-    this.wrongCount++;
-
-    audio.wrong();
-
-
-    this.scoreText
-        .setText(
-            `✓ ${this.correctCount}   ✦ ${this.wrongCount}`
-        );
-
-
-    this.statusText
-        .setText(
-            `Label ${label} belum tepat. Tukar semula katak!`
-        );
-
-
-    this.frogs.forEach(
-        frog=>{
-
-            const oldX=
-                frog.x;
-
-            this.tweens.add({
-
-                targets:frog,
-
-                x:
-                    oldX+
-                    Phaser.Math.Between(
-                        -5,
-                        5
-                    ),
-
-                duration:50,
-
-                yoyo:true,
-
-                repeat:3,
-
-                onComplete:()=>{
-
-                    frog.x=
-                        oldX;
-                }
-            });
-        }
-    );
-
-
-    this.time.delayedCall(
-        650,
-        ()=>{
-
-            this.locked=false;
-
-            this.statusText
-                .setText(
-                    "Cuba lagi. Samakan semua label."
-                );
-        }
-    );
-
-}
-
-
-/* =========================================================
    DESTROY FROGS
 ========================================================= */
 
@@ -2958,14 +2726,6 @@ destroyFrogs(){
 
     this.frogs.forEach(
         frog=>{
-
-            if(
-                frog.idleTween
-            ){
-
-                frog.idleTween.stop();
-            }
-
 
             if(
                 frog &&
@@ -2984,110 +2744,6 @@ destroyFrogs(){
 
 
 /* =========================================================
-   CELEBRATION
-========================================================= */
-
-createCelebration(big=false){
-
-    const amount=
-        big ? 55 : 24;
-
-
-    for(
-        let i=0;
-        i<amount;
-        i++
-    ){
-
-        const star=
-            this.add.star(
-                Phaser.Math.Between(
-                    70,
-                    750
-                ),
-
-                big ?
-                    Phaser.Math.Between(
-                        550,
-                        850
-                    )
-                    :
-                    Phaser.Math.Between(
-                        610,
-                        930
-                    ),
-
-                5,
-
-                3,
-
-                Phaser.Math.Between(
-                    6,
-                    10
-                ),
-
-                Phaser.Math.RND.pick([
-                    0xffd83d,
-                    0xff75cf,
-                    0xffffff,
-                    0x9fff55,
-                    0x5ce8ff
-                ]),
-
-                1
-            )
-            .setDepth(190);
-
-
-        this.tweens.add({
-
-            targets:star,
-
-            y:
-                star.y-
-                Phaser.Math.Between(
-                    80,
-                    180
-                ),
-
-            x:
-                star.x+
-                Phaser.Math.Between(
-                    -70,
-                    70
-                ),
-
-            alpha:0,
-
-            angle:
-                Phaser.Math.Between(
-                    -250,
-                    250
-                ),
-
-            scale:
-                Phaser.Math.FloatBetween(
-                    1.3,
-                    2
-                ),
-
-            duration:
-                Phaser.Math.Between(
-                    700,
-                    1300
-                ),
-
-            onComplete:()=>{
-
-                star.destroy();
-            }
-        });
-    }
-
-}
-
-
-/* =========================================================
    COMPLETE
 ========================================================= */
 
@@ -3096,6 +2752,7 @@ completeGame(){
     this.finished=true;
 
     this.locked=true;
+
 
     audio.finish();
 
@@ -3106,12 +2763,15 @@ completeGame(){
     this.progressBar.clear();
 
 
-    this.progressBar.fillStyle(
+    this.progressBar
+    .fillStyle(
         0xe1cfa0,
         1
     );
 
-    this.progressBar.fillRoundedRect(
+
+    this.progressBar
+    .fillRoundedRect(
         44,
         148,
         715,
@@ -3120,12 +2780,15 @@ completeGame(){
     );
 
 
-    this.progressBar.fillStyle(
-        0x51b765,
+    this.progressBar
+    .fillStyle(
+        0x53b968,
         1
     );
 
-    this.progressBar.fillRoundedRect(
+
+    this.progressBar
+    .fillRoundedRect(
         44,
         148,
         715,
@@ -3135,37 +2798,39 @@ completeGame(){
 
 
     this.progressText
-        .setText(
-            "SELESAI 25 / 25"
-        );
+    .setText(
+        "SELESAI 25 / 25"
+    );
 
 
     this.scoreText
-        .setText(
-            `✓ 25   ✦ ${this.wrongCount}`
-        );
+    .setText(
+        `✓ 25   ✦ ${this.wrongCount}`
+    );
 
 
     this.questionText
-        .setText(
-            "TAHNIAH! 🐸\n\nSemua 25 soalan telah selesai."
-        )
-        .setColor(
-            "#317623"
-        );
+    .setText(
+        "TAHNIAH! 🐸\n\nAnda berjaya menyelesaikan semua 25 soalan."
+    )
+    .setColor(
+        "#317624"
+    );
 
 
     this.answerTexts
-        .forEach(
-            text=>
-                text.setText("")
-        );
+    .forEach(
+        text=>{
+
+            text.setText("");
+        }
+    );
 
 
     this.statusText
-        .setText(
-            "MISI LABEL THE FROGS SELESAI!"
-        );
+    .setText(
+        "MISI LABEL THE FROGS SELESAI!"
+    );
 
 
     this.createBigFrog(
@@ -3174,54 +2839,55 @@ completeGame(){
     );
 
 
-    this.createCelebration(
-        true
-    );
+    this.restartButton=
+    this.add.text(
+        410,
+        920,
+        "↻  MAIN SEMULA",
+        {
+            fontFamily:
+            "Trebuchet MS, Arial",
 
+            fontSize:"24px",
+            fontStyle:"bold",
+            color:"#ffffff",
 
-    const restart=
-        this.add.text(
-            410,
-            920,
-            "↻  MAIN SEMULA",
-            {
-                fontFamily:
-                    "Trebuchet MS, Arial",
-                fontSize:"24px",
-                fontStyle:"bold",
-                color:"#ffffff",
+            backgroundColor:
+            "#de7b09",
 
-                backgroundColor:
-                    "#dd7a08",
-
-                padding:{
-                    x:24,
-                    y:14
-                }
+            padding:{
+                x:25,
+                y:14
             }
-        )
-        .setOrigin(.5)
-        .setDepth(250)
-        .setInteractive({
-            useHandCursor:true
-        });
+        }
+    )
+    .setOrigin(.5)
+    .setDepth(300)
+    .setInteractive({
+        useHandCursor:true
+    });
 
 
-    restart.on(
+    this.restartButton.on(
         "pointerdown",
         ()=>{
 
-            restart.destroy();
+            this.restartButton.destroy();
 
-            this.finished=false;
 
-            this.locked=false;
+            this.restartButton=null;
+
 
             this.questionIndex=0;
 
             this.correctCount=0;
 
             this.wrongCount=0;
+
+            this.finished=false;
+
+            this.locked=false;
+
 
             this.renderQuestion();
         }
@@ -3231,38 +2897,42 @@ completeGame(){
 
 
 /* =========================================================
-   BIG END FROG
+   BIG FROG
 ========================================================= */
 
-createBigFrog(x,y){
+createBigFrog(
+x,
+y
+){
 
     const frog=
-        this.add.container(
-            x,
-            y
-        )
-        .setDepth(100);
+    this.add.container(
+        x,
+        y
+    )
+    .setDepth(100);
 
 
     const shadow=
-        this.add.ellipse(
-            0,
-            91,
-            190,
-            35,
-            0x775c30,
-            .2
-        );
+    this.add.ellipse(
+        0,
+        91,
+        190,
+        35,
+        0x70572f,
+        .20
+    );
 
 
     const legL=
-        this.add.ellipse(
-            -75,
-            55,
-            95,
-            45,
-            0x8ec900
-        );
+    this.add.ellipse(
+        -75,
+        55,
+        95,
+        45,
+        0x8ec900
+    );
+
 
     legL.setStrokeStyle(
         5,
@@ -3271,13 +2941,14 @@ createBigFrog(x,y){
 
 
     const legR=
-        this.add.ellipse(
-            75,
-            55,
-            95,
-            45,
-            0x8ec900
-        );
+    this.add.ellipse(
+        75,
+        55,
+        95,
+        45,
+        0x8ec900
+    );
+
 
     legR.setStrokeStyle(
         5,
@@ -3286,13 +2957,14 @@ createBigFrog(x,y){
 
 
     const body=
-        this.add.ellipse(
-            0,
-            27,
-            155,
-            135,
-            0x9bd800
-        );
+    this.add.ellipse(
+        0,
+        27,
+        155,
+        135,
+        0x9bd800
+    );
+
 
     body.setStrokeStyle(
         6,
@@ -3301,23 +2973,24 @@ createBigFrog(x,y){
 
 
     const belly=
-        this.add.ellipse(
-            17,
-            35,
-            105,
-            90,
-            0xe4f84d
-        );
+    this.add.ellipse(
+        17,
+        35,
+        105,
+        90,
+        0xe5fa50
+    );
 
 
     const head=
-        this.add.ellipse(
-            0,
-            -47,
-            145,
-            100,
-            0x9bd800
-        );
+    this.add.ellipse(
+        0,
+        -47,
+        145,
+        100,
+        0x9bd800
+    );
+
 
     head.setStrokeStyle(
         6,
@@ -3326,12 +2999,13 @@ createBigFrog(x,y){
 
 
     const eye1=
-        this.add.circle(
-            -42,
-            -92,
-            31,
-            0xffffff
-        );
+    this.add.circle(
+        -42,
+        -92,
+        31,
+        0xffffff
+    );
+
 
     eye1.setStrokeStyle(
         5,
@@ -3340,12 +3014,13 @@ createBigFrog(x,y){
 
 
     const eye2=
-        this.add.circle(
-            38,
-            -86,
-            28,
-            0xffffff
-        );
+    this.add.circle(
+        38,
+        -86,
+        28,
+        0xffffff
+    );
+
 
     eye2.setStrokeStyle(
         5,
@@ -3353,36 +3028,36 @@ createBigFrog(x,y){
     );
 
 
-    this.add.circle;
-
-
     const pupil1=
-        this.add.circle(
-            -37,
-            -90,
-            10,
-            0x111111
-        );
+    this.add.circle(
+        -37,
+        -90,
+        10,
+        0x111111
+    );
 
 
     const pupil2=
-        this.add.circle(
-            34,
-            -84,
-            9,
-            0x111111
-        );
+    this.add.circle(
+        34,
+        -84,
+        9,
+        0x111111
+    );
 
 
     const mouth=
-        this.add.graphics();
+    this.add.graphics();
+
 
     mouth.lineStyle(
         6,
         0x203400
     );
 
+
     mouth.beginPath();
+
 
     mouth.arc(
         0,
@@ -3391,6 +3066,7 @@ createBigFrog(x,y){
         Phaser.Math.DegToRad(25),
         Phaser.Math.DegToRad(155)
     );
+
 
     mouth.strokePath();
 
@@ -3414,21 +3090,16 @@ createBigFrog(x,y){
 
         targets:frog,
 
-        y:y-8,
+        y:y-7,
 
-        angle:{
-            from:-1.5,
-            to:1.5
-        },
-
-        duration:900,
+        duration:850,
 
         yoyo:true,
 
         repeat:-1,
 
         ease:
-            "Sine.easeInOut"
+        "Sine.easeInOut"
     });
 
 }
@@ -3437,66 +3108,66 @@ createBigFrog(x,y){
 
 
 /* =========================================================
-   CONFIG
+   PHASER CONFIG
 ========================================================= */
 
 const config={
 
     type:
-        Phaser.AUTO,
+    Phaser.AUTO,
 
     parent:
-        "game",
+    "game",
 
     width:
-        820,
+    820,
 
     height:
-        1090,
+    1090,
 
     backgroundColor:
-        "#18a6d8",
-
-    antialias:
-        true,
+    "#19a7d9",
 
     transparent:
-        false,
+    false,
+
+    antialias:
+    true,
 
     render:{
 
-        antialias:
-            true,
+        antialias:true,
 
-        pixelArt:
-            false,
+        pixelArt:false,
 
-        roundPixels:
-            false,
+        roundPixels:false,
 
         powerPreference:
-            "high-performance"
+        "high-performance"
     },
 
     scale:{
 
         mode:
-            Phaser.Scale.FIT,
+        Phaser.Scale.FIT,
 
         autoCenter:
-            Phaser.Scale.CENTER_BOTH,
+        Phaser.Scale.CENTER_BOTH,
 
         width:
-            820,
+        820,
 
         height:
-            1090
+        1090
     },
 
     input:{
 
-        activePointers:
-            4
+        activePointers:5,
+
+        touch:{
+            capture:true
+        }
     },
 
     scene:[
@@ -3511,7 +3182,7 @@ new Phaser.Game(
 
 
 /* =========================================================
-   MOBILE
+   MOBILE PREVENT SCROLL
 ========================================================= */
 
 document.addEventListener(
