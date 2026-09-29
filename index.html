@@ -2,65 +2,88 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
-<meta
-    name="viewport"
-    content="width=device-width,
-    initial-scale=1,
-    maximum-scale=1,
-    user-scalable=no,
-    viewport-fit=cover"
->
 
-<title>Magnet Rail Switch - Set 1</title>
+<meta
+name="viewport"
+content="width=device-width,
+initial-scale=1,
+maximum-scale=1,
+user-scalable=no,
+viewport-fit=cover">
+
+<title>Makmal Uji Air - Set 1</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <style>
+
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
 }
 
-html,body{
+html,
+body{
     margin:0;
     padding:0;
-    width:100%;
+
     min-height:100%;
+
+    font-family:
+    "Trebuchet MS",
+    Arial,
+    sans-serif;
+
     background:
-        radial-gradient(circle at top,#e9f8ff 0%,#cdefff 40%,#c7ddff 100%);
-    font-family:"Trebuchet MS",Arial,sans-serif;
-    touch-action:none;
+    linear-gradient(
+        135deg,
+        #dff7ff,
+        #effcff,
+        #dcecff
+    );
+
     overscroll-behavior:none;
 }
 
 body{
-    min-height:100vh;
-    min-height:100svh;
     display:flex;
-    align-items:flex-start;
     justify-content:center;
+    align-items:flex-start;
+
     padding:
-        max(4px,env(safe-area-inset-top))
-        4px
-        max(4px,env(safe-area-inset-bottom));
+    max(5px,env(safe-area-inset-top))
+    4px
+    max(5px,env(safe-area-inset-bottom));
 }
 
+
+/* ===============================
+   GAME CONTAINER
+================================ */
+
 #game-shell{
+
     width:min(
         98vw,
-        760px,
-        calc(97svh * 0.75)
+        700px
     );
 
-    aspect-ratio:3/4;
+    aspect-ratio:760/1180;
 
-    background:#dff5ff;
-    border-radius:20px;
+    max-height:96svh;
+
+    border:
+    3px solid #19324d;
+
+    border-radius:22px;
+
     overflow:hidden;
 
+    background:#eefaff;
+
     box-shadow:
-        0 8px 25px rgba(34,77,120,.22),
-        inset 0 0 0 2px rgba(255,255,255,.8);
+    0 12px 28px
+    rgba(28,63,92,.18);
 }
 
 #game{
@@ -70,23 +93,39 @@ body{
 
 canvas{
     display:block;
+
     width:100% !important;
     height:100% !important;
+
+    touch-action:none;
 }
 
+
+/* ===============================
+   PHONE
+================================ */
+
 @media(max-width:600px){
+
     body{
         padding:2px;
     }
 
     #game-shell{
+
         width:99vw;
-        border-radius:12px;
+
+        max-height:98svh;
+
+        border-width:2px;
+
+        border-radius:15px;
     }
 }
 
 </style>
 </head>
+
 
 <body>
 
@@ -94,10 +133,13 @@ canvas{
     <div id="game"></div>
 </div>
 
+
 <script>
+
 (() => {
 
 "use strict";
+
 
 /* =========================================================
    SOALAN
@@ -106,2130 +148,2537 @@ canvas{
 const QUESTIONS = [
 
 {
-q:"Apakah kegunaan magnet pada pemutar skru bermagnet?",
+q:"Sudu logam dikelaskan sebagai objek yang ____.",
 a:[
-"Memegang skru",
-"Mencairkan skru",
-"Mewarnakan skru",
-"Memotong skru"
+"Tidak boleh menyerap air",
+"Boleh menyerap air",
+"Menyimpan air di dalam kain",
+"Menghasilkan air"
 ],
-correct:0
+c:0
 },
 
 {
-q:"Skru kerap jatuh ketika seseorang bekerja. Alat manakah paling sesuai berdasarkan contoh dalam buku?",
+q:"Mengapakah saiz objek disamakan dalam aktiviti membandingkan keupayaan menyerap air?",
 a:[
-"Kayu aiskrim",
-"Pemutar skru bermagnet",
-"Pembaris plastik",
-"Guli"
+"Supaya air menjadi panas",
+"Supaya objek berubah warna",
+"Supaya perbandingan lebih adil",
+"Supaya bahan menjadi logam"
 ],
-correct:1
+c:2
 },
 
 {
-q:"Magnet pada kotak pensel membantu bahagian penutup ____.",
+q:"Mop dikelaskan sebagai objek yang ____.",
 a:[
-"Menjadi panjang",
-"Menjadi lembut",
-"Bertukar warna",
-"Tertutup rapat"
+"Menghasilkan air",
+"Boleh menyerap air",
+"Tidak boleh menyerap air",
+"Menolak udara"
 ],
-correct:3
+c:1
 },
 
 {
-q:"Jika penutup beg tangan menggunakan magnet, magnet membantu bahagian itu ____.",
+q:"Pilih objek yang boleh menyerap air daripada senarai berikut.",
 a:[
-"Melekat atau tertutup",
-"Menjadi lut sinar",
-"Menghasilkan bunyi",
-"Bertukar menjadi kayu"
+"Mainan plastik",
+"Pemadam",
+"Klip kertas",
+"Sapu tangan"
 ],
-correct:0
+c:3
 },
 
 {
-q:"Magnet pada pintu peti sejuk membantu pintu menjadi ____.",
+q:"Jika air kekal sebagai titisan di atas sesuatu objek, objek itu kemungkinan ____.",
 a:[
-"Lebih tinggi",
-"Lebih panjang",
-"Tertutup rapat",
-"Lebih ringan"
+"Tidak menyerap air",
+"Menghasilkan air",
+"Menyerap air",
+"Menjadi lembut"
 ],
-correct:2
+c:0
 },
 
 {
-q:"Magnet yang kelihatan seperti batang bulat memanjang dinamakan ____.",
+q:"Objek plastik manakah yang tidak boleh menyerap air?",
 a:[
-"Magnet bar",
-"Magnet silinder",
-"Magnet cincin",
-"Magnet butang"
+"Kain lap",
+"Kertas surat khabar",
+"Tisu",
+"Mainan plastik"
 ],
-correct:1
+c:3
 },
 
 {
-q:"Magnet dinamakan berdasarkan ____.",
+q:"Air berwarna dititiskan pada tisu dan titisan itu hilang. Apakah kesimpulan yang betul?",
 a:[
-"Beratnya",
-"Baunya",
-"Warnanya",
-"Bentuknya"
+"Tisu menolak air",
+"Tisu tidak menyerap air",
+"Tisu menyerap air",
+"Tisu menghasilkan air"
 ],
-correct:3
+c:2
 },
 
 {
-q:"Seorang murid melihat magnet berbentuk kepingan bulat padat. Nama yang sesuai ialah ____.",
+q:"Tisu dapur, mop dan alas kaki dimasukkan dalam satu kumpulan kerana semuanya ____.",
 a:[
-"Magnet butang",
-"Magnet bentuk U",
-"Magnet cincin",
-"Magnet ladam"
+"Boleh menyerap air",
+"Diperbuat daripada kaca",
+"Tidak boleh menyerap air",
+"Diperbuat daripada logam"
 ],
-correct:0
+c:0
 },
 
 {
-q:"Apakah nama magnet yang berbentuk batang panjang?",
+q:"Pilih objek yang tidak boleh menyerap air daripada senarai berikut.",
 a:[
-"Magnet butang",
-"Magnet cincin",
-"Magnet bar",
-"Magnet ladam"
+"Sapu tangan",
+"Klip kertas",
+"Tisu",
+"Kain lap"
 ],
-correct:2
+c:1
 },
 
 {
-q:"Ali mengumpulkan magnet bar, silinder, ladam, bentuk U, butang dan cincin. Apakah yang ditunjukkan oleh koleksi ini?",
+q:"Apakah maksud objek menyerap air?",
 a:[
-"Magnet mempunyai pelbagai bentuk",
-"Semua magnet berbentuk bulat",
-"Semua magnet mempunyai satu bentuk",
-"Magnet tidak mempunyai bentuk"
+"Objek yang boleh menyerap air",
+"Objek yang menolak semua air",
+"Objek yang menghasilkan air",
+"Objek yang tidak boleh menyerap air"
 ],
-correct:0
+c:0
 },
 
 {
-q:"Objek bulat manakah dalam aktiviti yang tidak dapat ditarik magnet?",
+q:"Tisu dapur dikelaskan sebagai objek yang ____.",
 a:[
-"Paku",
-"Guli",
-"Skru",
-"Pin baju"
+"Menyimpan udara",
+"Tidak boleh menyerap air",
+"Menghasilkan air",
+"Boleh menyerap air"
 ],
-correct:1
+c:3
 },
 
 {
-q:"Dalam satu ujian, skru dan pin baju bergerak ke arah magnet. Apakah persamaan kedua-duanya?",
+q:"Gelas kaca, sudu logam dan pinggan plastik dimasukkan dalam satu kumpulan kerana semuanya ____.",
 a:[
-"Kedua-duanya pembaris",
-"Kedua-duanya tidak dapat ditarik",
-"Kedua-duanya magnet",
-"Kedua-duanya dapat ditarik magnet"
+"Diperbuat daripada kain",
+"Boleh menyerap air",
+"Tidak boleh menyerap air",
+"Diperbuat daripada kertas"
 ],
-correct:3
+c:2
 },
 
 {
-q:"Magnet tidak dapat menarik ____.",
+q:"Siti mahu memilih objek yang boleh menyerap tumpahan air. Antara berikut, yang sesuai ialah ____.",
 a:[
-"Paku",
-"Skru",
-"Pensel",
-"Pin baju"
+"Gelas kaca",
+"Sudu logam",
+"Pinggan plastik",
+"Kain lap"
 ],
-correct:2
+c:3
 },
 
 {
-q:"Yang manakah pasangan objek yang kedua-duanya boleh ditarik magnet berdasarkan contoh unit ini?",
+q:"Apakah kegunaan mop?",
 a:[
-"Guli dan pemadam",
-"Butang plastik dan guli",
-"Kayu aiskrim dan pembaris plastik",
-"Skru dan pin baju"
+"Melindungi kaki daripada hujan",
+"Menyerap dan mengelap air di lantai",
+"Menjadi cermin kereta",
+"Menadah air hujan"
 ],
-correct:3
+c:1
 },
 
 {
-q:"Butang daripada bahan apakah yang tidak dapat ditarik magnet dalam aktiviti?",
+q:"Kain lap membantu mengeringkan jag kerana kain lap ____.",
 a:[
-"Penutup botol logam",
-"Butang plastik",
-"Skru",
-"Pin baju"
+"Menyerap air",
+"Menghasilkan air",
+"Diperbuat daripada kaca",
+"Tidak menyerap air"
 ],
-correct:1
+c:0
 },
 
 {
-q:"Sebuah magnet menarik magnet lain. Apakah yang boleh dikatakan tentang kutub yang berhadapan?",
+q:"Tisu dan tuala mempunyai kepentingan yang serupa kerana kedua-duanya boleh ____.",
 a:[
-"Kedua-duanya kutub yang berlainan",
-"Satu magnet ialah plastik",
-"Magnet tidak mempunyai kutub",
-"Kedua-duanya mesti sama"
+"Menjadi kaca",
+"Menghalang hujan seperti payung",
+"Menyerap air",
+"Menadah hujan"
 ],
-correct:0
+c:2
 },
 
 {
-q:"Kutub magnet yang sama apabila didekatkan akan ____.",
+q:"Mengapakah tong besi sesuai menyimpan air hujan?",
 a:[
-"Hilang",
-"Melekat pada kayu",
-"Menolak",
-"Menarik"
+"Kerana digunakan untuk mengelap peluh",
+"Kerana tidak menyerap air",
+"Kerana menyerap semua air",
+"Kerana diperbuat daripada tisu"
 ],
-correct:2
+c:1
 },
 
 {
-q:"Dua magnet boleh menarik atau ____ apabila didekatkan.",
+q:"Objek menyerap air sesuai digunakan untuk ____.",
 a:[
-"Menolak",
-"Mengukur",
-"Mewarnakan",
-"Memadam"
+"Menghalang hujan dengan payung",
+"Menadah air dalam tong",
+"Membuat cermin kereta",
+"Mengeringkan permukaan basah"
 ],
-correct:0
+c:3
 },
 
 {
-q:"Sebuah magnet menolak magnet lain. Apakah yang boleh dikatakan tentang kutub yang berhadapan?",
+q:"Kasut getah penting kerana dapat ____.",
 a:[
-"Magnet tidak mempunyai kutub",
-"Satu magnet ialah kayu",
-"Kedua-duanya mesti berlainan",
-"Kedua-duanya kutub yang sama"
+"Mengelakkan kaki daripada basah",
+"Menyerap air ke dalam kasut",
+"Menyerap peluh dari muka",
+"Mengelap meja"
 ],
-correct:3
+c:0
 },
 
 {
-q:"Hakim mahu melihat tolakan antara dua magnet. Apakah susunan yang sesuai?",
+q:"Mop digunakan pada lantai basah kerana mop ____.",
 a:[
-"Magnet dijauhkan tanpa diuji",
-"Kutub yang berlainan didekatkan",
-"Kutub yang sama didekatkan",
-"Magnet ditutup dengan kertas"
+"Tidak menyerap air",
+"Menyerap air",
+"Menjadi licin",
+"Menghasilkan air"
 ],
-correct:2
+c:1
 },
 
 {
-q:"Magnet P menarik klip kertas dari jarak lebih jauh berbanding magnet Q. Magnet manakah lebih kuat?",
+q:"Jika mahu membuat penghadang hujan, ciri objek yang diperlukan ialah ____.",
 a:[
-"Magnet P",
-"Kedua-duanya tiada kekuatan",
-"Kedua-duanya sama",
-"Magnet Q"
+"Tidak menyerap air",
+"Mudah basah",
+"Menyerap air dengan banyak",
+"Diperbuat daripada tisu"
 ],
-correct:0
+c:0
 },
 
 {
-q:"Jika satu magnet boleh menarik klip kertas dari jarak yang lebih jauh, apakah maksudnya?",
+q:"Jika objek digunakan untuk melindungi daripada hujan, objek itu sebaiknya ____.",
 a:[
-"Magnet itu diperbuat daripada kayu",
-"Magnet itu lebih kuat",
-"Magnet itu lebih lemah",
-"Magnet itu bukan magnet"
+"Menyerap peluh",
+"Mudah basah",
+"Tidak menyerap air",
+"Menyerap air"
 ],
-correct:1
+c:2
 },
 
 {
-q:"Magnet yang menarik lebih banyak klip kertas dianggap lebih ____.",
+q:"Apakah kegunaan kain lap?",
 a:[
-"Lemah",
-"Lembut",
-"Ringan",
-"Kuat"
+"Melindungi kaki",
+"Menjadi payung",
+"Menadah hujan",
+"Mengelap dan menyerap air"
 ],
-correct:3
+c:3
 },
 
 {
-q:"Magnet berbentuk huruf apakah yang digunakan dalam aktiviti menguji kekuatan magnet?",
+q:"Air hujan mahu dikumpulkan dan disimpan. Objek manakah sesuai?",
 a:[
-"Pemadam sahaja",
-"Magnet bentuk U",
-"Guli sahaja",
-"Pensel sahaja"
+"Tisu",
+"Tong besi",
+"Mop",
+"Sapu tangan"
 ],
-correct:1
+c:1
 },
 
 {
-q:"Magnet yang menarik klip kertas dari jarak lebih jauh dianggap lebih ____.",
+q:"Seorang murid mahu mengelap cecair pada luka. Apakah objek yang sesuai berdasarkan contoh buku?",
 a:[
-"Lembut",
-"Lemah",
-"Kuat",
-"Licin"
+"Klip kertas",
+"Mainan plastik",
+"Bebola kapas",
+"Sudu logam"
 ],
-correct:2
+c:2
 }
 
 ];
 
 
+
 /* =========================================================
-   AUDIO
+   GAME SIZE
 ========================================================= */
 
-class AudioManager{
+const W = 760;
+const H = 1180;
 
-    constructor(){
-        this.ctx = null;
-        this.musicTimer = null;
-        this.enabled = true;
-        this.started = false;
-        this.noteIndex = 0;
 
-        this.notes = [
-            261.63,
-            329.63,
-            392.00,
-            329.63,
-            293.66,
-            349.23,
-            440.00,
-            349.23
-        ];
+
+/* =========================================================
+   AUDIO
+   AUDIO DIHASILKAN SENDIRI DENGAN WEB AUDIO
+========================================================= */
+
+let audioCtx = null;
+
+let musicTimer = null;
+
+let musicOn = true;
+
+
+function ensureAudio(){
+
+    if(!audioCtx){
+
+        audioCtx =
+        new(
+            window.AudioContext ||
+            window.webkitAudioContext
+        )();
     }
 
-    init(){
+    if(audioCtx.state === "suspended"){
 
-        if(this.started) return;
-
-        try{
-
-            this.ctx =
-                new (
-                    window.AudioContext ||
-                    window.webkitAudioContext
-                )();
-
-            if(this.ctx.state === "suspended"){
-                this.ctx.resume();
-            }
-
-            this.started = true;
-
-            this.startMusic();
-
-        }catch(e){}
-
-    }
-
-    tone(freq,duration=.12,type="sine",volume=.04){
-
-        if(
-            !this.enabled ||
-            !this.ctx ||
-            this.ctx.state !== "running"
-        ) return;
-
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        osc.type = type;
-        osc.frequency.value = freq;
-
-        const now = this.ctx.currentTime;
-
-        gain.gain.setValueAtTime(volume,now);
-        gain.gain.exponentialRampToValueAtTime(
-            0.001,
-            now + duration
-        );
-
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-
-        osc.start(now);
-        osc.stop(now + duration);
-    }
-
-    click(){
-        this.tone(520,.07,"sine",.035);
-    }
-
-    correct(){
-        this.tone(523,.10,"triangle",.06);
-
-        setTimeout(()=>{
-            this.tone(659,.12,"triangle",.055);
-        },90);
-
-        setTimeout(()=>{
-            this.tone(784,.16,"triangle",.05);
-        },180);
-    }
-
-    wrong(){
-        this.tone(180,.10,"sawtooth",.025);
-
-        setTimeout(()=>{
-            this.tone(135,.14,"sawtooth",.02);
-        },100);
-    }
-
-    finish(){
-
-        const seq=[523,659,784,1046];
-
-        seq.forEach((f,i)=>{
-            setTimeout(()=>{
-                this.tone(f,.22,"triangle",.055);
-            },i*120);
-        });
-
-    }
-
-    startMusic(){
-
-        if(this.musicTimer) return;
-
-        this.musicTimer=setInterval(()=>{
-
-            if(
-                !this.enabled ||
-                !this.ctx ||
-                this.ctx.state !== "running"
-            ) return;
-
-            this.tone(
-                this.notes[this.noteIndex],
-                .22,
-                "sine",
-                .012
-            );
-
-            this.noteIndex =
-                (this.noteIndex+1) %
-                this.notes.length;
-
-        },650);
-
-    }
-
-    toggle(){
-
-        this.enabled=!this.enabled;
-
-        return this.enabled;
+        audioCtx.resume();
     }
 }
 
-const AUDIO = new AudioManager();
+
+
+function tone(
+    freq = 440,
+    dur = .1,
+    type = "sine",
+    vol = .03,
+    delay = 0
+){
+
+    ensureAudio();
+
+    const oscillator =
+    audioCtx.createOscillator();
+
+    const gain =
+    audioCtx.createGain();
+
+    const time =
+    audioCtx.currentTime + delay;
+
+
+    oscillator.type = type;
+
+    oscillator.frequency.value = freq;
+
+    gain.gain.value = vol;
+
+
+    oscillator.connect(gain);
+
+    gain.connect(
+        audioCtx.destination
+    );
+
+
+    gain.gain.setValueAtTime(
+        vol,
+        time
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        .0001,
+        time + dur
+    );
+
+
+    oscillator.start(time);
+
+    oscillator.stop(
+        time + dur + .02
+    );
+}
+
+
+
+function sfxCorrect(){
+
+    tone(
+        660,
+        .08,
+        "triangle",
+        .04
+    );
+
+    tone(
+        880,
+        .12,
+        "triangle",
+        .035,
+        .08
+    );
+}
+
+
+
+function sfxWrong(){
+
+    tone(
+        180,
+        .12,
+        "sawtooth",
+        .038
+    );
+
+    tone(
+        130,
+        .15,
+        "sawtooth",
+        .03,
+        .08
+    );
+}
+
+
+
+function sfxDrop(){
+
+    tone(
+        520,
+        .05,
+        "sine",
+        .022
+    );
+
+    tone(
+        700,
+        .05,
+        "sine",
+        .017,
+        .05
+    );
+}
+
+
+
+function startMusic(){
+
+    if(musicTimer) return;
+
+    ensureAudio();
+
+
+    const sequence = [
+
+        262,
+        330,
+        392,
+        330,
+        294,
+        349,
+        440,
+        349
+
+    ];
+
+
+    let i = 0;
+
+
+    musicTimer =
+    setInterval(() => {
+
+        if(musicOn){
+
+            tone(
+
+                sequence[
+                    i %
+                    sequence.length
+                ],
+
+                .16,
+
+                "triangle",
+
+                .009
+            );
+
+            i++;
+        }
+
+    },440);
+}
+
 
 
 /* =========================================================
-   PHASER
+   PHASER SCENE
 ========================================================= */
 
-class MagnetGame extends Phaser.Scene{
-
-    constructor(){
-        super("MagnetGame");
-
-        this.questionIndex=0;
-
-        this.answerPods=[];
-
-        this.podAngles=[
-            Math.PI,
-            Math.PI*1.5,
-            0,
-            Math.PI*.5
-        ];
-
-        this.rotationOffset=0;
-
-        this.rotationSpeed=.00032;
-
-        this.answerLocked=false;
-
-        this.trackCX=360;
-        this.trackCY=680;
-
-        this.trackRX=265;
-        this.trackRY=125;
-
-        this.magnetX=360;
-        this.magnetY=680;
-
-        this.magnetPulse=0;
-    }
+class WaterLab extends Phaser.Scene{
 
 
-    create(){
+constructor(){
 
-        this.cameras.main.setBackgroundColor("#dff6ff");
+    super("WaterLab");
 
-        this.createBackground();
-        this.createHeader();
-        this.createQuestionPanel();
-        this.createLab();
-        this.createTrack();
-        this.createMagnet();
-        this.createAnswerPods();
-        this.createFooter();
+}
 
-        this.showQuestion();
 
-        this.input.on("pointerdown",()=>{
-            AUDIO.init();
-        });
 
-    }
+/* =========================================================
+   CREATE
+========================================================= */
+
+create(){
+
+    this.qIndex = 0;
+
+    this.score = 0;
+
+    this.locked = false;
+
+    this.optionCards = [];
+
+
+    this.drawBackground();
+
+    this.createHUD();
+
+    this.createQuestionPanel();
+
+    this.createLabArea();
+
+
+    this.loadQuestion();
+
+
+    /*
+    Browser hanya benarkan audio
+    selepas sentuhan pertama.
+    */
+
+    this.input.once(
+        "pointerdown",
+        () => {
+
+            startMusic();
+
+        }
+    );
+}
+
 
 
 /* =========================================================
    BACKGROUND
 ========================================================= */
 
-    createBackground(){
+drawBackground(){
 
-        const g=this.add.graphics();
+    this.add.rectangle(
+        W/2,
+        H/2,
+        W,
+        H,
+        0xeefaff
+    );
 
-        /* wall */
 
-        g.fillStyle(0xeaf9ff,1);
-        g.fillRect(0,0,720,960);
+    const g =
+    this.add.graphics();
 
-        /* decorative circles */
 
-        g.fillStyle(0xd5f2ff,.7);
+    g.fillStyle(
+        0xd8f5ff,
+        1
+    );
 
-        g.fillCircle(60,80,90);
-        g.fillCircle(670,200,100);
-        g.fillCircle(40,840,95);
-        g.fillCircle(700,900,130);
+    g.fillRoundedRect(
+        16,
+        16,
+        W-32,
+        H-32,
+        28
+    );
 
-        /* grid */
 
-        g.lineStyle(1,0xcfe7f1,.38);
+    g.lineStyle(
+        3,
+        0x24435f,
+        1
+    );
 
-        for(let x=0;x<=720;x+=40){
-            g.lineBetween(x,0,x,960);
+    g.strokeRoundedRect(
+        16,
+        16,
+        W-32,
+        H-32,
+        28
+    );
+
+
+    /*
+    MEJA MAKMAL
+    */
+
+    g.fillStyle(
+        0xc9edf7,
+        1
+    );
+
+    g.fillRect(
+        34,
+        1015,
+        W-68,
+        100
+    );
+
+
+    g.fillStyle(
+        0x8fbdcd,
+        1
+    );
+
+    g.fillRect(
+        34,
+        1115,
+        W-68,
+        32
+    );
+
+
+    /*
+    BUBBLE BACKGROUND
+    */
+
+    const bubbles = [
+
+        [72,118,12],
+
+        [688,132,17],
+
+        [58,454,9],
+
+        [700,470,13],
+
+        [95,1030,8],
+
+        [670,990,10]
+
+    ];
+
+
+    bubbles.forEach(
+        bubble => {
+
+            g.lineStyle(
+                3,
+                0x8fd4e7,
+                .55
+            );
+
+            g.strokeCircle(
+                bubble[0],
+                bubble[1],
+                bubble[2]
+            );
+
         }
+    );
+}
 
-        for(let y=0;y<=960;y+=40){
-            g.lineBetween(0,y,720,y);
-        }
-
-        /* bottom laboratory floor */
-
-        g.fillStyle(0xb9dce9,.42);
-        g.fillRect(0,548,720,412);
-
-        g.fillStyle(0xffffff,.55);
-        g.fillRoundedRect(
-            24,
-            565,
-            672,
-            338,
-            28
-        );
-
-        g.lineStyle(3,0xb8d8e8,.8);
-
-        g.strokeRoundedRect(
-            24,
-            565,
-            672,
-            338,
-            28
-        );
-
-    }
 
 
 /* =========================================================
-   HEADER
+   TOP HUD
 ========================================================= */
 
-    createHeader(){
+createHUD(){
 
-        const g=this.add.graphics();
+    /*
+    HOME
+    */
 
-        g.fillStyle(0xffffff,.96);
+    const home =
+    this.add.rectangle(
+        45,
+        46,
+        42,
+        42,
+        0xffffff
+    )
+    .setStrokeStyle(
+        2,
+        0x2a526b
+    )
+    .setInteractive({
+        useHandCursor:true
+    });
 
-        g.fillRoundedRect(
-            24,
-            18,
-            672,
-            65,
-            22
-        );
 
-        g.lineStyle(2,0xb9dceb,1);
+    this.add.text(
+        45,
+        45,
+        "⌂",
+        {
+            fontSize:"29px",
+            color:"#173850"
+        }
+    )
+    .setOrigin(
+        .5,
+        .55
+    );
 
-        g.strokeRoundedRect(
-            24,
-            18,
-            672,
-            65,
-            22
-        );
 
-        this.add.text(
-            48,
-            50,
-            "MAGNET RAIL SWITCH",
-            {
-                fontFamily:"Trebuchet MS",
-                fontSize:"26px",
-                fontStyle:"bold",
-                color:"#17445c"
+    home.on(
+        "pointerdown",
+        () => {
+
+            try{
+
+                window.location.href =
+                "index.html";
+
+            }catch(error){
+
             }
-        ).setOrigin(0,.5);
 
-        this.progressText=this.add.text(
-            610,
-            50,
-            "1 / 25",
-            {
-                fontFamily:"Trebuchet MS",
-                fontSize:"21px",
-                fontStyle:"bold",
-                color:"#245b74"
+        }
+    );
+
+
+
+    /*
+    TITLE
+    */
+
+    this.add.text(
+        78,
+        46,
+        "MAKMAL UJI AIR",
+        {
+
+            fontSize:"27px",
+
+            fontStyle:"bold",
+
+            color:"#16324b"
+
+        }
+    )
+    .setOrigin(
+        0,
+        .5
+    );
+
+
+
+    /*
+    COUNTER
+    */
+
+    this.counter =
+    this.add.text(
+        688,
+        46,
+        "1/25",
+        {
+
+            fontSize:"22px",
+
+            fontStyle:"bold",
+
+            color:"#16324b"
+
+        }
+    )
+    .setOrigin(
+        1,
+        .5
+    );
+
+
+
+    /*
+    PROGRESS BAR
+    */
+
+    this.progressBg =
+    this.add.rectangle(
+        470,
+        46,
+        150,
+        18,
+        0xc7dfe8
+    )
+    .setStrokeStyle(
+        2,
+        0x315b70
+    )
+    .setOrigin(
+        0,
+        .5
+    );
+
+
+    this.progressFill =
+    this.add.rectangle(
+        472,
+        46,
+        146,
+        12,
+        0x36b6db
+    )
+    .setOrigin(
+        0,
+        .5
+    )
+    .setScale(
+        0,
+        1
+    );
+
+
+
+    /*
+    SOUND BUTTON
+    */
+
+    this.soundBtn =
+    this.add.rectangle(
+        716,
+        46,
+        38,
+        38,
+        0xffffff
+    )
+    .setStrokeStyle(
+        2,
+        0x2a526b
+    )
+    .setInteractive({
+        useHandCursor:true
+    });
+
+
+    this.soundIcon =
+    this.add.text(
+        716,
+        46,
+        "♪",
+        {
+
+            fontSize:"24px",
+
+            fontStyle:"bold",
+
+            color:"#173850"
+
+        }
+    )
+    .setOrigin(.5);
+
+
+    this.soundBtn.on(
+        "pointerdown",
+        () => {
+
+            ensureAudio();
+
+            musicOn =
+            !musicOn;
+
+
+            this.soundIcon.setText(
+                musicOn
+                ?
+                "♪"
+                :
+                "×"
+            );
+
+
+            if(musicOn){
+
+                startMusic();
             }
-        ).setOrigin(.5);
 
-        this.soundBtn=this.add.container(662,50);
+        }
+    );
+}
 
-        const bg=this.add.circle(
-            0,0,24,0xe6f7ff
-        );
-
-        bg.setStrokeStyle(
-            2,
-            0x9bcfe4
-        );
-
-        this.soundIcon=this.add.text(
-            0,
-            0,
-            "♪",
-            {
-                fontSize:"24px",
-                fontStyle:"bold",
-                color:"#1f607e"
-            }
-        ).setOrigin(.5);
-
-        this.soundBtn.add([
-            bg,
-            this.soundIcon
-        ]);
-
-        this.soundBtn
-            .setSize(48,48)
-            .setInteractive({
-                useHandCursor:true
-            });
-
-        this.soundBtn.on(
-            "pointerdown",
-            ()=>{
-
-                AUDIO.init();
-
-                const on=AUDIO.toggle();
-
-                this.soundIcon.setText(
-                    on ? "♪" : "×"
-                );
-            }
-        );
-
-    }
 
 
 /* =========================================================
    QUESTION PANEL
 ========================================================= */
 
-    createQuestionPanel(){
+createQuestionPanel(){
 
-        this.questionCard=
-            this.add.container(360,105);
+    this.add.rectangle(
+        380,
+        164,
+        660,
+        180,
+        0xffffff
+    )
+    .setStrokeStyle(
+        3,
+        0x284e68
+    );
 
-        const shadow=this.add.graphics();
 
-        shadow.fillStyle(
-            0x5b8ba0,
-            .13
-        );
+    this.qLabel =
+    this.add.text(
+        67,
+        94,
+        "SOALAN 1",
+        {
 
-        shadow.fillRoundedRect(
-            -322,
-            5,
-            644,
-            415,
-            28
-        );
+            fontSize:"18px",
 
-        const card=this.add.graphics();
+            fontStyle:"bold",
 
-        card.fillStyle(
-            0xffffff,
-            1
-        );
-
-        card.fillRoundedRect(
-            -322,
-            0,
-            644,
-            410,
-            28
-        );
-
-        card.lineStyle(
-            3,
-            0xaed9eb,
-            1
-        );
-
-        card.strokeRoundedRect(
-            -322,
-            0,
-            644,
-            410,
-            28
-        );
-
-        this.topicText=this.add.text(
-            -292,
-            28,
-            "APAKAH GUNANYA MAGNET?",
-            {
-                fontFamily:"Trebuchet MS",
-                fontSize:"17px",
-                fontStyle:"bold",
-                color:"#1681a8"
-            }
-        );
-
-        this.questionText=this.add.text(
-            -292,
-            64,
-            "",
-            {
-                fontFamily:"Trebuchet MS",
-                fontSize:"24px",
-                fontStyle:"bold",
-                color:"#17394d",
-                wordWrap:{
-                    width:584
-                },
-                lineSpacing:5
-            }
-        );
-
-        this.answersText=[];
-
-        const colors=[
-            "#eaf7ff",
-            "#f0eeff",
-            "#fff4df",
-            "#eaf9ed"
-        ];
-
-        for(let i=0;i<4;i++){
-
-            const y=200+i*48;
-
-            const box=this.add.graphics();
-
-            box.fillStyle(
-                Phaser.Display.Color
-                    .HexStringToColor(
-                        colors[i]
-                    )
-                    .color,
-                1
-            );
-
-            box.fillRoundedRect(
-                -292,
-                y,
-                584,
-                40,
-                12
-            );
-
-            box.lineStyle(
-                1,
-                0xc9dce7,
-                1
-            );
-
-            box.strokeRoundedRect(
-                -292,
-                y,
-                584,
-                40,
-                12
-            );
-
-            const letter=
-                String.fromCharCode(
-                    65+i
-                );
-
-            const t=this.add.text(
-                -275,
-                y+20,
-                "",
-                {
-                    fontFamily:"Trebuchet MS",
-                    fontSize:"18px",
-                    fontStyle:"bold",
-                    color:"#213b4b"
-                }
-            ).setOrigin(0,.5);
-
-            this.answersText.push(t);
-
-            this.questionCard.add([
-                box,
-                t
-            ]);
+            color:"#2383a8"
 
         }
-
-        this.questionCard.addAt(
-            [
-                shadow,
-                card,
-                this.topicText,
-                this.questionText
-            ],
-            0
-        );
-
-    }
+    );
 
 
-/* =========================================================
-   LAB DECORATIONS
-========================================================= */
+    this.qText =
+    this.add.text(
+        67,
+        127,
+        "",
+        {
 
-    createLab(){
+            fontSize:"25px",
 
-        const g=this.add.graphics();
+            fontStyle:"bold",
 
-        /* left equipment */
+            color:"#17334a",
 
-        g.fillStyle(0x9ecfe1,1);
+            wordWrap:{
+                width:625
+            },
 
-        g.fillRoundedRect(
-            47,
-            592,
-            48,
-            52,
-            8
-        );
+            lineSpacing:4
 
-        g.fillStyle(0xffffff,1);
-
-        g.fillRect(
-            60,
-            575,
-            22,
-            20
-        );
-
-        g.lineStyle(
-            3,
-            0x6eaac3,
-            1
-        );
-
-        g.strokeRect(
-            60,
-            575,
-            22,
-            20
-        );
-
-        /* right equipment */
-
-        g.fillStyle(
-            0xa6d5e6,
-            1
-        );
-
-        g.fillRoundedRect(
-            620,
-            591,
-            48,
-            53,
-            8
-        );
-
-        g.fillStyle(
-            0x68adca,
-            1
-        );
-
-        g.fillCircle(
-            644,
-            610,
-            8
-        );
-
-        g.fillCircle(
-            644,
-            631,
-            6
-        );
-
-        this.add.text(
-            360,
-            591,
-            "TEKAN KAPSUL JAWAPAN",
-            {
-                fontFamily:"Trebuchet MS",
-                fontSize:"18px",
-                fontStyle:"bold",
-                color:"#5b8293"
-            }
-        ).setOrigin(.5);
-
-    }
-
-
-/* =========================================================
-   TRACK
-========================================================= */
-
-    createTrack(){
-
-        const g=this.add.graphics();
-
-        /* outer rail */
-
-        g.lineStyle(
-            20,
-            0x6c8794,
-            1
-        );
-
-        g.strokeEllipse(
-            this.trackCX,
-            this.trackCY,
-            this.trackRX*2,
-            this.trackRY*2
-        );
-
-        /* metal */
-
-        g.lineStyle(
-            13,
-            0xc7d8df,
-            1
-        );
-
-        g.strokeEllipse(
-            this.trackCX,
-            this.trackCY,
-            this.trackRX*2,
-            this.trackRY*2
-        );
-
-        /* inner highlight */
-
-        g.lineStyle(
-            3,
-            0xffffff,
-            .75
-        );
-
-        g.strokeEllipse(
-            this.trackCX,
-            this.trackCY,
-            this.trackRX*2,
-            this.trackRY*2
-        );
-
-        /* rail sleepers */
-
-        for(let i=0;i<28;i++){
-
-            const a=
-                (Math.PI*2/28)*i;
-
-            const x=
-                this.trackCX+
-                Math.cos(a)*
-                this.trackRX;
-
-            const y=
-                this.trackCY+
-                Math.sin(a)*
-                this.trackRY;
-
-            const line=
-                this.add.rectangle(
-                    x,
-                    y,
-                    24,
-                    5,
-                    0x708c98
-                );
-
-            line.rotation=
-                a + Math.PI/2;
         }
+    );
 
-    }
 
+    this.status =
+    this.add.text(
+        380,
+        238,
+        "Pilih satu kad jawapan untuk diuji.",
+        {
 
-/* =========================================================
-   MAGNET
-========================================================= */
+            fontSize:"18px",
 
-    createMagnet(){
+            fontStyle:"bold",
 
-        this.magnet=
-            this.add.container(
-                this.magnetX,
-                this.magnetY
-            );
+            color:"#4e7388"
 
-        this.magnetGlow=
-            this.add.circle(
-                0,
-                0,
-                105,
-                0x44d6ff,
-                .12
-            );
+        }
+    )
+    .setOrigin(.5);
+}
 
-        const core=
-            this.add.circle(
-                0,
-                0,
-                73,
-                0xf5fbff,
-                1
-            );
-
-        core.setStrokeStyle(
-            5,
-            0x8fbfd2
-        );
-
-        /* horseshoe magnet */
-
-        const magG=
-            this.add.graphics();
-
-        magG.lineStyle(
-            31,
-            0xe64e53,
-            1
-        );
-
-        magG.beginPath();
-
-        magG.arc(
-            0,
-            0,
-            47,
-            Phaser.Math.DegToRad(
-                25
-            ),
-            Phaser.Math.DegToRad(
-                155
-            ),
-            true
-        );
-
-        magG.strokePath();
-
-        /* poles */
-
-        magG.fillStyle(
-            0x4a91d0,
-            1
-        );
-
-        magG.fillRoundedRect(
-            -58,
-            -17,
-            30,
-            43,
-            7
-        );
-
-        magG.fillStyle(
-            0xe64e53,
-            1
-        );
-
-        magG.fillRoundedRect(
-            28,
-            -17,
-            30,
-            43,
-            7
-        );
-
-        this.add.text(
-            this.magnetX-43,
-            this.magnetY+1,
-            "S",
-            {
-                fontSize:"15px",
-                fontStyle:"bold",
-                color:"#ffffff"
-            }
-        ).setOrigin(.5);
-
-        this.add.text(
-            this.magnetX+43,
-            this.magnetY+1,
-            "N",
-            {
-                fontSize:"15px",
-                fontStyle:"bold",
-                color:"#ffffff"
-            }
-        ).setOrigin(.5);
-
-        this.magnetLabel=
-            this.add.text(
-                0,
-                38,
-                "MAGNET",
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-                    fontSize:"15px",
-                    fontStyle:"bold",
-                    color:"#37677a"
-                }
-            ).setOrigin(.5);
-
-        this.magnet.add([
-            this.magnetGlow,
-            core,
-            magG,
-            this.magnetLabel
-        ]);
-
-    }
 
 
 /* =========================================================
-   ANSWER PODS
+   LAB AREA
 ========================================================= */
 
-    createAnswerPods(){
+createLabArea(){
 
-        const podColors=[
-            0x3fb5e8,
-            0x8d72df,
-            0xf3a845,
-            0x50ba72
-        ];
+    const g =
+    this.add.graphics();
 
-        for(let i=0;i<4;i++){
 
-            const pod=this.add.container(
-                0,
-                0
+    /*
+    RAK PIPET
+    */
+
+    g.fillStyle(
+        0x7fa9bb,
+        1
+    );
+
+    g.fillRoundedRect(
+        96,
+        300,
+        568,
+        18,
+        9
+    );
+
+
+    g.fillStyle(
+        0x4e7387,
+        1
+    );
+
+    g.fillRect(
+        128,
+        318,
+        13,
+        94
+    );
+
+    g.fillRect(
+        619,
+        318,
+        13,
+        94
+    );
+
+
+    /*
+    LABEL
+    */
+
+    g.fillStyle(
+        0xe9fbff,
+        1
+    );
+
+    g.fillRoundedRect(
+        280,
+        324,
+        200,
+        54,
+        13
+    );
+
+
+    g.lineStyle(
+        3,
+        0x5b879b,
+        1
+    );
+
+    g.strokeRoundedRect(
+        280,
+        324,
+        200,
+        54,
+        13
+    );
+
+
+    this.add.text(
+        380,
+        350,
+        "PIPET AIR",
+        {
+
+            fontSize:"20px",
+
+            fontStyle:"bold",
+
+            color:"#35586d"
+
+        }
+    )
+    .setOrigin(.5);
+
+
+
+    /*
+    PIPET
+    */
+
+    this.dropper =
+    this.add.container(
+        380,
+        418
+    );
+
+
+    const bulb =
+    this.add.ellipse(
+        0,
+        -22,
+        42,
+        50,
+        0x79cfe7
+    )
+    .setStrokeStyle(
+        3,
+        0x315b70
+    );
+
+
+    const tube =
+    this.add.rectangle(
+        0,
+        22,
+        14,
+        62,
+        0xf8fdff
+    )
+    .setStrokeStyle(
+        3,
+        0x315b70
+    );
+
+
+    const tip =
+    this.add.triangle(
+
+        0,
+        57,
+
+        -8,
+        -4,
+
+        8,
+        -4,
+
+        0,
+        16,
+
+        0x315b70
+
+    );
+
+
+    const shine =
+    this.add.ellipse(
+        -8,
+        -31,
+        8,
+        12,
+        0xffffff,
+        .7
+    );
+
+
+    this.dropper.add([
+
+        bulb,
+
+        tube,
+
+        tip,
+
+        shine
+
+    ]);
+
+
+
+    /*
+    ANSWER CARDS
+    */
+
+    const cardY = [
+
+        530,
+
+        665,
+
+        800,
+
+        935
+
+    ];
+
+
+    cardY.forEach(
+        (y,index) => {
+
+            this.makeOptionCard(
+                index,
+                380,
+                y
             );
 
-            const shadow=
-                this.add.ellipse(
-                    3,
-                    7,
-                    76,
-                    46,
-                    0x2a5263,
-                    .18
-                );
+        }
+    );
 
-            const body=
-                this.add.ellipse(
-                    0,
-                    0,
-                    74,
-                    48,
-                    podColors[i],
-                    1
-                );
 
-            body.setStrokeStyle(
-                4,
+
+    /*
+    BOTTOM SCORE PANEL
+    */
+
+    this.add.rectangle(
+        380,
+        1065,
+        620,
+        66,
+        0xffffff
+    )
+    .setStrokeStyle(
+        3,
+        0x2d536a
+    );
+
+
+    this.add.text(
+        92,
+        1065,
+        "SKOR",
+        {
+
+            fontSize:"20px",
+
+            fontStyle:"bold",
+
+            color:"#3a6177"
+
+        }
+    )
+    .setOrigin(.5);
+
+
+    this.scoreText =
+    this.add.text(
+        153,
+        1065,
+        "0",
+        {
+
+            fontSize:"30px",
+
+            fontStyle:"bold",
+
+            color:"#173850"
+
+        }
+    )
+    .setOrigin(.5);
+
+
+
+    this.add.text(
+        287,
+        1065,
+        "Ujian",
+        {
+
+            fontSize:"19px",
+
+            fontStyle:"bold",
+
+            color:"#3a6177"
+
+        }
+    )
+    .setOrigin(.5);
+
+
+
+    /*
+    10 RESULT DOTS
+    */
+
+    this.testDots = [];
+
+
+    for(
+        let i=0;
+        i<10;
+        i++
+    ){
+
+        const dot =
+        this.add.circle(
+            351 + i*27,
+            1065,
+            8,
+            0xd8e8ef
+        )
+        .setStrokeStyle(
+            2,
+            0x6f96a8
+        );
+
+
+        this.testDots.push(
+            dot
+        );
+    }
+
+
+
+    /*
+    INSTRUCTION
+    */
+
+    this.add.text(
+        380,
+        1151,
+        "Tekan kad A, B, C atau D untuk memilih jawapan",
+        {
+
+            fontSize:"17px",
+
+            color:"#476b7e"
+
+        }
+    )
+    .setOrigin(.5);
+}
+
+
+
+/* =========================================================
+   CREATE ANSWER CARD
+========================================================= */
+
+makeOptionCard(
+    index,
+    x,
+    y
+){
+
+    const colors = [
+
+        0x66c7e4,
+
+        0xffc75f,
+
+        0x8bd3a8,
+
+        0xd59dea
+
+    ];
+
+
+    const card =
+    this.add.container(
+        x,
+        y
+    );
+
+
+    /*
+    SHADOW
+    */
+
+    const shadow =
+    this.add.rectangle(
+        4,
+        7,
+        620,
+        116,
+        0x18394a,
+        .15
+    );
+
+
+    /*
+    CARD
+    */
+
+    const bg =
+    this.add.rectangle(
+        0,
+        0,
+        620,
+        116,
+        0xffffff
+    )
+    .setStrokeStyle(
+        3,
+        0x315b70
+    )
+    .setInteractive({
+        useHandCursor:true
+    });
+
+
+
+    /*
+    LETTER BADGE
+    */
+
+    const badge =
+    this.add.circle(
+        -260,
+        0,
+        30,
+        colors[index]
+    )
+    .setStrokeStyle(
+        2,
+        0x315b70
+    );
+
+
+    const letter =
+    this.add.text(
+        -260,
+        0,
+        "ABCD"[index],
+        {
+
+            fontSize:"27px",
+
+            fontStyle:"bold",
+
+            color:"#173850"
+
+        }
+    )
+    .setOrigin(.5);
+
+
+
+    /*
+    ANSWER TEXT
+    */
+
+    const answer =
+    this.add.text(
+        -212,
+        -31,
+        "",
+        {
+
+            fontSize:"24px",
+
+            fontStyle:"bold",
+
+            color:"#173850",
+
+            wordWrap:{
+                width:455
+            },
+
+            lineSpacing:3
+
+        }
+    );
+
+
+
+    /*
+    WATER TEST STRIP
+    */
+
+    const tray =
+    this.add.rectangle(
+        45,
+        43,
+        440,
+        12,
+        0xc9d7dd
+    )
+    .setStrokeStyle(
+        2,
+        0x567c8f
+    );
+
+
+    /*
+    ABSORPTION ANIMATION
+    */
+
+    const absorb =
+    this.add.rectangle(
+        -175,
+        43,
+        440,
+        8,
+        0x48c782,
+        .82
+    )
+    .setOrigin(
+        0,
+        .5
+    )
+    .setScale(
+        0,
+        1
+    );
+
+
+    card.add([
+
+        shadow,
+
+        bg,
+
+        badge,
+
+        letter,
+
+        answer,
+
+        tray,
+
+        absorb
+
+    ]);
+
+
+    card.bg = bg;
+
+    card.answer = answer;
+
+    card.absorb = absorb;
+
+    card.baseX = x;
+
+    card.baseY = y;
+
+    card.index = index;
+
+
+
+    /*
+    TAP
+    */
+
+    bg.on(
+        "pointerdown",
+        () => {
+
+            this.choose(index);
+
+        }
+    );
+
+
+    /*
+    LAPTOP HOVER
+    */
+
+    bg.on(
+        "pointerover",
+        () => {
+
+            if(
+                !this.locked
+            ){
+
+                card.setScale(
+                    1.018
+                );
+            }
+
+        }
+    );
+
+
+    bg.on(
+        "pointerout",
+        () => {
+
+            card.setScale(1);
+
+        }
+    );
+
+
+    this.optionCards.push(
+        card
+    );
+}
+
+
+
+/* =========================================================
+   LOAD QUESTION
+========================================================= */
+
+loadQuestion(){
+
+    this.locked = false;
+
+
+    const item =
+    QUESTIONS[
+        this.qIndex
+    ];
+
+
+
+    this.qLabel.setText(
+
+        "SOALAN " +
+        (
+            this.qIndex + 1
+        )
+
+    );
+
+
+    this.qText.setText(
+        item.q
+    );
+
+
+    this.status
+    .setText(
+        "Pilih satu kad jawapan untuk diuji."
+    )
+    .setColor(
+        "#4e7388"
+    );
+
+
+    this.counter.setText(
+
+        (
+            this.qIndex + 1
+        )
+
+        +
+
+        "/25"
+
+    );
+
+
+
+    /*
+    PROGRESS
+    */
+
+    this.progressFill.setScale(
+
+        this.qIndex /
+        QUESTIONS.length,
+
+        1
+
+    );
+
+
+
+    /*
+    RESET CARDS
+    */
+
+    this.optionCards.forEach(
+        (card,index) => {
+
+            card.answer.setText(
+                item.a[index]
+            );
+
+
+            card.setScale(1);
+
+
+            card.bg.setFillStyle(
                 0xffffff
             );
 
-            const inner=
-                this.add.circle(
-                    0,
-                    0,
-                    18,
-                    0xffffff,
-                    .98
-                );
 
-            const letter=
-                this.add.text(
-                    0,
-                    0,
-                    String.fromCharCode(
-                        65+i
-                    ),
-                    {
-                        fontFamily:
-                            "Trebuchet MS",
-                        fontSize:"23px",
-                        fontStyle:"bold",
-                        color:"#244354"
-                    }
-                ).setOrigin(.5);
-
-            pod.add([
-                shadow,
-                body,
-                inner,
-                letter
-            ]);
-
-            pod.setSize(
-                86,
-                62
+            card.bg.setStrokeStyle(
+                3,
+                0x315b70
             );
 
-            pod.setInteractive({
-                useHandCursor:true
-            });
 
-            pod.answerIndex=i;
-            pod.baseScale=1;
-
-            pod.on(
-                "pointerdown",
-                ()=>this.selectAnswer(
-                    pod
-                )
+            card.absorb.setScale(
+                0,
+                1
             );
 
-            this.answerPods.push(
-                pod
-            );
+
+            card.setVisible(true);
 
         }
+    );
 
-    }
+
+
+    /*
+    RESET PIPET
+    */
+
+    this.dropper
+    .setPosition(
+        380,
+        418
+    )
+    .setVisible(true)
+    .setAlpha(1);
+}
+
 
 
 /* =========================================================
-   FOOTER / STATUS
+   PLAYER CHOOSE ANSWER
 ========================================================= */
 
-    createFooter(){
+choose(index){
 
-        this.statusBox=
-            this.add.graphics();
+    if(
+        this.locked
+    ){
 
-        this.statusBox.fillStyle(
-            0xffffff,
-            .96
+        return;
+    }
+
+
+    ensureAudio();
+
+    startMusic();
+
+
+    this.locked = true;
+
+
+    const item =
+    QUESTIONS[
+        this.qIndex
+    ];
+
+
+    const card =
+    this.optionCards[
+        index
+    ];
+
+
+    this.status
+    .setText(
+        "Pipet sedang menguji jawapan..."
+    )
+    .setColor(
+        "#3e7790"
+    );
+
+
+    sfxDrop();
+
+
+
+    /*
+    PIPET TURUN
+    */
+
+    this.tweens.add({
+
+        targets:
+        this.dropper,
+
+        y:
+        card.baseY - 84,
+
+        duration:390,
+
+        ease:
+        "Sine.easeInOut",
+
+
+        onComplete:
+        () => {
+
+
+            /*
+            WATER DROP
+            */
+
+            const drop =
+            this.add.circle(
+
+                card.baseX,
+
+                card.baseY - 34,
+
+                11,
+
+                0x32bfe6
+
+            )
+            .setStrokeStyle(
+                2,
+                0x1c6a88
+            );
+
+
+            /*
+            DROP FALL
+            */
+
+            this.tweens.add({
+
+                targets:drop,
+
+                y:
+                card.baseY + 39,
+
+                scale:.65,
+
+                duration:270,
+
+                ease:
+                "Quad.easeIn",
+
+
+                onComplete:
+                () => {
+
+                    drop.destroy();
+
+
+                    this.resolveAnswer(
+
+                        index,
+
+                        item.c
+
+                    );
+
+                }
+
+            });
+
+        }
+
+    });
+}
+
+
+
+/* =========================================================
+   CHECK ANSWER
+========================================================= */
+
+resolveAnswer(
+    chosen,
+    correct
+){
+
+    const card =
+    this.optionCards[
+        chosen
+    ];
+
+
+    const isCorrect =
+    chosen === correct;
+
+
+
+    /* =============================
+       BETUL
+    ============================== */
+
+    if(
+        isCorrect
+    ){
+
+        this.score++;
+
+
+        this.scoreText.setText(
+            this.score
         );
 
-        this.statusBox.fillRoundedRect(
-            70,
-            865,
-            580,
-            62,
-            20
+
+        sfxCorrect();
+
+
+
+        card.bg
+        .setFillStyle(
+            0xe4faed
+        )
+        .setStrokeStyle(
+            4,
+            0x2a9d60
         );
 
-        this.statusBox.lineStyle(
-            2,
-            0xb6d8e6,
+
+
+        /*
+        GREEN ABSORB EFFECT
+        */
+
+        card.absorb.setScale(
+            0,
             1
         );
 
-        this.statusBox.strokeRoundedRect(
-            70,
-            865,
-            580,
-            62,
-            20
-        );
-
-        this.statusText=
-            this.add.text(
-                360,
-                896,
-                "Pilih kapsul A, B, C atau D.",
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-                    fontSize:"19px",
-                    fontStyle:"bold",
-                    color:"#31576a",
-                    align:"center"
-                }
-            ).setOrigin(.5);
-
-    }
-
-
-/* =========================================================
-   QUESTION
-========================================================= */
-
-    showQuestion(){
-
-        this.answerLocked=false;
-
-        const data=
-            QUESTIONS[
-                this.questionIndex
-            ];
-
-        this.progressText.setText(
-            `${this.questionIndex+1} / ${QUESTIONS.length}`
-        );
-
-        this.questionText.setText(
-            `${this.questionIndex+1}. ${data.q}`
-        );
-
-        data.a.forEach(
-            (ans,i)=>{
-
-                const letter=
-                    String.fromCharCode(
-                        65+i
-                    );
-
-                this.answersText[i]
-                    .setText(
-                        `${letter}. ${ans}`
-                    );
-            }
-        );
-
-        if(this.questionIndex<=4){
-
-            this.topicText.setText(
-                "APAKAH GUNANYA MAGNET?"
-            );
-
-        }else if(
-            this.questionIndex<=9
-        ){
-
-            this.topicText.setText(
-                "BENTUK MAGNET"
-            );
-
-        }else if(
-            this.questionIndex<=14
-        ){
-
-            this.topicText.setText(
-                "HEBATNYA MAGNET"
-            );
-
-        }else if(
-            this.questionIndex<=19
-        ){
-
-            this.topicText.setText(
-                "TARIKAN DAN TOLAKAN MAGNET"
-            );
-
-        }else{
-
-            this.topicText.setText(
-                "KEKUATAN MAGNET"
-            );
-        }
-
-        this.statusText
-            .setColor("#31576a")
-            .setText(
-                "Pilih kapsul A, B, C atau D."
-            );
-
-        this.rotationSpeed=
-            .00030 +
-            Math.floor(
-                this.questionIndex/5
-            ) * .000045;
-
-        this.resetPods();
-
-    }
-
-
-/* =========================================================
-   ANSWER LOGIC
-========================================================= */
-
-    selectAnswer(pod){
-
-        if(this.answerLocked){
-            return;
-        }
-
-        AUDIO.init();
-        AUDIO.click();
-
-        const selected=
-            pod.answerIndex;
-
-        const correct=
-            QUESTIONS[
-                this.questionIndex
-            ].correct;
-
-        if(selected===correct){
-
-            this.answerLocked=true;
-
-            AUDIO.correct();
-
-            this.statusText
-                .setColor("#187541")
-                .setText(
-                    "Betul! Magnet menarik jawapan."
-                );
-
-            this.correctAnimation(
-                pod
-            );
-
-        }else{
-
-            AUDIO.wrong();
-
-            this.statusText
-                .setColor("#b7333b")
-                .setText(
-                    "Belum tepat. Cuba kapsul lain."
-                );
-
-            this.wrongAnimation(
-                pod
-            );
-
-        }
-
-    }
-
-
-/* =========================================================
-   CORRECT ANIMATION
-========================================================= */
-
-    correctAnimation(pod){
-
-        pod.disableInteractive();
-
-        const startX=pod.x;
-        const startY=pod.y;
-
-        /* magnetic field pulse */
 
         this.tweens.add({
+
             targets:
-                this.magnetGlow,
-            scaleX:1.7,
-            scaleY:1.7,
-            alpha:.04,
-            duration:280,
-            yoyo:true,
-            repeat:2
-        });
+            card.absorb,
 
-        /* magnet vibration */
+            scaleX:1,
 
-        this.tweens.add({
-            targets:
-                this.magnet,
-            scaleX:1.06,
-            scaleY:1.06,
-            duration:110,
-            yoyo:true,
-            repeat:3
-        });
+            duration:430,
 
-        const trail=
-            this.add.graphics();
-
-        let progress=0;
-
-        this.tweens.addCounter({
-
-            from:0,
-            to:1,
-
-            duration:700,
-
-            ease:"Cubic.easeIn",
-
-            onUpdate:(tw)=>{
-
-                progress=
-                    tw.getValue();
-
-                const mx=
-                    Phaser.Math.Linear(
-                        startX,
-                        this.magnetX,
-                        progress
-                    );
-
-                const my=
-                    Phaser.Math.Linear(
-                        startY,
-                        this.magnetY,
-                        progress
-                    );
-
-                /* curve */
-
-                const curve=
-                    Math.sin(
-                        progress*Math.PI
-                    ) * 55;
-
-                pod.x=
-                    mx +
-                    Math.sin(
-                        progress*Math.PI*2
-                    )*curve*.28;
-
-                pod.y=
-                    my - curve;
-
-                pod.rotation+=.12;
-
-                pod.setScale(
-                    1-progress*.38
-                );
-
-                trail.clear();
-
-                trail.lineStyle(
-                    3,
-                    0x48cfff,
-                    .32
-                );
-
-                trail.lineBetween(
-                    pod.x,
-                    pod.y,
-                    this.magnetX,
-                    this.magnetY
-                );
-
-            },
-
-            onComplete:()=>{
-
-                trail.destroy();
-
-                this.tweens.add({
-                    targets:pod,
-                    alpha:0,
-                    scaleX:.15,
-                    scaleY:.15,
-                    duration:180,
-                    onComplete:()=>{
-
-                        this.time.delayedCall(
-                            500,
-                            ()=>this.nextQuestion()
-                        );
-
-                    }
-                });
-
-            }
+            ease:
+            "Sine.easeOut"
 
         });
 
+
+
+        this.status
+        .setText(
+            "BETUL! Sampel menyerap titisan ujian."
+        )
+        .setColor(
+            "#25824d"
+        );
+
+
+        this.burst(
+
+            card.baseX,
+
+            card.baseY + 42,
+
+            0x4bcf88
+
+        );
     }
 
 
-/* =========================================================
-   WRONG ANIMATION
-========================================================= */
 
-    wrongAnimation(pod){
+    /* =============================
+       SALAH
+    ============================== */
 
-        if(
-            pod.getData(
-                "movingWrong"
-            )
-        ) return;
+    else{
 
-        pod.setData(
-            "movingWrong",
-            true
+        sfxWrong();
+
+
+        card.bg
+        .setFillStyle(
+            0xffecec
+        )
+        .setStrokeStyle(
+            4,
+            0xdc4c4c
         );
 
-        pod.disableInteractive();
 
-        const oldX=pod.x;
-        const oldY=pod.y;
+        /*
+        SHOW CORRECT ANSWER
+        */
 
-        const dx=
-            pod.x-this.magnetX;
+        const right =
+        this.optionCards[
+            correct
+        ];
 
-        const dy=
-            pod.y-this.magnetY;
 
-        const len=
-            Math.sqrt(
-                dx*dx+
-                dy*dy
-            ) || 1;
+        right.bg
+        .setFillStyle(
+            0xe9faef
+        )
+        .setStrokeStyle(
+            4,
+            0x2a9d60
+        );
 
-        const push=52;
 
-        const targetX=
-            oldX+
-            (dx/len)*push;
+        this.status
+        .setText(
+            "Belum tepat. Jawapan betul ditanda hijau."
+        )
+        .setColor(
+            "#b13e3e"
+        );
 
-        const targetY=
-            oldY+
-            (dy/len)*push;
 
-        /* red cross */
+        this.splash(
 
-        const cross=
-            this.add.text(
-                pod.x,
-                pod.y-44,
-                "✕",
-                {
-                    fontSize:"30px",
-                    fontStyle:"bold",
-                    color:"#e6454d"
-                }
-            ).setOrigin(.5);
+            card.baseX,
+
+            card.baseY + 42
+
+        );
+    }
+
+
+
+    /*
+    RESULT DOT
+    */
+
+    this.testDots[
+        this.qIndex % 10
+    ]
+    .setFillStyle(
+
+        isCorrect
+        ?
+        0x48c782
+        :
+        0xf06a6a
+
+    );
+
+
+
+    /*
+    NEXT QUESTION
+    */
+
+    this.time.delayedCall(
+
+        1250,
+
+        () => {
+
+            this.nextQuestion();
+
+        }
+
+    );
+}
+
+
+
+/* =========================================================
+   CORRECT PARTICLES
+========================================================= */
+
+burst(
+    x,
+    y,
+    color
+){
+
+    for(
+        let i=0;
+        i<10;
+        i++
+    ){
+
+        const particle =
+        this.add.circle(
+            x,
+            y,
+            5,
+            color
+        );
+
+
+        const angle =
+        (
+            Math.PI * 2 / 10
+        ) * i;
+
+
+        const distance =
+        Phaser.Math.Between(
+            24,
+            52
+        );
+
 
         this.tweens.add({
 
-            targets:cross,
+            targets:particle,
 
-            y:cross.y-24,
+            x:
+            x +
+            Math.cos(angle)
+            *
+            distance,
+
+            y:
+            y +
+            Math.sin(angle)
+            *
+            distance,
+
             alpha:0,
 
-            duration:520,
+            scale:.2,
 
-            onComplete:()=>{
-                cross.destroy();
+            duration:500,
+
+
+            onComplete:
+            () => {
+
+                particle.destroy();
+
             }
 
         });
+    }
+}
+
+
+
+/* =========================================================
+   WRONG SPLASH
+========================================================= */
+
+splash(
+    x,
+    y
+){
+
+    for(
+        let i=0;
+        i<9;
+        i++
+    ){
+
+        const particle =
+        this.add.circle(
+
+            x,
+
+            y,
+
+            Phaser.Math.Between(
+                4,
+                7
+            ),
+
+            0x35bde5
+
+        );
+
+
+        const dx =
+        Phaser.Math.Between(
+            -58,
+            58
+        );
+
+
+        const dy =
+        Phaser.Math.Between(
+            -42,
+            12
+        );
+
 
         this.tweens.add({
 
-            targets:pod,
+            targets:particle,
 
-            x:targetX,
-            y:targetY,
-            scaleX:1.12,
-            scaleY:1.12,
+            x:
+            x + dx,
 
-            duration:170,
+            y:
+            y + dy,
 
-            ease:"Quad.easeOut",
+            alpha:0,
 
-            yoyo:true,
+            duration:470,
 
-            onComplete:()=>{
 
-                pod.setScale(1);
+            onComplete:
+            () => {
 
-                pod.setData(
-                    "movingWrong",
-                    false
-                );
-
-                pod.setInteractive({
-                    useHandCursor:true
-                });
+                particle.destroy();
 
             }
 
         });
-
     }
+}
+
 
 
 /* =========================================================
-   NEXT
+   NEXT QUESTION
 ========================================================= */
 
-    nextQuestion(){
+nextQuestion(){
 
-        this.questionIndex++;
+    this.qIndex++;
 
-        if(
-            this.questionIndex >=
-            QUESTIONS.length
-        ){
 
-            this.finishGame();
+    /*
+    FINISH
+    */
 
-            return;
-        }
+    if(
+        this.qIndex >=
+        QUESTIONS.length
+    ){
 
-        this.showQuestion();
+        this.showFinish();
 
+        return;
     }
 
 
-/* =========================================================
-   RESET POD
-========================================================= */
 
-    resetPods(){
+    /*
+    RESET DOTS EVERY 10 QUESTIONS
+    */
 
-        for(let i=0;i<4;i++){
+    if(
+        this.qIndex % 10 === 0
+    ){
 
-            const pod=
-                this.answerPods[i];
+        this.testDots.forEach(
+            dot => {
 
-            pod.setAlpha(1);
-            pod.setScale(1);
-            pod.rotation=0;
+                dot.setFillStyle(
+                    0xd8e8ef
+                );
 
-            pod.setData(
-                "movingWrong",
-                false
-            );
-
-            pod.setInteractive({
-                useHandCursor:true
-            });
-
-            this.podAngles[i]=
-                Math.PI*.5*i;
-
-        }
-
-        this.rotationOffset=0;
-
-        this.positionPods();
-
+            }
+        );
     }
+
+
+
+    this.loadQuestion();
+}
+
 
 
 /* =========================================================
    FINISH
 ========================================================= */
 
-    finishGame(){
+showFinish(){
 
-        this.answerLocked=true;
+    this.locked = true;
 
-        AUDIO.finish();
 
-        this.questionText.setText(
-            "Tahniah! Semua 25 soalan telah selesai."
-        );
+    this.progressFill.setScale(
+        1,
+        1
+    );
 
-        this.topicText.setText(
-            "MISI MAGNET SELESAI"
-        );
 
-        this.answersText.forEach(
-            t=>t.setText("")
-        );
+    this.counter.setText(
+        "25/25"
+    );
 
-        this.statusText
-            .setColor("#187541")
-            .setText(
-                "25 / 25 berjaya diselesaikan!"
+
+    this.qLabel.setText(
+        "SELESAI"
+    );
+
+
+    this.qText.setText(
+        "Tahniah! Semua 25 soalan telah diuji di Makmal Uji Air."
+    );
+
+
+    this.status
+    .setText(
+        "Skor akhir: "
+        +
+        this.score
+        +
+        " / 25"
+    )
+    .setColor(
+        "#1f7950"
+    );
+
+
+
+    /*
+    HIDE ANSWER CARDS
+    */
+
+    this.optionCards.forEach(
+        card => {
+
+            card.setVisible(
+                false
             );
 
-        this.answerPods.forEach(
-            pod=>{
-                pod.disableInteractive();
-
-                this.tweens.add({
-                    targets:pod,
-                    alpha:0,
-                    duration:400
-                });
-            }
-        );
-
-        this.progressText.setText(
-            "25 / 25"
-        );
-
-        this.createCelebration();
-
-        this.createReplayButton();
-
-    }
+        }
+    );
 
 
-/* =========================================================
-   CELEBRATION
-========================================================= */
+    this.dropper.setVisible(
+        false
+    );
 
-    createCelebration(){
 
-        for(let i=0;i<28;i++){
 
-            const x=
-                Phaser.Math.Between(
-                    90,
-                    630
-                );
+    /*
+    RESULT PANEL
+    */
 
-            const y=
-                Phaser.Math.Between(
-                    610,
-                    805
-                );
+    const panel =
+    this.add.container(
+        380,
+        690
+    );
 
-            const star=
-                this.add.star(
-                    x,
-                    y,
-                    5,
-                    3,
-                    8,
-                    Phaser.Display.Color
-                        .RandomRGB(80,240)
-                        .color,
-                    .9
-                );
 
-            star.setScale(0);
+    const shadow =
+    this.add.rectangle(
+        7,
+        10,
+        560,
+        360,
+        0x173850,
+        .15
+    );
 
-            this.tweens.add({
 
-                targets:star,
+    const bg =
+    this.add.rectangle(
+        0,
+        0,
+        560,
+        360,
+        0xffffff
+    )
+    .setStrokeStyle(
+        4,
+        0x315b70
+    );
 
-                scaleX:
-                    Phaser.Math.FloatBetween(
-                        .7,
-                        1.5
-                    ),
 
-                scaleY:
-                    Phaser.Math.FloatBetween(
-                        .7,
-                        1.5
-                    ),
+    const star =
+    this.add.text(
+        0,
+        -108,
+        "★",
+        {
 
-                angle:
-                    Phaser.Math.Between(
-                        90,
-                        260
-                    ),
+            fontSize:"78px",
 
-                alpha:0,
-
-                duration:
-                    Phaser.Math.Between(
-                        900,
-                        1500
-                    ),
-
-                delay:
-                    Phaser.Math.Between(
-                        0,
-                        500
-                    ),
-
-                repeat:2,
-
-                onRepeat:()=>{
-
-                    star.alpha=1;
-
-                    star.x=
-                        Phaser.Math.Between(
-                            90,
-                            630
-                        );
-
-                    star.y=
-                        Phaser.Math.Between(
-                            610,
-                            820
-                        );
-                }
-
-            });
+            color:"#f2b544"
 
         }
+    )
+    .setOrigin(.5);
 
-    }
+
+    const title =
+    this.add.text(
+        0,
+        -42,
+        "EKSPERIMEN SELESAI!",
+        {
+
+            fontSize:"31px",
+
+            fontStyle:"bold",
+
+            color:"#173850"
+
+        }
+    )
+    .setOrigin(.5);
 
 
-/* =========================================================
-   REPLAY
-========================================================= */
+    const score =
+    this.add.text(
+        0,
+        25,
+        this.score + " / 25",
+        {
 
-    createReplayButton(){
+            fontSize:"56px",
 
-        const replay=
-            this.add.container(
-                360,
-                780
+            fontStyle:"bold",
+
+            color:"#2383a8"
+
+        }
+    )
+    .setOrigin(.5);
+
+
+
+    /*
+    REPLAY BUTTON
+    */
+
+    const replay =
+    this.add.rectangle(
+        0,
+        116,
+        260,
+        62,
+        0x45b7dc
+    )
+    .setStrokeStyle(
+        3,
+        0x25556d
+    )
+    .setInteractive({
+        useHandCursor:true
+    });
+
+
+    const replayText =
+    this.add.text(
+        0,
+        116,
+        "MAIN SEMULA",
+        {
+
+            fontSize:"23px",
+
+            fontStyle:"bold",
+
+            color:"#ffffff"
+
+        }
+    )
+    .setOrigin(.5);
+
+
+
+    panel.add([
+
+        shadow,
+
+        bg,
+
+        star,
+
+        title,
+
+        score,
+
+        replay,
+
+        replayText
+
+    ]);
+
+
+
+    replay.on(
+        "pointerdown",
+        () => {
+
+            panel.destroy();
+
+
+            this.qIndex = 0;
+
+            this.score = 0;
+
+
+            this.scoreText.setText(
+                "0"
             );
 
-        const shadow=
-            this.add.graphics();
 
-        shadow.fillStyle(
-            0x23566d,
-            .18
-        );
+            this.testDots.forEach(
+                dot => {
 
-        shadow.fillRoundedRect(
-            -115,
-            -27+5,
-            230,
-            58,
-            18
-        );
+                    dot.setFillStyle(
+                        0xd8e8ef
+                    );
 
-        const bg=
-            this.add.graphics();
-
-        bg.fillStyle(
-            0x36aadd,
-            1
-        );
-
-        bg.fillRoundedRect(
-            -115,
-            -27,
-            230,
-            58,
-            18
-        );
-
-        bg.lineStyle(
-            3,
-            0xffffff,
-            .85
-        );
-
-        bg.strokeRoundedRect(
-            -115,
-            -27,
-            230,
-            58,
-            18
-        );
-
-        const txt=
-            this.add.text(
-                0,
-                1,
-                "MAIN SEMULA",
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-                    fontSize:"22px",
-                    fontStyle:"bold",
-                    color:"#ffffff"
                 }
-            ).setOrigin(.5);
-
-        replay.add([
-            shadow,
-            bg,
-            txt
-        ]);
-
-        replay.setSize(
-            240,
-            70
-        );
-
-        replay.setInteractive({
-            useHandCursor:true
-        });
-
-        replay.on(
-            "pointerdown",
-            ()=>{
-
-                AUDIO.click();
-
-                this.scene.restart();
-
-            }
-        );
-
-    }
+            );
 
 
-/* =========================================================
-   POD POSITION
-========================================================= */
-
-    positionPods(){
-
-        this.answerPods.forEach(
-            (pod,i)=>{
-
-                if(
-                    pod.getData(
-                        "movingWrong"
-                    )
-                ) return;
-
-                const angle=
-                    this.podAngles[i]+
-                    this.rotationOffset;
-
-                pod.x=
-                    this.trackCX+
-                    Math.cos(angle)*
-                    this.trackRX;
-
-                pod.y=
-                    this.trackCY+
-                    Math.sin(angle)*
-                    this.trackRY;
-
-                /*
-                   slight scaling gives depth:
-                   front = bigger
-                */
-
-                const depth=
-                    (
-                        Math.sin(angle)+1
-                    )/2;
-
-                const scale=
-                    .84+
-                    depth*.18;
-
-                pod.setScale(scale);
-
-                pod.setDepth(
-                    20+
-                    Math.round(
-                        depth*10
-                    )
-                );
-
-            }
-        );
-
-    }
-
-
-/* =========================================================
-   UPDATE
-========================================================= */
-
-    update(time,delta){
-
-        if(!this.answerLocked){
-
-            this.rotationOffset +=
-                this.rotationSpeed *
-                delta;
-
-            this.positionPods();
+            this.loadQuestion();
 
         }
-
-        this.magnetPulse+=
-            delta*.004;
-
-        if(
-            this.magnetGlow &&
-            !this.answerLocked
-        ){
-
-            const s=
-                1+
-                Math.sin(
-                    this.magnetPulse
-                )*.045;
-
-            this.magnetGlow
-                .setScale(s);
-
-        }
-
-    }
+    );
+}
 
 }
 
 
+
 /* =========================================================
-   CONFIG
+   PHASER CONFIG
 ========================================================= */
 
-const config={
+const config = {
 
-    type:Phaser.AUTO,
+    type:
+    Phaser.AUTO,
 
-    parent:"game",
+    parent:
+    "game",
 
-    width:720,
-    height:960,
+    width:
+    W,
 
-    backgroundColor:"#dff6ff",
+    height:
+    H,
 
-    render:{
-        antialias:true,
-        roundPixels:false
-    },
+    backgroundColor:
+    "#eefaff",
 
-    scale:{
-        mode:Phaser.Scale.FIT,
-        autoCenter:
-            Phaser.Scale.CENTER_BOTH
-    },
-
-    input:{
-        activePointers:3
-    },
 
     scene:[
-        MagnetGame
-    ]
+        WaterLab
+    ],
+
+
+    scale:{
+
+        mode:
+        Phaser.Scale.FIT,
+
+        autoCenter:
+        Phaser.Scale.CENTER_BOTH,
+
+        width:
+        W,
+
+        height:
+        H
+    },
+
+
+    render:{
+
+        antialias:true,
+
+        pixelArt:false,
+
+        roundPixels:true
+
+    }
 
 };
 
-new Phaser.Game(config);
+
+
+/* =========================================================
+   START GAME
+========================================================= */
+
+new Phaser.Game(
+    config
+);
+
 
 })();
+
 </script>
 
 </body>
