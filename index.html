@@ -16,6 +16,7 @@ viewport-fit=cover">
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <style>
+
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
@@ -27,6 +28,7 @@ body{
     padding:0;
     width:100%;
     min-height:100%;
+    overflow:hidden;
 
     font-family:
     "Trebuchet MS",
@@ -36,9 +38,9 @@ body{
     background:
     linear-gradient(
         135deg,
-        #55d4ff,
+        #5dd9ff,
         #dff9ff,
-        #66dafa
+        #65d9fb
     );
 
     overscroll-behavior:none;
@@ -60,6 +62,7 @@ body{
 }
 
 #game-shell{
+
     width:min(
         98vw,
         820px,
@@ -68,33 +71,44 @@ body{
 
     aspect-ratio:820 / 1090;
 
-    background:#24aee0;
-
-    border-radius:16px;
+    position:relative;
 
     overflow:hidden;
 
-    position:relative;
+    background:#24afe0;
+
+    border-radius:16px;
 
     box-shadow:
     0 12px 32px
-    rgba(0,65,90,.25);
+    rgba(0,60,90,.25);
+
+    touch-action:none;
+    user-select:none;
+    -webkit-user-select:none;
 }
 
 #game{
     width:100%;
     height:100%;
+    touch-action:none;
 }
 
 canvas{
+    display:block;
     width:100% !important;
     height:100% !important;
-    display:block;
+
+    touch-action:none !important;
+
+    user-select:none;
+    -webkit-user-select:none;
 }
 
 @media(max-width:520px){
 
     #game-shell{
+
         width:min(
             99vw,
             calc(98svh * .752)
@@ -104,36 +118,38 @@ canvas{
     }
 }
 
-@media(
-    orientation:landscape
-)
+@media
+(orientation:landscape)
 and
 (max-height:650px){
 
     #game-shell{
+
         width:min(
             94vw,
             calc(95svh * .752)
         );
     }
 }
+
 </style>
 </head>
 
 <body>
 
 <div id="game-shell">
-<div id="game"></div>
+    <div id="game"></div>
 </div>
 
 <script>
+
 (() => {
 
 "use strict";
 
 
 /* =========================================================
-   QUESTIONS
+   SOALAN SET 2
 ========================================================= */
 
 const QUESTIONS=[
@@ -445,7 +461,7 @@ answer:"C"
    AUDIO
 ========================================================= */
 
-class GameAudio{
+class AudioManager{
 
 constructor(){
 
@@ -453,9 +469,9 @@ constructor(){
 
     this.enabled=true;
 
-    this.started=false;
+    this.musicStarted=false;
 
-    this.musicTimer=null;
+    this.timer=null;
 
     this.musicIndex=0;
 
@@ -469,6 +485,7 @@ constructor(){
         440,
         392
     ];
+
 }
 
 
@@ -502,20 +519,21 @@ init(){
     }
 
 
-    if(!this.started){
+    if(!this.musicStarted){
 
-        this.started=true;
+        this.musicStarted=true;
 
         this.startMusic();
     }
+
 }
 
 
 tone(
 frequency,
-duration=.07,
+duration=.06,
+volume=.02,
 type="sine",
-volume=.025,
 delay=0
 ){
 
@@ -528,7 +546,7 @@ delay=0
     }
 
 
-    const now=
+    const start=
     this.ctx.currentTime+
     delay;
 
@@ -547,28 +565,28 @@ delay=0
     osc.frequency
     .setValueAtTime(
         frequency,
-        now
+        start
     );
 
 
     gain.gain
     .setValueAtTime(
         .0001,
-        now
+        start
     );
 
 
     gain.gain
     .exponentialRampToValueAtTime(
         volume,
-        now+.008
+        start+.006
     );
 
 
     gain.gain
     .exponentialRampToValueAtTime(
         .0001,
-        now+duration
+        start+duration
     );
 
 
@@ -579,51 +597,52 @@ delay=0
     );
 
 
-    osc.start(now);
+    osc.start(start);
 
     osc.stop(
-        now+
+        start+
         duration+
-        .02
+        .015
     );
+
 }
 
 
 tap(){
 
     this.tone(
-        560,
+        610,
         .035,
-        "sine",
-        .018
+        .017
     );
+
 }
 
 
 correct(){
 
     this.tone(
-        523.25,
-        .09,
-        "sine",
+        523,
+        .10,
         .04
     );
 
     this.tone(
-        659.25,
-        .1,
-        "sine",
+        659,
+        .10,
         .04,
-        .075
+        "sine",
+        .08
     );
 
     this.tone(
-        783.99,
-        .13,
-        "sine",
+        784,
+        .15,
         .04,
-        .15
+        "sine",
+        .16
     );
+
 }
 
 
@@ -631,56 +650,47 @@ wrong(){
 
     this.tone(
         210,
-        .1,
-        "triangle",
-        .03
+        .09,
+        .025,
+        "triangle"
     );
 
-    this.tone(
-        160,
-        .12,
-        "triangle",
-        .025,
-        .08
-    );
 }
 
 
 finish(){
 
-    const notes=[
-        523.25,
-        659.25,
-        783.99,
-        1046.5
-    ];
-
-    notes.forEach(
-        (note,index)=>{
+    [
+        523,
+        659,
+        784,
+        1047
+    ]
+    .forEach(
+        (n,i)=>{
 
             this.tone(
-                note,
-                .18,
+                n,
+                .17,
+                .04,
                 "sine",
-                .045,
-                index*.1
+                i*.10
             );
+
         }
     );
+
 }
 
 
 startMusic(){
 
-    if(
-        this.musicTimer
-    ){
-
+    if(this.timer){
         return;
     }
 
 
-    this.musicTimer=
+    this.timer=
     setInterval(
         ()=>{
 
@@ -695,7 +705,7 @@ startMusic(){
 
             const note=
             this.notes[
-                this.musicIndex%
+                this.musicIndex %
                 this.notes.length
             ];
 
@@ -705,14 +715,14 @@ startMusic(){
 
             this.tone(
                 note,
-                .24,
-                "sine",
-                .007
+                .20,
+                .006
             );
 
         },
-        720
+        740
     );
+
 }
 
 
@@ -723,32 +733,33 @@ toggle(){
 
 
     if(this.enabled){
-
         this.init();
     }
 
 
     return this.enabled;
+
 }
 
 }
 
 
 const audio=
-new GameAudio();
+new AudioManager();
 
 
 /* =========================================================
-   SCENE
+   MAIN SCENE
 ========================================================= */
 
-class FrogLabelGame extends Phaser.Scene{
+class FrogGame
+extends Phaser.Scene{
 
 
 constructor(){
 
     super(
-        "FrogLabelGame"
+        "FrogGame"
     );
 
 
@@ -760,18 +771,32 @@ constructor(){
 
     this.frogs=[];
 
+    this.hitZones=[];
+
+    this.answerTexts=[];
+
     this.locked=false;
 
     this.finished=false;
-
-    this.answerTexts=[];
 
     this.restartButton=null;
 
 }
 
 
+/* =========================================================
+   CREATE
+========================================================= */
+
 create(){
+
+    /*
+    Satu pointer hanya aktifkan
+    objek interactive paling atas.
+    */
+
+    this.input.setTopOnly(true);
+
 
     this.buildBackground();
 
@@ -779,20 +804,26 @@ create(){
 
     this.buildQuestionCard();
 
-    this.buildPlayBoard();
+    this.buildBoard();
 
     this.buildStatus();
 
     this.renderQuestion();
 
 
+    /*
+    Start audio pada sentuhan pertama.
+    */
+
     this.input.on(
         "pointerdown",
         ()=>{
 
             audio.init();
+
         }
     );
+
 }
 
 
@@ -807,10 +838,10 @@ buildBackground(){
 
 
     bg.fillGradientStyle(
-        0x21b9ec,
-        0x21b9ec,
-        0x087fb9,
-        0x087fb9,
+        0x24bcec,
+        0x24bcec,
+        0x087db8,
+        0x087db8,
         1
     );
 
@@ -823,53 +854,53 @@ buildBackground(){
     );
 
 
-    const decor=
+    const decoration=
     this.add.graphics();
 
 
-    decor.fillStyle(
+    decoration.fillStyle(
         0xffffff,
         .07
     );
 
 
-    decor.fillTriangle(
+    decoration.fillTriangle(
         0,
+        70,
+        230,
+        170,
+        0,
+        225
+    );
+
+
+    decoration.fillTriangle(
+        820,
         80,
-        220,
-        165,
-        0,
-        220
-    );
-
-
-    decor.fillTriangle(
-        820,
-        90,
         610,
-        180,
+        175,
         820,
-        230
+        235
     );
 
 
-    decor.fillTriangle(
+    decoration.fillTriangle(
         0,
         700,
-        170,
+        175,
         790,
         0,
-        880
+        890
     );
 
 
-    decor.fillTriangle(
+    decoration.fillTriangle(
         820,
         690,
         640,
         790,
         820,
-        890
+        895
     );
 
 }
@@ -887,7 +918,7 @@ buildHeader(){
 
     panel.fillStyle(
         0x075778,
-        .98
+        1
     );
 
 
@@ -901,7 +932,7 @@ buildHeader(){
 
 
     panel.fillStyle(
-        0x0f799b,
+        0x117b9c,
         1
     );
 
@@ -921,13 +952,19 @@ buildHeader(){
         50,
         "⌂",
         {
+
             fontFamily:"Arial",
+
             fontSize:"38px",
+
             fontStyle:"bold",
+
             color:"#ffffff"
+
         }
     )
     .setOrigin(.5)
+    .setDepth(5000)
     .setInteractive({
         useHandCursor:true
     });
@@ -939,21 +976,26 @@ buildHeader(){
 
             window.location.href=
             "index.html";
+
         }
     );
 
 
     this.add.text(
         87,
-        30,
+        29,
         "LABEL THE FROGS!",
         {
+
             fontFamily:
             "Trebuchet MS, Arial",
 
             fontSize:"27px",
+
             fontStyle:"bold",
+
             color:"#ffffff"
+
         }
     );
 
@@ -963,11 +1005,14 @@ buildHeader(){
         59,
         "Objek Menyerap Air • SET 2",
         {
+
             fontFamily:
             "Trebuchet MS, Arial",
 
             fontSize:"15px",
-            color:"#d8f8ff"
+
+            color:"#d9f9ff"
+
         }
     );
 
@@ -975,14 +1020,18 @@ buildHeader(){
     this.soundButton=
     this.add.text(
         755,
-        51,
+        50,
         "🔊",
         {
+
             fontFamily:"Arial",
+
             fontSize:"28px"
+
         }
     )
     .setOrigin(.5)
+    .setDepth(5000)
     .setInteractive({
         useHandCursor:true
     });
@@ -992,16 +1041,17 @@ buildHeader(){
         "pointerdown",
         ()=>{
 
-            const active=
+            const enabled=
             audio.toggle();
 
 
             this.soundButton
             .setText(
-                active ?
-                "🔊" :
-                "🔇"
+                enabled
+                ? "🔊"
+                : "🔇"
             );
+
         }
     );
 
@@ -1019,8 +1069,8 @@ buildQuestionCard(){
 
 
     shadow.fillStyle(
-        0x00415b,
-        .2
+        0x003e58,
+        .20
     );
 
 
@@ -1033,17 +1083,17 @@ buildQuestionCard(){
     );
 
 
-    const panel=
+    const card=
     this.add.graphics();
 
 
-    panel.fillStyle(
-        0xfff1cb,
+    card.fillStyle(
+        0xfff1ca,
         1
     );
 
 
-    panel.fillRoundedRect(
+    card.fillRoundedRect(
         20,
         98,
         770,
@@ -1052,14 +1102,14 @@ buildQuestionCard(){
     );
 
 
-    panel.lineStyle(
+    card.lineStyle(
         5,
         0xffffff,
         .9
     );
 
 
-    panel.strokeRoundedRect(
+    card.strokeRoundedRect(
         20,
         98,
         770,
@@ -1074,27 +1124,27 @@ buildQuestionCard(){
 
     doodle.lineStyle(
         2,
-        0xb68b47,
+        0xa98447,
         .12
     );
 
 
     doodle.strokeCircle(
-        723,
-        149,
-        26
+        720,
+        145,
+        25
     );
 
 
     doodle.strokeCircle(
-        695,
-        442,
-        20
+        700,
+        440,
+        18
     );
 
 
     doodle.strokeRect(
-        53,
+        50,
         410,
         42,
         31
@@ -1104,15 +1154,19 @@ buildQuestionCard(){
     this.progressText=
     this.add.text(
         44,
-        117,
+        116,
         "",
         {
+
             fontFamily:
             "Trebuchet MS, Arial",
 
             fontSize:"18px",
+
             fontStyle:"bold",
-            color:"#715d2e"
+
+            color:"#725d2e"
+
         }
     );
 
@@ -1120,15 +1174,19 @@ buildQuestionCard(){
     this.scoreText=
     this.add.text(
         762,
-        117,
+        116,
         "",
         {
+
             fontFamily:
             "Trebuchet MS, Arial",
 
             fontSize:"17px",
+
             fontStyle:"bold",
-            color:"#715d2e"
+
+            color:"#725d2e"
+
         }
     )
     .setOrigin(
@@ -1147,28 +1205,40 @@ buildQuestionCard(){
         164,
         "",
         {
+
             fontFamily:
             "Trebuchet MS, Arial",
 
             fontSize:"25px",
+
             fontStyle:"bold",
-            color:"#372f1c",
+
+            color:"#382f1c",
 
             wordWrap:{
+
                 width:715,
+
                 useAdvancedWrap:true
+
             },
 
             lineSpacing:3
+
         }
     );
 
 
     const positions=[
+
         [43,305],
+
         [411,305],
+
         [43,387],
+
         [411,387]
+
     ];
 
 
@@ -1215,7 +1285,7 @@ buildQuestionCard(){
 
         box.lineStyle(
             2,
-            0xd8bb76,
+            0xd7b975,
             .75
         );
 
@@ -1233,7 +1303,7 @@ buildQuestionCard(){
             x+31,
             y+35,
             21,
-            0xf49a20
+            0xf39821
         );
 
 
@@ -1242,52 +1312,64 @@ buildQuestionCard(){
             y+35,
             letters[i],
             {
+
                 fontFamily:
                 "Trebuchet MS, Arial",
 
                 fontSize:"22px",
+
                 fontStyle:"bold",
+
                 color:"#ffffff"
+
             }
         )
         .setOrigin(.5);
 
 
-        const answerText=
+        const answer=
         this.add.text(
             x+62,
             y+10,
             "",
             {
+
                 fontFamily:
                 "Trebuchet MS, Arial",
 
                 fontSize:"16px",
+
                 fontStyle:"bold",
+
                 color:"#403820",
 
                 wordWrap:{
+
                     width:270,
+
                     useAdvancedWrap:true
+
                 }
+
             }
         );
 
 
         this.answerTexts
         .push(
-            answerText
+            answer
         );
+
     }
 
 }
 
 
 /* =========================================================
-   PLAY BOARD
+   BOARD
 ========================================================= */
 
-buildPlayBoard(){
+buildBoard(){
 
     const shadow=
     this.add.graphics();
@@ -1313,7 +1395,7 @@ buildPlayBoard(){
 
 
     board.fillStyle(
-        0xf7dfa7,
+        0xf7dfa8,
         1
     );
 
@@ -1346,7 +1428,7 @@ buildPlayBoard(){
     board.lineStyle(
         3,
         0xd5a65c,
-        .40
+        .38
     );
 
 
@@ -1359,32 +1441,32 @@ buildPlayBoard(){
     );
 
 
-    const d=
+    const doodle=
     this.add.graphics();
 
 
-    d.lineStyle(
+    doodle.lineStyle(
         2,
         0xa57e40,
         .10
     );
 
 
-    d.strokeCircle(
+    doodle.strokeCircle(
         100,
         930,
-        44
+        45
     );
 
 
-    d.strokeCircle(
+    doodle.strokeCircle(
         720,
         875,
         35
     );
 
 
-    d.strokeRect(
+    doodle.strokeRect(
         665,
         555,
         48,
@@ -1400,19 +1482,17 @@ buildPlayBoard(){
 
 buildStatus(){
 
-    this.statusPanel=
+    const panel=
     this.add.graphics();
 
 
-    this.statusPanel
-    .fillStyle(
+    panel.fillStyle(
         0xf38a10,
         1
     );
 
 
-    this.statusPanel
-    .fillRoundedRect(
+    panel.fillRoundedRect(
         170,
         994,
         480,
@@ -1421,16 +1501,14 @@ buildStatus(){
     );
 
 
-    this.statusPanel
-    .lineStyle(
+    panel.lineStyle(
         4,
         0xffc64d,
         1
     );
 
 
-    this.statusPanel
-    .strokeRoundedRect(
+    panel.strokeRoundedRect(
         170,
         994,
         480,
@@ -1445,21 +1523,26 @@ buildStatus(){
         1027,
         "",
         {
+
             fontFamily:
             "Trebuchet MS, Arial",
 
             fontSize:"19px",
+
             fontStyle:"bold",
+
             color:"#ffffff",
 
             stroke:"#6d3900",
+
             strokeThickness:4,
 
             align:"center"
+
         }
     )
     .setOrigin(.5)
-    .setDepth(300);
+    .setDepth(3000);
 
 }
 
@@ -1471,13 +1554,14 @@ buildStatus(){
 renderQuestion(){
 
     if(
-        this.questionIndex>=
+        this.questionIndex >=
         QUESTIONS.length
     ){
 
         this.completeGame();
 
         return;
+
     }
 
 
@@ -1506,6 +1590,7 @@ renderQuestion(){
         .setText(
             data.options[i]
         );
+
     }
 
 
@@ -1526,7 +1611,7 @@ renderQuestion(){
 
     this.statusText
     .setText(
-        "Tap katak dengan cepat untuk tukar label"
+        "1 tap = terus tukar 1 label"
     );
 
 
@@ -1536,19 +1621,22 @@ renderQuestion(){
 
 
 /* =========================================================
-   PROGRESS BAR
+   PROGRESS
 ========================================================= */
 
 drawProgress(){
 
     const x=44;
+
     const y=148;
+
     const w=715;
+
     const h=9;
 
 
-    const value=
-    this.questionIndex/
+    const progress=
+    this.questionIndex /
     QUESTIONS.length;
 
 
@@ -1573,12 +1661,12 @@ drawProgress(){
 
 
     if(
-        value>0
+        progress > 0
     ){
 
         this.progressBar
         .fillStyle(
-            0x54ba68,
+            0x53b968,
             1
         );
 
@@ -1587,17 +1675,18 @@ drawProgress(){
         .fillRoundedRect(
             x,
             y,
-            w*value,
+            w*progress,
             h,
             5
         );
+
     }
 
 }
 
 
 /* =========================================================
-   NUMBER OF FROGS
+   FROG COUNT
 ========================================================= */
 
 getFrogCount(){
@@ -1652,7 +1741,7 @@ getFrogCount(){
 
 
 /* =========================================================
-   GRID CONFIG
+   GRID CONFIGURATION
 ========================================================= */
 
 getGridConfig(count){
@@ -1660,76 +1749,117 @@ getGridConfig(count){
     if(count<=6){
 
         return{
+
             cols:3,
+
             gapX:190,
+
             gapY:180,
+
             startY:655,
+
             scale:1.13
+
         };
+
     }
 
 
     if(count<=8){
 
         return{
+
             cols:4,
+
             gapX:160,
+
             gapY:185,
+
             startY:655,
+
             scale:1.03
+
         };
+
     }
 
 
     if(count<=12){
 
         return{
+
             cols:4,
+
             gapX:155,
+
             gapY:140,
+
             startY:620,
+
             scale:.89
+
         };
+
     }
 
 
     if(count<=16){
 
         return{
+
             cols:4,
+
             gapX:153,
+
             gapY:110,
+
             startY:590,
+
             scale:.74
+
         };
+
     }
 
 
     if(count<=20){
 
         return{
+
             cols:5,
+
             gapX:126,
+
             gapY:108,
+
             startY:590,
+
             scale:.69
+
         };
+
     }
 
 
     return{
+
         cols:6,
+
         gapX:105,
+
         gapY:108,
+
         startY:590,
+
         scale:.64
+
     };
 
 }
 
 
 /* =========================================================
-   CREATE LEVEL
+   CREATE FROG LEVEL
 ========================================================= */
 
 createFrogLevel(){
@@ -1747,18 +1877,19 @@ createFrogLevel(){
     );
 
 
+    const rows=
+    Math.ceil(
+        count/
+        config.cols
+    );
+
+
     const labels=[
         "A",
         "B",
         "C",
         "D"
     ];
-
-
-    const rows=
-    Math.ceil(
-        count/config.cols
-    );
 
 
     let index=0;
@@ -1781,13 +1912,14 @@ createFrogLevel(){
         );
 
 
-        const rowWidth=
+        const width=
         (rowCount-1)*
         config.gapX;
 
 
         const startX=
-        410-rowWidth/2;
+        410-
+        width/2;
 
 
         for(
@@ -1809,13 +1941,11 @@ createFrogLevel(){
 
 
             const label=
-            Phaser.Utils.Array
-            .GetRandom(
+            Phaser.Utils.Array.GetRandom(
                 labels
             );
 
 
-            const frog=
             this.createFrog(
                 x,
                 y,
@@ -1824,18 +1954,16 @@ createFrogLevel(){
             );
 
 
-            this.frogs.push(
-                frog
-            );
-
-
             index++;
+
         }
+
     }
 
 
     /*
-    Elak semua sama secara kebetulan
+    Jangan benarkan semua label
+    sama semasa baru muncul.
     */
 
     const uniform=
@@ -1856,9 +1984,10 @@ createFrogLevel(){
         : "A";
 
 
-        this.updateFrogLabel(
+        this.updateLabel(
             last
         );
+
     }
 
 }
@@ -1881,16 +2010,14 @@ label
         y
     )
     .setScale(scale)
-    .setDepth(70);
-
-
-    frog.baseScale=
-    scale;
+    .setDepth(100);
 
 
     frog.label=
     label;
 
+
+    /* SHADOW */
 
     const shadow=
     this.add.ellipse(
@@ -1903,7 +2030,9 @@ label
     );
 
 
-    const leftBackLeg=
+    /* BACK LEGS */
+
+    const legL=
     this.add.ellipse(
         -39,
         27,
@@ -1914,14 +2043,13 @@ label
     .setRotation(-.12);
 
 
-    leftBackLeg
-    .setStrokeStyle(
+    legL.setStrokeStyle(
         3,
         0x243600
     );
 
 
-    const rightBackLeg=
+    const legR=
     this.add.ellipse(
         39,
         27,
@@ -1932,12 +2060,13 @@ label
     .setRotation(.12);
 
 
-    rightBackLeg
-    .setStrokeStyle(
+    legR.setStrokeStyle(
         3,
         0x243600
     );
 
+
+    /* BODY */
 
     const body=
     this.add.ellipse(
@@ -1955,6 +2084,8 @@ label
     );
 
 
+    /* BELLY */
+
     const belly=
     this.add.ellipse(
         10,
@@ -1970,6 +2101,8 @@ label
         0x729b00
     );
 
+
+    /* HEAD */
 
     const head=
     this.add.ellipse(
@@ -1987,7 +2120,9 @@ label
     );
 
 
-    const leftEye=
+    /* EYES */
+
+    const eyeL=
     this.add.circle(
         -22,
         -54,
@@ -1996,13 +2131,13 @@ label
     );
 
 
-    leftEye.setStrokeStyle(
+    eyeL.setStrokeStyle(
         3,
         0x111111
     );
 
 
-    const rightEye=
+    const eyeR=
     this.add.circle(
         20,
         -51,
@@ -2011,13 +2146,13 @@ label
     );
 
 
-    rightEye.setStrokeStyle(
+    eyeR.setStrokeStyle(
         3,
         0x111111
     );
 
 
-    const leftPupil=
+    const pupilL=
     this.add.circle(
         -20,
         -53,
@@ -2026,7 +2161,7 @@ label
     );
 
 
-    const rightPupil=
+    const pupilR=
     this.add.circle(
         19,
         -50,
@@ -2035,7 +2170,9 @@ label
     );
 
 
-    const nose1=
+    /* NOSE */
+
+    const noseL=
     this.add.circle(
         -8,
         -31,
@@ -2044,7 +2181,7 @@ label
     );
 
 
-    const nose2=
+    const noseR=
     this.add.circle(
         8,
         -31,
@@ -2052,6 +2189,8 @@ label
         0x3e6c00
     );
 
+
+    /* SMILE */
 
     const mouth=
     this.add.graphics();
@@ -2079,7 +2218,9 @@ label
     mouth.strokePath();
 
 
-    const leftArm=
+    /* ARMS */
+
+    const armL=
     this.add.ellipse(
         -23,
         21,
@@ -2090,7 +2231,7 @@ label
     .setRotation(.25);
 
 
-    const rightArm=
+    const armR=
     this.add.ellipse(
         27,
         20,
@@ -2101,11 +2242,13 @@ label
     .setRotation(-.25);
 
 
+    /* LABEL */
+
     const labelCircle=
     this.add.circle(
         8,
         15,
-        21,
+        23,
         0xffffff
     );
 
@@ -2122,18 +2265,24 @@ label
         15,
         label,
         {
+
             fontFamily:
             "Trebuchet MS, Arial",
 
-            fontSize:"24px",
+            fontSize:"26px",
+
             fontStyle:"bold",
+
             color:"#134e73"
+
         }
     )
     .setOrigin(.5);
 
 
-    const leftFoot=
+    /* FEET */
+
+    const footL=
     this.add.ellipse(
         -30,
         39,
@@ -2143,13 +2292,13 @@ label
     );
 
 
-    leftFoot.setStrokeStyle(
+    footL.setStrokeStyle(
         2,
         0x243600
     );
 
 
-    const rightFoot=
+    const footR=
     this.add.ellipse(
         30,
         39,
@@ -2159,32 +2308,52 @@ label
     );
 
 
-    rightFoot.setStrokeStyle(
+    footR.setStrokeStyle(
         2,
         0x243600
     );
 
 
     frog.add([
+
         shadow,
-        leftBackLeg,
-        rightBackLeg,
+
+        legL,
+
+        legR,
+
         body,
+
         belly,
+
         head,
-        leftEye,
-        rightEye,
-        leftPupil,
-        rightPupil,
-        nose1,
-        nose2,
+
+        eyeL,
+
+        eyeR,
+
+        pupilL,
+
+        pupilR,
+
+        noseL,
+
+        noseR,
+
         mouth,
-        leftArm,
-        rightArm,
+
+        armL,
+
+        armR,
+
         labelCircle,
+
         labelText,
-        leftFoot,
-        rightFoot
+
+        footL,
+
+        footR
+
     ]);
 
 
@@ -2204,42 +2373,69 @@ label
     labelText;
 
 
-    /*
-    BESARKAN HIT AREA
-    Mudah tap dekat phone.
-    */
-
-    frog.setSize(
-        145,
-        145
+    this.frogs.push(
+        frog
     );
 
 
-    frog.setInteractive(
-        new Phaser.Geom.Rectangle(
-            -72,
-            -72,
-            145,
-            145
-        ),
-        Phaser.Geom.Rectangle.Contains
+    this.updateLabel(
+        frog
     );
 
 
+    /* =====================================================
+       INI PEMBETULAN UTAMA
+
+       JANGAN letak interactive pada container.
+
+       Kita buat Phaser Zone invisible
+       yang sentiasa berada di atas katak.
+
+       Jadi tap tak bergantung pada
+       scale container.
+    ===================================================== */
+
+
+    const hitWidth=
+    Math.max(
+        72,
+        110*scale
+    );
+
+
+    const hitHeight=
+    Math.max(
+        78,
+        125*scale
+    );
+
+
+    const hitZone=
+    this.add.zone(
+        x,
+        y-5,
+        hitWidth,
+        hitHeight
+    )
+    .setOrigin(.5)
+    .setDepth(2000)
+    .setInteractive({
+        useHandCursor:true
+    });
+
+
+    hitZone.frog=
+    frog;
+
+
     /*
-    TIADA POINTER OVER TWEEN.
-    TIADA DELAY.
-    TIADA COOLDOWN.
+    pointerdown = terus berubah.
+    Tak tunggu pointerup.
     */
 
-    frog.on(
+    hitZone.on(
         "pointerdown",
-        (
-            pointer,
-            localX,
-            localY,
-            event
-        )=>{
+        ()=>{
 
             if(
                 this.locked ||
@@ -2247,32 +2443,28 @@ label
             ){
 
                 return;
-            }
 
-
-            if(event){
-
-                event.stopPropagation();
             }
 
 
             audio.init();
 
-            audio.tap();
-
 
             /*
-            TERUS TUKAR LABEL.
+            Terus tukar pada event yang sama.
             */
 
-            this.changeFrogLabelInstant(
+            this.changeLabelInstant(
                 frog
             );
+
         }
     );
 
 
-    return frog;
+    this.hitZones.push(
+        hitZone
+    );
 
 }
 
@@ -2281,15 +2473,19 @@ label
    INSTANT LABEL CHANGE
 ========================================================= */
 
-changeFrogLabelInstant(
+changeLabelInstant(
 frog
 ){
 
     /*
-    Tidak guna tween.
-    Tidak guna delayedCall.
-    Tidak guna cooldown.
+    PENTING:
+    Tiada tween.
+    Tiada delay.
+    Tiada cooldown.
+    Tiada debounce.
+    Tiada timeout.
     */
+
 
     if(
         this.locked ||
@@ -2297,53 +2493,60 @@ frog
     ){
 
         return;
+
     }
 
 
-    switch(
-        frog.label
+    if(
+        frog.label==="A"
     ){
 
-        case "A":
+        frog.label="B";
 
-            frog.label="B";
+    }
 
-            break;
+    else if(
+        frog.label==="B"
+    ){
 
+        frog.label="C";
 
-        case "B":
+    }
 
-            frog.label="C";
+    else if(
+        frog.label==="C"
+    ){
 
-            break;
+        frog.label="D";
 
+    }
 
-        case "C":
+    else{
 
-            frog.label="D";
+        frog.label="A";
 
-            break;
-
-
-        default:
-
-            frog.label="A";
-
-            break;
     }
 
 
     /*
-    Update visual terus pada frame yang sama.
+    Update tulisan terus.
     */
 
-    this.updateFrogLabel(
+    this.updateLabel(
         frog
     );
 
 
     /*
-    Semak board terus.
+    Bunyi sangat pendek.
+    */
+
+    audio.tap();
+
+
+    /*
+    Semak keadaan board
+    pada frame yang sama.
     */
 
     this.checkBoard();
@@ -2352,10 +2555,10 @@ frog
 
 
 /* =========================================================
-   LABEL VISUAL
+   UPDATE LABEL
 ========================================================= */
 
-updateFrogLabel(
+updateLabel(
 frog
 ){
 
@@ -2365,16 +2568,9 @@ frog
     );
 
 
-    let fill=
-    0xffffff;
-
-
-    let border=
-    0x1e4665;
-
-
-    let textColor=
-    "#134e73";
+    let fill;
+    let border;
+    let text;
 
 
     if(
@@ -2387,8 +2583,9 @@ frog
         border=
         0x278ac4;
 
-        textColor=
+        text=
         "#12699c";
+
     }
 
 
@@ -2402,8 +2599,9 @@ frog
         border=
         0xd652ad;
 
-        textColor=
+        text=
         "#9c267b";
+
     }
 
 
@@ -2417,8 +2615,9 @@ frog
         border=
         0xd89e17;
 
-        textColor=
+        text=
         "#946700";
+
     }
 
 
@@ -2430,8 +2629,9 @@ frog
         border=
         0x5ba33e;
 
-        textColor=
+        text=
         "#387725";
+
     }
 
 
@@ -2452,14 +2652,14 @@ frog
 
     frog.labelText
     .setColor(
-        textColor
+        text
     );
 
 }
 
 
 /* =========================================================
-   CHECK SAME LABEL
+   UNIFORM LABEL CHECK
 ========================================================= */
 
 getUniformLabel(){
@@ -2469,10 +2669,11 @@ getUniformLabel(){
     ){
 
         return null;
+
     }
 
 
-    const label=
+    const first=
     this.frogs[0].label;
 
 
@@ -2484,15 +2685,17 @@ getUniformLabel(){
 
         if(
             this.frogs[i].label !==
-            label
+            first
         ){
 
             return null;
+
         }
+
     }
 
 
-    return label;
+    return first;
 
 }
 
@@ -2503,50 +2706,57 @@ getUniformLabel(){
 
 checkBoard(){
 
-    const uniform=
+    const same=
     this.getUniformLabel();
 
 
-    if(!uniform){
+    if(!same){
 
-        this.updateLiveStatus();
+        this.updateStatus();
 
         return;
+
     }
 
 
-    const data=
+    const answer=
     QUESTIONS[
         this.questionIndex
-    ];
+    ].answer;
 
 
     if(
-        uniform===
-        data.answer
+        same===
+        answer
     ){
 
         /*
-        Hanya jawapan betul dikunci.
+        HANYA jawapan betul lock input.
         */
 
         this.locked=true;
 
 
-        this.handleCorrect(
-            uniform
+        this.correctAnswer(
+            same
         );
 
-    }else{
+    }
+
+    else{
 
         /*
-        JAWAPAN SALAH TIDAK LOCK.
-        User boleh tap serta-merta.
+        Jawapan salah:
+        TAK LOCK.
+
+        User boleh terus tap
+        pada millisecond seterusnya.
         */
 
-        this.handleWrongInstant(
-            uniform
+        this.wrongAnswer(
+            same
         );
+
     }
 
 }
@@ -2556,9 +2766,9 @@ checkBoard(){
    LIVE STATUS
 ========================================================= */
 
-updateLiveStatus(){
+updateStatus(){
 
-    const counts={
+    const count={
         A:0,
         B:0,
         C:0,
@@ -2569,25 +2779,32 @@ updateLiveStatus(){
     this.frogs.forEach(
         frog=>{
 
-            counts[
+            count[
                 frog.label
             ]++;
+
         }
     );
 
 
-    const highest=
+    const array=
     Object.entries(
-        counts
-    )
-    .sort(
+        count
+    );
+
+
+    array.sort(
         (a,b)=>
         b[1]-a[1]
-    )[0];
+    );
+
+
+    const best=
+    array[0];
 
 
     if(
-        highest[1]>=
+        best[1]>=
         Math.ceil(
             this.frogs.length*.55
         )
@@ -2595,25 +2812,28 @@ updateLiveStatus(){
 
         this.statusText
         .setText(
-            `${highest[1]}/${this.frogs.length} katak label ${highest[0]}`
+            `${best[1]}/${this.frogs.length} katak sudah ${best[0]}`
         );
 
-    }else{
+    }
+
+    else{
 
         this.statusText
         .setText(
             "Samakan semua label katak"
         );
+
     }
 
 }
 
 
 /* =========================================================
-   WRONG - NO DELAY
+   WRONG
 ========================================================= */
 
-handleWrongInstant(
+wrongAnswer(
 label
 ){
 
@@ -2631,16 +2851,20 @@ label
 
     this.statusText
     .setText(
-        `${label} belum tepat! Tap terus untuk ubah.`
+        `${label} belum betul! Terus tap untuk ubah.`
     );
 
 
     /*
     PENTING:
-    Tiada this.locked=true
-    Tiada delayedCall
-    Tiada tween blocking
-    User terus boleh tekan katak.
+
+    this.locked kekal FALSE.
+
+    Tiada delayedCall.
+
+    Tiada shake animation.
+
+    Tiada pause.
     */
 
 }
@@ -2650,7 +2874,7 @@ label
    CORRECT
 ========================================================= */
 
-handleCorrect(
+correctAnswer(
 label
 ){
 
@@ -2677,41 +2901,45 @@ label
 
             frog.bodyPart
             .setFillStyle(
-                0x7fda29
+                0x80da29
             );
 
 
             frog.headPart
             .setFillStyle(
-                0xa8ed3d
+                0xa9ef3d
             );
+
         }
     );
 
 
     /*
-    Transition lebih cepat.
+    Cuma transition soalan betul
+    ada masa pendek.
     */
 
     this.time.delayedCall(
-        450,
+        400,
         ()=>{
 
             this.questionIndex++;
 
 
             if(
-                this.questionIndex>=
+                this.questionIndex >=
                 QUESTIONS.length
             ){
 
                 this.completeGame();
 
                 return;
+
             }
 
 
             this.renderQuestion();
+
         }
     );
 
@@ -2719,10 +2947,39 @@ label
 
 
 /* =========================================================
-   DESTROY FROGS
+   DESTROY FROGS + HIT ZONES
 ========================================================= */
 
 destroyFrogs(){
+
+    /*
+    Buang hit zones dulu.
+    */
+
+    this.hitZones.forEach(
+        zone=>{
+
+            if(
+                zone &&
+                zone.scene
+            ){
+
+                zone.removeAllListeners();
+
+                zone.destroy();
+
+            }
+
+        }
+    );
+
+
+    this.hitZones=[];
+
+
+    /*
+    Kemudian katak.
+    */
 
     this.frogs.forEach(
         frog=>{
@@ -2733,7 +2990,9 @@ destroyFrogs(){
             ){
 
                 frog.destroy();
+
             }
+
         }
     );
 
@@ -2765,7 +3024,7 @@ completeGame(){
 
     this.progressBar
     .fillStyle(
-        0xe1cfa0,
+        0xe2cfa0,
         1
     );
 
@@ -2823,6 +3082,7 @@ completeGame(){
         text=>{
 
             text.setText("");
+
         }
     );
 
@@ -2845,24 +3105,31 @@ completeGame(){
         920,
         "↻  MAIN SEMULA",
         {
+
             fontFamily:
             "Trebuchet MS, Arial",
 
             fontSize:"24px",
+
             fontStyle:"bold",
+
             color:"#ffffff",
 
             backgroundColor:
-            "#de7b09",
+            "#dd7b09",
 
             padding:{
+
                 x:25,
+
                 y:14
+
             }
+
         }
     )
     .setOrigin(.5)
-    .setDepth(300)
+    .setDepth(5000)
     .setInteractive({
         useHandCursor:true
     });
@@ -2890,6 +3157,7 @@ completeGame(){
 
 
             this.renderQuestion();
+
         }
     );
 
@@ -2998,7 +3266,7 @@ y
     );
 
 
-    const eye1=
+    const eyeL=
     this.add.circle(
         -42,
         -92,
@@ -3007,13 +3275,13 @@ y
     );
 
 
-    eye1.setStrokeStyle(
+    eyeL.setStrokeStyle(
         5,
         0x111111
     );
 
 
-    const eye2=
+    const eyeR=
     this.add.circle(
         38,
         -86,
@@ -3022,13 +3290,13 @@ y
     );
 
 
-    eye2.setStrokeStyle(
+    eyeR.setStrokeStyle(
         5,
         0x111111
     );
 
 
-    const pupil1=
+    const pupilL=
     this.add.circle(
         -37,
         -90,
@@ -3037,7 +3305,7 @@ y
     );
 
 
-    const pupil2=
+    const pupilR=
     this.add.circle(
         34,
         -84,
@@ -3072,35 +3340,30 @@ y
 
 
     frog.add([
+
         shadow,
+
         legL,
+
         legR,
+
         body,
+
         belly,
+
         head,
-        eye1,
-        eye2,
-        pupil1,
-        pupil2,
+
+        eyeL,
+
+        eyeR,
+
+        pupilL,
+
+        pupilR,
+
         mouth
+
     ]);
-
-
-    this.tweens.add({
-
-        targets:frog,
-
-        y:y-7,
-
-        duration:850,
-
-        yoyo:true,
-
-        repeat:-1,
-
-        ease:
-        "Sine.easeInOut"
-    });
 
 }
 
@@ -3144,6 +3407,7 @@ const config={
 
         powerPreference:
         "high-performance"
+
     },
 
     scale:{
@@ -3159,44 +3423,51 @@ const config={
 
         height:
         1090
+
     },
 
     input:{
 
-        activePointers:5,
+        activePointers:10,
 
         touch:{
+
             capture:true
+
         }
+
     },
 
     scene:[
-        FrogLabelGame
+        FrogGame
     ]
+
 };
 
 
+const game=
 new Phaser.Game(
     config
 );
 
 
 /* =========================================================
-   MOBILE PREVENT SCROLL
+   MOBILE INPUT
 ========================================================= */
 
 document.addEventListener(
     "touchmove",
-    e=>{
+    event=>{
 
         if(
-            e.target.closest &&
-            e.target.closest(
+            event.target.closest &&
+            event.target.closest(
                 "#game-shell"
             )
         ){
 
-            e.preventDefault();
+            event.preventDefault();
+
         }
 
     },
@@ -3207,17 +3478,31 @@ document.addEventListener(
 
 
 document.addEventListener(
+    "gesturestart",
+    event=>{
+
+        event.preventDefault();
+
+    },
+    {
+        passive:false
+    }
+);
+
+
+document.addEventListener(
     "contextmenu",
-    e=>{
+    event=>{
 
         if(
-            e.target.closest &&
-            e.target.closest(
+            event.target.closest &&
+            event.target.closest(
                 "#game-shell"
             )
         ){
 
-            e.preventDefault();
+            event.preventDefault();
+
         }
 
     }
