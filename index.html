@@ -2,5738 +2,3114 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
-<meta
-name="viewport"
-content="width=device-width,
-initial-scale=1,
-maximum-scale=1,
-user-scalable=no,
-viewport-fit=cover">
-
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Trail Puzzle - Set 6</title>
-
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
-
 <style>
-
-*{
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
-}
-
-html,
-body{
-    margin:0;
-    padding:0;
-    width:100%;
-    min-height:100%;
-
-    font-family:
-    "Trebuchet MS",
-    Arial,
-    sans-serif;
-
-    background:
-    linear-gradient(
-        135deg,
-        #d8f3ff,
-        #f8fcff,
-        #dcecff
-    );
-
-    touch-action:none;
-    overscroll-behavior:none;
-}
-
-body{
-    min-height:100vh;
-    min-height:100svh;
-
-    display:flex;
-
-    justify-content:center;
-    align-items:flex-start;
-
-    padding:
-    max(4px,env(safe-area-inset-top))
-    3px
-    max(4px,env(safe-area-inset-bottom));
-}
-
-#game-shell{
-
-    width:min(
-        98vw,
-        820px,
-        calc(96svh * .789)
-    );
-
-    aspect-ratio:900/1140;
-
-    overflow:hidden;
-
-    border-radius:22px;
-
-    border:3px solid #ffffff;
-
-    background:#dff5ff;
-
-    box-shadow:
-    0 12px 35px
-    rgba(30,72,92,.18);
-}
-
-#game,
-#game canvas{
-    width:100%;
-    height:100%;
-}
-
-#game canvas{
-
-    display:block!important;
-
-    touch-action:none;
-
-    user-select:none;
-    -webkit-user-select:none;
-}
-
-@media(max-width:540px){
-
-    body{
-        padding:2px;
-    }
-
-    #game-shell{
-
-        width:99vw;
-
-        border-radius:15px;
-
-        border-width:2px;
-    }
-}
-
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;width:100%;min-height:100%;font-family:"Trebuchet MS",Arial,sans-serif;background:linear-gradient(135deg,#d8f3ff,#f8fcff,#dcecff);touch-action:none;overscroll-behavior:none}
+body{min-height:100vh;min-height:100svh;display:flex;justify-content:center;align-items:flex-start;padding:max(4px,env(safe-area-inset-top)) 3px max(4px,env(safe-area-inset-bottom))}
+#game-shell{width:min(98vw,820px,calc(96svh * .789));aspect-ratio:900/1140;overflow:hidden;border-radius:22px;border:3px solid #fff;background:#dff5ff;box-shadow:0 12px 35px rgba(30,72,92,.18)}
+#game,#game canvas{width:100%;height:100%}
+#game canvas{display:block!important;touch-action:none;user-select:none;-webkit-user-select:none}
+@media(max-width:540px){body{padding:2px}#game-shell{width:99vw;border-radius:15px;border-width:2px}}
 </style>
 </head>
-
 <body>
-
-<div id="game-shell">
-    <div id="game"></div>
-</div>
-
-
+<div id="game-shell"><div id="game"></div></div>
 <script>
-
 "use strict";
 
+const GAME_W=900;
+const GAME_H=1140;
 
-/* =========================================================
-   GAME SIZE
-   ========================================================= */
-
-const GAME_W = 900;
-const GAME_H = 1140;
-
-
-/* =========================================================
-   QUESTIONS SET 6
-   ========================================================= */
-
-const QUESTIONS = [
-
-{
-topic:"Apakah Gunanya Magnet?",
-q:"Seorang murid mahu menghasilkan pin bermagnet seperti aktiviti dalam buku. Magnet apakah yang digunakan?",
-a:[
-"Dua magnet bar",
-"Dua magnet butang",
-"Dua magnet ladam",
-"Dua magnet silinder"
-],
-correct:1
-},
-
-{
-topic:"Apakah Gunanya Magnet?",
-q:"Antara situasi berikut, yang manakah menunjukkan kegunaan magnet dalam kehidupan seharian?",
-a:[
-"Mengukur panjang meja",
-"Mewarnakan gambar",
-"Memadam tulisan pensel",
-"Menutup pintu peti sejuk dengan rapat"
-],
-correct:3
-},
-
-{
-topic:"Apakah Gunanya Magnet?",
-q:"Apakah alat yang boleh memegang skru supaya tidak mudah jatuh?",
-a:[
-"Pembaris plastik",
-"Pemutar skru bermagnet",
-"Pemadam",
-"Guli"
-],
-correct:1
-},
-
-{
-topic:"Apakah Gunanya Magnet?",
-q:"Tanda nama cikgu boleh melekat tanpa pin kerana mengandungi ____.",
-a:[
-"Kayu",
-"Kertas",
-"Magnet",
-"Plastik"
-],
-correct:2
-},
-
-{
-topic:"Apakah Gunanya Magnet?",
-q:"Siti mahu kotak penselnya boleh ditutup rapat seperti contoh dalam buku. Penutup itu perlu mempunyai ____.",
-a:[
-"Magnet",
-"Pemadam",
-"Guli",
-"Kayu aiskrim"
-],
-correct:0
-},
-
-{
-topic:"Bentuk Magnet",
-q:"Yang manakah nama magnet yang berbentuk seperti butang?",
-a:[
-"Magnet buku",
-"Magnet pemadam",
-"Magnet butang",
-"Magnet pensel"
-],
-correct:2
-},
-
-{
-topic:"Bentuk Magnet",
-q:"Apakah nama magnet yang berbentuk seperti ladam kuda?",
-a:[
-"Magnet cincin",
-"Magnet ladam",
-"Magnet butang",
-"Magnet bar"
-],
-correct:1
-},
-
-{
-topic:"Bentuk Magnet",
-q:"Pasangan manakah terdiri daripada magnet ladam dan satu lagi bentuk magnet yang betul?",
-a:[
-"Magnet bunga dan magnet akar",
-"Magnet kertas dan magnet kayu",
-"Magnet air dan magnet pasir",
-"Magnet ladam dan magnet bentuk U"
-],
-correct:3
-},
-
-{
-topic:"Bentuk Magnet",
-q:"Apakah perbezaan yang dinyatakan antara magnet ladam dengan magnet bentuk U?",
-a:[
-"Kutub magnet ladam lebih rapat",
-"Magnet U tidak mempunyai kutub",
-"Magnet U diperbuat daripada kayu",
-"Magnet ladam tidak mempunyai kutub"
-],
-correct:0
-},
-
-{
-topic:"Bentuk Magnet",
-q:"Yang manakah nama magnet yang berbentuk silinder?",
-a:[
-"Magnet akar",
-"Magnet segitiga daun",
-"Magnet bunga",
-"Magnet silinder"
-],
-correct:3
-},
-
-{
-topic:"Hebatnya Magnet",
-q:"Jika objek bergerak ke arah magnet apabila magnet didekatkan, tindakan itu disebut ____.",
-a:[
-"Memadam",
-"Mengukur",
-"Menarik",
-"Menolak"
-],
-correct:2
-},
-
-{
-topic:"Hebatnya Magnet",
-q:"Objek plastik berbentuk pembaris manakah yang tidak dapat ditarik magnet?",
-a:[
-"Pembaris plastik",
-"Klip kertas",
-"Paku",
-"Skru"
-],
-correct:0
-},
-
-{
-topic:"Hebatnya Magnet",
-q:"Yang manakah pasangan objek yang kedua-duanya tidak dapat ditarik magnet?",
-a:[
-"Pin baju dan skru",
-"Guli dan pemadam",
-"Klip kertas dan paku",
-"Skru dan paku"
-],
-correct:1
-},
-
-{
-topic:"Hebatnya Magnet",
-q:"Yang manakah pasangan objek yang menunjukkan satu boleh ditarik dan satu tidak boleh ditarik?",
-a:[
-"Skru dan guli",
-"Guli dan pemadam",
-"Paku dan skru",
-"Pin baju dan klip kertas"
-],
-correct:0
-},
-
-{
-topic:"Hebatnya Magnet",
-q:"Objek yang digunakan untuk memadam tulisan manakah yang tidak dapat ditarik magnet?",
-a:[
-"Skru",
-"Klip kertas",
-"Paku",
-"Pemadam"
-],
-correct:3
-},
-
-{
-topic:"Tarikan dan Tolakan Magnet",
-q:"Jika U berhadapan dengan U, tindakan yang betul ialah ____.",
-a:[
-"Tarikan",
-"Tolakan",
-"Tiada tindakan",
-"Pemanasan"
-],
-correct:1
-},
-
-{
-topic:"Tarikan dan Tolakan Magnet",
-q:"Apabila magnet saling menjauh kerana kutub yang sama, tindakan itu ialah ____.",
-a:[
-"Pengukuran",
-"Pemadaman",
-"Tolakan",
-"Tarikan"
-],
-correct:2
-},
-
-{
-topic:"Tarikan dan Tolakan Magnet",
-q:"Kutub Utara didekatkan dengan kutub Utara. Apakah yang berlaku?",
-a:[
-"Melekat pada plastik",
-"Menolak",
-"Mencair",
-"Menarik"
-],
-correct:1
-},
-
-{
-topic:"Tarikan dan Tolakan Magnet",
-q:"Jika S berhadapan dengan U, tindakan yang betul ialah ____.",
-a:[
-"Tolakan",
-"Tiada tindakan",
-"Pemanasan",
-"Tarikan"
-],
-correct:3
-},
-
-{
-topic:"Tarikan dan Tolakan Magnet",
-q:"Dua magnet bar digunakan dalam aktiviti untuk mengkaji ____.",
-a:[
-"Tarikan dan tolakan",
-"Bau magnet",
-"Warna magnet",
-"Rasa magnet"
-],
-correct:0
-},
-
-{
-topic:"Kekuatan Magnet",
-q:"Magnet digerakkan mendekati klip kertas sehingga klip kertas ____.",
-a:[
-"Hilang",
-"Mencair",
-"Ditarik",
-"Bertukar warna"
-],
-correct:2
-},
-
-{
-topic:"Kekuatan Magnet",
-q:"Dua magnet diuji dengan jenis klip kertas yang sama. Magnet R menarik lebih banyak klip. Apakah kesimpulan paling sesuai?",
-a:[
-"Klip kertas bukan objek tarikan",
-"Magnet R lebih lemah",
-"Kedua-duanya sama",
-"Magnet R lebih kuat"
-],
-correct:3
-},
-
-{
-topic:"Kekuatan Magnet",
-q:"Dalam aktiviti kekuatan magnet, klip kertas disusun di sisi ____.",
-a:[
-"Tingkap",
-"Pembaris",
-"Buku",
-"Pintu"
-],
-correct:1
-},
-
-{
-topic:"Kekuatan Magnet",
-q:"Untuk membandingkan kekuatan magnet dengan adil, klip kertas perlu disusun dan jarak diperhatikan menggunakan ____.",
-a:[
-"Pembaris",
-"Guli",
-"Pemadam",
-"Kayu aiskrim"
-],
-correct:0
-},
-
-{
-topic:"Kekuatan Magnet",
-q:"Kekuatan magnet boleh dibandingkan dengan melihat bilangan klip kertas yang ____.",
-a:[
-"Dipotong",
-"Diwarnakan",
-"Ditarik",
-"Dipadam"
-],
-correct:2
-}
-
+const QUESTIONS=[
+{topic:"Apakah Gunanya Magnet?",q:"Seorang murid mahu menghasilkan pin bermagnet seperti aktiviti dalam buku. Magnet apakah yang digunakan?",a:["Dua magnet bar","Dua magnet butang","Dua magnet ladam","Dua magnet silinder"],correct:1},
+{topic:"Apakah Gunanya Magnet?",q:"Antara situasi berikut, yang manakah menunjukkan kegunaan magnet dalam kehidupan seharian?",a:["Mengukur panjang meja","Mewarnakan gambar","Memadam tulisan pensel","Menutup pintu peti sejuk dengan rapat"],correct:3},
+{topic:"Apakah Gunanya Magnet?",q:"Apakah alat yang boleh memegang skru supaya tidak mudah jatuh?",a:["Pembaris plastik","Pemutar skru bermagnet","Pemadam","Guli"],correct:1},
+{topic:"Apakah Gunanya Magnet?",q:"Tanda nama cikgu boleh melekat tanpa pin kerana mengandungi ____.",a:["Kayu","Kertas","Magnet","Plastik"],correct:2},
+{topic:"Apakah Gunanya Magnet?",q:"Siti mahu kotak penselnya boleh ditutup rapat seperti contoh dalam buku. Penutup itu perlu mempunyai ____.",a:["Magnet","Pemadam","Guli","Kayu aiskrim"],correct:0},
+{topic:"Bentuk Magnet",q:"Yang manakah nama magnet yang berbentuk seperti butang?",a:["Magnet buku","Magnet pemadam","Magnet butang","Magnet pensel"],correct:2},
+{topic:"Bentuk Magnet",q:"Apakah nama magnet yang berbentuk seperti ladam kuda?",a:["Magnet cincin","Magnet ladam","Magnet butang","Magnet bar"],correct:1},
+{topic:"Bentuk Magnet",q:"Pasangan manakah terdiri daripada magnet ladam dan satu lagi bentuk magnet yang betul?",a:["Magnet bunga dan magnet akar","Magnet kertas dan magnet kayu","Magnet air dan magnet pasir","Magnet ladam dan magnet bentuk U"],correct:3},
+{topic:"Bentuk Magnet",q:"Apakah perbezaan yang dinyatakan antara magnet ladam dengan magnet bentuk U?",a:["Kutub magnet ladam lebih rapat","Magnet U tidak mempunyai kutub","Magnet U diperbuat daripada kayu","Magnet ladam tidak mempunyai kutub"],correct:0},
+{topic:"Bentuk Magnet",q:"Yang manakah nama magnet yang berbentuk silinder?",a:["Magnet akar","Magnet segitiga daun","Magnet bunga","Magnet silinder"],correct:3},
+{topic:"Hebatnya Magnet",q:"Jika objek bergerak ke arah magnet apabila magnet didekatkan, tindakan itu disebut ____.",a:["Memadam","Mengukur","Menarik","Menolak"],correct:2},
+{topic:"Hebatnya Magnet",q:"Objek plastik berbentuk pembaris manakah yang tidak dapat ditarik magnet?",a:["Pembaris plastik","Klip kertas","Paku","Skru"],correct:0},
+{topic:"Hebatnya Magnet",q:"Yang manakah pasangan objek yang kedua-duanya tidak dapat ditarik magnet?",a:["Pin baju dan skru","Guli dan pemadam","Klip kertas dan paku","Skru dan paku"],correct:1},
+{topic:"Hebatnya Magnet",q:"Yang manakah pasangan objek yang menunjukkan satu boleh ditarik dan satu tidak boleh ditarik?",a:["Skru dan guli","Guli dan pemadam","Paku dan skru","Pin baju dan klip kertas"],correct:0},
+{topic:"Hebatnya Magnet",q:"Objek yang digunakan untuk memadam tulisan manakah yang tidak dapat ditarik magnet?",a:["Skru","Klip kertas","Paku","Pemadam"],correct:3},
+{topic:"Tarikan dan Tolakan Magnet",q:"Jika U berhadapan dengan U, tindakan yang betul ialah ____.",a:["Tarikan","Tolakan","Tiada tindakan","Pemanasan"],correct:1},
+{topic:"Tarikan dan Tolakan Magnet",q:"Apabila magnet saling menjauh kerana kutub yang sama, tindakan itu ialah ____.",a:["Pengukuran","Pemadaman","Tolakan","Tarikan"],correct:2},
+{topic:"Tarikan dan Tolakan Magnet",q:"Kutub Utara didekatkan dengan kutub Utara. Apakah yang berlaku?",a:["Melekat pada plastik","Menolak","Mencair","Menarik"],correct:1},
+{topic:"Tarikan dan Tolakan Magnet",q:"Jika S berhadapan dengan U, tindakan yang betul ialah ____.",a:["Tolakan","Tiada tindakan","Pemanasan","Tarikan"],correct:3},
+{topic:"Tarikan dan Tolakan Magnet",q:"Dua magnet bar digunakan dalam aktiviti untuk mengkaji ____.",a:["Tarikan dan tolakan","Bau magnet","Warna magnet","Rasa magnet"],correct:0},
+{topic:"Kekuatan Magnet",q:"Magnet digerakkan mendekati klip kertas sehingga klip kertas ____.",a:["Hilang","Mencair","Ditarik","Bertukar warna"],correct:2},
+{topic:"Kekuatan Magnet",q:"Dua magnet diuji dengan jenis klip kertas yang sama. Magnet R menarik lebih banyak klip. Apakah kesimpulan paling sesuai?",a:["Klip kertas bukan objek tarikan","Magnet R lebih lemah","Kedua-duanya sama","Magnet R lebih kuat"],correct:3},
+{topic:"Kekuatan Magnet",q:"Dalam aktiviti kekuatan magnet, klip kertas disusun di sisi ____.",a:["Tingkap","Pembaris","Buku","Pintu"],correct:1},
+{topic:"Kekuatan Magnet",q:"Untuk membandingkan kekuatan magnet dengan adil, klip kertas perlu disusun dan jarak diperhatikan menggunakan ____.",a:["Pembaris","Guli","Pemadam","Kayu aiskrim"],correct:0},
+{topic:"Kekuatan Magnet",q:"Kekuatan magnet boleh dibandingkan dengan melihat bilangan klip kertas yang ____.",a:["Dipotong","Diwarnakan","Ditarik","Dipadam"],correct:2}
 ];
 
-
-/* =========================================================
-   HELPERS
-   ========================================================= */
-
-function cellKey(r,c){
-
-    return r + "," + c;
-}
-
-
-function edgeKey(a,b){
-
-    const x =
-    cellKey(
-        a.r,
-        a.c
-    );
-
-
-    const y =
-    cellKey(
-        b.r,
-        b.c
-    );
-
-
-    return(
-        x < y
-        ? x + "|" + y
-        : y + "|" + x
-    );
-}
-
-
-/* =========================================================
-   RANDOM
-   ========================================================= */
-
-function makeRandom(seed){
-
-    return function(){
-
-        let t =
-        seed +=
-        0x6D2B79F5;
-
-
-        t =
-        Math.imul(
-            t ^
-            (
-                t >>>
-                15
-            ),
-            t | 1
-        );
-
-
-        t ^=
-        t +
-        Math.imul(
-            t ^
-            (
-                t >>>
-                7
-            ),
-            t | 61
-        );
-
-
-        return(
-            (
-                t ^
-                (
-                    t >>>
-                    14
-                )
-            ) >>>
-            0
-        ) /
-        4294967296;
-    };
-}
-
-
-function shuffle(
-    array,
-    random
-){
-
-    for(
-        let i =
-        array.length - 1;
-
-        i > 0;
-
-        i--
-    ){
-
-        const j =
-        Math.floor(
-            random() *
-            (
-                i + 1
-            )
-        );
-
-
-        [
-            array[i],
-            array[j]
-        ] =
-        [
-            array[j],
-            array[i]
-        ];
-    }
-
-
-    return array;
-}
-
-
-/* =========================================================
-   GRID NEIGHBOURS
-   ========================================================= */
-
-function gridNeighbours(
-    cell,
-    rows,
-    cols
-){
-
-    const output =
-    [];
-
-
-    if(
-        cell.r >
-        0
-    ){
-
-        output.push({
-            r:
-            cell.r - 1,
-
-            c:
-            cell.c
-        });
-    }
-
-
-    if(
-        cell.r <
-        rows - 1
-    ){
-
-        output.push({
-            r:
-            cell.r + 1,
-
-            c:
-            cell.c
-        });
-    }
-
-
-    if(
-        cell.c >
-        0
-    ){
-
-        output.push({
-            r:
-            cell.r,
-
-            c:
-            cell.c - 1
-        });
-    }
-
-
-    if(
-        cell.c <
-        cols - 1
-    ){
-
-        output.push({
-            r:
-            cell.r,
-
-            c:
-            cell.c + 1
-        });
-    }
-
-
-    return output;
-}
-
-
-/* =========================================================
-   BASIC FULL GRID PATH
-   ========================================================= */
-
-function basicSnake(
-    rows,
-    cols,
-    vertical
-){
-
-    const path =
-    [];
-
-
-    if(
-        !vertical
-    ){
-
-        for(
-            let r=0;
-            r<rows;
-            r++
-        ){
-
-            if(
-                r %
-                2 ===
-                0
-            ){
-
-                for(
-                    let c=0;
-                    c<cols;
-                    c++
-                ){
-
-                    path.push({
-                        r:r,
-                        c:c
-                    });
-                }
-
-            }else{
-
-                for(
-                    let c=cols-1;
-                    c>=0;
-                    c--
-                ){
-
-                    path.push({
-                        r:r,
-                        c:c
-                    });
-                }
-            }
-        }
-
-    }else{
-
-        for(
-            let c=0;
-            c<cols;
-            c++
-        ){
-
-            if(
-                c %
-                2 ===
-                0
-            ){
-
-                for(
-                    let r=0;
-                    r<rows;
-                    r++
-                ){
-
-                    path.push({
-                        r:r,
-                        c:c
-                    });
-                }
-
-            }else{
-
-                for(
-                    let r=rows-1;
-                    r>=0;
-                    r--
-                ){
-
-                    path.push({
-                        r:r,
-                        c:c
-                    });
-                }
-            }
-        }
-    }
-
-
-    return path;
-}
-
-
-/* =========================================================
-   MUTATE FULL GRID PATH
-   ========================================================= */
-
-function mutateHamiltonian(
-    path,
-    rows,
-    cols,
-    random,
-    steps
-){
-
-    let current =
-    path.map(
-        cell=>({
-
-            r:
-            cell.r,
-
-            c:
-            cell.c
-
-        })
-    );
-
-
-    for(
-        let step=0;
-        step<steps;
-        step++
-    ){
-
-        const useStart =
-        random() <
-        .5;
-
-
-        if(
-            useStart
-        ){
-
-            const endpoint =
-            current[0];
-
-
-            const neighbours =
-            shuffle(
-                gridNeighbours(
-                    endpoint,
-                    rows,
-                    cols
-                ),
-                random
-            );
-
-
-            let changed =
-            false;
-
-
-            for(
-                const neighbour
-                of neighbours
-            ){
-
-                let index =
-                -1;
-
-
-                for(
-                    let i=2;
-                    i<current.length;
-                    i++
-                ){
-
-                    if(
-                        current[i].r ===
-                        neighbour.r &&
-
-                        current[i].c ===
-                        neighbour.c
-                    ){
-
-                        index =
-                        i;
-
-                        break;
-                    }
-                }
-
-
-                if(
-                    index >
-                    1
-                ){
-
-                    current =
-
-                    current
-                    .slice(
-                        0,
-                        index
-                    )
-                    .reverse()
-
-                    .concat(
-
-                        current.slice(
-                            index
-                        )
-                    );
-
-
-                    changed =
-                    true;
-
-
-                    break;
-                }
-            }
-
-
-            if(
-                !changed &&
-                random() <
-                .35
-            ){
-
-                current.reverse();
-            }
-
-        }else{
-
-            const endpoint =
-            current[
-                current.length -
-                1
-            ];
-
-
-            const neighbours =
-            shuffle(
-                gridNeighbours(
-                    endpoint,
-                    rows,
-                    cols
-                ),
-                random
-            );
-
-
-            let changed =
-            false;
-
-
-            for(
-                const neighbour
-                of neighbours
-            ){
-
-                let index =
-                -1;
-
-
-                for(
-                    let i=0;
-                    i<current.length-2;
-                    i++
-                ){
-
-                    if(
-                        current[i].r ===
-                        neighbour.r &&
-
-                        current[i].c ===
-                        neighbour.c
-                    ){
-
-                        index =
-                        i;
-
-                        break;
-                    }
-                }
-
-
-                if(
-                    index >=
-                    0 &&
-
-                    index <
-                    current.length -
-                    2
-                ){
-
-                    current =
-
-                    current
-                    .slice(
-                        0,
-                        index + 1
-                    )
-
-                    .concat(
-
-                        current
-                        .slice(
-                            index + 1
-                        )
-                        .reverse()
-                    );
-
-
-                    changed =
-                    true;
-
-
-                    break;
-                }
-            }
-
-
-            if(
-                !changed &&
-                random() <
-                .35
-            ){
-
-                current.reverse();
-            }
-        }
-    }
-
-
-    return current;
-}
-
-
-/* =========================================================
-   COUNT TURNS
-   ========================================================= */
-
-function countTurns(
-    path
-){
-
-    let turns =
-    0;
-
-
-    for(
-        let i=2;
-        i<path.length;
-        i++
-    ){
-
-        const a =
-        path[
-            i - 2
-        ];
-
-
-        const b =
-        path[
-            i - 1
-        ];
-
-
-        const c =
-        path[i];
-
-
-        const d1r =
-        b.r -
-        a.r;
-
-
-        const d1c =
-        b.c -
-        a.c;
-
-
-        const d2r =
-        c.r -
-        b.r;
-
-
-        const d2c =
-        c.c -
-        b.c;
-
-
-        if(
-            d1r !==
-            d2r ||
-
-            d1c !==
-            d2c
-        ){
-
-            turns++;
-        }
-    }
-
-
-    return turns;
-}
-
-
-/* =========================================================
-   AUDIO
-   ========================================================= */
+function cellKey(r,c){return r+","+c;}
+function edgeKey(a,b){const x=cellKey(a.r,a.c),y=cellKey(b.r,b.c);return x<y?x+"|"+y:y+"|"+x;}
+function makeRandom(seed){return function(){let t=seed+=0x6D2B79F5;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;};}
+function shuffle(array,random){for(let i=array.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[array[i],array[j]]=[array[j],array[i]];}return array;}
+function gridNeighbours(cell,rows,cols){const out=[];if(cell.r>0)out.push({r:cell.r-1,c:cell.c});if(cell.r<rows-1)out.push({r:cell.r+1,c:cell.c});if(cell.c>0)out.push({r:cell.r,c:cell.c-1});if(cell.c<cols-1)out.push({r:cell.r,c:cell.c+1});return out;}
+function basicSnake(rows,cols,vertical){const path=[];if(!vertical){for(let r=0;r<rows;r++){if(r%2===0){for(let c=0;c<cols;c++)path.push({r:r,c:c});}else{for(let c=cols-1;c>=0;c--)path.push({r:r,c:c});}}}else{for(let c=0;c<cols;c++){if(c%2===0){for(let r=0;r<rows;r++)path.push({r:r,c:c});}else{for(let r=rows-1;r>=0;r--)path.push({r:r,c:c});}}}return path;}
+function mutateHamiltonian(path,rows,cols,random,steps){let current=path.map(cell=>({r:cell.r,c:cell.c}));for(let step=0;step<steps;step++){const useStart=random()<.5;if(useStart){const endpoint=current[0];const neighbours=shuffle(gridNeighbours(endpoint,rows,cols),random);let changed=false;for(const neighbour of neighbours){let index=-1;for(let i=2;i<current.length;i++){if(current[i].r===neighbour.r&&current[i].c===neighbour.c){index=i;break;}}if(index>1){current=current.slice(0,index).reverse().concat(current.slice(index));changed=true;break;}}if(!changed&&random()<.35)current.reverse();}else{const endpoint=current[current.length-1];const neighbours=shuffle(gridNeighbours(endpoint,rows,cols),random);let changed=false;for(const neighbour of neighbours){let index=-1;for(let i=0;i<current.length-2;i++){if(current[i].r===neighbour.r&&current[i].c===neighbour.c){index=i;break;}}if(index>=0&&index<current.length-2){current=current.slice(0,index+1).concat(current.slice(index+1).reverse());changed=true;break;}}if(!changed&&random()<.35)current.reverse();}}return current;}
+function countTurns(path){let turns=0;for(let i=2;i<path.length;i++){const a=path[i-2],b=path[i-1],c=path[i];const d1r=b.r-a.r,d1c=b.c-a.c,d2r=c.r-b.r,d2c=c.c-b.c;if(d1r!==d2r||d1c!==d2c)turns++;}return turns;}
+function formatCountdown(seconds){const safe=Math.max(0,Math.floor(seconds));const minutes=Math.floor(safe/60);const secs=safe%60;return String(minutes).padStart(2,"0")+":"+String(secs).padStart(2,"0");}
 
 class SoundBox{
-
-    constructor(){
-
-        this.ctx =
-        null;
-
-
-        this.master =
-        null;
-
-
-        this.musicTimer =
-        null;
-
-
-        this.musicIndex =
-        0;
-    }
-
-
-    unlock(){
-
-        if(
-            this.ctx
-        ){
-
-            if(
-                this.ctx.state ===
-                "suspended"
-            ){
-
-                this.ctx.resume();
-            }
-
-
-            return;
-        }
-
-
-        const AC =
-        window.AudioContext ||
-        window.webkitAudioContext;
-
-
-        if(
-            !AC
-        ){
-
-            return;
-        }
-
-
-        this.ctx =
-        new AC();
-
-
-        this.master =
-        this.ctx.createGain();
-
-
-        this.master.gain.value =
-        .11;
-
-
-        this.master.connect(
-            this.ctx.destination
-        );
-
-
-        this.startMusic();
-    }
-
-
-    tone(
-        frequency,
-        duration=.07,
-        type="sine",
-        volume=.05
-    ){
-
-        if(
-            !this.ctx
-        ){
-
-            return;
-        }
-
-
-        const now =
-        this.ctx.currentTime;
-
-
-        const oscillator =
-        this.ctx.createOscillator();
-
-
-        const gain =
-        this.ctx.createGain();
-
-
-        oscillator.type =
-        type;
-
-
-        oscillator.frequency.value =
-        frequency;
-
-
-        gain.gain.setValueAtTime(
-            .0001,
-            now
-        );
-
-
-        gain.gain.exponentialRampToValueAtTime(
-            volume,
-            now +
-            .01
-        );
-
-
-        gain.gain.exponentialRampToValueAtTime(
-            .0001,
-            now +
-            duration
-        );
-
-
-        oscillator.connect(
-            gain
-        );
-
-
-        gain.connect(
-            this.master
-        );
-
-
-        oscillator.start(
-            now
-        );
-
-
-        oscillator.stop(
-            now +
-            duration +
-            .03
-        );
-    }
-
-
-    move(){
-
-        this.tone(
-            350,
-            .035,
-            "triangle",
-            .03
-        );
-    }
-
-
-    undo(){
-
-        this.tone(
-            250,
-            .04,
-            "triangle",
-            .03
-        );
-    }
-
-
-    bad(){
-
-        this.tone(
-            135,
-            .07,
-            "square",
-            .035
-        );
-    }
-
-
-    correct(){
-
-        this.tone(
-            620,
-            .08,
-            "triangle",
-            .08
-        );
-
-
-        setTimeout(
-            ()=>{
-
-                this.tone(
-                    840,
-                    .13,
-                    "triangle",
-                    .08
-                );
-
-            },
-            90
-        );
-    }
-
-
-    win(){
-
-        this.tone(
-            523,
-            .08,
-            "sine",
-            .09
-        );
-
-
-        setTimeout(
-            ()=>{
-
-                this.tone(
-                    659,
-                    .10,
-                    "sine",
-                    .09
-                );
-
-            },
-            90
-        );
-
-
-        setTimeout(
-            ()=>{
-
-                this.tone(
-                    784,
-                    .16,
-                    "sine",
-                    .09
-                );
-
-            },
-            180
-        );
-    }
-
-
-    startMusic(){
-
-        if(
-            this.musicTimer
-        ){
-
-            return;
-        }
-
-
-        const notes =
-        [
-            261.63,
-            329.63,
-            392,
-            329.63,
-
-            293.66,
-            349.23,
-            392,
-            349.23
-        ];
-
-
-        this.musicTimer =
-        setInterval(
-            ()=>{
-
-                if(
-                    !this.ctx
-                ){
-
-                    return;
-                }
-
-
-                this.tone(
-
-                    notes[
-                        this.musicIndex %
-                        notes.length
-                    ],
-
-                    .16,
-
-                    "sine",
-
-                    .009
-                );
-
-
-                this.musicIndex++;
-
-            },
-            520
-        );
-    }
+constructor(){this.ctx=null;this.master=null;this.musicTimer=null;this.musicIndex=0;}
+unlock(){if(this.ctx){if(this.ctx.state==="suspended")this.ctx.resume();return;}const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;this.ctx=new AC();this.master=this.ctx.createGain();this.master.gain.value=.11;this.master.connect(this.ctx.destination);this.startMusic();}
+tone(frequency,duration=.07,type="sine",volume=.05){if(!this.ctx)return;const now=this.ctx.currentTime;const oscillator=this.ctx.createOscillator();const gain=this.ctx.createGain();oscillator.type=type;oscillator.frequency.value=frequency;gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(volume,now+.01);gain.gain.exponentialRampToValueAtTime(.0001,now+duration);oscillator.connect(gain);gain.connect(this.master);oscillator.start(now);oscillator.stop(now+duration+.03);}
+move(){this.tone(350,.035,"triangle",.03);}
+undo(){this.tone(250,.04,"triangle",.03);}
+bad(){this.tone(135,.07,"square",.035);}
+correct(){this.tone(620,.08,"triangle",.08);setTimeout(()=>this.tone(840,.13,"triangle",.08),90);}
+win(){this.tone(523,.08,"sine",.09);setTimeout(()=>this.tone(659,.10,"sine",.09),90);setTimeout(()=>this.tone(784,.16,"sine",.09),180);}
+startMusic(){if(this.musicTimer)return;const notes=[261.63,329.63,392,329.63,293.66,349.23,392,349.23];this.musicTimer=setInterval(()=>{if(!this.ctx)return;this.tone(notes[this.musicIndex%notes.length],.16,"sine",.009);this.musicIndex++;},520);}
 }
 
-
-const AUDIO =
-new SoundBox();
-
-
-/* =========================================================
-   MAIN GAME
-   ========================================================= */
-
-class TrailPuzzle
-extends Phaser.Scene{
-
-    constructor(){
-
-        super(
-            "TrailPuzzle"
-        );
-    }
-
-
-    create(){
-
-        this.stageIndex =
-        0;
-
-
-        this.correctFirstTry =
-        0;
-
-
-        this.questionOpen =
-        false;
-
-
-        this.answerLocked =
-        false;
-
-
-        this.locked =
-        false;
-
-
-        this.dragging =
-        false;
-
-
-        this.lastDragX =
-        0;
-
-
-        this.lastDragY =
-        0;
-
-
-        this.sessionSeed =
-        Date.now() >>>
-        0;
-
-
-        this.usedPatternSignatures =
-        new Set();
-
-
-        /* ===============================
-           COUNTDOWN
-           =============================== */
-
-        this.countdownEvent =
-        null;
-
-
-        this.timeLeft =
-        60;
-
-
-        this.hintVisible =
-        false;
-
-
-        /* ===============================
-           GRAPHICS
-           =============================== */
-
-        this.bgG =
-        this.add.graphics();
-
-
-        this.boardG =
-        this.add.graphics();
-
-
-        this.tileG =
-        this.add.graphics();
-
-
-        /*
-        Hint berada di atas tile,
-        tapi di bawah line user.
-        */
-
-        this.hintG =
-        this.add.graphics();
-
-
-        this.pathG =
-        this.add.graphics();
-
-
-        this.barrierG =
-        this.add.graphics();
-
-
-        this.drawBackground();
-
-        this.createHeader();
-
-        this.createPortal();
-
-        this.createSymbol();
-
-        this.setupTouch();
-
-
-        this.input.on(
-            "pointerdown",
-            ()=>{
-
-                AUDIO.unlock();
-            }
-        );
-
-
-        this.startStage(
-            0
-        );
-    }
-
-
-/* =========================================================
-   BACKGROUND
-   ========================================================= */
-
-    drawBackground(){
-
-        this.bgG
-        .fillStyle(
-            0xdff4ff,
-            1
-        );
-
-
-        this.bgG
-        .fillRect(
-            0,
-            0,
-            GAME_W,
-            GAME_H
-        );
-
-
-        this.bgG
-        .fillStyle(
-            0xffffff,
-            .18
-        );
-
-
-        for(
-            let y=-80;
-            y<GAME_H+80;
-            y+=115
-        ){
-
-            for(
-                let x=-90;
-                x<GAME_W+90;
-                x+=150
-            ){
-
-                const offset =
-                (
-                    Math.abs(
-                        Math.floor(
-                            y /
-                            115
-                        )
-                    ) %
-                    2
-                ) *
-                45;
-
-
-                this.bgG
-                .fillRoundedRect(
-
-                    x +
-                    offset,
-
-                    y,
-
-                    92,
-
-                    46,
-
-                    22
-                );
-            }
-        }
-    }
-
-
-/* =========================================================
-   HEADER
-   ========================================================= */
-
-    createHeader(){
-
-        this.add.rectangle(
-            450,
-            92,
-            820,
-            150,
-            0xffffff,
-            .97
-        )
-        .setStrokeStyle(
-            3,
-            0xc6dce5
-        );
-
-
-        this.add.text(
-            70,
-            32,
-            "TRAIL PUZZLE",
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-
-                fontSize:
-                "29px",
-
-                fontStyle:
-                "bold",
-
-                color:
-                "#173f51"
-            }
-        )
-        .setOrigin(
-            0,
-            .5
-        );
-
-
-        this.stageText =
-        this.add.text(
-            70,
-            70,
-            "STAGE 1 / 25",
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-
-                fontSize:
-                "22px",
-
-                fontStyle:
-                "bold",
-
-                color:
-                "#e45155"
-            }
-        )
-        .setOrigin(
-            0,
-            .5
-        );
-
-
-        this.difficultyText =
-        this.add.text(
-            245,
-            70,
-            "MUDAH",
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-
-                fontSize:
-                "16px",
-
-                fontStyle:
-                "bold",
-
-                color:
-                "#ffffff",
-
-                backgroundColor:
-                "#4b91aa",
-
-                padding:{
-                    x:10,
-                    y:5
-                }
-            }
-        )
-        .setOrigin(
-            0,
-            .5
-        );
-
-
-        /* =================================================
-           COUNTDOWN DISPLAY
-           ================================================= */
-
-        this.timerText =
-        this.add.text(
-            690,
-            38,
-            "60s",
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-
-                fontSize:
-                "24px",
-
-                fontStyle:
-                "bold",
-
-                color:
-                "#e45155"
-            }
-        )
-        .setOrigin(
-            .5
-        );
-
-
-        this.timerLabel =
-        this.add.text(
-            690,
-            67,
-            "COUNTDOWN",
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-
-                fontSize:
-                "13px",
-
-                fontStyle:
-                "bold",
-
-                color:
-                "#6c8792"
-            }
-        )
-        .setOrigin(
-            .5
-        );
-
-
-        this.statusText =
-        this.add.text(
-            70,
-            107,
-            "Seret simbol melalui semua petak.",
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-
-                fontSize:
-                "18px",
-
-                color:
-                "#55717d"
-            }
-        )
-        .setOrigin(
-            0,
-            .5
-        );
-
-
-        this.progressBack =
-        this.add.rectangle(
-            70,
-            140,
-            470,
-            12,
-            0xd8e6eb
-        )
-        .setOrigin(
-            0,
-            .5
-        );
-
-
-        this.progressFill =
-        this.add.rectangle(
-            70,
-            140,
-            1,
-            12,
-            0xffbd42
-        )
-        .setOrigin(
-            0,
-            .5
-        );
-
-
-        this.progressText =
-        this.add.text(
-            555,
-            140,
-            "",
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-
-                fontSize:
-                "16px",
-
-                fontStyle:
-                "bold",
-
-                color:
-                "#607984"
-            }
-        )
-        .setOrigin(
-            0,
-            .5
-        );
-
-
-        const reset =
-        this.add.rectangle(
-            785,
-            105,
-            120,
-            58,
-            0xf5fafc,
-            1
-        )
-        .setStrokeStyle(
-            2,
-            0xc4d8e1
-        )
-        .setInteractive({
-            useHandCursor:true
-        });
-
-
-        this.add.text(
-            785,
-            105,
-            "↻ RESET",
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-
-                fontSize:
-                "17px",
-
-                fontStyle:
-                "bold",
-
-                color:
-                "#31586a"
-            }
-        )
-        .setOrigin(
-            .5
-        );
-
-
-        reset.on(
-            "pointerdown",
-            ()=>{
-
-                AUDIO.unlock();
-
-
-                this.dragging =
-                false;
-
-
-                this.resetStage();
-            }
-        );
-    }
-
-
-/* =========================================================
-   SYMBOL
-   ========================================================= */
-
-    createSymbol(){
-
-        this.player =
-        this.add.container(
-            0,
-            0
-        );
-
-
-        const shadow =
-        this.add.ellipse(
-            3,
-            19,
-            44,
-            13,
-            0x173946,
-            .16
-        );
-
-
-        const outer =
-        this.add.circle(
-            0,
-            0,
-            24,
-            0x4a91ad,
-            1
-        )
-        .setStrokeStyle(
-            4,
-            0xffffff
-        );
-
-
-        const inner =
-        this.add.circle(
-            0,
-            0,
-            16,
-            0x6ab0c9,
-            1
-        );
-
-
-        const symbol =
-        this.add.text(
-            0,
-            -1,
-            "✦",
-            {
-                fontFamily:
-                "Arial",
-
-                fontSize:
-                "25px",
-
-                fontStyle:
-                "bold",
-
-                color:
-                "#ffffff"
-            }
-        )
-        .setOrigin(
-            .5
-        );
-
-
-        this.player.add([
-
-            shadow,
-            outer,
-            inner,
-            symbol
-
-        ]);
-
-
-        this.player
-        .setDepth(
-            100
-        );
-    }
-
-
-/* =========================================================
-   PORTAL
-   ========================================================= */
-
-    createPortal(){
-
-        this.portal =
-        this.add.container(
-            0,
-            0
-        );
-
-
-        const glow =
-        this.add.circle(
-            0,
-            0,
-            38,
-            0x000000,
-            .12
-        );
-
-
-        const outer =
-        this.add.circle(
-            0,
-            0,
-            30,
-            0x161a1e,
-            1
-        )
-        .setStrokeStyle(
-            5,
-            0x3d474d
-        );
-
-
-        const ring =
-        this.add.circle(
-            0,
-            0,
-            20,
-            0x07090b,
-            1
-        )
-        .setStrokeStyle(
-            3,
-            0x77848b
-        );
-
-
-        const core =
-        this.add.circle(
-            0,
-            0,
-            9,
-            0x000000,
-            1
-        )
-        .setStrokeStyle(
-            2,
-            0xe4ebee
-        );
-
-
-        this.portal.add([
-
-            glow,
-            outer,
-            ring,
-            core
-
-        ]);
-
-
-        this.portal
-        .setDepth(
-            80
-        );
-
-
-        this.tweens.add({
-
-            targets:
-            ring,
-
-            scaleX:{
-                from:.86,
-                to:1.10
-            },
-
-            scaleY:{
-                from:.86,
-                to:1.10
-            },
-
-            alpha:{
-                from:.55,
-                to:1
-            },
-
-            duration:
-            700,
-
-            yoyo:
-            true,
-
-            repeat:
-            -1
-        });
-    }
-
-
-/* =========================================================
-   DIFFICULTY
-   ========================================================= */
-
-    getSettings(){
-
-        const stage =
-        this.stageIndex;
-
-
-        if(
-            stage <
-            5
-        ){
-
-            return{
-
-                rows:5,
-
-                cols:5,
-
-                barriers:
-                3 +
-                stage,
-
-                mutations:
-                4 +
-                stage *
-                2,
-
-                label:
-                stage <
-                2
-                ? "MUDAH"
-                : "MUDAH +"
-
-            };
-        }
-
-
-        if(
-            stage <
-            10
-        ){
-
-            return{
-
-                rows:5,
-
-                cols:6,
-
-                barriers:
-                7 +
-                (
-                    stage -
-                    5
-                ),
-
-                mutations:
-                14 +
-                (
-                    stage -
-                    5
-                ) *
-                3,
-
-                label:
-                "SEDERHANA"
-
-            };
-        }
-
-
-        if(
-            stage <
-            15
-        ){
-
-            return{
-
-                rows:6,
-
-                cols:6,
-
-                barriers:
-                10 +
-                (
-                    stage -
-                    10
-                ),
-
-                mutations:
-                28 +
-                (
-                    stage -
-                    10
-                ) *
-                4,
-
-                label:
-                "MENCABAR"
-
-            };
-        }
-
-
-        if(
-            stage <
-            20
-        ){
-
-            return{
-
-                rows:6,
-
-                cols:7,
-
-                barriers:
-                13 +
-                (
-                    stage -
-                    15
-                ),
-
-                mutations:
-                48 +
-                (
-                    stage -
-                    15
-                ) *
-                5,
-
-                label:
-                "SUKAR"
-
-            };
-        }
-
-
-        return{
-
-            rows:7,
-
-            cols:7,
-
-            barriers:
-            16 +
-            (
-                stage -
-                20
-            ),
-
-            mutations:
-            72 +
-            (
-                stage -
-                20
-            ) *
-            6,
-
-            label:
-            "SANGAT SUKAR"
-
-        };
-    }
-
-
-/* =========================================================
-   CREATE SAFE PATH
-   ========================================================= */
-
-    makePath(
-        random,
-        settings
-    ){
-
-        let bestPath =
-        null;
-
-
-        let bestTurns =
-        -1;
-
-
-        const tries =
-        6 +
-        Math.floor(
-            this.stageIndex /
-            4
-        );
-
-
-        for(
-            let tryIndex=0;
-            tryIndex<tries;
-            tryIndex++
-        ){
-
-            let path =
-            basicSnake(
-
-                this.rows,
-
-                this.cols,
-
-                random() <
-                .5
-            );
-
-
-            path =
-            mutateHamiltonian(
-
-                path,
-
-                this.rows,
-
-                this.cols,
-
-                random,
-
-                settings.mutations +
-                tryIndex *
-                2
-            );
-
-
-            const turns =
-            countTurns(
-                path
-            );
-
-
-            if(
-                turns >
-                bestTurns
-            ){
-
-                bestTurns =
-                turns;
-
-
-                bestPath =
-                path;
-            }
-        }
-
-
-        return bestPath;
-    }
-
-
-/* =========================================================
-   PATTERN SIGNATURE
-   ========================================================= */
-
-    patternSignature(){
-
-        const barrierKeys =
-        this.barriers
-        .map(
-            b=>
-            b.key
-        )
-        .sort();
-
-
-        const pathKeys =
-        this.safePath
-        .map(
-            cell=>
-            cellKey(
-                cell.r,
-                cell.c
-            )
-        )
-        .join(">");
-
-
-        return(
-
-            this.rows +
-            "x" +
-            this.cols +
-
-            "|PATH:" +
-            pathKeys +
-
-            "|BARRIER:" +
-            barrierKeys.join(";")
-        );
-    }
-
-
-/* =========================================================
-   GENERATE PATTERN
-   ========================================================= */
-
-    generatePattern(
-        settings,
-        attempt
-    ){
-
-        const random =
-        makeRandom(
-
-            (
-                this.sessionSeed +
-
-                this.stageIndex *
-                100003 +
-
-                attempt *
-                92821
-            ) >>>
-            0
-        );
-
-
-        this.safePath =
-        this.makePath(
-
-            random,
-
-            settings
-        );
-
-
-        this.startCell =
-        {
-            ...this.safePath[0]
-        };
-
-
-        this.portalCell =
-        {
-            ...this.safePath[
-                this.safePath.length -
-                1
-            ]
-        };
-
-
-        const safeEdges =
-        new Set();
-
-
-        for(
-            let i=1;
-            i<this.safePath.length;
-            i++
-        ){
-
-            safeEdges.add(
-
-                edgeKey(
-
-                    this.safePath[
-                        i -
-                        1
-                    ],
-
-                    this.safePath[
-                        i
-                    ]
-                )
-            );
-        }
-
-
-        const candidates =
-        [];
-
-
-        for(
-            let r=0;
-            r<this.rows;
-            r++
-        ){
-
-            for(
-                let c=0;
-                c<this.cols;
-                c++
-            ){
-
-                const current =
-                {
-                    r:r,
-                    c:c
-                };
-
-
-                if(
-                    c + 1 <
-                    this.cols
-                ){
-
-                    const next =
-                    {
-                        r:r,
-                        c:c+1
-                    };
-
-
-                    const k =
-                    edgeKey(
-                        current,
-                        next
-                    );
-
-
-                    if(
-                        !safeEdges.has(
-                            k
-                        )
-                    ){
-
-                        candidates.push({
-
-                            a:{
-                                ...current
-                            },
-
-                            b:{
-                                ...next
-                            },
-
-                            key:k
-
-                        });
-                    }
-                }
-
-
-                if(
-                    r + 1 <
-                    this.rows
-                ){
-
-                    const next =
-                    {
-                        r:r+1,
-                        c:c
-                    };
-
-
-                    const k =
-                    edgeKey(
-                        current,
-                        next
-                    );
-
-
-                    if(
-                        !safeEdges.has(
-                            k
-                        )
-                    ){
-
-                        candidates.push({
-
-                            a:{
-                                ...current
-                            },
-
-                            b:{
-                                ...next
-                            },
-
-                            key:k
-
-                        });
-                    }
-                }
-            }
-        }
-
-
-        shuffle(
-            candidates,
-            random
-        );
-
-
-        const centreX =
-        (
-            this.cols -
-            1
-        ) /
-        2;
-
-
-        const centreY =
-        (
-            this.rows -
-            1
-        ) /
-        2;
-
-
-        for(
-            const barrier
-            of candidates
-        ){
-
-            const middleX =
-            (
-                barrier.a.c +
-                barrier.b.c
-            ) /
-            2;
-
-
-            const middleY =
-            (
-                barrier.a.r +
-                barrier.b.r
-            ) /
-            2;
-
-
-            const distance =
-            Math.hypot(
-
-                middleX -
-                centreX,
-
-                middleY -
-                centreY
-            );
-
-
-            const centreBonus =
-            Math.max(
-
-                0,
-
-                1 -
-                distance /
-                Math.max(
-                    this.rows,
-                    this.cols
-                )
-            );
-
-
-            barrier.score =
-
-            random()
-
-            +
-
-            centreBonus *
-            (
-                .25 +
-                this.stageIndex *
-                .012
-            );
-        }
-
-
-        candidates.sort(
-            (
-                a,
-                b
-            )=>
-            b.score -
-            a.score
-        );
-
-
-        this.barriers =
-        [];
-
-
-        this.barrierSet =
-        new Set();
-
-
-        const target =
-        Math.min(
-
-            settings.barriers,
-
-            candidates.length
-        );
-
-
-        for(
-            const barrier
-            of candidates
-        ){
-
-            if(
-                this.barriers.length >=
-                target
-            ){
-
-                break;
-            }
-
-
-            let tooNear =
-            0;
-
-
-            for(
-                const chosen
-                of this.barriers
-            ){
-
-                const ax =
-                (
-                    barrier.a.c +
-                    barrier.b.c
-                ) /
-                2;
-
-
-                const ay =
-                (
-                    barrier.a.r +
-                    barrier.b.r
-                ) /
-                2;
-
-
-                const bx =
-                (
-                    chosen.a.c +
-                    chosen.b.c
-                ) /
-                2;
-
-
-                const by =
-                (
-                    chosen.a.r +
-                    chosen.b.r
-                ) /
-                2;
-
-
-                if(
-                    Math.abs(
-                        ax -
-                        bx
-                    )
-                    +
-                    Math.abs(
-                        ay -
-                        by
-                    )
-                    <
-                    1.15
-                ){
-
-                    tooNear++;
-                }
-            }
-
-
-            if(
-                tooNear >
-                0 &&
-
-                random() <
-                .62
-            ){
-
-                continue;
-            }
-
-
-            this.barriers.push(
-                barrier
-            );
-
-
-            this.barrierSet.add(
-                barrier.key
-            );
-        }
-
-
-        for(
-            const barrier
-            of candidates
-        ){
-
-            if(
-                this.barriers.length >=
-                target
-            ){
-
-                break;
-            }
-
-
-            if(
-                this.barrierSet.has(
-                    barrier.key
-                )
-            ){
-
-                continue;
-            }
-
-
-            this.barriers.push(
-                barrier
-            );
-
-
-            this.barrierSet.add(
-                barrier.key
-            );
-        }
-    }
-
-
-/* =========================================================
-   BUILD UNIQUE STAGE
-   ========================================================= */
-
-    buildStage(){
-
-        const settings =
-        this.getSettings();
-
-
-        this.rows =
-        settings.rows;
-
-
-        this.cols =
-        settings.cols;
-
-
-        this.currentDifficulty =
-        settings.label;
-
-
-        let signature =
-        "";
-
-
-        for(
-            let attempt=0;
-            attempt<160;
-            attempt++
-        ){
-
-            this.generatePattern(
-
-                settings,
-
-                attempt
-            );
-
-
-            signature =
-            this.patternSignature();
-
-
-            if(
-                !this.usedPatternSignatures.has(
-                    signature
-                )
-            ){
-
-                break;
-            }
-        }
-
-
-        this.usedPatternSignatures
-        .add(
-            signature
-        );
-
-
-        this.currentCell =
-        {
-            ...this.startCell
-        };
-
-
-        this.history =
-        [
-            {
-                ...this.startCell
-            }
-        ];
-
-
-        this.visited =
-        new Set([
-            cellKey(
-                this.startCell.r,
-                this.startCell.c
-            )
-        ]);
-    }
-
-
-/* =========================================================
-   START STAGE
-   ========================================================= */
-
-    startStage(
-        index
-    ){
-
-        /*
-        Berhentikan timer stage lama.
-        */
-
-        this.stopCountdown();
-
-
-        this.stageIndex =
-        index;
-
-
-        this.locked =
-        false;
-
-
-        this.questionOpen =
-        false;
-
-
-        this.answerLocked =
-        false;
-
-
-        this.dragging =
-        false;
-
-
-        /*
-        HINT DISEMBUNYIKAN UNTUK STAGE BARU.
-        */
-
-        this.hintVisible =
-        false;
-
-
-        this.timeLeft =
-        60;
-
-
-        this.buildStage();
-
-        this.calculateBoard();
-
-
-        this.stageText
-        .setText(
-            "STAGE " +
-            (
-                index +
-                1
-            ) +
-            " / 25"
-        );
-
-
-        this.difficultyText
-        .setText(
-            this.currentDifficulty
-        );
-
-
-        this.statusText
-        .setText(
-            "Pattern baru. Seret untuk maju, tarik balik untuk undo."
-        );
-
-
-        this.timerText
-        .setText(
-            "60s"
-        )
-        .setColor(
-            "#e45155"
-        );
-
-
-        this.player
-        .setVisible(
-            true
-        )
-        .setAlpha(
-            1
-        );
-
-
-        this.drawBoard();
-
-        this.placePlayer();
-
-        this.updateProgress();
-
-
-        /*
-        START COUNTDOWN 60 SAAT.
-        */
-
-        this.startCountdown();
-    }
-
-
-/* =========================================================
-   COUNTDOWN 60 SAAT
-   ========================================================= */
-
-    startCountdown(){
-
-        this.stopCountdown();
-
-
-        this.timeLeft =
-        60;
-
-
-        this.timerText
-        .setText(
-            "60s"
-        )
-        .setColor(
-            "#e45155"
-        );
-
-
-        this.countdownEvent =
-        this.time.addEvent({
-
-            delay:
-            1000,
-
-
-            loop:
-            true,
-
-
-            callback:
-            ()=>{
-
-                /*
-                Kalau dah masuk soalan atau
-                stage dah selesai, timer tak jalan.
-                */
-
-                if(
-                    this.questionOpen ||
-                    this.locked
-                ){
-
-                    return;
-                }
-
-
-                this.timeLeft--;
-
-
-                /*
-                10 SAAT TERAKHIR JADI LEBIH MERAH.
-                */
-
-                if(
-                    this.timeLeft <=
-                    10
-                ){
-
-                    this.timerText
-                    .setColor(
-                        "#d93636"
-                    );
-
-                }else{
-
-                    this.timerText
-                    .setColor(
-                        "#e45155"
-                    );
-                }
-
-
-                this.timerText
-                .setText(
-
-                    Math.max(
-                        0,
-                        this.timeLeft
-                    )
-                    +
-                    "s"
-                );
-
-
-                /*
-                HABIS 60 SAAT.
-                */
-
-                if(
-                    this.timeLeft <=
-                    0
-                ){
-
-                    this.stopCountdown();
-
-
-                    this.revealHiddenPath();
-                }
-            }
-
-        });
-    }
-
-
-/* =========================================================
-   STOP COUNTDOWN
-   ========================================================= */
-
-    stopCountdown(){
-
-        if(
-            this.countdownEvent
-        ){
-
-            this.countdownEvent
-            .remove(
-                false
-            );
-
-
-            this.countdownEvent =
-            null;
-        }
-    }
-
-
-/* =========================================================
-   60 SAAT HABIS
-
-   TUNJUK LALUAN TERSEMBUNYI.
-
-   PENTING:
-   TAK ADA OVERLAY.
-   TAK ADA WINDOW TUTUP GAME.
-   GAME MASIH BOLEH DIMAIN.
-   ========================================================= */
-
-    revealHiddenPath(){
-
-        if(
-            this.hintVisible ||
-            this.questionOpen ||
-            this.locked
-        ){
-
-            return;
-        }
-
-
-        this.hintVisible =
-        true;
-
-
-        this.timerText
-        .setText(
-            "0s"
-        )
-        .setColor(
-            "#4b91aa"
-        );
-
-
-        this.statusText
-        .setText(
-            "Masa tamat! Laluan bantuan ditunjukkan."
-        );
-
-
-        /*
-        REDRAW SAHAJA.
-        TAK TUTUP GAME.
-        */
-
-        this.drawBoard();
-    }
-
-
-/* =========================================================
-   RESET
-
-   RESET:
-   - pattern sama
-   - user balik start
-   - hint hilang
-   - countdown balik 60
-   ========================================================= */
-
-    resetStage(){
-
-        if(
-            this.questionOpen
-        ){
-
-            return;
-        }
-
-
-        this.locked =
-        false;
-
-
-        this.dragging =
-        false;
-
-
-        this.hintVisible =
-        false;
-
-
-        this.currentCell =
-        {
-            ...this.startCell
-        };
-
-
-        this.history =
-        [
-            {
-                ...this.startCell
-            }
-        ];
-
-
-        this.visited =
-        new Set([
-            cellKey(
-                this.startCell.r,
-                this.startCell.c
-            )
-        ]);
-
-
-        this.player
-        .setVisible(
-            true
-        )
-        .setAlpha(
-            1
-        );
-
-
-        this.placePlayer();
-
-        this.drawBoard();
-
-        this.updateProgress();
-
-
-        this.statusText
-        .setText(
-            "Puzzle direset. Countdown bermula semula."
-        );
-
-
-        /*
-        COUNTDOWN BALIK 60.
-        */
-
-        this.startCountdown();
-    }
-
-
-/* =========================================================
-   BOARD
-   ========================================================= */
-
-    calculateBoard(){
-
-        this.cellSize =
-        Math.floor(
-            Math.min(
-
-                770 /
-                this.cols,
-
-                805 /
-                this.rows,
-
-                116
-            )
-        );
-
-
-        this.boardW =
-        this.cols *
-        this.cellSize;
-
-
-        this.boardH =
-        this.rows *
-        this.cellSize;
-
-
-        this.boardX =
-        (
-            GAME_W -
-            this.boardW
-        ) /
-        2;
-
-
-        this.boardY =
-        180 +
-        Math.max(
-            0,
-            (
-                825 -
-                this.boardH
-            ) /
-            2
-        );
-    }
-
-
-    cellCenter(
-        r,
-        c
-    ){
-
-        return{
-
-            x:
-            this.boardX +
-            c *
-            this.cellSize +
-            this.cellSize /
-            2,
-
-
-            y:
-            this.boardY +
-            r *
-            this.cellSize +
-            this.cellSize /
-            2
-
-        };
-    }
-
-
-    pointerToCell(
-        x,
-        y
-    ){
-
-        if(
-            x <
-            this.boardX ||
-
-            x >=
-            this.boardX +
-            this.boardW ||
-
-            y <
-            this.boardY ||
-
-            y >=
-            this.boardY +
-            this.boardH
-        ){
-
-            return null;
-        }
-
-
-        return{
-
-            r:
-            Math.floor(
-                (
-                    y -
-                    this.boardY
-                ) /
-                this.cellSize
-            ),
-
-
-            c:
-            Math.floor(
-                (
-                    x -
-                    this.boardX
-                ) /
-                this.cellSize
-            )
-
-        };
-    }
-
-
-/* =========================================================
-   PLAYER POSITION
-   ========================================================= */
-
-    placePlayer(){
-
-        const position =
-        this.cellCenter(
-
-            this.currentCell.r,
-
-            this.currentCell.c
-        );
-
-
-        this.player
-        .setPosition(
-
-            position.x,
-
-            position.y
-        )
-        .setScale(
-            Math.min(
-                1,
-                this.cellSize /
-                82
-            )
-        );
-    }
-
-
-/* =========================================================
-   DRAW BOARD
-   ========================================================= */
-
-    drawBoard(){
-
-        this.boardG.clear();
-
-        this.tileG.clear();
-
-        this.hintG.clear();
-
-        this.pathG.clear();
-
-        this.barrierG.clear();
-
-
-        const padding =
-        20;
-
-
-        /* BOARD SHADOW */
-
-        this.boardG
-        .fillStyle(
-            0x173c4e,
-            .14
-        );
-
-
-        this.boardG
-        .fillRoundedRect(
-
-            this.boardX -
-            padding +
-            8,
-
-            this.boardY -
-            padding +
-            10,
-
-            this.boardW +
-            padding *
-            2,
-
-            this.boardH +
-            padding *
-            2,
-
-            28
-        );
-
-
-        /* BOARD */
-
-        this.boardG
-        .fillStyle(
-            0xffffff,
-            1
-        );
-
-
-        this.boardG
-        .fillRoundedRect(
-
-            this.boardX -
-            padding,
-
-            this.boardY -
-            padding,
-
-            this.boardW +
-            padding *
-            2,
-
-            this.boardH +
-            padding *
-            2,
-
-            28
-        );
-
-
-        this.boardG
-        .lineStyle(
-            5,
-            0xb8ced9,
-            1
-        );
-
-
-        this.boardG
-        .strokeRoundedRect(
-
-            this.boardX -
-            padding,
-
-            this.boardY -
-            padding,
-
-            this.boardW +
-            padding *
-            2,
-
-            this.boardH +
-            padding *
-            2,
-
-            28
-        );
-
-
-        /* =================================================
-           SEMUA GRID SENTIASA ADA
-           ================================================= */
-
-        for(
-            let r=0;
-            r<this.rows;
-            r++
-        ){
-
-            for(
-                let c=0;
-                c<this.cols;
-                c++
-            ){
-
-                const x =
-                this.boardX +
-                c *
-                this.cellSize;
-
-
-                const y =
-                this.boardY +
-                r *
-                this.cellSize;
-
-
-                const visited =
-                this.visited.has(
-                    cellKey(
-                        r,
-                        c
-                    )
-                );
-
-
-                this.tileG
-                .fillStyle(
-
-                    visited
-                    ? 0xffca46
-                    : 0xd7eff8,
-
-                    1
-                );
-
-
-                this.tileG
-                .fillRoundedRect(
-
-                    x + 5,
-
-                    y + 5,
-
-                    this.cellSize -
-                    10,
-
-                    this.cellSize -
-                    10,
-
-                    14
-                );
-
-
-                this.tileG
-                .lineStyle(
-
-                    2,
-
-                    visited
-                    ? 0xe4a323
-                    : 0x93b8c7,
-
-                    .85
-                );
-
-
-                this.tileG
-                .strokeRoundedRect(
-
-                    x + 5,
-
-                    y + 5,
-
-                    this.cellSize -
-                    10,
-
-                    this.cellSize -
-                    10,
-
-                    14
-                );
-
-
-                this.tileG
-                .fillStyle(
-
-                    0xffffff,
-
-                    visited
-                    ? .20
-                    : .38
-                );
-
-
-                this.tileG
-                .fillRoundedRect(
-
-                    x +
-                    this.cellSize *
-                    .16,
-
-                    y +
-                    this.cellSize *
-                    .15,
-
-                    this.cellSize *
-                    .29,
-
-                    this.cellSize *
-                    .10,
-
-                    6
-                );
-            }
-        }
-
-
-        /* =================================================
-           HINT PATH
-
-           HANYA MUNCUL SELEPAS COUNTDOWN 0.
-           ================================================= */
-
-        if(
-            this.hintVisible
-        ){
-
-            this.drawHiddenSolution();
-        }
-
-
-        /* =================================================
-           USER LINE
-           ================================================= */
-
-        if(
-            this.history.length >
-            1
-        ){
-
-            this.pathG
-            .lineStyle(
-
-                Math.max(
-                    8,
-                    this.cellSize *
-                    .085
-                ),
-
-                0xf0a424,
-
-                .92
-            );
-
-
-            this.pathG
-            .beginPath();
-
-
-            for(
-                let i=0;
-                i<this.history.length;
-                i++
-            ){
-
-                const position =
-                this.cellCenter(
-
-                    this.history[i].r,
-
-                    this.history[i].c
-                );
-
-
-                if(
-                    i ===
-                    0
-                ){
-
-                    this.pathG
-                    .moveTo(
-
-                        position.x,
-
-                        position.y
-                    );
-
-                }else{
-
-                    this.pathG
-                    .lineTo(
-
-                        position.x,
-
-                        position.y
-                    );
-                }
-            }
-
-
-            this.pathG
-            .strokePath();
-        }
-
-
-        /* BARRIERS */
-
-        for(
-            const barrier
-            of this.barriers
-        ){
-
-            this.drawBarrier(
-                barrier
-            );
-        }
-
-
-        /* PORTAL */
-
-        const portalPosition =
-        this.cellCenter(
-
-            this.portalCell.r,
-
-            this.portalCell.c
-        );
-
-
-        this.portal
-        .setPosition(
-
-            portalPosition.x,
-
-            portalPosition.y
-        )
-        .setScale(
-            Math.min(
-                1,
-                this.cellSize /
-                84
-            )
-        );
-    }
-
-
-/* =========================================================
-   DRAW HIDDEN SOLUTION
-
-   LINE BIRU = LALUAN BANTUAN.
-
-   TAK MENGGANGGU LINE ORANGE USER.
-   ========================================================= */
-
-    drawHiddenSolution(){
-
-        if(
-            !this.safePath ||
-            this.safePath.length <
-            2
-        ){
-
-            return;
-        }
-
-
-        const width =
-        Math.max(
-            5,
-            this.cellSize *
-            .055
-        );
-
-
-        /*
-        LINE BIRU TRANSPARENT.
-        */
-
-        this.hintG
-        .lineStyle(
-            width,
-            0x45b7c4,
-            .62
-        );
-
-
-        this.hintG
-        .beginPath();
-
-
-        for(
-            let i=0;
-            i<this.safePath.length;
-            i++
-        ){
-
-            const position =
-            this.cellCenter(
-
-                this.safePath[i].r,
-
-                this.safePath[i].c
-            );
-
-
-            if(
-                i ===
-                0
-            ){
-
-                this.hintG
-                .moveTo(
-
-                    position.x,
-
-                    position.y
-                );
-
-            }else{
-
-                this.hintG
-                .lineTo(
-
-                    position.x,
-
-                    position.y
-                );
-            }
-        }
-
-
-        this.hintG
-        .strokePath();
-
-
-        /*
-        TITIK PUTIH-BIRU SEPANJANG
-        LALUAN BANTUAN.
-
-        Tak letak setiap cell supaya
-        visual tak terlalu padat.
-        */
-
-        for(
-            let i=0;
-            i<this.safePath.length;
-            i++
-        ){
-
-            if(
-                i %
-                2 !==
-                0 &&
-
-                i !==
-                this.safePath.length -
-                1
-            ){
-
-                continue;
-            }
-
-
-            const position =
-            this.cellCenter(
-
-                this.safePath[i].r,
-
-                this.safePath[i].c
-            );
-
-
-            const radius =
-            Math.max(
-                4,
-                this.cellSize *
-                .035
-            );
-
-
-            this.hintG
-            .fillStyle(
-                0xffffff,
-                .90
-            );
-
-
-            this.hintG
-            .fillCircle(
-
-                position.x,
-
-                position.y,
-
-                radius
-            );
-
-
-            this.hintG
-            .lineStyle(
-                2,
-                0x45b7c4,
-                .95
-            );
-
-
-            this.hintG
-            .strokeCircle(
-
-                position.x,
-
-                position.y,
-
-                radius
-            );
-        }
-    }
-
-
-/* =========================================================
-   BARRIER
-   ========================================================= */
-
-    drawBarrier(
-        barrier
-    ){
-
-        const a =
-        this.cellCenter(
-
-            barrier.a.r,
-
-            barrier.a.c
-        );
-
-
-        const b =
-        this.cellCenter(
-
-            barrier.b.r,
-
-            barrier.b.c
-        );
-
-
-        const middleX =
-        (
-            a.x +
-            b.x
-        ) /
-        2;
-
-
-        const middleY =
-        (
-            a.y +
-            b.y
-        ) /
-        2;
-
-
-        const thickness =
-        Math.max(
-            10,
-            this.cellSize *
-            .09
-        );
-
-
-        const length =
-        this.cellSize *
-        .50;
-
-
-        if(
-            barrier.a.r ===
-            barrier.b.r
-        ){
-
-            this.barrierG
-            .fillStyle(
-                0x39464d,
-                .20
-            );
-
-
-            this.barrierG
-            .fillRoundedRect(
-
-                middleX -
-                thickness /
-                2 +
-                2,
-
-                middleY -
-                length /
-                2 +
-                2,
-
-                thickness,
-
-                length,
-
-                4
-            );
-
-
-            this.barrierG
-            .fillStyle(
-                0xf6c648,
-                1
-            );
-
-
-            this.barrierG
-            .fillRoundedRect(
-
-                middleX -
-                thickness /
-                2,
-
-                middleY -
-                length /
-                2,
-
-                thickness,
-
-                length,
-
-                4
-            );
-
-
-            this.barrierG
-            .fillStyle(
-                0x374047,
-                1
-            );
-
-
-            for(
-                let y=
-                middleY -
-                length /
-                2 +
-                7;
-
-                y<
-                middleY +
-                length /
-                2;
-
-                y+=18
-            ){
-
-                this.barrierG
-                .fillRect(
-
-                    middleX -
-                    thickness /
-                    2,
-
-                    y,
-
-                    thickness,
-
-                    6
-                );
-            }
-
-        }else{
-
-            this.barrierG
-            .fillStyle(
-                0x39464d,
-                .20
-            );
-
-
-            this.barrierG
-            .fillRoundedRect(
-
-                middleX -
-                length /
-                2 +
-                2,
-
-                middleY -
-                thickness /
-                2 +
-                2,
-
-                length,
-
-                thickness,
-
-                4
-            );
-
-
-            this.barrierG
-            .fillStyle(
-                0xf6c648,
-                1
-            );
-
-
-            this.barrierG
-            .fillRoundedRect(
-
-                middleX -
-                length /
-                2,
-
-                middleY -
-                thickness /
-                2,
-
-                length,
-
-                thickness,
-
-                4
-            );
-
-
-            this.barrierG
-            .fillStyle(
-                0x374047,
-                1
-            );
-
-
-            for(
-                let x=
-                middleX -
-                length /
-                2 +
-                7;
-
-                x<
-                middleX +
-                length /
-                2;
-
-                x+=18
-            ){
-
-                this.barrierG
-                .fillRect(
-
-                    x,
-
-                    middleY -
-                    thickness /
-                    2,
-
-                    6,
-
-                    thickness
-                );
-            }
-        }
-    }
-
-
-/* =========================================================
-   CHECK BARRIER
-   ========================================================= */
-
-    hasBarrier(
-        a,
-        b
-    ){
-
-        return(
-            this.barrierSet.has(
-                edgeKey(
-                    a,
-                    b
-                )
-            )
-        );
-    }
-
-
-/* =========================================================
-   TOUCH
-   ========================================================= */
-
-    setupTouch(){
-
-        this.input.on(
-            "pointerdown",
-            pointer=>{
-
-                if(
-                    this.locked ||
-                    this.questionOpen
-                ){
-
-                    return;
-                }
-
-
-                const touched =
-                this.pointerToCell(
-
-                    pointer.x,
-
-                    pointer.y
-                );
-
-
-                if(
-                    !touched
-                ){
-
-                    return;
-                }
-
-
-                if(
-                    touched.r !==
-                    this.currentCell.r ||
-
-                    touched.c !==
-                    this.currentCell.c
-                ){
-
-                    return;
-                }
-
-
-                this.dragging =
-                true;
-
-
-                this.lastDragX =
-                pointer.x;
-
-
-                this.lastDragY =
-                pointer.y;
-            }
-        );
-
-
-        this.input.on(
-            "pointermove",
-            pointer=>{
-
-                if(
-                    !this.dragging ||
-                    !pointer.isDown ||
-                    this.locked ||
-                    this.questionOpen
-                ){
-
-                    return;
-                }
-
-
-                const startX =
-                this.lastDragX;
-
-
-                const startY =
-                this.lastDragY;
-
-
-                const endX =
-                pointer.x;
-
-
-                const endY =
-                pointer.y;
-
-
-                const distance =
-                Phaser.Math.Distance.Between(
-
-                    startX,
-
-                    startY,
-
-                    endX,
-
-                    endY
-                );
-
-
-                const spacing =
-                Math.max(
-                    9,
-                    this.cellSize *
-                    .16
-                );
-
-
-                const steps =
-                Math.max(
-
-                    1,
-
-                    Math.ceil(
-                        distance /
-                        spacing
-                    )
-                );
-
-
-                for(
-                    let i=1;
-                    i<=steps;
-                    i++
-                ){
-
-                    const ratio =
-                    i /
-                    steps;
-
-
-                    const sampleX =
-                    Phaser.Math.Linear(
-
-                        startX,
-
-                        endX,
-
-                        ratio
-                    );
-
-
-                    const sampleY =
-                    Phaser.Math.Linear(
-
-                        startY,
-
-                        endY,
-
-                        ratio
-                    );
-
-
-                    const target =
-                    this.pointerToCell(
-
-                        sampleX,
-
-                        sampleY
-                    );
-
-
-                    if(
-                        target
-                    ){
-
-                        this.processCell(
-                            target
-                        );
-                    }
-
-
-                    if(
-                        this.locked
-                    ){
-
-                        break;
-                    }
-                }
-
-
-                this.lastDragX =
-                pointer.x;
-
-
-                this.lastDragY =
-                pointer.y;
-            }
-        );
-
-
-        this.input.on(
-            "pointerup",
-            ()=>{
-
-                this.dragging =
-                false;
-            }
-        );
-
-
-        this.input.on(
-            "pointerout",
-            ()=>{
-
-                this.dragging =
-                false;
-            }
-        );
-    }
-
-
-/* =========================================================
-   PROCESS CELL
-   ========================================================= */
-
-    processCell(
-        target
-    ){
-
-        if(
-            target.r ===
-            this.currentCell.r &&
-
-            target.c ===
-            this.currentCell.c
-        ){
-
-            return;
-        }
-
-
-        const distance =
-        Math.abs(
-            target.r -
-            this.currentCell.r
-        )
-        +
-        Math.abs(
-            target.c -
-            this.currentCell.c
-        );
-
-
-        if(
-            distance !==
-            1
-        ){
-
-            return;
-        }
-
-
-        this.tryMove(
-            target
-        );
-    }
-
-
-/* =========================================================
-   MOVE + UNDO
-   ========================================================= */
-
-    tryMove(
-        target
-    ){
-
-        const targetKey =
-        cellKey(
-            target.r,
-            target.c
-        );
-
-
-        /* UNDO */
-
-        if(
-            this.history.length >
-            1
-        ){
-
-            const previous =
-            this.history[
-                this.history.length -
-                2
-            ];
-
-
-            if(
-                previous.r ===
-                target.r &&
-
-                previous.c ===
-                target.c
-            ){
-
-                this.undoStep();
-
-
-                return true;
-            }
-        }
-
-
-        /* BARRIER */
-
-        if(
-            this.hasBarrier(
-
-                this.currentCell,
-
-                target
-            )
-        ){
-
-            this.statusText
-            .setText(
-                "Ada penghalang. Cari jalan lain."
-            );
-
-
-            AUDIO.bad();
-
-
-            this.flashBarrier(
-
-                this.currentCell,
-
-                target
-            );
-
-
-            return false;
-        }
-
-
-        /* CELL DAH LALU */
-
-        if(
-            this.visited.has(
-                targetKey
-            )
-        ){
-
-            this.statusText
-            .setText(
-                "Petak ini dah dilalui. Tarik balik untuk undo."
-            );
-
-
-            AUDIO.bad();
-
-
-            this.flashCell(
-
-                target.r,
-
-                target.c
-            );
-
-
-            return false;
-        }
-
-
-        const total =
-        this.rows *
-        this.cols;
-
-
-        const isPortal =
-        target.r ===
-        this.portalCell.r &&
-
-        target.c ===
-        this.portalCell.c;
-
-
-        /* PORTAL LAST */
-
-        if(
-            isPortal &&
-
-            this.visited.size !==
-            total -
-            1
-        ){
-
-            this.statusText
-            .setText(
-                "Portal mesti jadi petak terakhir."
-            );
-
-
-            AUDIO.bad();
-
-
-            this.flashCell(
-
-                target.r,
-
-                target.c
-            );
-
-
-            return false;
-        }
-
-
-        /* FORWARD */
-
-        this.currentCell =
-        {
-            r:
-            target.r,
-
-            c:
-            target.c
-        };
-
-
-        this.history.push(
-            {
-                ...this.currentCell
-            }
-        );
-
-
-        this.visited.add(
-            targetKey
-        );
-
-
-        AUDIO.move();
-
-
-        this.placePlayer();
-
-        this.drawBoard();
-
-        this.updateProgress();
-
-
-        if(
-            isPortal &&
-
-            this.visited.size ===
-            total
-        ){
-
-            this.completeStage();
-        }
-
-
-        return true;
-    }
-
-
-/* =========================================================
-   UNDO
-   ========================================================= */
-
-    undoStep(){
-
-        if(
-            this.history.length <=
-            1
-        ){
-
-            return;
-        }
-
-
-        const removed =
-        this.history.pop();
-
-
-        this.visited.delete(
-
-            cellKey(
-                removed.r,
-                removed.c
-            )
-        );
-
-
-        const previous =
-        this.history[
-            this.history.length -
-            1
-        ];
-
-
-        this.currentCell =
-        {
-            r:
-            previous.r,
-
-            c:
-            previous.c
-        };
-
-
-        AUDIO.undo();
-
-
-        this.placePlayer();
-
-        this.drawBoard();
-
-        this.updateProgress();
-    }
-
-
-/* =========================================================
-   FLASH CELL
-   ========================================================= */
-
-    flashCell(
-        r,
-        c
-    ){
-
-        const position =
-        this.cellCenter(
-            r,
-            c
-        );
-
-
-        const ring =
-        this.add.circle(
-
-            position.x,
-
-            position.y,
-
-            this.cellSize *
-            .27,
-
-            0xff5555,
-
-            .12
-        )
-        .setStrokeStyle(
-            5,
-            0xff5555,
-            1
-        )
-        .setDepth(
-            150
-        );
-
-
-        this.tweens.add({
-
-            targets:
-            ring,
-
-            scaleX:
-            1.25,
-
-            scaleY:
-            1.25,
-
-            alpha:
-            0,
-
-            duration:
-            260,
-
-            onComplete:()=>{
-
-                ring.destroy();
-            }
-        });
-    }
-
-
-/* =========================================================
-   FLASH BARRIER
-   ========================================================= */
-
-    flashBarrier(
-        a,
-        b
-    ){
-
-        const pointA =
-        this.cellCenter(
-            a.r,
-            a.c
-        );
-
-
-        const pointB =
-        this.cellCenter(
-            b.r,
-            b.c
-        );
-
-
-        const flash =
-        this.add.circle(
-
-            (
-                pointA.x +
-                pointB.x
-            ) /
-            2,
-
-            (
-                pointA.y +
-                pointB.y
-            ) /
-            2,
-
-            15,
-
-            0xff4f4f,
-
-            .70
-        )
-        .setDepth(
-            160
-        );
-
-
-        this.tweens.add({
-
-            targets:
-            flash,
-
-            scaleX:
-            1.8,
-
-            scaleY:
-            1.8,
-
-            alpha:
-            0,
-
-            duration:
-            250,
-
-            onComplete:()=>{
-
-                flash.destroy();
-            }
-        });
-    }
-
-
-/* =========================================================
-   PROGRESS
-   ========================================================= */
-
-    updateProgress(){
-
-        const total =
-        this.rows *
-        this.cols;
-
-
-        const done =
-        this.visited.size;
-
-
-        const remaining =
-        total -
-        done;
-
-
-        this.progressFill
-        .displayWidth =
-        Math.max(
-
-            4,
-
-            470 *
-            (
-                done /
-                total
-            )
-        );
-
-
-        this.progressText
-        .setText(
-            done +
-            " / " +
-            total
-        );
-
-
-        /*
-        Kalau hint dah keluar,
-        status kekalkan mesej hint.
-        */
-
-        if(
-            this.hintVisible
-        ){
-
-            this.statusText
-            .setText(
-                "Laluan bantuan sedang ditunjukkan."
-            );
-
-        }else if(
-            remaining >
-            1
-        ){
-
-            this.statusText
-            .setText(
-                remaining +
-                " petak lagi. Countdown " +
-                this.timeLeft +
-                "s."
-            );
-
-        }else if(
-            remaining ===
-            1
-        ){
-
-            this.statusText
-            .setText(
-                "Tinggal portal hitam!"
-            );
-        }
-    }
-
-
-/* =========================================================
-   COMPLETE
-   ========================================================= */
-
-    completeStage(){
-
-        /*
-        STAGE SELESAI,
-        TIMER TERUS BERHENTI.
-        */
-
-        this.stopCountdown();
-
-
-        this.locked =
-        true;
-
-
-        this.dragging =
-        false;
-
-
-        this.statusText
-        .setText(
-            "Stage selesai!"
-        );
-
-
-        AUDIO.win();
-
-
-        this.time.delayedCall(
-            350,
-            ()=>{
-
-                this.showQuestion();
-            }
-        );
-    }
-
-
-/* =========================================================
-   QUESTION
-   ========================================================= */
-
-    showQuestion(){
-
-        this.questionOpen =
-        true;
-
-
-        this.locked =
-        true;
-
-
-        this.answerLocked =
-        false;
-
-
-        this.questionMistake =
-        false;
-
-
-        const question =
-        QUESTIONS[
-            this.stageIndex
-        ];
-
-
-        this.questionLayer =
-        this.add.container(
-            0,
-            0
-        )
-        .setDepth(
-            300
-        );
-
-
-        const panel =
-        this.add.rectangle(
-            450,
-            570,
-            760,
-            850,
-            0xffffff,
-            .98
-        )
-        .setStrokeStyle(
-            4,
-            0xc5dae4
-        );
-
-
-        const badge =
-        this.add.text(
-            450,
-            185,
-            "SOALAN " +
-            (
-                this.stageIndex +
-                1
-            ) +
-            " / 25",
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-
-                fontSize:
-                "20px",
-
-                fontStyle:
-                "bold",
-
-                color:
-                "#ffffff",
-
-                backgroundColor:
-                "#e45155",
-
-                padding:{
-                    x:18,
-                    y:9
-                }
-            }
-        )
-        .setOrigin(
-            .5
-        );
-
-
-        const topic =
-        this.add.text(
-            450,
-            240,
-            question.topic,
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-
-                fontSize:
-                "23px",
-
-                fontStyle:
-                "bold",
-
-                color:
-                "#3e778e",
-
-                align:
-                "center"
-            }
-        )
-        .setOrigin(
-            .5
-        );
-
-
-        const questionText =
-        this.add.text(
-            450,
-            330,
-            question.q,
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-
-                fontSize:
-                "25px",
-
-                fontStyle:
-                "bold",
-
-                color:
-                "#183d4d",
-
-                align:
-                "center",
-
-                wordWrap:{
-                    width:650,
-                    useAdvancedWrap:true
-                },
-
-                lineSpacing:
-                4
-            }
-        )
-        .setOrigin(
-            .5
-        );
-
-
-        this.questionLayer.add([
-
-            panel,
-            badge,
-            topic,
-            questionText
-
-        ]);
-
-
-        const answerY =
-        [
-            500,
-            620,
-            740,
-            860
-        ];
-
-
-        question.a.forEach(
-            (
-                answer,
-                index
-            )=>{
-
-                const button =
-                this.add.rectangle(
-                    450,
-                    answerY[index],
-                    650,
-                    90,
-                    0xf1f7fa,
-                    1
-                )
-                .setStrokeStyle(
-                    3,
-                    0xb8cfd9
-                )
-                .setInteractive({
-                    useHandCursor:true
-                });
-
-
-                const circle =
-                this.add.circle(
-                    165,
-                    answerY[index],
-                    28,
-                    0x40798f,
-                    1
-                );
-
-
-                const letter =
-                this.add.text(
-                    165,
-                    answerY[index],
-                    String.fromCharCode(
-                        65 +
-                        index
-                    ),
-                    {
-                        fontFamily:
-                        "Arial",
-
-                        fontSize:
-                        "24px",
-
-                        fontStyle:
-                        "bold",
-
-                        color:
-                        "#ffffff"
-                    }
-                )
-                .setOrigin(
-                    .5
-                );
-
-
-                const answerText =
-                this.add.text(
-                    210,
-                    answerY[index],
-                    answer,
-                    {
-                        fontFamily:
-                        "Trebuchet MS, Arial",
-
-                        fontSize:
-                        "21px",
-
-                        fontStyle:
-                        "bold",
-
-                        color:
-                        "#244653",
-
-                        wordWrap:{
-                            width:500,
-                            useAdvancedWrap:true
-                        }
-                    }
-                )
-                .setOrigin(
-                    0,
-                    .5
-                );
-
-
-                this.questionLayer.add([
-
-                    button,
-                    circle,
-                    letter,
-                    answerText
-
-                ]);
-
-
-                button.on(
-                    "pointerdown",
-                    ()=>{
-
-                        AUDIO.unlock();
-
-
-                        this.checkAnswer(
-
-                            index,
-
-                            question.correct,
-
-                            button,
-
-                            circle
-                        );
-                    }
-                );
-            }
-        );
-    }
-
-
-/* =========================================================
-   ANSWER
-   ========================================================= */
-
-    checkAnswer(
-        selected,
-        correct,
-        button,
-        circle
-    ){
-
-        if(
-            this.answerLocked
-        ){
-
-            return;
-        }
-
-
-        if(
-            selected ===
-            correct
-        ){
-
-            this.answerLocked =
-            true;
-
-
-            button
-            .setFillStyle(
-                0xd7f3dd
-            )
-            .setStrokeStyle(
-                4,
-                0x50ae65
-            );
-
-
-            circle
-            .setFillStyle(
-                0x43a45b
-            );
-
-
-            AUDIO.correct();
-
-
-            if(
-                !this.questionMistake
-            ){
-
-                this.correctFirstTry++;
-            }
-
-
-            this.time.delayedCall(
-                600,
-                ()=>{
-
-                    this.questionLayer
-                    .destroy();
-
-
-                    this.questionOpen =
-                    false;
-
-
-                    this.answerLocked =
-                    false;
-
-
-                    if(
-                        this.stageIndex >=
-                        24
-                    ){
-
-                        this.showFinish();
-
-                    }else{
-
-                        this.startStage(
-                            this.stageIndex +
-                            1
-                        );
-                    }
-                }
-            );
-
-        }else{
-
-            this.questionMistake =
-            true;
-
-
-            AUDIO.bad();
-
-
-            button
-            .setFillStyle(
-                0xffdddd
-            )
-            .setStrokeStyle(
-                4,
-                0xdf5757
-            );
-
-
-            circle
-            .setFillStyle(
-                0xd94f4f
-            );
-
-
-            this.time.delayedCall(
-                320,
-                ()=>{
-
-                    if(
-                        button.active
-                    ){
-
-                        button
-                        .setFillStyle(
-                            0xf1f7fa
-                        )
-                        .setStrokeStyle(
-                            3,
-                            0xb8cfd9
-                        );
-
-
-                        circle
-                        .setFillStyle(
-                            0x40798f
-                        );
-                    }
-                }
-            );
-        }
-    }
-
-
-/* =========================================================
-   FINISH
-   ========================================================= */
-
-    showFinish(){
-
-        this.stopCountdown();
-
-
-        const layer =
-        this.add.container(
-            0,
-            0
-        )
-        .setDepth(
-            500
-        );
-
-
-        const panel =
-        this.add.rectangle(
-            450,
-            560,
-            700,
-            560,
-            0xffffff,
-            .98
-        )
-        .setStrokeStyle(
-            4,
-            0xc5dbe4
-        );
-
-
-        const icon =
-        this.add.text(
-            450,
-            385,
-            "✦",
-            {
-                fontFamily:
-                "Arial",
-
-                fontSize:
-                "90px",
-
-                fontStyle:
-                "bold",
-
-                color:
-                "#4c90aa"
-            }
-        )
-        .setOrigin(
-            .5
-        );
-
-
-        const title =
-        this.add.text(
-            450,
-            470,
-            "MISI SELESAI!",
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-
-                fontSize:
-                "40px",
-
-                fontStyle:
-                "bold",
-
-                color:
-                "#193f50"
-            }
-        )
-        .setOrigin(
-            .5
-        );
-
-
-        const description =
-        this.add.text(
-            450,
-            545,
-            "Semua 25 pattern unik dan 25 soalan telah diselesaikan.",
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-
-                fontSize:
-                "22px",
-
-                color:
-                "#58737f",
-
-                align:
-                "center",
-
-                wordWrap:{
-                    width:560
-                }
-            }
-        )
-        .setOrigin(
-            .5
-        );
-
-
-        const score =
-        this.add.text(
-            450,
-            620,
-            "Betul cubaan pertama: " +
-            this.correctFirstTry +
-            " / 25",
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-
-                fontSize:
-                "24px",
-
-                fontStyle:
-                "bold",
-
-                color:
-                "#e45155"
-            }
-        )
-        .setOrigin(
-            .5
-        );
-
-
-        const replay =
-        this.add.rectangle(
-            450,
-            715,
-            400,
-            76,
-            0x3e839b,
-            1
-        )
-        .setStrokeStyle(
-            3,
-            0x316c81
-        )
-        .setInteractive({
-            useHandCursor:true
-        });
-
-
-        const replayText =
-        this.add.text(
-            450,
-            715,
-            "MAIN SEMULA",
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-
-                fontSize:
-                "24px",
-
-                fontStyle:
-                "bold",
-
-                color:
-                "#ffffff"
-            }
-        )
-        .setOrigin(
-            .5
-        );
-
-
-        layer.add([
-
-            panel,
-            icon,
-            title,
-            description,
-            score,
-            replay,
-            replayText
-
-        ]);
-
-
-        replay.on(
-            "pointerdown",
-            ()=>{
-
-                this.correctFirstTry =
-                0;
-
-
-                this.sessionSeed =
-                Date.now() >>>
-                0;
-
-
-                this.usedPatternSignatures
-                .clear();
-
-
-                layer.destroy();
-
-
-                this.startStage(
-                    0
-                );
-            }
-        );
-    }
+const AUDIO=new SoundBox();
+
+class TrailPuzzle extends Phaser.Scene{
+
+constructor(){super("TrailPuzzle");}
+
+create(){
+this.stageIndex=0;
+this.correctFirstTry=0;
+this.questionOpen=false;
+this.answerLocked=false;
+this.locked=false;
+this.dragging=false;
+this.lastDragX=0;
+this.lastDragY=0;
+this.sessionSeed=Date.now()>>>0;
+this.usedPatternSignatures=new Set();
+this.countdownEvent=null;
+this.timeLeft=60;
+this.hintVisible=false;
+
+this.bgG=this.add.graphics();
+this.boardG=this.add.graphics();
+this.tileG=this.add.graphics();
+this.hintG=this.add.graphics();
+this.pathG=this.add.graphics();
+this.barrierG=this.add.graphics();
+
+this.drawBackground();
+this.createHeader();
+this.createPortal();
+this.createSymbol();
+this.setupTouch();
+
+this.input.on("pointerdown",()=>AUDIO.unlock());
+
+this.startStage(0);
+}
+
+drawBackground(){
+
+this.bgG.fillStyle(0xdff4ff,1);
+this.bgG.fillRect(0,0,GAME_W,GAME_H);
+this.bgG.fillStyle(0xffffff,.18);
+
+for(let y=-80;y<GAME_H+80;y+=115){
+
+for(let x=-90;x<GAME_W+90;x+=150){
+
+const offset=(Math.abs(Math.floor(y/115))%2)*45;
+
+this.bgG.fillRoundedRect(
+x+offset,
+y,
+92,
+46,
+22
+);
+
+}
+}
 
 }
 
+createHeader(){
 
-/* =========================================================
-   START GAME
+this.add.rectangle(
+450,
+92,
+820,
+150,
+0xffffff,
+.97
+)
+.setStrokeStyle(
+3,
+0xc6dce5
+);
 
-   KEKALKAN:
-   - TIADA LOADING OVERLAY
-   - TIADA ERROR OVERLAY
-   - TIADA FULLSCREEN COVER
-   - TIADA BLOCKED CELL
-   ========================================================= */
+this.add.text(
+70,
+32,
+"TRAIL PUZZLE",
+{
+fontFamily:"Trebuchet MS, Arial",
+fontSize:"29px",
+fontStyle:"bold",
+color:"#173f51"
+}
+)
+.setOrigin(
+0,
+.5
+);
+
+this.stageText=this.add.text(
+70,
+70,
+"STAGE 1 / 25",
+{
+fontFamily:"Trebuchet MS, Arial",
+fontSize:"22px",
+fontStyle:"bold",
+color:"#e45155"
+}
+)
+.setOrigin(
+0,
+.5
+);
+
+this.difficultyText=this.add.text(
+245,
+70,
+"MUDAH",
+{
+fontFamily:"Trebuchet MS, Arial",
+fontSize:"16px",
+fontStyle:"bold",
+color:"#ffffff",
+backgroundColor:"#4b91aa",
+padding:{
+x:10,
+y:5
+}
+}
+)
+.setOrigin(
+0,
+.5
+);
+
+this.clockCard=this.add.container(
+625,
+52
+);
+
+const clockShadow=this.add.rectangle(
+4,
+5,
+190,
+66,
+0x173c4e,
+.10
+)
+.setOrigin(
+.5
+);
+
+const clockPanel=this.add.rectangle(
+0,
+0,
+190,
+66,
+0xffffff,
+1
+)
+.setStrokeStyle(
+2,
+0xc5d9e2
+)
+.setOrigin(
+.5
+);
+
+this.clockFace=this.add.circle(
+-64,
+0,
+22,
+0xf3fbff,
+1
+)
+.setStrokeStyle(
+3,
+0x4b91aa
+);
+
+this.clockHands=this.add.graphics();
+
+this.timerScreen=this.add.rectangle(
+31,
+1,
+108,
+48,
+0x173f51,
+1
+)
+.setStrokeStyle(
+2,
+0x315f72
+)
+.setOrigin(
+.5
+);
+
+this.timerLabel=this.add.text(
+31,
+-12,
+"MASA",
+{
+fontFamily:"Trebuchet MS, Arial",
+fontSize:"11px",
+fontStyle:"bold",
+color:"#bfe7f3",
+letterSpacing:1
+}
+)
+.setOrigin(
+.5
+);
+
+this.timerText=this.add.text(
+31,
+9,
+"01:00",
+{
+fontFamily:"Courier New, monospace",
+fontSize:"25px",
+fontStyle:"bold",
+color:"#ffffff"
+}
+)
+.setOrigin(
+.5
+);
+
+this.clockCard.add([
+clockShadow,
+clockPanel,
+this.clockFace,
+this.clockHands,
+this.timerScreen,
+this.timerLabel,
+this.timerText
+]);
+
+this.updateClockDisplay();
+
+this.statusText=this.add.text(
+70,
+107,
+"Seret simbol melalui semua petak.",
+{
+fontFamily:"Trebuchet MS, Arial",
+fontSize:"18px",
+color:"#55717d"
+}
+)
+.setOrigin(
+0,
+.5
+);
+
+this.progressBack=this.add.rectangle(
+70,
+140,
+470,
+12,
+0xd8e6eb
+)
+.setOrigin(
+0,
+.5
+);
+
+this.progressFill=this.add.rectangle(
+70,
+140,
+1,
+12,
+0xffbd42
+)
+.setOrigin(
+0,
+.5
+);
+
+this.progressText=this.add.text(
+555,
+140,
+"",
+{
+fontFamily:"Trebuchet MS, Arial",
+fontSize:"16px",
+fontStyle:"bold",
+color:"#607984"
+}
+)
+.setOrigin(
+0,
+.5
+);
+
+const reset=this.add.rectangle(
+785,
+105,
+120,
+58,
+0xf5fafc,
+1
+)
+.setStrokeStyle(
+2,
+0xc4d8e1
+)
+.setInteractive({
+useHandCursor:true
+});
+
+this.add.text(
+785,
+105,
+"↻ RESET",
+{
+fontFamily:"Trebuchet MS, Arial",
+fontSize:"17px",
+fontStyle:"bold",
+color:"#31586a"
+}
+)
+.setOrigin(
+.5
+);
+
+reset.on(
+"pointerdown",
+()=>{
+
+AUDIO.unlock();
+
+this.dragging=false;
+
+this.resetStage();
+
+}
+);
+
+}
+
+createSymbol(){
+
+this.player=this.add.container(
+0,
+0
+);
+
+const shadow=this.add.ellipse(
+3,
+19,
+44,
+13,
+0x173946,
+.16
+);
+
+const outer=this.add.circle(
+0,
+0,
+24,
+0x4a91ad,
+1
+)
+.setStrokeStyle(
+4,
+0xffffff
+);
+
+const inner=this.add.circle(
+0,
+0,
+16,
+0x6ab0c9,
+1
+);
+
+const symbol=this.add.text(
+0,
+-1,
+"✦",
+{
+fontFamily:"Arial",
+fontSize:"25px",
+fontStyle:"bold",
+color:"#ffffff"
+}
+)
+.setOrigin(
+.5
+);
+
+this.player.add([
+shadow,
+outer,
+inner,
+symbol
+]);
+
+this.player.setDepth(
+100
+);
+
+}
+
+createPortal(){
+
+this.portal=this.add.container(
+0,
+0
+);
+
+const glow=this.add.circle(
+0,
+0,
+38,
+0x000000,
+.12
+);
+
+const outer=this.add.circle(
+0,
+0,
+30,
+0x161a1e,
+1
+)
+.setStrokeStyle(
+5,
+0x3d474d
+);
+
+const ring=this.add.circle(
+0,
+0,
+20,
+0x07090b,
+1
+)
+.setStrokeStyle(
+3,
+0x77848b
+);
+
+const core=this.add.circle(
+0,
+0,
+9,
+0x000000,
+1
+)
+.setStrokeStyle(
+2,
+0xe4ebee
+);
+
+this.portal.add([
+glow,
+outer,
+ring,
+core
+]);
+
+this.portal.setDepth(
+80
+);
+
+this.tweens.add({
+
+targets:ring,
+
+scaleX:{
+from:.86,
+to:1.10
+},
+
+scaleY:{
+from:.86,
+to:1.10
+},
+
+alpha:{
+from:.55,
+to:1
+},
+
+duration:700,
+
+yoyo:true,
+
+repeat:-1
+
+});
+
+}
+
+getSettings(){
+
+const stage=this.stageIndex;
+
+if(stage<5){
+
+return{
+rows:5,
+cols:5,
+barriers:3+stage,
+mutations:4+stage*2,
+label:stage<2?"MUDAH":"MUDAH +"
+};
+
+}
+
+if(stage<10){
+
+return{
+rows:5,
+cols:6,
+barriers:7+(stage-5),
+mutations:14+(stage-5)*3,
+label:"SEDERHANA"
+};
+
+}
+
+if(stage<15){
+
+return{
+rows:6,
+cols:6,
+barriers:10+(stage-10),
+mutations:28+(stage-10)*4,
+label:"MENCABAR"
+};
+
+}
+
+if(stage<20){
+
+return{
+rows:6,
+cols:7,
+barriers:13+(stage-15),
+mutations:48+(stage-15)*5,
+label:"SUKAR"
+};
+
+}
+
+return{
+rows:7,
+cols:7,
+barriers:16+(stage-20),
+mutations:72+(stage-20)*6,
+label:"SANGAT SUKAR"
+};
+
+}
+
+makePath(random,settings){
+
+let bestPath=null;
+
+let bestTurns=-1;
+
+const tries=6+Math.floor(
+this.stageIndex/4
+);
+
+for(
+let tryIndex=0;
+tryIndex<tries;
+tryIndex++
+){
+
+let path=basicSnake(
+this.rows,
+this.cols,
+random()<.5
+);
+
+path=mutateHamiltonian(
+path,
+this.rows,
+this.cols,
+random,
+settings.mutations+tryIndex*2
+);
+
+const turns=countTurns(
+path
+);
+
+if(
+turns>bestTurns
+){
+
+bestTurns=turns;
+
+bestPath=path;
+
+}
+
+}
+
+return bestPath;
+
+}
+
+patternSignature(){
+
+const barrierKeys=this.barriers.map(
+b=>b.key
+)
+.sort();
+
+const pathKeys=this.safePath.map(
+cell=>cellKey(
+cell.r,
+cell.c
+)
+)
+.join(">");
+
+return(
+this.rows+
+"x"+
+this.cols+
+"|PATH:"+
+pathKeys+
+"|BARRIER:"+
+barrierKeys.join(";")
+);
+
+}
+
+generatePattern(
+settings,
+attempt
+){
+
+const random=makeRandom(
+(
+this.sessionSeed+
+this.stageIndex*100003+
+attempt*92821
+)>>>0
+);
+
+this.safePath=this.makePath(
+random,
+settings
+);
+
+this.startCell={
+...this.safePath[0]
+};
+
+this.portalCell={
+...this.safePath[
+this.safePath.length-1
+]
+};
+
+const safeEdges=new Set();
+
+for(
+let i=1;
+i<this.safePath.length;
+i++
+){
+
+safeEdges.add(
+edgeKey(
+this.safePath[i-1],
+this.safePath[i]
+)
+);
+
+}
+
+const candidates=[];
+
+for(
+let r=0;
+r<this.rows;
+r++
+){
+
+for(
+let c=0;
+c<this.cols;
+c++
+){
+
+const current={
+r:r,
+c:c
+};
+
+if(
+c+1<this.cols
+){
+
+const next={
+r:r,
+c:c+1
+};
+
+const k=edgeKey(
+current,
+next
+);
+
+if(
+!safeEdges.has(k)
+){
+
+candidates.push({
+a:{...current},
+b:{...next},
+key:k
+});
+
+}
+
+}
+
+if(
+r+1<this.rows
+){
+
+const next={
+r:r+1,
+c:c
+};
+
+const k=edgeKey(
+current,
+next
+);
+
+if(
+!safeEdges.has(k)
+){
+
+candidates.push({
+a:{...current},
+b:{...next},
+key:k
+});
+
+}
+
+}
+
+}
+
+}
+
+shuffle(
+candidates,
+random
+);
+
+const centreX=(
+this.cols-1
+)/2;
+
+const centreY=(
+this.rows-1
+)/2;
+
+for(
+const barrier of candidates
+){
+
+const middleX=(
+barrier.a.c+
+barrier.b.c
+)/2;
+
+const middleY=(
+barrier.a.r+
+barrier.b.r
+)/2;
+
+const distance=Math.hypot(
+middleX-centreX,
+middleY-centreY
+);
+
+const centreBonus=Math.max(
+0,
+1-distance/Math.max(
+this.rows,
+this.cols
+)
+);
+
+barrier.score=
+random()
++
+centreBonus*
+(
+.25+
+this.stageIndex*.012
+);
+
+}
+
+candidates.sort(
+(a,b)=>b.score-a.score
+);
+
+this.barriers=[];
+
+this.barrierSet=new Set();
+
+const target=Math.min(
+settings.barriers,
+candidates.length
+);
+
+for(
+const barrier of candidates
+){
+
+if(
+this.barriers.length>=target
+){
+
+break;
+
+}
+
+let tooNear=0;
+
+for(
+const chosen of this.barriers
+){
+
+const ax=(
+barrier.a.c+
+barrier.b.c
+)/2;
+
+const ay=(
+barrier.a.r+
+barrier.b.r
+)/2;
+
+const bx=(
+chosen.a.c+
+chosen.b.c
+)/2;
+
+const by=(
+chosen.a.r+
+chosen.b.r
+)/2;
+
+if(
+Math.abs(
+ax-bx
+)
++
+Math.abs(
+ay-by
+)
+<
+1.15
+){
+
+tooNear++;
+
+}
+
+}
+
+if(
+tooNear>0&&
+random()<.62
+){
+
+continue;
+
+}
+
+this.barriers.push(
+barrier
+);
+
+this.barrierSet.add(
+barrier.key
+);
+
+}
+
+for(
+const barrier of candidates
+){
+
+if(
+this.barriers.length>=target
+){
+
+break;
+
+}
+
+if(
+this.barrierSet.has(
+barrier.key
+)
+){
+
+continue;
+
+}
+
+this.barriers.push(
+barrier
+);
+
+this.barrierSet.add(
+barrier.key
+);
+
+}
+
+}
+
+buildStage(){
+
+const settings=this.getSettings();
+
+this.rows=settings.rows;
+
+this.cols=settings.cols;
+
+this.currentDifficulty=settings.label;
+
+let signature="";
+
+for(
+let attempt=0;
+attempt<160;
+attempt++
+){
+
+this.generatePattern(
+settings,
+attempt
+);
+
+signature=this.patternSignature();
+
+if(
+!this.usedPatternSignatures.has(
+signature
+)
+){
+
+break;
+
+}
+
+}
+
+this.usedPatternSignatures.add(
+signature
+);
+
+this.currentCell={
+...this.startCell
+};
+
+this.history=[
+{
+...this.startCell
+}
+];
+
+this.visited=new Set([
+cellKey(
+this.startCell.r,
+this.startCell.c
+)
+]);
+
+}
+
+startStage(
+index
+){
+
+this.stopCountdown();
+
+this.stageIndex=index;
+
+this.locked=false;
+
+this.questionOpen=false;
+
+this.answerLocked=false;
+
+this.dragging=false;
+
+this.hintVisible=false;
+
+this.timeLeft=60;
+
+this.buildStage();
+
+this.calculateBoard();
+
+this.stageText.setText(
+"STAGE "+
+(index+1)+
+" / 25"
+);
+
+this.difficultyText.setText(
+this.currentDifficulty
+);
+
+this.statusText.setText(
+"Pattern baru. Seret untuk maju, tarik balik untuk undo."
+);
+
+this.updateClockDisplay();
+
+this.player.setVisible(
+true
+)
+.setAlpha(
+1
+);
+
+this.drawBoard();
+
+this.placePlayer();
+
+this.updateProgress();
+
+this.startCountdown();
+
+}
+
+updateClockDisplay(){
+
+const value=Math.max(
+0,
+this.timeLeft
+);
+
+this.timerText.setText(
+formatCountdown(
+value
+)
+);
+
+if(
+value<=0
+){
+
+this.timerScreen
+.setFillStyle(
+0x26798f,
+1
+)
+.setStrokeStyle(
+2,
+0x1f6072
+);
+
+this.timerText.setColor(
+"#ffffff"
+);
+
+this.timerLabel.setColor(
+"#d8f6ff"
+);
+
+this.clockFace.setStrokeStyle(
+3,
+0x26798f
+);
+
+}else if(
+value<=10
+){
+
+this.timerScreen
+.setFillStyle(
+0xb93d48,
+1
+)
+.setStrokeStyle(
+2,
+0x8f2933
+);
+
+this.timerText.setColor(
+"#ffffff"
+);
+
+this.timerLabel.setColor(
+"#ffe3e5"
+);
+
+this.clockFace.setStrokeStyle(
+3,
+0xd94d58
+);
+
+}else if(
+value<=30
+){
+
+this.timerScreen
+.setFillStyle(
+0x9a681f,
+1
+)
+.setStrokeStyle(
+2,
+0x765017
+);
+
+this.timerText.setColor(
+"#fff8e8"
+);
+
+this.timerLabel.setColor(
+"#ffe7b0"
+);
+
+this.clockFace.setStrokeStyle(
+3,
+0xd79a35
+);
+
+}else{
+
+this.timerScreen
+.setFillStyle(
+0x173f51,
+1
+)
+.setStrokeStyle(
+2,
+0x315f72
+);
+
+this.timerText.setColor(
+"#ffffff"
+);
+
+this.timerLabel.setColor(
+"#bfe7f3"
+);
+
+this.clockFace.setStrokeStyle(
+3,
+0x4b91aa
+);
+
+}
+
+this.clockHands.clear();
+
+const cx=-64;
+const cy=0;
+
+this.clockHands.lineStyle(
+2,
+0x7696a3,
+.65
+);
+
+this.clockHands.lineBetween(
+cx,
+-18,
+cx,
+-15
+);
+
+this.clockHands.lineBetween(
+cx,
+15,
+cx,
+18
+);
+
+this.clockHands.lineBetween(
+cx-18,
+cy,
+cx-15,
+cy
+);
+
+this.clockHands.lineBetween(
+cx+15,
+cy,
+cx+18,
+cy
+);
+
+const progress=(
+60-value
+)/60;
+
+const angle=(
+-Math.PI/2
+)
++
+(
+progress*
+Math.PI*
+2
+);
+
+const handX=
+cx+
+Math.cos(
+angle
+)*13;
+
+const handY=
+cy+
+Math.sin(
+angle
+)*13;
+
+this.clockHands.lineStyle(
+4,
+0x274f60,
+1
+);
+
+this.clockHands.lineBetween(
+cx,
+cy,
+handX,
+handY
+);
+
+this.clockHands.lineStyle(
+3,
+0x7696a3,
+1
+);
+
+this.clockHands.lineBetween(
+cx,
+cy,
+cx,
+cy-8
+);
+
+this.clockHands.fillStyle(
+0xe45155,
+1
+);
+
+this.clockHands.fillCircle(
+cx,
+cy,
+3
+);
+
+}
+
+startCountdown(){
+
+this.stopCountdown();
+
+this.timeLeft=60;
+
+this.updateClockDisplay();
+
+this.countdownEvent=this.time.addEvent({
+
+delay:1000,
+
+loop:true,
+
+callback:()=>{
+
+if(
+this.questionOpen||
+this.locked
+){
+
+return;
+
+}
+
+this.timeLeft--;
+
+this.updateClockDisplay();
+
+if(
+this.timeLeft<=0
+){
+
+this.stopCountdown();
+
+this.revealHiddenPath();
+
+}
+
+}
+
+});
+
+}
+
+stopCountdown(){
+
+if(
+this.countdownEvent
+){
+
+this.countdownEvent.remove(
+false
+);
+
+this.countdownEvent=null;
+
+}
+
+}
+
+revealHiddenPath(){
+
+if(
+this.hintVisible||
+this.questionOpen||
+this.locked
+){
+
+return;
+
+}
+
+this.hintVisible=true;
+
+this.timeLeft=0;
+
+this.updateClockDisplay();
+
+this.statusText.setText(
+"Masa tamat! Laluan bantuan ditunjukkan."
+);
+
+this.drawBoard();
+
+}
+
+resetStage(){
+
+if(
+this.questionOpen
+){
+
+return;
+
+}
+
+this.locked=false;
+
+this.dragging=false;
+
+this.hintVisible=false;
+
+this.currentCell={
+...this.startCell
+};
+
+this.history=[
+{
+...this.startCell
+}
+];
+
+this.visited=new Set([
+cellKey(
+this.startCell.r,
+this.startCell.c
+)
+]);
+
+this.player.setVisible(
+true
+)
+.setAlpha(
+1
+);
+
+this.placePlayer();
+
+this.drawBoard();
+
+this.updateProgress();
+
+this.statusText.setText(
+"Puzzle direset. Countdown bermula semula."
+);
+
+this.startCountdown();
+
+}
+
+calculateBoard(){
+
+this.cellSize=Math.floor(
+Math.min(
+770/this.cols,
+805/this.rows,
+116
+)
+);
+
+this.boardW=this.cols*this.cellSize;
+
+this.boardH=this.rows*this.cellSize;
+
+this.boardX=(
+GAME_W-this.boardW
+)/2;
+
+this.boardY=
+180+
+Math.max(
+0,
+(
+825-this.boardH
+)/2
+);
+
+}
+
+cellCenter(
+r,
+c
+){
+
+return{
+x:
+this.boardX+
+c*this.cellSize+
+this.cellSize/2,
+
+y:
+this.boardY+
+r*this.cellSize+
+this.cellSize/2
+};
+
+}
+
+pointerToCell(
+x,
+y
+){
+
+if(
+x<this.boardX||
+x>=this.boardX+this.boardW||
+y<this.boardY||
+y>=this.boardY+this.boardH
+){
+
+return null;
+
+}
+
+return{
+r:
+Math.floor(
+(
+y-this.boardY
+)/
+this.cellSize
+),
+
+c:
+Math.floor(
+(
+x-this.boardX
+)/
+this.cellSize
+)
+};
+
+}
+
+placePlayer(){
+
+const position=this.cellCenter(
+this.currentCell.r,
+this.currentCell.c
+);
+
+this.player.setPosition(
+position.x,
+position.y
+)
+.setScale(
+Math.min(
+1,
+this.cellSize/82
+)
+);
+
+}
+
+drawBoard(){
+
+this.boardG.clear();
+this.tileG.clear();
+this.hintG.clear();
+this.pathG.clear();
+this.barrierG.clear();
+
+const padding=20;
+
+this.boardG.fillStyle(
+0x173c4e,
+.14
+);
+
+this.boardG.fillRoundedRect(
+this.boardX-padding+8,
+this.boardY-padding+10,
+this.boardW+padding*2,
+this.boardH+padding*2,
+28
+);
+
+this.boardG.fillStyle(
+0xffffff,
+1
+);
+
+this.boardG.fillRoundedRect(
+this.boardX-padding,
+this.boardY-padding,
+this.boardW+padding*2,
+this.boardH+padding*2,
+28
+);
+
+this.boardG.lineStyle(
+5,
+0xb8ced9,
+1
+);
+
+this.boardG.strokeRoundedRect(
+this.boardX-padding,
+this.boardY-padding,
+this.boardW+padding*2,
+this.boardH+padding*2,
+28
+);
+
+for(
+let r=0;
+r<this.rows;
+r++
+){
+
+for(
+let c=0;
+c<this.cols;
+c++
+){
+
+const x=this.boardX+c*this.cellSize;
+
+const y=this.boardY+r*this.cellSize;
+
+const visited=this.visited.has(
+cellKey(
+r,
+c
+)
+);
+
+this.tileG.fillStyle(
+visited
+?0xffca46
+:0xd7eff8,
+1
+);
+
+this.tileG.fillRoundedRect(
+x+5,
+y+5,
+this.cellSize-10,
+this.cellSize-10,
+14
+);
+
+this.tileG.lineStyle(
+2,
+visited
+?0xe4a323
+:0x93b8c7,
+.85
+);
+
+this.tileG.strokeRoundedRect(
+x+5,
+y+5,
+this.cellSize-10,
+this.cellSize-10,
+14
+);
+
+this.tileG.fillStyle(
+0xffffff,
+visited?.20:.38
+);
+
+this.tileG.fillRoundedRect(
+x+this.cellSize*.16,
+y+this.cellSize*.15,
+this.cellSize*.29,
+this.cellSize*.10,
+6
+);
+
+}
+
+}
+
+if(
+this.hintVisible
+){
+
+this.drawHiddenSolution();
+
+}
+
+if(
+this.history.length>1
+){
+
+this.pathG.lineStyle(
+Math.max(
+8,
+this.cellSize*.085
+),
+0xf0a424,
+.92
+);
+
+this.pathG.beginPath();
+
+for(
+let i=0;
+i<this.history.length;
+i++
+){
+
+const p=this.cellCenter(
+this.history[i].r,
+this.history[i].c
+);
+
+if(
+i===0
+){
+
+this.pathG.moveTo(
+p.x,
+p.y
+);
+
+}else{
+
+this.pathG.lineTo(
+p.x,
+p.y
+);
+
+}
+
+}
+
+this.pathG.strokePath();
+
+}
+
+for(
+const barrier of this.barriers
+){
+
+this.drawBarrier(
+barrier
+);
+
+}
+
+const portalPosition=this.cellCenter(
+this.portalCell.r,
+this.portalCell.c
+);
+
+this.portal.setPosition(
+portalPosition.x,
+portalPosition.y
+)
+.setScale(
+Math.min(
+1,
+this.cellSize/84
+)
+);
+
+}
+
+drawHiddenSolution(){
+
+if(
+!this.safePath||
+this.safePath.length<2
+){
+
+return;
+
+}
+
+const width=Math.max(
+5,
+this.cellSize*.055
+);
+
+this.hintG.lineStyle(
+width,
+0x45b7c4,
+.62
+);
+
+this.hintG.beginPath();
+
+for(
+let i=0;
+i<this.safePath.length;
+i++
+){
+
+const p=this.cellCenter(
+this.safePath[i].r,
+this.safePath[i].c
+);
+
+if(
+i===0
+){
+
+this.hintG.moveTo(
+p.x,
+p.y
+);
+
+}else{
+
+this.hintG.lineTo(
+p.x,
+p.y
+);
+
+}
+
+}
+
+this.hintG.strokePath();
+
+for(
+let i=0;
+i<this.safePath.length;
+i++
+){
+
+if(
+i%2!==0&&
+i!==this.safePath.length-1
+){
+
+continue;
+
+}
+
+const p=this.cellCenter(
+this.safePath[i].r,
+this.safePath[i].c
+);
+
+this.hintG.fillStyle(
+0xffffff,
+.90
+);
+
+this.hintG.fillCircle(
+p.x,
+p.y,
+Math.max(
+4,
+this.cellSize*.035
+)
+);
+
+this.hintG.lineStyle(
+2,
+0x45b7c4,
+.95
+);
+
+this.hintG.strokeCircle(
+p.x,
+p.y,
+Math.max(
+4,
+this.cellSize*.035
+)
+);
+
+}
+
+}
+
+drawBarrier(
+barrier
+){
+
+const a=this.cellCenter(
+barrier.a.r,
+barrier.a.c
+);
+
+const b=this.cellCenter(
+barrier.b.r,
+barrier.b.c
+);
+
+const middleX=(
+a.x+b.x
+)/2;
+
+const middleY=(
+a.y+b.y
+)/2;
+
+const thickness=Math.max(
+10,
+this.cellSize*.09
+);
+
+const length=this.cellSize*.50;
+
+if(
+barrier.a.r===barrier.b.r
+){
+
+this.barrierG.fillStyle(
+0x39464d,
+.20
+);
+
+this.barrierG.fillRoundedRect(
+middleX-thickness/2+2,
+middleY-length/2+2,
+thickness,
+length,
+4
+);
+
+this.barrierG.fillStyle(
+0xf6c648,
+1
+);
+
+this.barrierG.fillRoundedRect(
+middleX-thickness/2,
+middleY-length/2,
+thickness,
+length,
+4
+);
+
+this.barrierG.fillStyle(
+0x374047,
+1
+);
+
+for(
+let y=
+middleY-length/2+7;
+y<middleY+length/2;
+y+=18
+){
+
+this.barrierG.fillRect(
+middleX-thickness/2,
+y,
+thickness,
+6
+);
+
+}
+
+}else{
+
+this.barrierG.fillStyle(
+0x39464d,
+.20
+);
+
+this.barrierG.fillRoundedRect(
+middleX-length/2+2,
+middleY-thickness/2+2,
+length,
+thickness,
+4
+);
+
+this.barrierG.fillStyle(
+0xf6c648,
+1
+);
+
+this.barrierG.fillRoundedRect(
+middleX-length/2,
+middleY-thickness/2,
+length,
+thickness,
+4
+);
+
+this.barrierG.fillStyle(
+0x374047,
+1
+);
+
+for(
+let x=
+middleX-length/2+7;
+x<middleX+length/2;
+x+=18
+){
+
+this.barrierG.fillRect(
+x,
+middleY-thickness/2,
+6,
+thickness
+);
+
+}
+
+}
+
+}
+
+hasBarrier(
+a,
+b
+){
+
+return this.barrierSet.has(
+edgeKey(
+a,
+b
+)
+);
+
+}
+
+setupTouch(){
+
+this.input.on(
+"pointerdown",
+pointer=>{
+
+if(
+this.locked||
+this.questionOpen
+){
+
+return;
+
+}
+
+const touched=this.pointerToCell(
+pointer.x,
+pointer.y
+);
+
+if(
+!touched
+){
+
+return;
+
+}
+
+if(
+touched.r!==this.currentCell.r||
+touched.c!==this.currentCell.c
+){
+
+return;
+
+}
+
+this.dragging=true;
+
+this.lastDragX=pointer.x;
+
+this.lastDragY=pointer.y;
+
+}
+);
+
+this.input.on(
+"pointermove",
+pointer=>{
+
+if(
+!this.dragging||
+!pointer.isDown||
+this.locked||
+this.questionOpen
+){
+
+return;
+
+}
+
+const startX=this.lastDragX;
+const startY=this.lastDragY;
+const endX=pointer.x;
+const endY=pointer.y;
+
+const distance=Phaser.Math.Distance.Between(
+startX,
+startY,
+endX,
+endY
+);
+
+const spacing=Math.max(
+9,
+this.cellSize*.16
+);
+
+const steps=Math.max(
+1,
+Math.ceil(
+distance/
+spacing
+)
+);
+
+for(
+let i=1;
+i<=steps;
+i++
+){
+
+const ratio=i/steps;
+
+const sampleX=Phaser.Math.Linear(
+startX,
+endX,
+ratio
+);
+
+const sampleY=Phaser.Math.Linear(
+startY,
+endY,
+ratio
+);
+
+const target=this.pointerToCell(
+sampleX,
+sampleY
+);
+
+if(
+target
+){
+
+this.processCell(
+target
+);
+
+}
+
+if(
+this.locked
+){
+
+break;
+
+}
+
+}
+
+this.lastDragX=pointer.x;
+this.lastDragY=pointer.y;
+
+}
+);
+
+this.input.on(
+"pointerup",
+()=>{
+
+this.dragging=false;
+
+}
+);
+
+this.input.on(
+"pointerout",
+()=>{
+
+this.dragging=false;
+
+}
+);
+
+}
+
+processCell(
+target
+){
+
+if(
+target.r===this.currentCell.r&&
+target.c===this.currentCell.c
+){
+
+return;
+
+}
+
+const distance=
+Math.abs(
+target.r-this.currentCell.r
+)
++
+Math.abs(
+target.c-this.currentCell.c
+);
+
+if(
+distance!==1
+){
+
+return;
+
+}
+
+this.tryMove(
+target
+);
+
+}
+
+tryMove(
+target
+){
+
+const targetKey=cellKey(
+target.r,
+target.c
+);
+
+if(
+this.history.length>1
+){
+
+const previous=this.history[
+this.history.length-2
+];
+
+if(
+previous.r===target.r&&
+previous.c===target.c
+){
+
+this.undoStep();
+
+return true;
+
+}
+
+}
+
+if(
+this.hasBarrier(
+this.currentCell,
+target
+)
+){
+
+this.statusText.setText(
+"Ada penghalang. Cari jalan lain."
+);
+
+AUDIO.bad();
+
+this.flashBarrier(
+this.currentCell,
+target
+);
+
+return false;
+
+}
+
+if(
+this.visited.has(
+targetKey
+)
+){
+
+this.statusText.setText(
+"Petak ini dah dilalui. Tarik balik untuk undo."
+);
+
+AUDIO.bad();
+
+this.flashCell(
+target.r,
+target.c
+);
+
+return false;
+
+}
+
+const total=this.rows*this.cols;
+
+const isPortal=
+target.r===this.portalCell.r&&
+target.c===this.portalCell.c;
+
+if(
+isPortal&&
+this.visited.size!==total-1
+){
+
+this.statusText.setText(
+"Portal mesti jadi petak terakhir."
+);
+
+AUDIO.bad();
+
+this.flashCell(
+target.r,
+target.c
+);
+
+return false;
+
+}
+
+this.currentCell={
+r:target.r,
+c:target.c
+};
+
+this.history.push({
+...this.currentCell
+});
+
+this.visited.add(
+targetKey
+);
+
+AUDIO.move();
+
+this.placePlayer();
+
+this.drawBoard();
+
+this.updateProgress();
+
+if(
+isPortal&&
+this.visited.size===total
+){
+
+this.completeStage();
+
+}
+
+return true;
+
+}
+
+undoStep(){
+
+if(
+this.history.length<=1
+){
+
+return;
+
+}
+
+const removed=this.history.pop();
+
+this.visited.delete(
+cellKey(
+removed.r,
+removed.c
+)
+);
+
+const previous=this.history[
+this.history.length-1
+];
+
+this.currentCell={
+r:previous.r,
+c:previous.c
+};
+
+AUDIO.undo();
+
+this.placePlayer();
+
+this.drawBoard();
+
+this.updateProgress();
+
+}
+
+flashCell(
+r,
+c
+){
+
+const position=this.cellCenter(
+r,
+c
+);
+
+const ring=this.add.circle(
+position.x,
+position.y,
+this.cellSize*.27,
+0xff5555,
+.12
+)
+.setStrokeStyle(
+5,
+0xff5555,
+1
+)
+.setDepth(
+150
+);
+
+this.tweens.add({
+
+targets:ring,
+
+scaleX:1.25,
+
+scaleY:1.25,
+
+alpha:0,
+
+duration:260,
+
+onComplete:()=>{
+
+ring.destroy();
+
+}
+
+});
+
+}
+
+flashBarrier(
+a,
+b
+){
+
+const pointA=this.cellCenter(
+a.r,
+a.c
+);
+
+const pointB=this.cellCenter(
+b.r,
+b.c
+);
+
+const flash=this.add.circle(
+(
+pointA.x+
+pointB.x
+)/2,
+(
+pointA.y+
+pointB.y
+)/2,
+15,
+0xff4f4f,
+.70
+)
+.setDepth(
+160
+);
+
+this.tweens.add({
+
+targets:flash,
+
+scaleX:1.8,
+
+scaleY:1.8,
+
+alpha:0,
+
+duration:250,
+
+onComplete:()=>{
+
+flash.destroy();
+
+}
+
+});
+
+}
+
+updateProgress(){
+
+const total=this.rows*this.cols;
+
+const done=this.visited.size;
+
+const remaining=total-done;
+
+this.progressFill.displayWidth=Math.max(
+4,
+470*(
+done/total
+)
+);
+
+this.progressText.setText(
+done+
+" / "+
+total
+);
+
+if(
+this.hintVisible
+){
+
+this.statusText.setText(
+"Laluan bantuan sedang ditunjukkan."
+);
+
+}else if(
+remaining>1
+){
+
+this.statusText.setText(
+remaining+
+" petak lagi. Countdown "+
+this.timeLeft+
+"s."
+);
+
+}else if(
+remaining===1
+){
+
+this.statusText.setText(
+"Tinggal portal hitam!"
+);
+
+}
+
+}
+
+completeStage(){
+
+this.stopCountdown();
+
+this.locked=true;
+
+this.dragging=false;
+
+this.statusText.setText(
+"Stage selesai!"
+);
+
+AUDIO.win();
+
+this.time.delayedCall(
+350,
+()=>this.showQuestion()
+);
+
+}
+
+showQuestion(){
+
+this.questionOpen=true;
+
+this.locked=true;
+
+this.answerLocked=false;
+
+this.questionMistake=false;
+
+const question=QUESTIONS[
+this.stageIndex
+];
+
+this.questionLayer=this.add.container(
+0,
+0
+)
+.setDepth(
+300
+);
+
+const panel=this.add.rectangle(
+450,
+570,
+760,
+850,
+0xffffff,
+.98
+)
+.setStrokeStyle(
+4,
+0xc5dae4
+);
+
+const badge=this.add.text(
+450,
+185,
+"SOALAN "+
+(this.stageIndex+1)+
+" / 25",
+{
+fontFamily:"Trebuchet MS, Arial",
+fontSize:"20px",
+fontStyle:"bold",
+color:"#ffffff",
+backgroundColor:"#e45155",
+padding:{
+x:18,
+y:9
+}
+}
+)
+.setOrigin(
+.5
+);
+
+const topic=this.add.text(
+450,
+240,
+question.topic,
+{
+fontFamily:"Trebuchet MS, Arial",
+fontSize:"23px",
+fontStyle:"bold",
+color:"#3e778e",
+align:"center"
+}
+)
+.setOrigin(
+.5
+);
+
+const questionText=this.add.text(
+450,
+330,
+question.q,
+{
+fontFamily:"Trebuchet MS, Arial",
+fontSize:"25px",
+fontStyle:"bold",
+color:"#183d4d",
+align:"center",
+wordWrap:{
+width:650,
+useAdvancedWrap:true
+},
+lineSpacing:4
+}
+)
+.setOrigin(
+.5
+);
+
+this.questionLayer.add([
+panel,
+badge,
+topic,
+questionText
+]);
+
+const answerY=[
+500,
+620,
+740,
+860
+];
+
+question.a.forEach(
+(
+answer,
+index
+)=>{
+
+const button=this.add.rectangle(
+450,
+answerY[index],
+650,
+90,
+0xf1f7fa,
+1
+)
+.setStrokeStyle(
+3,
+0xb8cfd9
+)
+.setInteractive({
+useHandCursor:true
+});
+
+const circle=this.add.circle(
+165,
+answerY[index],
+28,
+0x40798f,
+1
+);
+
+const letter=this.add.text(
+165,
+answerY[index],
+String.fromCharCode(
+65+index
+),
+{
+fontFamily:"Arial",
+fontSize:"24px",
+fontStyle:"bold",
+color:"#ffffff"
+}
+)
+.setOrigin(
+.5
+);
+
+const answerText=this.add.text(
+210,
+answerY[index],
+answer,
+{
+fontFamily:"Trebuchet MS, Arial",
+fontSize:"21px",
+fontStyle:"bold",
+color:"#244653",
+wordWrap:{
+width:500,
+useAdvancedWrap:true
+}
+}
+)
+.setOrigin(
+0,
+.5
+);
+
+this.questionLayer.add([
+button,
+circle,
+letter,
+answerText
+]);
+
+button.on(
+"pointerdown",
+()=>{
+
+AUDIO.unlock();
+
+this.checkAnswer(
+index,
+question.correct,
+button,
+circle
+);
+
+}
+);
+
+}
+);
+
+}
+
+checkAnswer(
+selected,
+correct,
+button,
+circle
+){
+
+if(
+this.answerLocked
+){
+
+return;
+
+}
+
+if(
+selected===correct
+){
+
+this.answerLocked=true;
+
+button
+.setFillStyle(
+0xd7f3dd
+)
+.setStrokeStyle(
+4,
+0x50ae65
+);
+
+circle.setFillStyle(
+0x43a45b
+);
+
+AUDIO.correct();
+
+if(
+!this.questionMistake
+){
+
+this.correctFirstTry++;
+
+}
+
+this.time.delayedCall(
+600,
+()=>{
+
+this.questionLayer.destroy();
+
+this.questionOpen=false;
+
+this.answerLocked=false;
+
+if(
+this.stageIndex>=24
+){
+
+this.showFinish();
+
+}else{
+
+this.startStage(
+this.stageIndex+1
+);
+
+}
+
+}
+);
+
+}else{
+
+this.questionMistake=true;
+
+AUDIO.bad();
+
+button
+.setFillStyle(
+0xffdddd
+)
+.setStrokeStyle(
+4,
+0xdf5757
+);
+
+circle.setFillStyle(
+0xd94f4f
+);
+
+this.time.delayedCall(
+320,
+()=>{
+
+if(
+button.active
+){
+
+button
+.setFillStyle(
+0xf1f7fa
+)
+.setStrokeStyle(
+3,
+0xb8cfd9
+);
+
+circle.setFillStyle(
+0x40798f
+);
+
+}
+
+}
+);
+
+}
+
+}
+
+showFinish(){
+
+this.stopCountdown();
+
+const layer=this.add.container(
+0,
+0
+)
+.setDepth(
+500
+);
+
+const panel=this.add.rectangle(
+450,
+560,
+700,
+560,
+0xffffff,
+.98
+)
+.setStrokeStyle(
+4,
+0xc5dbe4
+);
+
+const icon=this.add.text(
+450,
+385,
+"✦",
+{
+fontFamily:"Arial",
+fontSize:"90px",
+fontStyle:"bold",
+color:"#4c90aa"
+}
+)
+.setOrigin(
+.5
+);
+
+const title=this.add.text(
+450,
+470,
+"MISI SELESAI!",
+{
+fontFamily:"Trebuchet MS, Arial",
+fontSize:"40px",
+fontStyle:"bold",
+color:"#193f50"
+}
+)
+.setOrigin(
+.5
+);
+
+const description=this.add.text(
+450,
+545,
+"Semua 25 pattern unik dan 25 soalan telah diselesaikan.",
+{
+fontFamily:"Trebuchet MS, Arial",
+fontSize:"22px",
+color:"#58737f",
+align:"center",
+wordWrap:{
+width:560
+}
+}
+)
+.setOrigin(
+.5
+);
+
+const score=this.add.text(
+450,
+620,
+"Betul cubaan pertama: "+
+this.correctFirstTry+
+" / 25",
+{
+fontFamily:"Trebuchet MS, Arial",
+fontSize:"24px",
+fontStyle:"bold",
+color:"#e45155"
+}
+)
+.setOrigin(
+.5
+);
+
+const replay=this.add.rectangle(
+450,
+715,
+400,
+76,
+0x3e839b,
+1
+)
+.setStrokeStyle(
+3,
+0x316c81
+)
+.setInteractive({
+useHandCursor:true
+});
+
+const replayText=this.add.text(
+450,
+715,
+"MAIN SEMULA",
+{
+fontFamily:"Trebuchet MS, Arial",
+fontSize:"24px",
+fontStyle:"bold",
+color:"#ffffff"
+}
+)
+.setOrigin(
+.5
+);
+
+layer.add([
+panel,
+icon,
+title,
+description,
+score,
+replay,
+replayText
+]);
+
+replay.on(
+"pointerdown",
+()=>{
+
+this.correctFirstTry=0;
+
+this.sessionSeed=
+Date.now()>>>0;
+
+this.usedPatternSignatures.clear();
+
+layer.destroy();
+
+this.startStage(
+0
+);
+
+}
+);
+
+}
+
+}
 
 new Phaser.Game({
 
-    type:
-    Phaser.CANVAS,
+type:
+Phaser.CANVAS,
 
-    parent:
-    "game",
+parent:
+"game",
 
-    width:
-    GAME_W,
+width:
+GAME_W,
 
-    height:
-    GAME_H,
+height:
+GAME_H,
 
-    backgroundColor:
-    "#dff4ff",
+backgroundColor:
+"#dff4ff",
 
-    render:{
+render:{
+antialias:true,
+roundPixels:false
+},
 
-        antialias:
-        true,
+scale:{
+mode:Phaser.Scale.FIT,
+autoCenter:Phaser.Scale.CENTER_BOTH,
+width:GAME_W,
+height:GAME_H
+},
 
-        roundPixels:
-        false
-    },
+input:{
+activePointers:3
+},
 
-    scale:{
-
-        mode:
-        Phaser.Scale.FIT,
-
-        autoCenter:
-        Phaser.Scale.CENTER_BOTH,
-
-        width:
-        GAME_W,
-
-        height:
-        GAME_H
-    },
-
-    input:{
-
-        activePointers:
-        3
-    },
-
-    scene:[
-        TrailPuzzle
-    ]
+scene:[
+TrailPuzzle
+]
 
 });
 
 </script>
-
 </body>
 </html>
