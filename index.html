@@ -4,524 +4,1070 @@
 <meta charset="UTF-8">
 
 <meta
-name="viewport"
-content="width=device-width,
-initial-scale=1,
-maximum-scale=1,
-user-scalable=no,
-viewport-fit=cover">
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+>
 
-<title>Mystery Doors Challenge - Set 4</title>
+<title>Mystery Doors Challenge — Set 4</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <style>
-
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
 }
 
-html,
+:root{
+    font-family:"Trebuchet MS",Arial,sans-serif;
+    color:#fff;
+    background:#eaf2fa;
+}
+
 body{
     margin:0;
-    padding:0;
-
-    width:100%;
-    min-height:100%;
-
-    font-family:
-    "Trebuchet MS",
-    Arial,
-    sans-serif;
+    min-height:100svh;
+    padding:16px 10px;
 
     background:
-    linear-gradient(
-        135deg,
-        #d9f3ff,
-        #f8fcff,
-        #dcecff
-    );
-
-    overscroll-behavior:none;
+        radial-gradient(
+            ellipse at top,
+            #fff 0,
+            #e9f3fc 50%,
+            #dce6f4 100%
+        );
 }
 
-body{
+button,
+a{
+    touch-action:manipulation;
+}
 
-    min-height:100vh;
-    min-height:100svh;
+button{
+    font:inherit;
+    cursor:pointer;
+}
+
+button:focus-visible,
+a:focus-visible{
+    outline:3px solid #ffdb82;
+    outline-offset:4px;
+}
+
+.shell{
+    --top:#243b68;
+    --bottom:#567bb0;
+
+    max-width:1050px;
+    margin:auto;
+
+    border-radius:28px;
+    overflow:hidden;
+
+    background:
+        linear-gradient(
+            150deg,
+            var(--top),
+            var(--bottom)
+        );
+
+    box-shadow:0 20px 60px #23395e30;
+    border:1px solid #ffffff90;
+    transition:background .3s;
+}
+
+.topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:15px 20px;
+    border-bottom:1px solid #ffffff18;
+    gap:10px;
+}
+
+.btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    min-height:44px;
+    border:1px solid #ffffff30;
+    border-radius:14px;
+
+    background:#101f3b55;
+    color:#fff;
+
+    padding:10px 16px;
+    font-weight:bold;
+    text-decoration:none;
+    font-size:13px;
+}
+
+.btn:active{
+    transform:translateY(1px);
+}
+
+.btn:disabled{
+    opacity:.4;
+    cursor:default;
+}
+
+.brand{
+    text-align:center;
+}
+
+.brand strong{
+    display:block;
+    font-size:16px;
+    letter-spacing:1.5px;
+}
+
+.brand small{
+    display:block;
+    color:#d5e3fc;
+    font-size:10px;
+    letter-spacing:2px;
+    margin-top:4px;
+}
+
+.right{
+    display:flex;
+    gap:8px;
+    align-items:center;
+}
+
+.score{
+    color:#ffe49a;
+    background:#ffffff10;
+    border:1px solid #ffffff15;
+
+    padding:10px 14px;
+    border-radius:14px;
+
+    font-weight:bold;
+    white-space:nowrap;
+}
+
+.sound{
+    width:44px;
+    padding:0;
+    font-size:21px;
+}
+
+.content{
+    display:grid;
+    grid-template-columns:320px minmax(0,1fr);
+
+    gap:20px;
+    padding:24px;
+}
+
+.side{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+    min-width:0;
+}
+
+.stage-line{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+}
+
+.eyebrow{
+    font-size:11px;
+    letter-spacing:2px;
+    color:#d0dff5;
+    font-weight:bold;
+}
+
+.stage-count{
+    font-size:12px;
+    background:#ffffff14;
+    padding:7px 10px;
+    border-radius:9px;
+}
+
+.stage-title{
+    font-size:24px;
+    margin:8px 0 0;
+    letter-spacing:.5px;
+}
+
+.stage-track{
+    display:flex;
+    gap:6px;
+    margin-top:14px;
+}
+
+.stage-track span{
+    height:5px;
+    background:#ffffff24;
+    border-radius:9px;
+    flex:1;
+}
+
+.stage-track .done{
+    background:#8ae4c5;
+}
+
+.stage-track .now{
+    background:#ffe09a;
+}
+
+.question{
+    background:#f8fbff;
+    color:#24334f;
+
+    padding:22px;
+    border-radius:23px;
+
+    box-shadow:0 8px 0 #162b4b20;
+    border:1px solid #fff;
+}
+
+.q-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+    margin-bottom:16px;
+}
+
+.q-tag{
+    font-size:11px;
+    letter-spacing:1px;
+    font-weight:bold;
+    color:#53709a;
+}
+
+.q-count{
+    font-size:12px;
+    color:#8192ac;
+}
+
+.question p{
+    font-size:clamp(17px,1.9vw,21px);
+    line-height:1.55;
+    font-weight:bold;
+    margin:0;
+}
+
+.hint{
+    font-size:13px;
+    line-height:1.6;
+    color:#d7e5f9;
+    margin:0;
+}
+
+.memory{
+    background:#14223c60;
+    border:1px solid #ffffff25;
+
+    padding:12px;
+    border-radius:17px;
 
     display:flex;
-
-    justify-content:center;
-    align-items:flex-start;
-
-    padding:
-    max(4px,env(safe-area-inset-top))
-    3px
-    max(5px,env(safe-area-inset-bottom));
-
-    overflow:hidden;
+    align-items:center;
+    gap:10px;
 }
 
-#game-shell{
+.memory[hidden]{
+    display:none;
+}
 
-    width:min(
-        98vw,
-        720px,
-        calc(97svh * .643)
-    );
+.clock{
+    font-variant-numeric:tabular-nums;
+    font-family:monospace;
+    font-size:26px;
+    font-weight:bold;
+    color:#ffe49a;
+    min-width:80px;
+}
 
-    height:min(
-        97svh,
-        1120px
-    );
+.memory-info{
+    flex:1;
+    font-size:11px;
+    line-height:1.4;
+    color:#dce8fc;
+}
 
-    aspect-ratio:720 / 1120;
+.memory .btn{
+    font-size:11px;
+    padding:8px;
+    min-height:40px;
+}
 
-    position:relative;
-
+.time-track{
+    height:4px;
+    border-radius:4px;
+    background:#ffffff20;
     overflow:hidden;
+    margin-top:5px;
+}
 
-    border-radius:20px;
+.time-fill{
+    width:100%;
+    height:100%;
+    background:#ffe49a;
+    transition:width .1s linear;
+}
 
-    background:#dceeff;
+.play{
+    min-width:0;
+}
 
-    box-shadow:
-    0 12px 35px
-    rgba(24,43,80,.22);
+.status{
+    min-height:45px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+    font-size:12px;
+    line-height:1.4;
+    color:#e3edff;
+
+    padding:7px 12px;
+    border:1px solid #ffffff1c;
+    border-radius:13px;
+    background:#10244044;
+
+    margin-bottom:10px;
 }
 
 #game{
     width:100%;
-    height:100%;
+    height:500px;
+    border-radius:20px;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            #ffffff0b,
+            #10213c22
+        );
+
+    overflow:hidden;
 }
 
 canvas{
-
-    display:block !important;
-
-    width:100% !important;
-    height:100% !important;
-
+    display:block;
     touch-action:none;
 }
 
-@media(max-width:500px){
+.feedback{
+    min-height:66px;
 
-    #game-shell{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
 
-        width:100vw;
+    text-align:center;
+    gap:4px;
 
-        height:min(
-            98svh,
-            1120px
-        );
+    padding:10px;
+    border-radius:14px;
+    margin-top:10px;
 
-        border-radius:13px;
-    }
-
+    background:#ffffff0b;
 }
 
+.feedback strong{
+    font-size:17px;
+    color:#ffe6a4;
+}
+
+.feedback small{
+    font-size:12px;
+    line-height:1.4;
+    color:#e1ebfc;
+}
+
+.feedback.good{
+    background:#0b513b99;
+}
+
+.feedback.bad{
+    background:#8b2f4366;
+}
+
+.footer{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+
+    font-size:11px;
+    color:#d9e6fa;
+    padding:0 24px 20px;
+}
+
+.dots{
+    display:flex;
+    gap:7px;
+}
+
+.dots i{
+    display:block;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#ffffff40;
+}
+
+.dots i.done{
+    background:#8ae4c5;
+}
+
+.dots i.now{
+    background:#ffdf93;
+    box-shadow:0 0 0 3px #ffdf931c;
+}
+
+.finish{
+    padding:18px;
+    border-radius:18px;
+    background:#ffffff14;
+    line-height:1.6;
+}
+
+.finish[hidden]{
+    display:none;
+}
+
+.finish strong{
+    display:block;
+    color:#ffe49a;
+    font-size:24px;
+}
+
+.finish .btn{
+    width:100%;
+    margin-top:12px;
+    background:#fff;
+    color:#294568;
+}
+
+/* TABLET / IPAD PORTRAIT / PHONE */
+
+@media(max-width:800px){
+    body{
+        padding:8px;
+    }
+
+    .shell{
+        max-width:610px;
+        border-radius:23px;
+    }
+
+    .content{
+        grid-template-columns:1fr;
+        gap:16px;
+        padding:18px;
+    }
+
+    .side{
+        gap:12px;
+    }
+
+    .stage-title{
+        font-size:21px;
+    }
+
+    .stage-track{
+        margin-top:10px;
+    }
+
+    .question{
+        padding:18px;
+    }
+
+    .question p{
+        font-size:18px;
+        line-height:1.45;
+    }
+
+    .q-head{
+        margin-bottom:10px;
+    }
+
+    .hint{
+        font-size:12px;
+    }
+
+    .topbar{
+        padding:12px 16px;
+    }
+
+    #game{
+        height:440px;
+    }
+
+    .footer{
+        padding:0 18px 18px;
+    }
+}
+
+/* SMALL PHONE */
+
+@media(max-width:420px){
+    body{
+        padding:5px;
+    }
+
+    .shell{
+        border-radius:19px;
+    }
+
+    .topbar{
+        padding:10px;
+        gap:6px;
+    }
+
+    .brand strong{
+        font-size:12px;
+        letter-spacing:1px;
+    }
+
+    .brand small{
+        font-size:8px;
+        letter-spacing:1px;
+    }
+
+    .btn{
+        padding:9px 10px;
+        font-size:11px;
+    }
+
+    .score{
+        padding:10px;
+        font-size:13px;
+    }
+
+    .right{
+        gap:5px;
+    }
+
+    .sound{
+        width:40px;
+    }
+
+    .content{
+        padding:13px;
+        gap:12px;
+    }
+
+    .question p{
+        font-size:16px;
+    }
+
+    .question{
+        padding:16px;
+    }
+
+    .stage-title{
+        font-size:20px;
+    }
+
+    .hint{
+        font-size:11px;
+    }
+
+    .footer{
+        padding:0 13px 16px;
+    }
+
+    #game{
+        height:430px;
+    }
+}
+
+@media(min-width:801px) and (max-height:700px){
+    body{
+        padding:8px;
+    }
+
+    .content{
+        padding:18px;
+        gap:18px;
+    }
+
+    #game{
+        height:430px;
+    }
+
+    .topbar{
+        padding:10px 18px;
+    }
+}
+
+@media(prefers-reduced-motion:reduce){
+    *{
+        scroll-behavior:auto!important;
+        transition:none!important;
+    }
+}
 </style>
 </head>
 
 <body>
 
-<div id="game-shell">
-    <div id="game"></div>
-</div>
+<main class="shell" id="shell">
+
+    <header class="topbar">
+
+        <a
+            class="btn"
+            href="index.html"
+            aria-label="Menu utama"
+        >
+            ⌂ HOME
+        </a>
+
+        <div class="brand">
+            <strong>MYSTERY DOORS</strong>
+            <small>CHALLENGE · SET 4</small>
+        </div>
+
+        <div class="right">
+
+            <span class="score" id="score">
+                ★ 0
+            </span>
+
+            <button
+                class="btn sound"
+                id="sound"
+                aria-label="Matikan bunyi"
+                aria-pressed="true"
+            >
+                ♪
+            </button>
+
+        </div>
+
+    </header>
+
+    <div class="content">
+
+        <section class="side">
+
+            <div>
+
+                <div class="stage-line">
+
+                    <span class="eyebrow" id="stage">
+                        STAGE 1 / 5
+                    </span>
+
+                    <span class="stage-count" id="local">
+                        1 / 5
+                    </span>
+
+                </div>
+
+                <h1 class="stage-title" id="title">
+                    MISTERI KACA
+                </h1>
+
+                <div class="stage-track" id="track"></div>
+
+            </div>
+
+            <div class="question">
+
+                <div class="q-head">
+
+                    <span class="q-tag" id="qtag">
+                        SOALAN 01
+                    </span>
+
+                    <span class="q-count" id="total">
+                        1 / 25
+                    </span>
+
+                </div>
+
+                <p id="question"></p>
+
+            </div>
+
+            <p class="hint" id="hint"></p>
+
+            <div class="memory" id="memory" hidden>
+
+                <span class="clock" id="clock">
+                    00:10
+                </span>
+
+                <div class="memory-info">
+
+                    <span id="memoryLabel">
+                        Hafal kedudukan
+                    </span>
+
+                    <div class="time-track">
+                        <div class="time-fill" id="timeFill"></div>
+                    </div>
+
+                </div>
+
+                <button class="btn" id="reveal" disabled>
+                    Lihat semula
+                </button>
+
+            </div>
+
+            <div class="finish" id="finish" hidden>
+
+                <strong>Tahniah! ★★★</strong>
+
+                25 / 25 soalan selesai.
+                <br>
+
+                <span id="finalScore"></span>
+
+                <button class="btn" id="restart">
+                    ↻ MAIN SEMULA
+                </button>
+
+            </div>
+
+        </section>
+
+        <section class="play">
+
+            <div class="status" id="status">
+                Pilih pintu jawapan yang betul.
+            </div>
+
+            <div
+                id="game"
+                aria-label="Pintu jawapan interaktif"
+            ></div>
+
+            <div
+                class="feedback"
+                id="feedback"
+                role="status"
+                aria-live="polite"
+            >
+
+                <strong id="message">
+                    Cari pintu yang betul
+                </strong>
+
+                <small id="submessage">
+                    Baca soalan, kemudian sentuh sebuah pintu.
+                </small>
+
+            </div>
+
+        </section>
+
+    </div>
+
+    <footer class="footer">
+
+        <span id="progressLabel">
+            PERJALANAN ANDA · 0 / 25
+        </span>
+
+        <div class="dots" id="dots"></div>
+
+    </footer>
+
+</main>
 
 <script>
-
 /* =========================================================
-   MYSTERY DOORS CHALLENGE
-   SET 4
-
-   STAGE 1
-   - Normal
-
-   STAGE 2
-   - Pintu shuffle sebelum pilih
-
-   STAGE 3
-   - Jawapan + A/B/C/D dipaparkan 10 saat
-   - Selepas 10 saat semuanya hilang
-   - Lihat semula sekali sahaja
-
-   STAGE 4
-   - Normal
-
-   STAGE 5
-   - 6 pintu
-   - 4 pintu sebenar
-   - 2 pintu pendua
-   - Pintu pendua meniru A/B/C/D + teks jawapan
-   - Pintu pendua sama warna
-   - Bila dibuka: kosong
-
-   SEMUA STAGE
-   - Salah = pintu tutup + semua pintu shuffle
-========================================================= */
-
-
-/* =========================================================
-   QUESTION DATA
+   QUESTION DATA — SEMUA 25 SOALAN DIKEKALKAN
 ========================================================= */
 
 const QUESTIONS = [
 
-/* =========================================================
-   STAGE 1
-========================================================= */
-
-{
-    q:"Meja kaca ialah objek yang ____ air.",
-
-    answers:[
-        "Menambah",
-        "Menyerap",
-        "Menghasilkan",
-        "Tidak menyerap"
-    ],
-
-    correct:3
-},
-
-{
-    q:"Duit syiling dan klip kertas boleh diletakkan dalam kumpulan yang sama jika kedua-duanya ____.",
-
-    answers:[
-        "Tidak menyerap air",
-        "Menyerap air",
-        "Diperbuat daripada tisu",
-        "Menghasilkan air"
-    ],
-
-    correct:0
-},
-
-{
-    q:"Murid menitis air pada kain lap dan gelas kaca. Titisan hilang pada kain lap tetapi kekal pada gelas. Apakah kesimpulan?",
-
-    answers:[
-        "Gelas menyerap air lebih baik daripada kain",
-        "Kedua-duanya tidak menyerap air",
-        "Kedua-duanya menyerap air",
-        "Kain lap menyerap air, gelas kaca tidak menyerap air"
-    ],
-
-    correct:3
-},
-
-{
-    q:"Objek manakah yang menyerap air dan biasa digunakan untuk mengelap?",
-
-    answers:[
-        "Klip kertas",
-        "Straw",
-        "Tisu",
-        "Pemadam"
-    ],
-
-    correct:2
-},
-
-{
-    q:"Antara pasangan berikut, yang manakah kedua-duanya menyerap air?",
-
-    answers:[
-        "Tisu dan sapu tangan",
-        "Klip kertas dan pemadam",
-        "Straw dan mainan plastik",
-        "Sudu logam dan gelas kaca"
-    ],
-
-    correct:0
-},
-
-
-/* =========================================================
-   STAGE 2
-========================================================= */
-
-{
-    q:"Gelas kaca dikelaskan sebagai objek yang ____.",
-
-    answers:[
-        "Boleh menyerap air",
-        "Tidak boleh menyerap air",
-        "Menghasilkan air",
-        "Menukar warna air"
-    ],
-
-    correct:1
-},
-
-{
-    q:"Apakah maksud objek tidak menyerap air?",
-
-    answers:[
-        "Objek yang menyimpan makanan",
-        "Objek yang menghasilkan air",
-        "Objek yang boleh menyerap air",
-        "Objek yang tidak boleh menyerap air"
-    ],
-
-    correct:3
-},
-
-{
-    q:"Bebola kapas digunakan dalam ujian awal. Jika air hilang apabila dititiskan padanya, ini menunjukkan bebola kapas ____.",
-
-    answers:[
-        "Menghasilkan air",
-        "Menyerap air",
-        "Tidak menyerap air",
-        "Menjadi plastik"
-    ],
-
-    correct:1
-},
-
-{
-    q:"Alas kaki dan pinggan plastik diuji. Pengelasan yang betul ialah ____.",
-
-    answers:[
-        "Kedua-duanya menyerap air",
-        "Kedua-duanya tidak menyerap air",
-        "Alas kaki menyerap air, pinggan plastik tidak menyerap air",
-        "Pinggan plastik menyerap air, alas kaki tidak menyerap air"
-    ],
-
-    correct:2
-},
-
-{
-    q:"Objek berbentuk tiub manakah yang tidak boleh menyerap air?",
-
-    answers:[
-        "Straw",
-        "Tisu",
-        "Kain lap",
-        "Sapu tangan"
-    ],
-
-    correct:0
-},
-
-
-/* =========================================================
-   STAGE 3
-========================================================= */
-
-{
-    q:"Dalam ujian titisan air, objek yang tiada lagi titisan air di atasnya ialah objek yang ____.",
-
-    answers:[
-        "Menolak air",
-        "Menyerap air",
-        "Menghasilkan air",
-        "Tidak menyerap air"
-    ],
-
-    correct:1
-},
-
-{
-    q:"Mengapakah ketebalan objek perlu dimalarkan dalam aktiviti perbandingan?",
-
-    answers:[
-        "Supaya semua objek tidak menyerap air",
-        "Supaya air menjadi pepejal",
-        "Supaya objek menghasilkan air",
-        "Supaya perbandingan keupayaan menyerap air lebih adil"
-    ],
-
-    correct:3
-},
-
-{
-    q:"Dalam aktiviti mop mini, tali pengikat digunakan kerana perlu membantu mop ____.",
-
-    answers:[
-        "Menjadi logam",
-        "Menghalang cahaya",
-        "Menyerap air",
-        "Menjadi kaca"
-    ],
-
-    correct:2
-},
-
-{
-    q:"Bebola kapas sesuai untuk mengelap luka kerana bebola kapas ____.",
-
-    answers:[
-        "Boleh menyerap cecair",
-        "Diperbuat daripada logam",
-        "Tidak boleh menyerap air",
-        "Menghalang hujan"
-    ],
-
-    correct:0
-},
-
-{
-    q:"Tong besi perlu tidak menyerap air supaya ____.",
-
-    answers:[
-        "Tong menyerap semua air",
-        "Tong mengeringkan badan",
-        "Tong menjadi tisu",
-        "Boleh menadah dan menyimpan air"
-    ],
-
-    correct:3
-},
-
-
-/* =========================================================
-   STAGE 4
-========================================================= */
-
-{
-    q:"Badan adik basah selepas mandi. Objek manakah paling sesuai digunakan?",
-
-    answers:[
-        "Pinggan plastik",
-        "Tuala",
-        "Sudu logam",
-        "Gelas kaca"
-    ],
-
-    correct:1
-},
-
-{
-    q:"Imran berpeluh selepas bermain. Apakah objek yang sesuai digunakan?",
-
-    answers:[
-        "Tong besi",
-        "Gelas kaca",
-        "Sapu tangan",
-        "Payung plastik"
-    ],
-
-    correct:2
-},
-
-{
-    q:"Objek menyerap air penting untuk ____.",
-
-    answers:[
-        "Mengelap cecair",
-        "Menghasilkan air",
-        "Menukar air menjadi logam",
-        "Menghalang semua cahaya"
-    ],
-
-    correct:0
-},
-
-{
-    q:"Tong besi penting kerana boleh ____.",
-
-    answers:[
-        "Mengelap peluh",
-        "Menadah dan menyimpan air hujan",
-        "Mengeringkan badan",
-        "Menyerap semua air hujan"
-    ],
-
-    correct:1
-},
-
-{
-    q:"Payung plastik penting kerana dapat ____.",
-
-    answers:[
-        "Mengelap peluh",
-        "Mengeringkan badan",
-        "Menyerap semua air hujan",
-        "Menghalang diri daripada terkena air hujan"
-    ],
-
-    correct:3
-},
-
-
-/* =========================================================
-   STAGE 5
-========================================================= */
-
-{
-    q:"Mengapakah kasut getah sesuai digunakan ketika hujan?",
-
-    answers:[
-        "Kerana menyimpan air hujan",
-        "Kerana menyerap air ke dalam kasut",
-        "Kerana tidak menyerap air dan membantu kaki kekal kering",
-        "Kerana digunakan untuk mengelap meja"
-    ],
-
-    correct:2
-},
-
-{
-    q:"Objek yang boleh menyerap air dan objek yang tidak boleh menyerap air adalah ____.",
-
-    answers:[
-        "Penting dalam kehidupan",
-        "Hanya digunakan di sekolah",
-        "Tidak berguna",
-        "Hanya digunakan ketika malam"
-    ],
-
-    correct:0
-},
-
-{
-    q:"Seorang murid memilih tisu untuk mengelakkan hujan membasahi badannya. Mengapakah pilihan itu kurang sesuai?",
-
-    answers:[
-        "Tisu tidak menyerap air",
-        "Tisu diperbuat daripada logam",
-        "Tisu menyerap air",
-        "Tisu sama seperti payung plastik"
-    ],
-
-    correct:2
-},
-
-{
-    q:"Mengapakah tuala sesuai digunakan selepas mandi?",
-
-    answers:[
-        "Kerana diperbuat daripada kaca",
-        "Kerana menyerap air pada badan",
-        "Kerana menadah air hujan",
-        "Kerana tidak menyerap air"
-    ],
-
-    correct:1
-},
-
-{
-    q:"Mengapakah payung plastik sesuai digunakan ketika hujan?",
-
-    answers:[
-        "Kerana menyerap air dengan cepat",
-        "Kerana mengeringkan lantai",
-        "Kerana menyerap peluh",
-        "Kerana tidak menyerap air dan menghalang hujan"
-    ],
-
-    correct:3
-}
+    {
+        q:"Meja kaca ialah objek yang ____ air.",
+        answers:[
+            "Menambah",
+            "Menyerap",
+            "Menghasilkan",
+            "Tidak menyerap"
+        ],
+        correct:3
+    },
+
+    {
+        q:"Duit syiling dan klip kertas boleh diletakkan dalam kumpulan yang sama jika kedua-duanya ____.",
+        answers:[
+            "Tidak menyerap air",
+            "Menyerap air",
+            "Diperbuat daripada tisu",
+            "Menghasilkan air"
+        ],
+        correct:0
+    },
+
+    {
+        q:"Murid menitis air pada kain lap dan gelas kaca. Titisan hilang pada kain lap tetapi kekal pada gelas. Apakah kesimpulan?",
+        answers:[
+            "Gelas menyerap air lebih baik daripada kain",
+            "Kedua-duanya tidak menyerap air",
+            "Kedua-duanya menyerap air",
+            "Kain lap menyerap air, gelas kaca tidak menyerap air"
+        ],
+        correct:3
+    },
+
+    {
+        q:"Objek manakah yang menyerap air dan biasa digunakan untuk mengelap?",
+        answers:[
+            "Klip kertas",
+            "Straw",
+            "Tisu",
+            "Pemadam"
+        ],
+        correct:2
+    },
+
+    {
+        q:"Antara pasangan berikut, yang manakah kedua-duanya menyerap air?",
+        answers:[
+            "Tisu dan sapu tangan",
+            "Klip kertas dan pemadam",
+            "Straw dan mainan plastik",
+            "Sudu logam dan gelas kaca"
+        ],
+        correct:0
+    },
+
+    {
+        q:"Gelas kaca dikelaskan sebagai objek yang ____.",
+        answers:[
+            "Boleh menyerap air",
+            "Tidak boleh menyerap air",
+            "Menghasilkan air",
+            "Menukar warna air"
+        ],
+        correct:1
+    },
+
+    {
+        q:"Apakah maksud objek tidak menyerap air?",
+        answers:[
+            "Objek yang menyimpan makanan",
+            "Objek yang menghasilkan air",
+            "Objek yang boleh menyerap air",
+            "Objek yang tidak boleh menyerap air"
+        ],
+        correct:3
+    },
+
+    {
+        q:"Bebola kapas digunakan dalam ujian awal. Jika air hilang apabila dititiskan padanya, ini menunjukkan bebola kapas ____.",
+        answers:[
+            "Menghasilkan air",
+            "Menyerap air",
+            "Tidak menyerap air",
+            "Menjadi plastik"
+        ],
+        correct:1
+    },
+
+    {
+        q:"Alas kaki dan pinggan plastik diuji. Pengelasan yang betul ialah ____.",
+        answers:[
+            "Kedua-duanya menyerap air",
+            "Kedua-duanya tidak menyerap air",
+            "Alas kaki menyerap air, pinggan plastik tidak menyerap air",
+            "Pinggan plastik menyerap air, alas kaki tidak menyerap air"
+        ],
+        correct:2
+    },
+
+    {
+        q:"Objek berbentuk tiub manakah yang tidak boleh menyerap air?",
+        answers:[
+            "Straw",
+            "Tisu",
+            "Kain lap",
+            "Sapu tangan"
+        ],
+        correct:0
+    },
+
+    {
+        q:"Dalam ujian titisan air, objek yang tiada lagi titisan air di atasnya ialah objek yang ____.",
+        answers:[
+            "Menolak air",
+            "Menyerap air",
+            "Menghasilkan air",
+            "Tidak menyerap air"
+        ],
+        correct:1
+    },
+
+    {
+        q:"Mengapakah ketebalan objek perlu dimalarkan dalam aktiviti perbandingan?",
+        answers:[
+            "Supaya semua objek tidak menyerap air",
+            "Supaya air menjadi pepejal",
+            "Supaya objek menghasilkan air",
+            "Supaya perbandingan keupayaan menyerap air lebih adil"
+        ],
+        correct:3
+    },
+
+    {
+        q:"Dalam aktiviti mop mini, tali pengikat digunakan kerana perlu membantu mop ____.",
+        answers:[
+            "Menjadi logam",
+            "Menghalang cahaya",
+            "Menyerap air",
+            "Menjadi kaca"
+        ],
+        correct:2
+    },
+
+    {
+        q:"Bebola kapas sesuai untuk mengelap luka kerana bebola kapas ____.",
+        answers:[
+            "Boleh menyerap cecair",
+            "Diperbuat daripada logam",
+            "Tidak boleh menyerap air",
+            "Menghalang hujan"
+        ],
+        correct:0
+    },
+
+    {
+        q:"Tong besi perlu tidak menyerap air supaya ____.",
+        answers:[
+            "Tong menyerap semua air",
+            "Tong mengeringkan badan",
+            "Tong menjadi tisu",
+            "Boleh menadah dan menyimpan air"
+        ],
+        correct:3
+    },
+
+    {
+        q:"Badan adik basah selepas mandi. Objek manakah paling sesuai digunakan?",
+        answers:[
+            "Pinggan plastik",
+            "Tuala",
+            "Sudu logam",
+            "Gelas kaca"
+        ],
+        correct:1
+    },
+
+    {
+        q:"Imran berpeluh selepas bermain. Apakah objek yang sesuai digunakan?",
+        answers:[
+            "Tong besi",
+            "Gelas kaca",
+            "Sapu tangan",
+            "Payung plastik"
+        ],
+        correct:2
+    },
+
+    {
+        q:"Objek menyerap air penting untuk ____.",
+        answers:[
+            "Mengelap cecair",
+            "Menghasilkan air",
+            "Menukar air menjadi logam",
+            "Menghalang semua cahaya"
+        ],
+        correct:0
+    },
+
+    {
+        q:"Tong besi penting kerana boleh ____.",
+        answers:[
+            "Mengelap peluh",
+            "Menadah dan menyimpan air hujan",
+            "Mengeringkan badan",
+            "Menyerap semua air hujan"
+        ],
+        correct:1
+    },
+
+    {
+        q:"Payung plastik penting kerana dapat ____.",
+        answers:[
+            "Mengelap peluh",
+            "Mengeringkan badan",
+            "Menyerap semua air hujan",
+            "Menghalang diri daripada terkena air hujan"
+        ],
+        correct:3
+    },
+
+    {
+        q:"Mengapakah kasut getah sesuai digunakan ketika hujan?",
+        answers:[
+            "Kerana menyimpan air hujan",
+            "Kerana menyerap air ke dalam kasut",
+            "Kerana tidak menyerap air dan membantu kaki kekal kering",
+            "Kerana digunakan untuk mengelap meja"
+        ],
+        correct:2
+    },
+
+    {
+        q:"Objek yang boleh menyerap air dan objek yang tidak boleh menyerap air adalah ____.",
+        answers:[
+            "Penting dalam kehidupan",
+            "Hanya digunakan di sekolah",
+            "Tidak berguna",
+            "Hanya digunakan ketika malam"
+        ],
+        correct:0
+    },
+
+    {
+        q:"Seorang murid memilih tisu untuk mengelakkan hujan membasahi badannya. Mengapakah pilihan itu kurang sesuai?",
+        answers:[
+            "Tisu tidak menyerap air",
+            "Tisu diperbuat daripada logam",
+            "Tisu menyerap air",
+            "Tisu sama seperti payung plastik"
+        ],
+        correct:2
+    },
+
+    {
+        q:"Mengapakah tuala sesuai digunakan selepas mandi?",
+        answers:[
+            "Kerana diperbuat daripada kaca",
+            "Kerana menyerap air pada badan",
+            "Kerana menadah air hujan",
+            "Kerana tidak menyerap air"
+        ],
+        correct:1
+    },
+
+    {
+        q:"Mengapakah payung plastik sesuai digunakan ketika hujan?",
+        answers:[
+            "Kerana menyerap air dengan cepat",
+            "Kerana mengeringkan lantai",
+            "Kerana menyerap peluh",
+            "Kerana tidak menyerap air dan menghalang hujan"
+        ],
+        correct:3
+    }
 
 ];
-
 
 /* =========================================================
    STAGE THEMES
@@ -529,2204 +1075,1339 @@ const QUESTIONS = [
 
 const STAGES = [
 
-{
-    name:"STAGE 1",
-    title:"MISTERI KACA",
+    {
+        title:"MISTERI KACA",
+        top:"#243b68",
+        bottom:"#567bb0",
+        door:0x517faf,
+        hint:"Baca soalan dan pilih pintu jawapan yang betul."
+    },
 
-    top:0x4169a8,
-    bottom:0x82d5ef,
+    {
+        title:"PINTU BERPINDAH",
+        top:"#174957",
+        bottom:"#438b91",
+        door:0x3c9096,
+        hint:"Perhatikan pintu berpindah. Pilih selepas pintu berhenti."
+    },
 
-    door:0x526ca5
-},
+    {
+        title:"UJIAN INGATAN",
+        top:"#453562",
+        bottom:"#886b9e",
+        door:0x8967aa,
+        hint:"Hafal selama 10 saat. Teks dan huruf A–D akan hilang. Lihat semula sekali sahaja."
+    },
 
-{
-    name:"STAGE 2",
-    title:"PINTU BERPINDAH",
+    {
+        title:"MISI HARIAN",
+        top:"#204c49",
+        bottom:"#609780",
+        door:0x4d967d,
+        hint:"Gunakan pengetahuan tentang air dalam kehidupan harian."
+    },
 
-    top:0x3d6799,
-    bottom:0x72d9dd,
-
-    door:0x447a91
-},
-
-{
-    name:"STAGE 3",
-    title:"UJIAN INGATAN",
-
-    top:0x684d91,
-    bottom:0xd1a2d9,
-
-    door:0x78568f
-},
-
-{
-    name:"STAGE 4",
-    title:"MISI HARIAN",
-
-    top:0x397a68,
-    bottom:0x9bd4ad,
-
-    door:0x438566
-},
-
-{
-    name:"STAGE 5",
-    title:"PINTU PENDUA",
-
-    top:0x314e87,
-    bottom:0x88bde8,
-
-    door:0x3d619d
-}
+    {
+        title:"PINTU PENDUA",
+        top:"#293756",
+        bottom:"#627cad",
+        door:0x587eaf,
+        hint:"Ada 6 pintu: 4 sebenar dan 2 pendua. Pintu pendua kelihatan sama tetapi kosong apabila dibuka."
+    }
 
 ];
 
-
 /* =========================================================
-   UTILITIES
+   HELPERS
 ========================================================= */
 
-function shuffleArray(array){
+const $ = id => document.getElementById(id);
 
-    const a=[
-        ...array
-    ];
+const shuffle = array => {
 
+    const a = [...array];
 
-    for(
-        let i=a.length-1;
-        i>0;
-        i--
-    ){
+    for(let i=a.length-1;i>0;i--){
 
-        const j=
-        Math.floor(
-            Math.random()*
-            (i+1)
-        );
+        const j = Math.floor(Math.random()*(i+1));
 
-
-        [
-            a[i],
-            a[j]
-        ]=[
-            a[j],
-            a[i]
-        ];
+        [a[i],a[j]] = [a[j],a[i]];
 
     }
-
 
     return a;
-}
 
+};
 
 /* =========================================================
-   AUDIO SYSTEM
+   GENERATED SOUND EFFECTS
 ========================================================= */
 
-class AudioSystem{
+const AUDIO = {
 
-    constructor(){
-
-        this.ctx=null;
-
-        this.enabled=true;
-
-    }
-
+    enabled:true,
+    ctx:null,
 
     init(){
 
-        if(this.ctx)
-            return;
-
-
         try{
 
-            this.ctx=
-            new(
+            this.ctx ??= new(
                 window.AudioContext ||
                 window.webkitAudioContext
             )();
 
+            if(this.ctx.state === "suspended"){
+                this.ctx.resume().catch(()=>{});
+            }
+
         }
         catch(e){}
 
-    }
-
+    },
 
     tone(
         frequency=440,
-        duration=.1,
-        volume=.04,
-        type="sine"
+        duration=.12,
+        type="sine",
+        offset=0
     ){
 
-        if(
-            !this.ctx ||
-            !this.enabled
-        )
+        if(!this.enabled || !this.ctx){
             return;
-
-
-        if(
-            this.ctx.state===
-            "suspended"
-        ){
-
-            this.ctx.resume();
-
         }
 
+        const ctx = this.ctx;
+        const oscillator = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const time = ctx.currentTime + offset;
 
-        const osc=
-        this.ctx.createOscillator();
-
-
-        const gain=
-        this.ctx.createGain();
-
-
-        osc.type=
-        type;
-
-
-        osc.frequency.value=
-        frequency;
-
-
-        gain.gain.value=
-        volume;
-
-
-        osc.connect(
-            gain
-        );
-
-
-        gain.connect(
-            this.ctx.destination
-        );
-
-
-        const now=
-        this.ctx.currentTime;
-
+        oscillator.type = type;
+        oscillator.frequency.value = frequency;
 
         gain.gain.setValueAtTime(
-            volume,
-            now
+            .0001,
+            time
         );
 
+        gain.gain.exponentialRampToValueAtTime(
+            .035,
+            time+.01
+        );
 
         gain.gain.exponentialRampToValueAtTime(
             .0001,
-            now+duration
+            time+duration
         );
 
+        oscillator.connect(gain);
+        gain.connect(ctx.destination);
 
-        osc.start(
-            now
-        );
+        oscillator.start(time);
+        oscillator.stop(time+duration+.02);
 
+        oscillator.onended = ()=>{
 
-        osc.stop(
-            now+duration
-        );
+            oscillator.disconnect();
+            gain.disconnect();
 
-    }
+        };
 
-
-    tap(){
-
-        this.tone(
-            440,
-            .06,
-            .025
-        );
-
-    }
-
-
-    shuffle(){
-
-        this.tone(
-            315,
-            .075,
-            .026,
-            "triangle"
-        );
-
-    }
-
-
-    door(){
-
-        this.tone(
-            235,
-            .09,
-            .03,
-            "triangle"
-        );
-
-    }
-
+    },
 
     correct(){
 
-        this.tone(
-            580,
-            .10,
-            .05
-        );
+        [540,720,960].forEach((frequency,index)=>{
 
+            this.tone(
+                frequency,
+                .18,
+                "sine",
+                index*.09
+            );
 
-        setTimeout(
-            ()=>{
+        });
 
-                this.tone(
-                    760,
-                    .11,
-                    .05
-                );
-
-            },
-            80
-        );
-
-
-        setTimeout(
-            ()=>{
-
-                this.tone(
-                    960,
-                    .15,
-                    .04
-                );
-
-            },
-            160
-        );
-
-    }
-
+    },
 
     wrong(){
 
         this.tone(
             170,
-            .16,
-            .04,
-            "square"
+            .18,
+            "triangle"
         );
 
-
-        setTimeout(
-            ()=>{
-
-                this.tone(
-                    130,
-                    .12,
-                    .03,
-                    "square"
-                );
-
-            },
-            100
+        this.tone(
+            120,
+            .2,
+            "triangle",
+            .12
         );
 
     }
 
-
-    stage(){
-
-        [
-            440,
-            560,
-            690,
-            870
-        ]
-        .forEach(
-            (frequency,index)=>{
-
-                setTimeout(
-                    ()=>{
-
-                        this.tone(
-                            frequency,
-                            .18,
-                            .035
-                        );
-
-                    },
-                    index*90
-                );
-
-            }
-        );
-
-    }
-
-}
-
-
-const AUDIO=
-new AudioSystem();
-
+};
 
 /* =========================================================
-   MAIN SCENE
+   MAIN GAME
 ========================================================= */
 
-class MysteryDoorGame
-extends Phaser.Scene{
+class MysteryDoorGame extends Phaser.Scene{
 
     constructor(){
-
-        super(
-            "MysteryDoorGame"
-        );
-
+        super("MysteryDoorGame");
     }
-
 
     create(){
 
-        this.questionIndex=0;
+        this.index = 0;
+        this.score = 0;
 
-        this.stageIndex=0;
+        this.version = 0;
+        this.busy = false;
+        this.finished = false;
 
-        this.score=0;
+        this.doors = [];
 
-        this.locked=false;
+        this.memoryLeft = 0;
+        this.memoryTotal = 0;
 
-        this.doorObjects=[];
+        this.layer = this.add.container();
+        this.effects = this.add.container();
 
+        this.scale.on("resize",()=>{
 
-        this.answersHidden=false;
-
-        this.revealUsed=false;
-
-        this.memoryTicker=null;
-
-        this.revealButton=null;
-
-        this.statusText=null;
-
-        this.resultBox=null;
-
-
-        this.backgroundLayer=
-        this.add.container();
-
-
-        this.gameLayer=
-        this.add.container();
-
-
-        this.uiLayer=
-        this.add.container();
-
-
-        this.fxLayer=
-        this.add.container();
-
-
-        this.createTopUI();
-
-        this.loadQuestion();
-
-
-        this.input.on(
-            "pointerdown",
-            ()=>{
-
-                AUDIO.init();
-
+            if(this.busy){
+                this.needsLayout = true;
             }
-        );
-
-    }
-
-
-/* =========================================================
-   TOP UI
-========================================================= */
-
-    createTopUI(){
-
-        /* HOME */
-
-        const home=
-        this.makeTopButton(
-            70,
-            40,
-            115,
-            52,
-            "⌂ HOME"
-        );
-
-
-        home.hit.on(
-            "pointerdown",
-            ()=>{
-
-                window.location.href=
-                "index.html";
-
+            else{
+                this.layout();
             }
-        );
 
-
-        /* SCORE */
-
-        const scoreBG=
-        this.add.graphics();
-
-
-        scoreBG.fillStyle(
-            0x172343,
-            .82
-        );
-
-
-        scoreBG.fillRoundedRect(
-            265,
-            14,
-            190,
-            54,
-            27
-        );
-
-
-        this.scoreText=
-        this.add.text(
-            360,
-            41,
-            "★ 0",
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"24px",
-
-                fontStyle:"bold",
-
-                color:"#ffffff"
-            }
-        )
-        .setOrigin(.5);
-
-
-        this.uiLayer.add(
-            scoreBG
-        );
-
-
-        this.uiLayer.add(
-            this.scoreText
-        );
-
-
-        /* SOUND */
-
-        const sound=
-        this.makeTopButton(
-            665,
-            40,
-            75,
-            52,
-            "♪"
-        );
-
-
-        sound.hit.on(
-            "pointerdown",
-            ()=>{
-
-                AUDIO.init();
-
-
-                AUDIO.enabled=
-                !AUDIO.enabled;
-
-
-                sound.text.setText(
-                    AUDIO.enabled
-                    ?
-                    "♪"
-                    :
-                    "×"
-                );
-
-            }
-        );
-
-    }
-
-
-/* =========================================================
-   TOP BUTTON
-========================================================= */
-
-    makeTopButton(
-        x,
-        y,
-        width,
-        height,
-        label
-    ){
-
-        const container=
-        this.add.container(
-            x,
-            y
-        );
-
-
-        const bg=
-        this.add.graphics();
-
-
-        bg.fillStyle(
-            0x20294b,
-            .92
-        );
-
-
-        bg.fillRoundedRect(
-            -width/2,
-            -height/2,
-            width,
-            height,
-            18
-        );
-
-
-        bg.lineStyle(
-            2,
-            0xffffff,
-            .6
-        );
-
-
-        bg.strokeRoundedRect(
-            -width/2,
-            -height/2,
-            width,
-            height,
-            18
-        );
-
-
-        const text=
-        this.add.text(
-            0,
-            0,
-            label,
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"18px",
-
-                fontStyle:"bold",
-
-                color:"#ffffff"
-            }
-        )
-        .setOrigin(.5);
-
-
-        const hit=
-        this.add.rectangle(
-            0,
-            0,
-            width,
-            height,
-            0xffffff,
-            .001
-        );
-
-
-        hit.setInteractive({
-            useHandCursor:true
         });
 
-
-        container.add([
-            bg,
-            text,
-            hit
-        ]);
-
-
-        this.uiLayer.add(
-            container
-        );
-
-
-        return{
-            container,
-            bg,
-            text,
-            hit
+        $("reveal").onclick = ()=>{
+            this.reveal();
         };
 
-    }
+        $("restart").onclick = ()=>{
 
+            AUDIO.init();
 
-/* =========================================================
-   CLEAR QUESTION TIMERS
-========================================================= */
+            this.index = 0;
+            this.score = 0;
+            this.finished = false;
 
-    clearQuestionTimers(){
+            this.load();
 
-        if(
-            this.memoryTicker
-        ){
+        };
 
-            this.memoryTicker.remove(
-                false
+        $("sound").onclick = ()=>{
+
+            AUDIO.init();
+
+            AUDIO.enabled = !AUDIO.enabled;
+
+            $("sound").textContent =
+                AUDIO.enabled ? "♪" : "×";
+
+            $("sound").setAttribute(
+                "aria-pressed",
+                String(AUDIO.enabled)
             );
 
-
-            this.memoryTicker=null;
-
-        }
-
-    }
-
-
-/* =========================================================
-   LOAD QUESTION
-========================================================= */
-
-    loadQuestion(){
-
-        this.clearQuestionTimers();
-
-
-        this.locked=true;
-
-        this.doorObjects=[];
-
-        this.answersHidden=false;
-
-        this.revealUsed=false;
-
-        this.revealButton=null;
-
-        this.resultBox=null;
-
-
-        this.gameLayer
-        .removeAll(true);
-
-
-        this.fxLayer
-        .removeAll(true);
-
-
-        this.stageIndex=
-        Math.floor(
-            this.questionIndex/5
-        );
-
-
-        this.drawBackground();
-
-        this.createStagePanel();
-
-        this.createQuestionCard();
-
-        this.createStatusArea();
-
-        this.createDoors();
-
-        this.createProgress();
-
-
-        /* =================================================
-           STAGE 2
-           AUTO SHUFFLE SEBELUM PILIH
-        ================================================= */
-
-        if(
-            this.stageIndex===1
-        ){
-
-            this.statusText
-            .setText(
-                "Perhatikan pintu... sedang diacak!"
+            $("sound").setAttribute(
+                "aria-label",
+                AUDIO.enabled
+                    ? "Matikan bunyi"
+                    : "Hidupkan bunyi"
             );
 
+        };
 
-            this.time.delayedCall(
-                250,
-                ()=>{
-
-                    this.autoStage2Shuffle();
-
-                }
-            );
-
-        }
-
-
-        /* =================================================
-           STAGE 3
-           MEMORY 10 SAAT
-        ================================================= */
-
-        else if(
-            this.stageIndex===2
-        ){
-
-            this.locked=false;
-
-            this.startMemoryMode();
-
-        }
-
-
-        /* =================================================
-           STAGE 5
-        ================================================= */
-
-        else if(
-            this.stageIndex===4
-        ){
-
-            this.locked=false;
-
-
-            this.statusText
-            .setText(
-                "Awas! Ada 2 pintu pendua yang sebenarnya kosong."
-            );
-
-        }
-
-
-        else{
-
-            this.locked=false;
-
-
-            this.statusText
-            .setText(
-                "Pilih pintu jawapan yang betul"
-            );
-
-        }
+        this.load();
 
     }
 
+    /* Timer dilindungi daripada callback soalan lama. */
 
-/* =========================================================
-   BACKGROUND
-========================================================= */
+    after(milliseconds,callback){
 
-    drawBackground(){
+        const version = this.version;
 
-        this.backgroundLayer
-        .removeAll(true);
+        this.time.delayedCall(milliseconds,()=>{
 
-
-        const stage=
-        STAGES[
-            this.stageIndex
-        ];
-
-
-        const bg=
-        this.add.graphics();
-
-
-        bg.fillGradientStyle(
-            stage.top,
-            stage.top,
-            stage.bottom,
-            stage.bottom,
-            1
-        );
-
-
-        bg.fillRect(
-            0,
-            0,
-            720,
-            1120
-        );
-
-
-        /* LIGHT */
-
-        bg.fillStyle(
-            0xffffff,
-            .10
-        );
-
-
-        bg.fillCircle(
-            590,
-            175,
-            145
-        );
-
-
-        bg.fillCircle(
-            95,
-            760,
-            120
-        );
-
-
-        /* MOUNTAINS */
-
-        bg.fillStyle(
-            0xffffff,
-            .07
-        );
-
-
-        bg.fillTriangle(
-            0,
-            710,
-            180,
-            390,
-            365,
-            710
-        );
-
-
-        bg.fillTriangle(
-            270,
-            710,
-            520,
-            420,
-            720,
-            710
-        );
-
-
-        /* GROUND */
-
-        bg.fillStyle(
-            0x101b38,
-            .16
-        );
-
-
-        bg.fillEllipse(
-            360,
-            1090,
-            930,
-            280
-        );
-
-
-        /* PARTICLES */
-
-        for(
-            let i=0;
-            i<17;
-            i++
-        ){
-
-            const x=
-            (
-                i*127+
-                75
-            )%720;
-
-
-            const y=
-            (
-                i*91+
-                110
-            )%1050;
-
-
-            bg.fillStyle(
-                0xffffff,
-                .055
-            );
-
-
-            bg.fillCircle(
-                x,
-                y,
-                5+(i%4)*3
-            );
-
-        }
-
-
-        this.backgroundLayer
-        .add(
-            bg
-        );
-
-    }
-
-
-/* =========================================================
-   STAGE PANEL
-========================================================= */
-
-    createStagePanel(){
-
-        const stage=
-        STAGES[
-            this.stageIndex
-        ];
-
-
-        const bg=
-        this.add.graphics();
-
-
-        bg.fillStyle(
-            0xffffff,
-            .15
-        );
-
-
-        bg.fillRoundedRect(
-            37,
-            88,
-            646,
-            72,
-            25
-        );
-
-
-        bg.lineStyle(
-            2,
-            0xffffff,
-            .32
-        );
-
-
-        bg.strokeRoundedRect(
-            37,
-            88,
-            646,
-            72,
-            25
-        );
-
-
-        const label=
-        this.add.text(
-            63,
-            106,
-            stage.name,
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"18px",
-
-                fontStyle:"bold",
-
-                color:"#ffffff"
-            }
-        );
-
-
-        const title=
-        this.add.text(
-            63,
-            132,
-            stage.title,
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"24px",
-
-                fontStyle:"bold",
-
-                color:"#ffffff"
-            }
-        );
-
-
-        const local=
-        (
-            this.questionIndex%
-            5
-        )+1;
-
-
-        const count=
-        this.add.text(
-            655,
-            126,
-            local+"/5",
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"26px",
-
-                fontStyle:"bold",
-
-                color:"#ffffff"
-            }
-        )
-        .setOrigin(
-            1,
-            .5
-        );
-
-
-        this.gameLayer.add([
-            bg,
-            label,
-            title,
-            count
-        ]);
-
-    }
-
-
-/* =========================================================
-   QUESTION CARD
-========================================================= */
-
-    createQuestionCard(){
-
-        const data=
-        QUESTIONS[
-            this.questionIndex
-        ];
-
-
-        const panel=
-        this.add.graphics();
-
-
-        panel.fillStyle(
-            0xffffff,
-            .95
-        );
-
-
-        panel.fillRoundedRect(
-            38,
-            184,
-            644,
-            235,
-            27
-        );
-
-
-        panel.lineStyle(
-            3,
-            0xffffff,
-            .65
-        );
-
-
-        panel.strokeRoundedRect(
-            38,
-            184,
-            644,
-            235,
-            27
-        );
-
-
-        const badge=
-        this.add.text(
-            65,
-            207,
-            "SOALAN "+
-            (
-                this.questionIndex+1
-            ),
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"17px",
-
-                fontStyle:"bold",
-
-                color:"#ffffff",
-
-                backgroundColor:
-                "#485b91",
-
-                padding:{
-                    x:13,
-                    y:6
-                }
-            }
-        );
-
-
-        let size=25;
-
-
-        if(
-            data.q.length>75
-        ){
-
-            size=22;
-
-        }
-
-
-        if(
-            data.q.length>115
-        ){
-
-            size=19;
-
-        }
-
-
-        if(
-            data.q.length>160
-        ){
-
-            size=17;
-
-        }
-
-
-        const question=
-        this.add.text(
-            65,
-            262,
-            data.q,
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:
-                size+"px",
-
-                fontStyle:"bold",
-
-                color:"#293451",
-
-                wordWrap:{
-                    width:590
-                },
-
-                lineSpacing:5
-            }
-        );
-
-
-        this.gameLayer.add([
-            panel,
-            badge,
-            question
-        ]);
-
-    }
-
-
-/* =========================================================
-   STATUS AREA
-========================================================= */
-
-    createStatusArea(){
-
-        const statusBG=
-        this.add.graphics();
-
-
-        statusBG.fillStyle(
-            0x172343,
-            .68
-        );
-
-
-        statusBG.fillRoundedRect(
-            42,
-            432,
-            636,
-            43,
-            20
-        );
-
-
-        this.statusText=
-        this.add.text(
-            360,
-            453,
-            "",
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"17px",
-
-                fontStyle:"bold",
-
-                color:"#ffffff",
-
-                align:"center"
-            }
-        )
-        .setOrigin(.5);
-
-
-        this.gameLayer.add([
-            statusBG,
-            this.statusText
-        ]);
-
-    }
-
-
-/* =========================================================
-   DOOR POSITIONS
-========================================================= */
-
-    getDoorPositions(){
-
-        /* =================================================
-           STAGE 5
-           6 DOORS
-        ================================================= */
-
-        if(
-            this.stageIndex===4
-        ){
-
-            return[
-
-                {
-                    x:130,
-                    y:610
-                },
-
-                {
-                    x:360,
-                    y:610
-                },
-
-                {
-                    x:590,
-                    y:610
-                },
-
-                {
-                    x:130,
-                    y:850
-                },
-
-                {
-                    x:360,
-                    y:850
-                },
-
-                {
-                    x:590,
-                    y:850
-                }
-
-            ];
-
-        }
-
-
-        /* =================================================
-           NORMAL 4 DOORS
-        ================================================= */
-
-        return[
-
-            {
-                x:188,
-                y:600
-            },
-
-            {
-                x:532,
-                y:600
-            },
-
-            {
-                x:188,
-                y:850
-            },
-
-            {
-                x:532,
-                y:850
+            if(version === this.version){
+                callback();
             }
 
-        ];
+        });
 
     }
 
+    message(title,subtitle="",type=""){
 
-/* =========================================================
-   CREATE DOORS
-========================================================= */
+        $("message").textContent = title;
+        $("submessage").textContent = subtitle;
 
-    createDoors(){
+        $("feedback").className =
+            "feedback " + type;
 
-        const data=
-        QUESTIONS[
-            this.questionIndex
-        ];
+    }
 
+    status(text){
+        $("status").textContent = text;
+    }
 
-        /* =================================================
-           4 REAL DOORS
-        ================================================= */
+    /* =====================================================
+       LOAD QUESTION
+    ===================================================== */
 
-        let choices=
-        data.answers.map(
-            (text,index)=>({
+    load(){
 
-                text:text,
+        this.version++;
 
-                originalIndex:index,
+        this.time.removeAllEvents();
+        this.tweens.killAll();
 
-                fake:false
+        this.effects.removeAll(true);
 
-            })
+        this.busy = false;
+        this.finished = false;
+
+        this.hiddenAnswers = false;
+        this.revealUsed = false;
+
+        this.memoryLeft = 0;
+
+        this.stage = Math.floor(this.index/5);
+
+        const stage = STAGES[this.stage];
+        const question = QUESTIONS[this.index];
+
+        $("shell").style.setProperty(
+            "--top",
+            stage.top
         );
 
+        $("shell").style.setProperty(
+            "--bottom",
+            stage.bottom
+        );
 
-        /* =================================================
-           STAGE 5
+        $("stage").textContent =
+            "STAGE " + (this.stage+1) + " / 5";
 
-           TAMBAH 2 PINTU PENDUA.
+        $("title").textContent = stage.title;
 
-           Contoh:
-           A
-           B
-           C
-           D
-           B palsu
-           D palsu
+        $("local").textContent =
+            (this.index%5+1) + " / 5";
 
-           Pintu B palsu kelihatan sama seperti B sebenar.
-           Pintu D palsu kelihatan sama seperti D sebenar.
-        ================================================= */
+        $("qtag").textContent =
+            "SOALAN " +
+            String(this.index+1).padStart(2,"0");
 
-        if(
-            this.stageIndex===4
-        ){
+        $("total").textContent =
+            (this.index+1) + " / 25";
 
-            const duplicateLetters=
-            shuffleArray(
-                [
-                    0,
-                    1,
-                    2,
-                    3
-                ]
-            )
-            .slice(
-                0,
-                2
-            );
+        $("question").textContent = question.q;
+        $("hint").textContent = stage.hint;
 
+        $("score").textContent = "★ " + this.score;
 
-            duplicateLetters
-            .forEach(
-                originalIndex=>{
+        $("finish").hidden = true;
+
+        $("memory").hidden = this.stage !== 2;
+
+        $("reveal").disabled = true;
+        $("reveal").textContent = "Lihat semula";
+
+        $("track").innerHTML = STAGES.map((_,index)=>{
+
+            const className =
+                index < this.stage
+                    ? "done"
+                    : index === this.stage
+                        ? "now"
+                        : "";
+
+            return '<span class="'+className+'"></span>';
+
+        }).join("");
+
+        $("dots").innerHTML = Array.from(
+            {length:5},
+            (_,index)=>{
+
+                const className =
+                    index < this.index%5
+                        ? "done"
+                        : index === this.index%5
+                            ? "now"
+                            : "";
+
+                return '<i class="'+className+'"></i>';
+
+            }
+        ).join("");
+
+        $("progressLabel").textContent =
+            "PERJALANAN ANDA · " + this.index + " / 25";
+
+        let choices = question.answers.map((text,index)=>({
+
+            text,
+            answer:index,
+            fake:false
+
+        }));
+
+        /* Stage 5: dua pintu pendua dengan warna dan teks sama. */
+
+        if(this.stage === 4){
+
+            shuffle([0,1,2,3])
+                .slice(0,2)
+                .forEach(index=>{
 
                     choices.push({
 
-                        /*
-                        Teks di depan juga sama.
-                        Pemain tidak boleh bezakan
-                        mana real / fake.
-                        */
-
-                        text:
-                        data.answers[
-                            originalIndex
-                        ],
-
-                        originalIndex:
-                        originalIndex,
-
+                        text:question.answers[index],
+                        answer:index,
                         fake:true
 
                     });
 
-                }
+                });
+
+        }
+
+        this.doors = shuffle(choices).map((choice,slot)=>({
+
+            choice,
+            slot,
+            opened:false,
+            win:false
+
+        }));
+
+        this.layout();
+
+        this.message(
+            "Cari pintu yang betul",
+            "Sentuh pintu untuk membuka jawapan."
+        );
+
+        this.status(
+            "Pilih pintu jawapan yang betul."
+        );
+
+        if(this.stage === 1){
+
+            this.busy = true;
+
+            this.status(
+                "Perhatikan pintu yang sedang berpindah…"
+            );
+
+            this.after(400,()=>{
+                this.autoShuffle(1);
+            });
+
+        }
+
+        if(this.stage === 2){
+
+            this.memoryLeft = 10000;
+            this.memoryTotal = 10000;
+
+            this.status(
+                "Hafal jawapan dan kedudukan pintu."
+            );
+
+            this.updateClock();
+
+        }
+
+        if(this.stage === 4){
+
+            this.status(
+                "Awas! Dua daripada enam pintu ialah pintu pendua."
             );
 
         }
 
+    }
 
-        choices=
-        shuffleArray(
-            choices
+    /* =====================================================
+       RESPONSIVE LAYOUT
+
+       Telefon:
+       - 2 lajur
+       - Stage 5 menjadi 3 baris
+
+       Skrin lebih lebar:
+       - Stage 5 boleh menggunakan 3 lajur
+
+       Resize tidak menukar soalan / pilihan / kedudukan slot.
+    ===================================================== */
+
+    layout(){
+
+        if(!this.doors.length){
+            return;
+        }
+
+        this.needsLayout = false;
+
+        const host = $("game");
+
+        const width = Math.max(
+            260,
+            host.clientWidth
         );
 
+        const columns =
+            this.doors.length === 6 && width >= 480
+                ? 3
+                : 2;
 
-        const positions=
-        this.getDoorPositions();
+        const rows = Math.ceil(
+            this.doors.length / columns
+        );
 
+        const height =
+            rows === 3
+                ? 650
+                : width < 420
+                    ? 440
+                    : 500;
 
-        choices.forEach(
-            (choice,index)=>{
+        if(host.style.height !== height+"px"){
+            host.style.height = height+"px";
+        }
 
-                const door=
-                this.createDoor(
-                    positions[index],
-                    choice
-                );
+        if(
+            this.scale.width !== width ||
+            this.scale.height !== height
+        ){
 
+            this.scale.resize(width,height);
+            return;
 
-                this.doorObjects
-                .push(
-                    door
-                );
+        }
 
-            }
+        this.layer.removeAll(true);
+
+        const gap = width < 420 ? 12 : 18;
+        const padding = 12;
+
+        const cellWidth =
+            (
+                width -
+                padding*2 -
+                gap*(columns-1)
+            ) / columns;
+
+        const cellHeight =
+            (
+                height -
+                padding*2 -
+                gap*(rows-1)
+            ) / rows;
+
+        this.slots = Array.from(
+            {length:this.doors.length},
+            (_,index)=>({
+
+                x:
+                    padding +
+                    cellWidth/2 +
+                    (index%columns)*(cellWidth+gap),
+
+                y:
+                    padding +
+                    cellHeight/2 +
+                    Math.floor(index/columns)*(cellHeight+gap)
+
+            })
+        );
+
+        this.doors.forEach(door=>{
+
+            this.drawDoor(
+                door,
+                cellWidth,
+                cellHeight
+            );
+
+        });
+
+    }
+
+    rect(
+        graphics,
+        color,
+        x,
+        y,
+        width,
+        height,
+        radius,
+        alpha=1
+    ){
+
+        graphics.fillStyle(color,alpha);
+
+        graphics.fillRoundedRect(
+            x,
+            y,
+            width,
+            height,
+            radius
         );
 
     }
 
-
-/* =========================================================
-   CREATE ONE DOOR
-========================================================= */
-
-    createDoor(
-        position,
-        choice
+    text(
+        x,
+        y,
+        value,
+        size,
+        color="#fff"
     ){
 
-        const stage=
-        STAGES[
-            this.stageIndex
-        ];
+        return this.add.text(
+            x,
+            y,
+            value,
+            {
+                fontFamily:"Trebuchet MS, Arial, sans-serif",
+                fontSize:size+"px",
+                fontStyle:"bold",
+                color,
+                align:"center"
+            }
+        )
+        .setOrigin(.5)
+        .setResolution(
+            Math.min(
+                window.devicePixelRatio || 1,
+                2
+            )
+        );
 
+    }
 
-        const stage5=
-        this.stageIndex===4;
+    /* =====================================================
+       DRAW DOOR
+    ===================================================== */
 
+    drawDoor(door,width,height){
 
-        const width=
-        stage5
-        ?
-        205
-        :
-        285;
+        const position = this.slots[door.slot];
 
-
-        const height=
-        stage5
-        ?
-        205
-        :
-        215;
-
-
-        const innerW=
-        width-48;
-
-
-        const innerH=
-        height-43;
-
-
-        const container=
-        this.add.container(
+        const container = this.add.container(
             position.x,
             position.y
         );
 
+        const frame = this.add.graphics();
 
-        /* =================================================
-           SHADOW
-        ================================================= */
+        const innerWidth = width-18;
+        const innerHeight = height-20;
 
-        const shadow=
-        this.add.graphics();
+        /* Shadow */
 
-
-        shadow.fillStyle(
-            0x000000,
-            .16
+        this.rect(
+            frame,
+            0x101c31,
+            -width/2+3,
+            -height/2+7,
+            width-6,
+            height-8,
+            18,
+            .3
         );
 
+        /* Outer frame */
 
-        shadow.fillRoundedRect(
-            -width/2+7,
-            -height/2+10,
-            width,
-            height,
-            22
-        );
-
-
-        /* =================================================
-           DOOR FRAME
-        ================================================= */
-
-        const frame=
-        this.add.graphics();
-
-
-        frame.fillStyle(
-            0x273552,
-            .96
-        );
-
-
-        frame.fillRoundedRect(
+        this.rect(
+            frame,
+            0x142740,
             -width/2,
             -height/2,
             width,
-            height,
-            23
-        );
-
-
-        frame.fillStyle(
-            0xffffff,
-            .11
-        );
-
-
-        frame.fillRoundedRect(
-            -width/2+9,
-            -height/2+9,
-            width-18,
-            height-18,
+            height-5,
             17
         );
 
+        /* Frame highlight */
 
-        /* =================================================
-           DARK ROOM BEHIND DOOR
-        ================================================= */
-
-        const inside=
-        this.add.graphics();
-
-
-        inside.fillStyle(
-            0x10172a,
-            1
+        this.rect(
+            frame,
+            0xb7cbe2,
+            -width/2+3,
+            -height/2+3,
+            width-6,
+            height-11,
+            14,
+            .35
         );
 
+        /* Empty room */
 
-        inside.fillRoundedRect(
-            -innerW/2,
-            -innerH/2,
-            innerW,
-            innerH,
-            14
+        this.rect(
+            frame,
+            0x0a1527,
+            -innerWidth/2,
+            -innerHeight/2,
+            innerWidth,
+            innerHeight,
+            11
         );
 
-
-        /*
-        Bahagian dalam kosong.
-
-        Hanya jawapan BETUL
-        akan tunjuk titisan.
-        Fake door kekal kosong.
-        */
-
-
-        /* =================================================
-           TREASURE / WATER DROP
-        ================================================= */
-
-        const treasureGlow=
-        this.add.circle(
+        const glow = this.add.circle(
             0,
-            15,
-            stage5
-            ?
-            31
-            :
-            42,
-            0xffe069,
-            .22
+            8,
+            31,
+            0x71dafa,
+            .16
         )
-        .setVisible(false);
+        .setVisible(door.win);
 
+        /* Water drop drawn with graphics. */
 
-        const treasure=
-        this.add.text(
+        const drop = this.add.graphics()
+            .setVisible(door.win);
+
+        drop.fillStyle(0x7be8ff,1);
+
+        drop.fillTriangle(
+            0,-26,
+            -18,9,
+            18,9
+        );
+
+        drop.fillCircle(
             0,
-            15,
-            "💧",
-            {
-                fontSize:
-                stage5
-                ?
-                "45px"
-                :
-                "56px"
-            }
-        )
-        .setOrigin(.5)
-        .setVisible(false);
+            10,
+            18
+        );
 
+        drop.fillStyle(
+            0xffffff,
+            .8
+        );
 
-        /* =================================================
-           MOVING DOOR PANEL
-        ================================================= */
+        drop.fillEllipse(
+            -6,
+            9,
+            5,
+            13
+        );
 
-        const panel=
-        this.add.container(
-            0,
+        /* Left hinge */
+
+        const panel = this.add.container(
+            -innerWidth/2,
             0
         );
 
+        const face = this.add.graphics();
 
-        const doorBG=
-        this.add.graphics();
-
-
-        /*
-        PENTING:
-        Fake door guna WARNA SAMA.
-        Tiada warna khas.
-        */
-
-        doorBG.fillStyle(
-            stage.door,
-            1
+        this.rect(
+            face,
+            STAGES[this.stage].door,
+            0,
+            -innerHeight/2,
+            innerWidth,
+            innerHeight,
+            11
         );
 
-
-        doorBG.fillRoundedRect(
-            -innerW/2,
-            -innerH/2,
-            innerW,
-            innerH,
-            14
-        );
-
-
-        doorBG.lineStyle(
+        this.rect(
+            face,
+            0xffffff,
             4,
+            -innerHeight/2+4,
+            innerWidth-8,
+            6,
+            3,
+            .19
+        );
+
+        face.lineStyle(
+            1,
             0xffffff,
-            .31
+            .25
         );
 
-
-        doorBG.strokeRoundedRect(
-            -innerW/2,
-            -innerH/2,
-            innerW,
-            innerH,
-            14
+        face.strokeRoundedRect(
+            8,
+            -innerHeight/2+10,
+            innerWidth-16,
+            innerHeight-20,
+            7
         );
 
-
-        const topPanelW=
-        innerW-34;
-
-
-        doorBG.lineStyle(
-            2,
-            0xffffff,
-            .14
+        face.lineStyle(
+            1,
+            0x071327,
+            .2
         );
 
-
-        doorBG.strokeRoundedRect(
-            -topPanelW/2,
-            -innerH/2+18,
-            topPanelW,
-            47,
-            8
-        );
-
-
-        /* =================================================
-           A / B / C / D
-
-           FAKE DOOR PUN MENGGUNAKAN
-           A / B / C / D YANG SAMA.
-        ================================================= */
-
-        const labelText=
-        [
-            "A",
-            "B",
-            "C",
-            "D"
-        ][
-            choice.originalIndex
-        ];
-
-
-        const letterCircle=
-        this.add.circle(
-            0,
-            -innerH/2+42,
-            stage5
-            ?
-            22
-            :
-            27,
-            0xffffff,
-            .95
-        );
-
-
-        const letterText=
-        this.add.text(
-            0,
-            -innerH/2+42,
-            labelText,
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:
-                stage5
-                ?
-                "24px"
-                :
-                "28px",
-
-                fontStyle:"bold",
-
-                color:"#354266"
-            }
-        )
-        .setOrigin(.5);
-
-
-        /* =================================================
-           ANSWER TEXT
-        ================================================= */
-
-        let fontSize=
-        stage5
-        ?
-        14
-        :
-        18;
-
-
-        if(
-            choice.text.length>38
-        ){
-
-            fontSize=
-            stage5
-            ?
-            12
-            :
-            16;
-
-        }
-
-
-        if(
-            choice.text.length>65
-        ){
-
-            fontSize=
-            stage5
-            ?
-            10
-            :
-            14;
-
-        }
-
-
-        if(
-            choice.text.length>90
-        ){
-
-            fontSize=
-            stage5
-            ?
-            9
-            :
-            12;
-
-        }
-
-
-        const answerText=
-        this.add.text(
-            0,
-            31,
-            choice.text,
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:
-                fontSize+"px",
-
-                fontStyle:"bold",
-
-                color:"#ffffff",
-
-                align:"center",
-
-                wordWrap:{
-                    width:
-                    innerW-24
-                },
-
-                lineSpacing:2
-            }
-        )
-        .setOrigin(.5);
-
-
-        /* =================================================
-           DOOR KNOB
-        ================================================= */
-
-        const knob=
-        this.add.circle(
-            innerW/2-18,
+        face.strokeRoundedRect(
             12,
-            stage5
-            ?
-            5
-            :
-            7,
-            0xffdd73,
-            1
+            -innerHeight/2+14,
+            innerWidth-24,
+            innerHeight-28,
+            6
         );
 
+        const badge = this.add.circle(
+            innerWidth/2,
+            -innerHeight/2+35,
+            19,
+            0xffe7ac
+        );
+
+        const letter = this.text(
+            innerWidth/2,
+            -innerHeight/2+35,
+            "ABCD"[door.choice.answer],
+            22,
+            "#2c405f"
+        );
+
+        const answer = this.text(
+            innerWidth/2,
+            25,
+            door.choice.text,
+            width < 170 ? 13 : 15
+        );
+
+        answer.setWordWrapWidth(
+            innerWidth-30
+        );
+
+        answer.setLineSpacing(3);
+
+        let fontSize = width < 170 ? 13 : 15;
+
+        while(
+            answer.height > innerHeight-91 &&
+            fontSize > 11
+        ){
+
+            fontSize -= .5;
+            answer.setFontSize(fontSize);
+
+        }
+
+        const knob = this.add.circle(
+            innerWidth-12,
+            innerHeight/2-21,
+            4,
+            0xffdd81
+        )
+        .setStrokeStyle(
+            1,
+            0xfff0bd
+        );
 
         panel.add([
-            doorBG,
-            letterCircle,
-            letterText,
-            answerText,
+            face,
+            badge,
+            letter,
+            answer,
             knob
         ]);
 
-
-        /* =================================================
-           HIT AREA
-        ================================================= */
-
-        const hit=
-        this.add.rectangle(
+        const hit = this.add.zone(
             0,
             0,
             width,
-            height,
-            0xffffff,
-            .001
-        );
-
-
-        hit.setInteractive({
+            height
+        )
+        .setInteractive({
             useHandCursor:true
         });
 
+        hit.on("pointerdown",()=>{
+
+            AUDIO.init();
+
+            if(
+                !this.busy &&
+                !this.finished &&
+                !door.opened
+            ){
+
+                this.choose(door);
+
+            }
+
+        });
 
         container.add([
-            shadow,
             frame,
-            inside,
-            treasureGlow,
-            treasure,
+            glow,
+            drop,
             panel,
             hit
         ]);
 
+        this.layer.add(container);
 
-        this.gameLayer.add(
-            container
-        );
-
-
-        const object={
+        Object.assign(door,{
 
             container,
-
             panel,
+            badge,
+            letter,
+            answer,
+            glow,
+            drop,
+            iw:innerWidth
 
-            doorBG,
+        });
 
-            letterCircle,
+        panel.scaleX =
+            door.opened ? .035 : 1;
 
-            letterText,
+        [badge,letter,answer].forEach(object=>{
 
-            answerText,
+            object.setVisible(
+                !this.hiddenAnswers
+            );
 
-            knob,
+        });
 
-            treasure,
+    }
 
-            treasureGlow,
+    /* =====================================================
+       MEMORY MODE
+    ===================================================== */
 
-            hit,
+    setHidden(value){
 
-            choice,
+        this.hiddenAnswers = value;
 
-            width,
+        this.doors.forEach(door=>{
 
-            height,
+            [
+                door.badge,
+                door.letter,
+                door.answer
+            ]
+            .forEach(object=>{
 
-            innerW,
+                object.setVisible(!value);
 
-            opened:false,
+            });
 
-            x:position.x,
+        });
 
-            y:position.y
+    }
 
-        };
+    updateClock(){
 
+        const seconds = Math.ceil(
+            this.memoryLeft/1000
+        );
 
-        hit.on(
-            "pointerdown",
-            ()=>{
+        $("clock").textContent =
+            "00:" + String(seconds).padStart(2,"0");
 
-                AUDIO.init();
+        $("timeFill").style.width = (
+            this.memoryTotal
+                ? this.memoryLeft/this.memoryTotal*100
+                : 0
+        ) + "%";
 
+        $("memoryLabel").textContent =
+            this.memoryLeft > 0
+                ? this.revealUsed
+                    ? "Lihat semula"
+                    : "Hafal kedudukan"
+                : "Jawapan ditutup";
 
-                if(
-                    this.locked ||
-                    object.opened
-                ){
+    }
 
-                    return;
+    update(_,delta){
 
-                }
+        if(
+            this.stage !== 2 ||
+            this.memoryLeft <= 0 ||
+            this.finished
+        ){
+            return;
+        }
 
+        this.memoryLeft = Math.max(
+            0,
+            this.memoryLeft-delta
+        );
 
-                AUDIO.tap();
+        this.updateClock();
 
+        if(this.memoryLeft === 0){
 
-                this.chooseDoor(
-                    object
+            this.setHidden(true);
+
+            $("reveal").disabled =
+                this.revealUsed || this.busy;
+
+            if(!this.busy){
+
+                this.status(
+                    "Jawapan dan A–D ditutup. Ingat kedudukan pintu!"
                 );
 
             }
-        );
-
-
-        return object;
-
-    }
-
-
-/* =========================================================
-   STAGE 2 AUTO SHUFFLE
-========================================================= */
-
-    autoStage2Shuffle(){
-
-        this.locked=true;
-
-
-        let round=0;
-
-
-        const runShuffle=()=>{
-
-            round++;
-
-
-            this.statusText
-            .setText(
-                "Pintu sedang berpindah... "+
-                round+
-                "/4"
-            );
-
-
-            this.shuffleAllDoors(
-                430,
-                ()=>{
-
-                    if(
-                        round<4
-                    ){
-
-                        this.time.delayedCall(
-                            90,
-                            runShuffle
-                        );
-
-                    }
-                    else{
-
-                        this.locked=false;
-
-
-                        this.statusText
-                        .setText(
-                            "Berhenti! Sekarang pilih jawapan."
-                        );
-
-                    }
-
-                },
-                false
-            );
-
-        };
-
-
-        runShuffle();
-
-    }
-
-
-/* =========================================================
-   SHUFFLE ALL DOORS
-========================================================= */
-
-    shuffleAllDoors(
-        duration=430,
-        callback=null,
-        controlLock=true
-    ){
-
-        if(
-            controlLock
-        ){
-
-            this.locked=true;
 
         }
 
+    }
 
-        AUDIO.shuffle();
+    reveal(){
 
+        if(
+            this.stage !== 2 ||
+            !this.hiddenAnswers ||
+            this.revealUsed ||
+            this.busy ||
+            this.finished
+        ){
+            return;
+        }
 
-        const slots=
-        this.getDoorPositions();
+        AUDIO.init();
+        AUDIO.tone();
 
+        this.revealUsed = true;
 
-        let targets=
-        shuffleArray(
-            slots
+        this.setHidden(false);
+
+        this.memoryLeft = 3000;
+        this.memoryTotal = 3000;
+
+        $("reveal").disabled = true;
+        $("reveal").textContent = "Sudah digunakan";
+
+        this.status(
+            "Lihat semula selama 3 saat. Hafal cepat!"
         );
 
+        this.updateClock();
 
-        /* =================================================
-           PASTIKAN BUKAN SEMUA KEKAL
-           DI TEMPAT SAMA
-        ================================================= */
+    }
 
-        let allSame=true;
+    /* =====================================================
+       INPUT / RESIZE STATE
+    ===================================================== */
 
+    unlock(){
 
-        for(
-            let i=0;
-            i<this.doorObjects.length;
-            i++
-        ){
+        this.busy = false;
 
-            const door=
-            this.doorObjects[i];
+        if(this.needsLayout){
+            this.layout();
+        }
 
+        $("reveal").disabled =
+            this.stage !== 2 ||
+            !this.hiddenAnswers ||
+            this.revealUsed ||
+            this.finished;
 
-            if(
-                door.container.x!==
-                targets[i].x ||
+    }
 
-                door.container.y!==
-                targets[i].y
-            ){
+    /* =====================================================
+       STAGE 2 SHUFFLE
+    ===================================================== */
 
-                allSame=false;
+    autoShuffle(round){
 
-                break;
+        this.status(
+            "Pintu sedang berpindah · " + round + " / 4"
+        );
+
+        this.shuffleDoors(()=>{
+
+            if(round < 4){
+
+                this.after(100,()=>{
+                    this.autoShuffle(round+1);
+                });
+
+            }
+            else{
+
+                this.unlock();
+
+                this.status(
+                    "Pintu berhenti. Sekarang pilih jawapan."
+                );
 
             }
 
-        }
+        });
 
+    }
+
+    /* =====================================================
+       SHUFFLE ALL DOORS
+    ===================================================== */
+
+    shuffleDoors(done){
+
+        this.busy = true;
+
+        AUDIO.tone(
+            310,
+            .08,
+            "triangle"
+        );
+
+        let slots = shuffle(
+            this.doors.map(door=>door.slot)
+        );
+
+        const allSame = this.doors.every(
+            (door,index)=>door.slot === slots[index]
+        );
 
         if(allSame){
-
-            targets.push(
-                targets.shift()
-            );
-
+            slots.push(slots.shift());
         }
 
+        let remaining = this.doors.length;
 
-        let completed=0;
+        this.doors.forEach((door,index)=>{
 
+            door.slot = slots[index];
 
-        this.doorObjects
-        .forEach(
-            (door,index)=>{
+            const position = this.slots[door.slot];
 
-                const target=
-                targets[index];
+            this.tweens.add({
 
+                targets:door.container,
+
+                x:position.x,
+                y:position.y,
+
+                duration:470,
+                ease:"Sine.InOut",
+
+                onComplete:()=>{
+
+                    remaining--;
+
+                    if(remaining === 0){
+                        done();
+                    }
+
+                }
+
+            });
+
+        });
+
+    }
+
+    /* =====================================================
+       OPEN DOOR
+    ===================================================== */
+
+    choose(door){
+
+        this.busy = true;
+
+        $("reveal").disabled = true;
+
+        door.opened = true;
+
+        AUDIO.tone(
+            235,
+            .12,
+            "triangle"
+        );
+
+        this.tweens.add({
+
+            targets:door.panel,
+
+            scaleX:.035,
+
+            duration:300,
+            ease:"Sine.InOut",
+
+            onComplete:()=>{
+
+                const isCorrect =
+                    !door.choice.fake &&
+                    door.choice.answer ===
+                    QUESTIONS[this.index].correct;
+
+                if(isCorrect){
+                    this.correct(door);
+                }
+                else{
+                    this.wrong(door);
+                }
+
+            }
+
+        });
+
+    }
+
+    /* =====================================================
+       CORRECT
+    ===================================================== */
+
+    correct(door){
+
+        this.memoryLeft = 0;
+
+        door.win = true;
+        door.drop.setVisible(true);
+        door.glow.setVisible(true);
+
+        AUDIO.correct();
+
+        this.score += 20;
+
+        $("score").textContent =
+            "★ " + this.score;
+
+        this.message(
+            "BETUL! +20 ★",
+            "Pintu jawapan berjaya dibuka.",
+            "good"
+        );
+
+        this.status(
+            "Bagus! Jawapan anda tepat."
+        );
+
+        this.sparkles(
+            door.container.x,
+            door.container.y
+        );
+
+        this.after(1100,()=>{
+
+            if(this.index === 24){
+
+                this.finish();
+                return;
+
+            }
+
+            const oldStage = this.stage;
+
+            this.index++;
+
+            const newStage = Math.floor(
+                this.index/5
+            );
+
+            if(newStage !== oldStage){
+
+                this.message(
+                    "STAGE " + (oldStage+1) + " SELESAI!",
+                    "5 / 5 soalan selesai. Bersedia untuk cabaran seterusnya.",
+                    "good"
+                );
+
+                this.status(
+                    "Cabaran seterusnya akan bermula…"
+                );
+
+                this.after(1400,()=>{
+                    this.load();
+                });
+
+            }
+            else{
+
+                this.load();
+
+            }
+
+        });
+
+    }
+
+    /* =====================================================
+       WRONG / EMPTY DUPLICATE
+    ===================================================== */
+
+    wrong(door){
+
+        AUDIO.wrong();
+
+        this.message(
+
+            door.choice.fake
+                ? "PINTU KOSONG!"
+                : "BELUM TEPAT",
+
+            door.choice.fake
+                ? "Ini pintu pendua. Cuba pintu yang lain."
+                : "Pintu akan ditutup dan diacak semula.",
+
+            "bad"
+
+        );
+
+        /*
+        Ruang dalam kekal kosong.
+        Tiada X / jawapan / harta untuk pintu salah.
+        */
+
+        this.after(
+            door.choice.fake ? 900 : 650,
+            ()=>{
 
                 this.tweens.add({
 
-                    targets:
-                    door.container,
+                    targets:door.panel,
 
-                    x:
-                    target.x,
+                    scaleX:1,
 
-                    y:
-                    target.y,
+                    duration:260,
+                    ease:"Sine.Out",
 
-                    duration:
-                    duration,
+                    onComplete:()=>{
 
-                    ease:
-                    "Sine.InOut",
+                        door.opened = false;
 
-                    onComplete:
-                    ()=>{
+                        this.status(
+                            "Semua pintu sedang bertukar tempat…"
+                        );
 
-                        door.x=
-                        door.container.x;
+                        this.shuffleDoors(()=>{
 
+                            this.unlock();
 
-                        door.y=
-                        door.container.y;
+                            this.status(
+                                this.stage === 2 &&
+                                this.hiddenAnswers
 
+                                    ? "Cuba lagi. Ingat kedudukan jawapan tadi!"
+                                    : "Cuba lagi! Kedudukan pintu sudah berubah."
+                            );
 
-                        completed++;
+                            this.message(
+                                "Cuba sekali lagi",
+                                "Pilih pintu jawapan yang betul."
+                            );
 
-
-                        if(
-                            completed===
-                            this.doorObjects.length
-                        ){
-
-                            if(
-                                controlLock
-                            ){
-
-                                this.locked=false;
-
-                            }
-
-
-                            if(callback){
-
-                                callback();
-
-                            }
-
-                        }
+                        });
 
                     }
 
@@ -2737,1154 +2418,42 @@ extends Phaser.Scene{
 
     }
 
+    /* =====================================================
+       PARTICLES
+    ===================================================== */
 
-/* =========================================================
-   STAGE 3 MEMORY MODE
-   10 SAAT
-========================================================= */
+    sparkles(x,y){
 
-    startMemoryMode(){
+        for(let i=0;i<12;i++){
 
-        this.answersHidden=false;
-
-        this.revealUsed=false;
-
-
-        let seconds=10;
-
-
-        this.statusText
-        .setText(
-            "Hafal jawapan! Hilang dalam "+
-            seconds+
-            " saat"
-        );
-
-
-        this.createRevealButton();
-
-
-        /*
-        10 EXECUTIONS:
-        10 -> 9 -> 8 ... -> 1 -> 0
-        */
-
-        this.memoryTicker=
-        this.time.addEvent({
-
-            delay:1000,
-
-            repeat:9,
-
-            callback:()=>{
-
-                seconds--;
-
-
-                if(
-                    seconds>0
-                ){
-
-                    this.statusText
-                    .setText(
-                        "Hafal jawapan! Hilang dalam "+
-                        seconds+
-                        " saat"
-                    );
-
-                }
-                else{
-
-                    this.hideStage3DoorInformation();
-
-                }
-
-            }
-
-        });
-
-    }
-
-
-/* =========================================================
-   STAGE 3
-   HIDE ANSWER + A/B/C/D
-========================================================= */
-
-    hideStage3DoorInformation(){
-
-        this.answersHidden=true;
-
-
-        this.doorObjects
-        .forEach(
-            door=>{
-
-                /*
-                HILANGKAN AYAT JAWAPAN
-                */
-
-                door.answerText
-                .setVisible(false);
-
-
-                /*
-                HILANGKAN A/B/C/D
-                */
-
-                door.letterCircle
-                .setVisible(false);
-
-
-                door.letterText
-                .setVisible(false);
-
-            }
-        );
-
-
-        this.statusText
-        .setText(
-            "Semua jawapan sudah ditutup. Ingat kedudukan pintu!"
-        );
-
-
-        this.setRevealButtonEnabled(
-            true
-        );
-
-    }
-
-
-/* =========================================================
-   STAGE 3
-   SHOW INFORMATION AGAIN
-========================================================= */
-
-    showStage3DoorInformation(){
-
-        this.doorObjects
-        .forEach(
-            door=>{
-
-                door.answerText
-                .setVisible(true);
-
-
-                door.letterCircle
-                .setVisible(true);
-
-
-                door.letterText
-                .setVisible(true);
-
-            }
-        );
-
-    }
-
-
-/* =========================================================
-   STAGE 3
-   HIDE AGAIN
-========================================================= */
-
-    hideStage3Again(){
-
-        this.doorObjects
-        .forEach(
-            door=>{
-
-                door.answerText
-                .setVisible(false);
-
-
-                door.letterCircle
-                .setVisible(false);
-
-
-                door.letterText
-                .setVisible(false);
-
-            }
-        );
-
-    }
-
-
-/* =========================================================
-   REVEAL BUTTON
-========================================================= */
-
-    createRevealButton(){
-
-        const container=
-        this.add.container(
-            570,
-            502
-        );
-
-
-        const width=190;
-
-        const height=43;
-
-
-        const bg=
-        this.add.graphics();
-
-
-        const text=
-        this.add.text(
-            0,
-            0,
-            "👁 LIHAT SEMULA",
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"15px",
-
-                fontStyle:"bold",
-
-                color:"#ffffff"
-            }
-        )
-        .setOrigin(.5);
-
-
-        const hit=
-        this.add.rectangle(
-            0,
-            0,
-            width,
-            height,
-            0xffffff,
-            .001
-        );
-
-
-        hit.setInteractive({
-            useHandCursor:true
-        });
-
-
-        container.add([
-            bg,
-            text,
-            hit
-        ]);
-
-
-        this.gameLayer.add(
-            container
-        );
-
-
-        this.revealButton={
-
-            container,
-
-            bg,
-
-            text,
-
-            hit,
-
-            width,
-
-            height
-
-        };
-
-
-        /*
-        BELUM BOLEH DIGUNA
-        SEBELUM 10 SAAT HABIS
-        */
-
-        this.setRevealButtonEnabled(
-            false
-        );
-
-
-        hit.on(
-            "pointerdown",
-            ()=>{
-
-                if(
-                    !this.answersHidden ||
-                    this.revealUsed ||
-                    this.locked
-                ){
-
-                    return;
-
-                }
-
-
-                AUDIO.tap();
-
-
-                this.revealUsed=true;
-
-
-                this.setRevealButtonEnabled(
-                    false
-                );
-
-
-                this.showStage3DoorInformation();
-
-
-                this.statusText
-                .setText(
-                    "LIHAT SEMULA • Hafal cepat! 3 saat"
-                );
-
-
-                /*
-                PAPAR SEMULA 3 SAAT
-                */
-
-                this.time.delayedCall(
-                    3000,
-                    ()=>{
-
-                        if(
-                            this.stageIndex!==2
-                        ){
-
-                            return;
-
-                        }
-
-
-                        this.hideStage3Again();
-
-
-                        this.statusText
-                        .setText(
-                            "LIHAT SEMULA sudah digunakan"
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-    }
-
-
-/* =========================================================
-   REVEAL BUTTON STATE
-========================================================= */
-
-    setRevealButtonEnabled(
-        enabled
-    ){
-
-        if(
-            !this.revealButton
-        ){
-
-            return;
-
-        }
-
-
-        this.revealButton.bg
-        .clear();
-
-
-        this.revealButton.bg
-        .fillStyle(
-            enabled
-            ?
-            0x27375f
-            :
-            0x5e6476,
-
-            enabled
-            ?
-            .95
-            :
-            .58
-        );
-
-
-        this.revealButton.bg
-        .fillRoundedRect(
-            -this.revealButton.width/2,
-            -this.revealButton.height/2,
-            this.revealButton.width,
-            this.revealButton.height,
-            18
-        );
-
-
-        this.revealButton.bg
-        .lineStyle(
-            2,
-            0xffffff,
-            enabled
-            ?
-            .55
-            :
-            .20
-        );
-
-
-        this.revealButton.bg
-        .strokeRoundedRect(
-            -this.revealButton.width/2,
-            -this.revealButton.height/2,
-            this.revealButton.width,
-            this.revealButton.height,
-            18
-        );
-
-
-        this.revealButton.text
-        .setAlpha(
-            enabled
-            ?
-            1
-            :
-            .45
-        );
-
-    }
-
-
-/* =========================================================
-   CHOOSE DOOR
-========================================================= */
-
-    chooseDoor(
-        door
-    ){
-
-        this.locked=true;
-
-
-        AUDIO.door();
-
-
-        door.opened=true;
-
-
-        const direction=
-        door.container.x<
-        360
-        ?
-        -1
-        :
-        1;
-
-
-        this.tweens.add({
-
-            targets:
-            door.panel,
-
-            scaleX:.06,
-
-            x:
-            direction*
-            (
-                door.width*
-                .34
-            ),
-
-            duration:320,
-
-            ease:
-            "Sine.InOut",
-
-            onComplete:
-            ()=>{
-
-                this.checkDoor(
-                    door
-                );
-
-            }
-
-        });
-
-    }
-
-
-/* =========================================================
-   CHECK DOOR
-========================================================= */
-
-    checkDoor(
-        door
-    ){
-
-        /* =================================================
-           STAGE 5 FAKE / DUPLICATE DOOR
-
-           PINTU DIBUKA
-           BAHAGIAN DALAM KOSONG.
-        ================================================= */
-
-        if(
-            door.choice.fake
-        ){
-
-            this.emptyDuplicateDoor(
-                door
-            );
-
-
-            return;
-
-        }
-
-
-        const data=
-        QUESTIONS[
-            this.questionIndex
-        ];
-
-
-        /* =================================================
-           REAL DOOR + CORRECT ANSWER
-        ================================================= */
-
-        if(
-            door.choice.originalIndex===
-            data.correct
-        ){
-
-            this.correctDoor(
-                door
-            );
-
-        }
-
-
-        /* =================================================
-           REAL DOOR BUT WRONG ANSWER
-        ================================================= */
-
-        else{
-
-            this.wrongDoor(
-                door
-            );
-
-        }
-
-    }
-
-
-/* =========================================================
-   CORRECT DOOR
-========================================================= */
-
-    correctDoor(
-        door
-    ){
-
-        AUDIO.correct();
-
-
-        /*
-        ONLY CORRECT DOOR
-        REVEALS WATER DROP
-        */
-
-        door.treasure
-        .setVisible(true);
-
-
-        door.treasureGlow
-        .setVisible(true);
-
-
-        this.tweens.add({
-
-            targets:[
-                door.treasure,
-                door.treasureGlow
-            ],
-
-            scale:{
-                from:.3,
-                to:1.15
-            },
-
-            alpha:{
-                from:.2,
-                to:1
-            },
-
-            duration:380,
-
-            ease:"Back.Out"
-
-        });
-
-
-        this.score+=20;
-
-
-        this.scoreText
-        .setText(
-            "★ "+
-            this.score
-        );
-
-
-        this.showMessage(
-            "BETUL!",
-            "Pintu jawapan berjaya dibuka.",
-            true
-        );
-
-
-        this.spawnStars(
-            door.container.x,
-            door.container.y
-        );
-
-
-        this.time.delayedCall(
-            1100,
-            ()=>{
-
-                const oldStage=
-                this.stageIndex;
-
-
-                this.questionIndex++;
-
-
-                if(
-                    this.questionIndex>=
-                    QUESTIONS.length
-                ){
-
-                    this.showFinal();
-
-                    return;
-
-                }
-
-
-                const newStage=
-                Math.floor(
-                    this.questionIndex/5
-                );
-
-
-                if(
-                    newStage!==oldStage
-                ){
-
-                    this.showStageComplete(
-                        oldStage
-                    );
-
-                }
-                else{
-
-                    this.loadQuestion();
-
-                }
-
-            }
-        );
-
-    }
-
-
-/* =========================================================
-   WRONG NORMAL DOOR
-========================================================= */
-
-    wrongDoor(
-        door
-    ){
-
-        AUDIO.wrong();
-
-
-        this.showMessage(
-            "BELUM TEPAT",
-            "Semua pintu akan diacak semula!",
-            false
-        );
-
-
-        this.cameras.main.shake(
-            130,
-            .004
-        );
-
-
-        /*
-        DOOR IS ALREADY OPEN.
-
-        INSIDE REMAINS DARK / EMPTY.
-        */
-
-
-        this.time.delayedCall(
-            600,
-            ()=>{
-
-                this.closeWrongDoorAndShuffle(
-                    door
-                );
-
-            }
-        );
-
-    }
-
-
-/* =========================================================
-   STAGE 5
-   EMPTY DUPLICATE DOOR
-========================================================= */
-
-    emptyDuplicateDoor(
-        door
-    ){
-
-        AUDIO.wrong();
-
-
-        /*
-        PENTING:
-
-        TIADA CLOUD.
-        TIADA X.
-        TIADA ANSWER.
-        TIADA TREASURE.
-
-        BILA PINTU DIBUKA,
-        USER NAMPAK RUANG KOSONG SAHAJA.
-        */
-
-
-        this.showMessage(
-            "PINTU KOSONG!",
-            "Salah pilih. Pintu ini hanyalah pintu pendua.",
-            false
-        );
-
-
-        this.cameras.main.shake(
-            120,
-            .003
-        );
-
-
-        /*
-        BIAR TERBUKA SEKEJAP
-        SUPAYA USER NAMPAK
-        MEMANG KOSONG.
-        */
-
-        this.time.delayedCall(
-            900,
-            ()=>{
-
-                this.closeWrongDoorAndShuffle(
-                    door
-                );
-
-            }
-        );
-
-    }
-
-
-/* =========================================================
-   CLOSE WRONG DOOR
-   THEN SHUFFLE ALL
-========================================================= */
-
-    closeWrongDoorAndShuffle(
-        door
-    ){
-
-        this.tweens.add({
-
-            targets:
-            door.panel,
-
-            scaleX:1,
-
-            x:0,
-
-            duration:280,
-
-            ease:"Sine.Out",
-
-            onComplete:
-            ()=>{
-
-                door.opened=false;
-
-
-                this.statusText
-                .setText(
-                    "Semua pintu sedang bertukar tempat..."
-                );
-
-
-                this.shuffleAllDoors(
-                    480,
-                    ()=>{
-
-
-                        /* =================================================
-                           STAGE 3
-
-                           JIKA JAWAPAN SUDAH HILANG,
-                           IA MESTI KEKAL HILANG
-                           SELEPAS SHUFFLE.
-                        ================================================= */
-
-                        if(
-                            this.stageIndex===2 &&
-                            this.answersHidden
-                        ){
-
-                            this.hideStage3Again();
-
-                        }
-
-
-                        /* =================================================
-                           STATUS AFTER SHUFFLE
-                        ================================================= */
-
-                        if(
-                            this.stageIndex===4
-                        ){
-
-                            this.statusText
-                            .setText(
-                                "Cuba lagi. Ingat, ada pintu pendua yang kosong!"
-                            );
-
-                        }
-
-                        else if(
-                            this.stageIndex===2
-                        ){
-
-                            this.statusText
-                            .setText(
-                                "Cuba lagi. Ingat kedudukan jawapan tadi!"
-                            );
-
-                        }
-
-                        else{
-
-                            this.statusText
-                            .setText(
-                                "Cuba lagi! Kedudukan pintu sudah berubah."
-                            );
-
-                        }
-
-                    }
-                );
-
-            }
-
-        });
-
-    }
-
-
-/* =========================================================
-   MESSAGE
-========================================================= */
-
-    showMessage(
-        title,
-        subtitle,
-        good
-    ){
-
-        if(
-            this.resultBox &&
-            this.resultBox.active
-        ){
-
-            this.resultBox.destroy();
-
-        }
-
-
-        const container=
-        this.add.container(
-            360,
-            1030
-        );
-
-
-        const bg=
-        this.add.graphics();
-
-
-        bg.fillStyle(
-            good
-            ?
-            0x23885b
-            :
-            0xb7454d,
-            .97
-        );
-
-
-        bg.fillRoundedRect(
-            -235,
-            -45,
-            470,
-            90,
-            28
-        );
-
-
-        bg.lineStyle(
-            3,
-            0xffffff,
-            .55
-        );
-
-
-        bg.strokeRoundedRect(
-            -235,
-            -45,
-            470,
-            90,
-            28
-        );
-
-
-        const titleText=
-        this.add.text(
-            0,
-            -14,
-            title,
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"22px",
-
-                fontStyle:"bold",
-
-                color:"#ffffff"
-            }
-        )
-        .setOrigin(.5);
-
-
-        const sub=
-        this.add.text(
-            0,
-            18,
-            subtitle,
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"15px",
-
-                fontStyle:"bold",
-
-                color:"#ffffff",
-
-                align:"center"
-            }
-        )
-        .setOrigin(.5);
-
-
-        container.add([
-            bg,
-            titleText,
-            sub
-        ]);
-
-
-        this.fxLayer.add(
-            container
-        );
-
-
-        this.resultBox=
-        container;
-
-
-        container.setScale(
-            .8
-        );
-
-
-        container.setAlpha(
-            0
-        );
-
-
-        this.tweens.add({
-
-            targets:
-            container,
-
-            scale:1,
-
-            alpha:1,
-
-            duration:170,
-
-            ease:"Back.Out"
-
-        });
-
-
-        if(!good){
-
-            this.time.delayedCall(
-                1050,
-                ()=>{
-
-                    if(
-                        !container.active
-                    ){
-
-                        return;
-
-                    }
-
-
-                    this.tweens.add({
-
-                        targets:
-                        container,
-
-                        alpha:0,
-
-                        duration:160,
-
-                        onComplete:
-                        ()=>{
-
-                            if(
-                                container.active
-                            ){
-
-                                container.destroy();
-
-                            }
-
-                        }
-
-                    });
-
-                }
-            );
-
-        }
-
-    }
-
-
-/* =========================================================
-   STAR EFFECT
-========================================================= */
-
-    spawnStars(
-        x,
-        y
-    ){
-
-        for(
-            let i=0;
-            i<10;
-            i++
-        ){
-
-            const star=
-            this.add.text(
+            const star = this.text(
                 x,
                 y,
-                "★",
-                {
-                    fontSize:
-                    (
-                        16+
-                        Math.random()*17
-                    )+
-                    "px",
-
-                    color:"#ffe36a"
-                }
-            )
-            .setOrigin(.5);
-
-
-            this.fxLayer.add(
-                star
+                "✦",
+                12+Math.random()*12,
+                "#ffe5a1"
             );
 
+            const angle =
+                Math.random()*Math.PI*2;
 
-            const angle=
-            Math.random()*
-            Math.PI*
-            2;
-
-
-            const distance=
-            70+
-            Math.random()*90;
-
+            this.effects.add(star);
 
             this.tweens.add({
 
-                targets:
-                star,
+                targets:star,
 
-                x:
-                x+
-                Math.cos(angle)*
-                distance,
-
-                y:
-                y+
-                Math.sin(angle)*
-                distance,
+                x:x+Math.cos(angle)*80,
+                y:y+Math.sin(angle)*85,
 
                 alpha:0,
-
-                scale:1.5,
+                angle:90,
 
                 duration:
-                650+
-                Math.random()*300,
+                    700+Math.random()*300,
 
-                ease:
-                "Cubic.Out",
-
-                onComplete:
-                ()=>{
-
+                onComplete:()=>{
                     star.destroy();
-
                 }
 
             });
@@ -3893,736 +2462,121 @@ extends Phaser.Scene{
 
     }
 
+    /* =====================================================
+       FINISH
 
-/* =========================================================
-   PROGRESS
-========================================================= */
+       Keputusan dipaparkan dalam panel.
+       Pintu permainan masih kelihatan.
+    ===================================================== */
 
-    createProgress(){
+    finish(){
 
-        const baseX=
-        280;
+        this.finished = true;
+        this.busy = false;
+        this.memoryLeft = 0;
 
-
-        const y=
-        1090;
-
-
-        const local=
-        this.questionIndex%
-        5;
-
-
-        for(
-            let i=0;
-            i<5;
-            i++
-        ){
-
-            const circle=
-            this.add.circle(
-                baseX+
-                i*40,
-                y,
-                10,
-
-                i<local
-                ?
-                0x75e3a1
-                :
-                i===local
-                ?
-                0xffdd69
-                :
-                0xffffff,
-
-                i<=local
-                ?
-                1
-                :
-                .35
-            );
-
-
-            circle.setStrokeStyle(
-                2,
-                0xffffff,
-                .65
-            );
-
-
-            this.gameLayer.add(
-                circle
-            );
-
+        if(this.needsLayout){
+            this.layout();
         }
 
-    }
+        $("finish").hidden = false;
 
+        $("finalScore").textContent =
+            "Skor anda: ★ " + this.score;
 
-/* =========================================================
-   STAGE COMPLETE
-========================================================= */
+        $("progressLabel").textContent =
+            "PERJALANAN ANDA · 25 / 25";
 
-    showStageComplete(
-        oldStage
-    ){
+        $("dots").innerHTML =
+            '<i class="done"></i>'.repeat(5);
 
-        this.clearQuestionTimers();
+        $("track").innerHTML =
+            '<span class="done"></span>'.repeat(5);
 
-
-        this.locked=true;
-
-
-        this.gameLayer
-        .removeAll(true);
-
-
-        this.fxLayer
-        .removeAll(true);
-
-
-        this.drawBackground();
-
-
-        AUDIO.stage();
-
-
-        const stage=
-        STAGES[
-            oldStage
-        ];
-
-
-        const glow=
-        this.add.circle(
-            360,
-            400,
-            180,
-            0xffffff,
-            .10
+        this.message(
+            "SEMUA CABARAN SELESAI!",
+            "Tahniah! Anda berjaya menjawab semua 25 soalan.",
+            "good"
         );
 
-
-        const panel=
-        this.add.graphics();
-
-
-        panel.fillStyle(
-            0x1b294d,
-            .95
+        this.status(
+            "Hebat! Lima stage berjaya diselesaikan."
         );
 
-
-        panel.fillRoundedRect(
-            75,
-            275,
-            570,
-            390,
-            38
-        );
-
-
-        panel.lineStyle(
-            4,
-            0xffde6c,
-            .9
-        );
-
-
-        panel.strokeRoundedRect(
-            75,
-            275,
-            570,
-            390,
-            38
-        );
-
-
-        const star=
-        this.add.text(
-            360,
-            345,
-            "★",
-            {
-                fontSize:"72px",
-
-                color:"#ffe16d"
-            }
-        )
-        .setOrigin(.5);
-
-
-        const title=
-        this.add.text(
-            360,
-            425,
-            "STAGE "+
-            (
-                oldStage+1
-            )+
-            " SELESAI!",
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"36px",
-
-                fontStyle:"bold",
-
-                color:"#ffffff"
-            }
-        )
-        .setOrigin(.5);
-
-
-        const name=
-        this.add.text(
-            360,
-            480,
-            stage.title,
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"23px",
-
-                fontStyle:"bold",
-
-                color:"#d9e7ff"
-            }
-        )
-        .setOrigin(.5);
-
-
-        const result=
-        this.add.text(
-            360,
-            550,
-            "5 / 5 SOALAN SELESAI",
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"21px",
-
-                fontStyle:"bold",
-
-                color:"#ffe47c"
-            }
-        )
-        .setOrigin(.5);
-
-
-        const next=
-        this.add.text(
-            360,
-            610,
-            "Cabaran seterusnya sedang menunggu...",
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"17px",
-
-                fontStyle:"bold",
-
-                color:"#ffffff"
-            }
-        )
-        .setOrigin(.5);
-
-
-        this.gameLayer.add([
-            glow,
-            panel,
-            star,
-            title,
-            name,
-            result,
-            next
-        ]);
-
-
-        this.time.delayedCall(
-            1700,
-            ()=>{
-
-                this.loadQuestion();
-
-            }
-        );
-
-    }
-
-
-/* =========================================================
-   FINAL SCREEN
-========================================================= */
-
-    showFinal(){
-
-        this.clearQuestionTimers();
-
-
-        this.locked=true;
-
-
-        this.gameLayer
-        .removeAll(true);
-
-
-        this.fxLayer
-        .removeAll(true);
-
-
-        this.drawBackground();
-
-
-        AUDIO.stage();
-
-
-        const glow=
-        this.add.circle(
-            360,
-            320,
-            190,
-            0xffffff,
-            .11
-        );
-
-
-        const stars=
-        this.add.text(
-            360,
-            190,
-            "★  ★  ★",
-            {
-                fontSize:"52px",
-
-                color:"#ffe16c"
-            }
-        )
-        .setOrigin(.5);
-
-
-        const title=
-        this.add.text(
-            360,
-            290,
-            "TAHNIAH!",
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"53px",
-
-                fontStyle:"bold",
-
-                color:"#ffffff"
-            }
-        )
-        .setOrigin(.5);
-
-
-        const sub=
-        this.add.text(
-            360,
-            355,
-            "Semua cabaran Mystery Doors telah selesai.",
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"21px",
-
-                fontStyle:"bold",
-
-                color:"#ffffff",
-
-                align:"center"
-            }
-        )
-        .setOrigin(.5);
-
-
-        const card=
-        this.add.graphics();
-
-
-        card.fillStyle(
-            0xffffff,
-            .94
-        );
-
-
-        card.fillRoundedRect(
-            95,
-            425,
-            530,
-            290,
-            38
-        );
-
-
-        const count=
-        this.add.text(
-            360,
-            500,
-            "25 / 25",
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"58px",
-
-                fontStyle:"bold",
-
-                color:"#35426d"
-            }
-        )
-        .setOrigin(.5);
-
-
-        const countLabel=
-        this.add.text(
-            360,
-            555,
-            "SOALAN SELESAI",
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"19px",
-
-                fontStyle:"bold",
-
-                color:"#77809d"
-            }
-        )
-        .setOrigin(.5);
-
-
-        const score=
-        this.add.text(
-            360,
-            635,
-            "★ "+
-            this.score,
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"39px",
-
-                fontStyle:"bold",
-
-                color:"#dca831"
-            }
-        )
-        .setOrigin(.5);
-
-
-        const scoreLabel=
-        this.add.text(
-            360,
-            680,
-            "SKOR",
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"17px",
-
-                fontStyle:"bold",
-
-                color:"#77809d"
-            }
-        )
-        .setOrigin(.5);
-
-
-        this.gameLayer.add([
-            glow,
-            stars,
-            title,
-            sub,
-            card,
-            count,
-            countLabel,
-            score,
-            scoreLabel
-        ]);
-
-
-        this.createFinalButton(
-            360,
-            810,
-            "↻ MAIN SEMULA",
-            ()=>{
-
-                this.restartGame();
-
-            }
-        );
-
-
-        this.createFinalButton(
-            360,
-            910,
-            "⌂ MENU UTAMA",
-            ()=>{
-
-                window.location.href=
-                "index.html";
-
-            }
-        );
-
-    }
-
-
-/* =========================================================
-   FINAL BUTTON
-========================================================= */
-
-    createFinalButton(
-        x,
-        y,
-        label,
-        callback
-    ){
-
-        const container=
-        this.add.container(
-            x,
-            y
-        );
-
-
-        const bg=
-        this.add.graphics();
-
-
-        bg.fillStyle(
-            0x27375f,
-            .95
-        );
-
-
-        bg.fillRoundedRect(
-            -175,
-            -37,
-            350,
-            74,
-            30
-        );
-
-
-        bg.lineStyle(
-            3,
-            0xffffff,
-            .55
-        );
-
-
-        bg.strokeRoundedRect(
-            -175,
-            -37,
-            350,
-            74,
-            30
-        );
-
-
-        const text=
-        this.add.text(
-            0,
-            0,
-            label,
-            {
-                fontFamily:
-                "Trebuchet MS",
-
-                fontSize:"23px",
-
-                fontStyle:"bold",
-
-                color:"#ffffff"
-            }
-        )
-        .setOrigin(.5);
-
-
-        const hit=
-        this.add.rectangle(
-            0,
-            0,
-            350,
-            74,
-            0xffffff,
-            .001
-        );
-
-
-        hit.setInteractive({
-            useHandCursor:true
-        });
-
-
-        hit.on(
-            "pointerdown",
-            ()=>{
-
-                AUDIO.tap();
-
-                callback();
-
-            }
-        );
-
-
-        container.add([
-            bg,
-            text,
-            hit
-        ]);
-
-
-        this.gameLayer.add(
-            container
-        );
-
-    }
-
-
-/* =========================================================
-   RESTART
-========================================================= */
-
-    restartGame(){
-
-        this.clearQuestionTimers();
-
-
-        this.questionIndex=0;
-
-        this.stageIndex=0;
-
-        this.score=0;
-
-        this.locked=false;
-
-
-        this.scoreText
-        .setText(
-            "★ 0"
-        );
-
-
-        this.loadQuestion();
+        AUDIO.correct();
 
     }
 
 }
 
-
 /* =========================================================
    PHASER CONFIG
 ========================================================= */
 
-const config={
+const game = new Phaser.Game({
 
-    type:
-    Phaser.AUTO,
+    type:Phaser.AUTO,
 
-    width:
-    720,
+    parent:"game",
 
-    height:
-    1120,
+    width:$("game").clientWidth,
+    height:500,
 
-    parent:
-    "game",
-
-    backgroundColor:
-    "#dceeff",
-
-    antialias:
-    true,
-
-    roundPixels:
-    true,
-
-    render:{
-
-        antialias:true,
-
-        pixelArt:false,
-
-        powerPreference:
-        "high-performance"
-
-    },
+    transparent:true,
+    antialias:true,
+    roundPixels:false,
 
     scale:{
-
-        mode:
-        Phaser.Scale.FIT,
-
-        autoCenter:
-        Phaser.Scale.CENTER_BOTH,
-
-        width:
-        720,
-
-        height:
-        1120
-
+        mode:Phaser.Scale.NONE
     },
 
     input:{
-
         activePointers:3
-
     },
 
     scene:[
         MysteryDoorGame
     ]
 
-};
-
-
-const game=
-new Phaser.Game(
-    config
-);
-
+});
 
 /* =========================================================
-   PREVENT MOBILE PAGE SCROLL
+   RESPONSIVE RESIZE
+
+   Layout dikira semula selepas animasi selesai.
+   Soalan, skor, timer dan pilihan tidak direset.
 ========================================================= */
 
-document.addEventListener(
-    "touchmove",
-    function(e){
+let resizeFrame = 0;
 
-        if(
-            e.target &&
-            e.target.tagName==="CANVAS"
-        ){
+const observer = new ResizeObserver(()=>{
 
-            e.preventDefault();
+    cancelAnimationFrame(resizeFrame);
 
+    resizeFrame = requestAnimationFrame(()=>{
+
+        const scene = game.scene.getScene(
+            "MysteryDoorGame"
+        );
+
+        if(!scene || !scene.layer){
+            return;
         }
 
-    },
-    {
-        passive:false
-    }
-);
+        if(scene.busy){
+            scene.needsLayout = true;
+        }
+        else{
+            scene.layout();
+        }
 
+    });
+
+});
+
+observer.observe(
+    $("game")
+);
 </script>
 
 </body>
