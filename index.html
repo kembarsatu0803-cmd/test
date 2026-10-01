@@ -4,17 +4,14 @@
 <meta charset="UTF-8">
 
 <meta
-    name="viewport"
-    content="
-        width=device-width,
-        initial-scale=1,
-        maximum-scale=1,
-        user-scalable=no,
-        viewport-fit=cover
-    "
->
+name="viewport"
+content="width=device-width,
+initial-scale=1,
+maximum-scale=1,
+user-scalable=no,
+viewport-fit=cover">
 
-<title>Word Wonder Air - Set 4</title>
+<title>Mystery Doors - Set 4</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
@@ -41,15 +38,16 @@ body{
     background:
     linear-gradient(
         135deg,
-        #dceeff,
-        #f8fbff,
-        #e9ddff
+        #d9f3ff,
+        #f8fcff,
+        #dcecff
     );
 
     overscroll-behavior:none;
 }
 
 body{
+
     min-height:100vh;
     min-height:100svh;
 
@@ -58,9 +56,9 @@ body{
     align-items:flex-start;
 
     padding:
-        max(5px, env(safe-area-inset-top))
-        4px
-        max(8px, env(safe-area-inset-bottom));
+    max(4px,env(safe-area-inset-top))
+    3px
+    max(5px,env(safe-area-inset-bottom));
 
     overflow:hidden;
 }
@@ -70,27 +68,27 @@ body{
     width:min(
         98vw,
         720px,
-        calc(96svh * 0.6667)
+        calc(97svh * .643)
     );
 
     height:min(
-        96svh,
-        1080px
+        97svh,
+        1120px
     );
 
-    aspect-ratio:2 / 3;
+    aspect-ratio:720/1120;
 
     position:relative;
 
     overflow:hidden;
 
-    border-radius:22px;
+    border-radius:20px;
+
+    background:#dceeff;
 
     box-shadow:
-        0 12px 35px
-        rgba(30,40,80,.22);
-
-    background:#dfeaff;
+    0 12px 35px
+    rgba(24,43,80,.22);
 }
 
 #game{
@@ -110,16 +108,16 @@ canvas{
 @media(max-width:500px){
 
     #game-shell{
+
         width:100vw;
 
         height:min(
-            96svh,
-            1080px
+            98svh,
+            1120px
         );
 
-        border-radius:15px;
+        border-radius:13px;
     }
-
 }
 
 </style>
@@ -133,309 +131,420 @@ canvas{
 
 <script>
 
-/* =========================================================
-   WORD WONDER AIR
+/* ========================================================
+   MYSTERY DOORS
    SET 4
-   5 STAGE
-   5 SOALAN SETIAP STAGE
-========================================================= */
+   5 STAGE × 5 SOALAN
+======================================================== */
 
 
-/* =========================================================
-   DATA SOALAN
-========================================================= */
+/* ========================================================
+   QUESTIONS
+======================================================== */
 
 const QUESTIONS = [
 
+/* =========================
+   STAGE 1
+========================= */
+
 {
-    tp:"TP1",
-    question:"Meja kaca ialah objek yang ____ air.",
-    answer:"Tidak menyerap"
+q:"Meja kaca ialah objek yang ____ air.",
+answers:[
+"Menambah",
+"Menyerap",
+"Menghasilkan",
+"Tidak menyerap"
+],
+correct:3
 },
 
 {
-    tp:"TP2",
-    question:"Duit syiling dan klip kertas boleh diletakkan dalam kumpulan yang sama jika kedua-duanya ____.",
-    answer:"Tidak menyerap air"
+q:"Duit syiling dan klip kertas boleh diletakkan dalam kumpulan yang sama jika kedua-duanya ____.",
+answers:[
+"Tidak menyerap air",
+"Menyerap air",
+"Diperbuat daripada tisu",
+"Menghasilkan air"
+],
+correct:0
 },
 
 {
-    tp:"TP2",
-    question:"Murid menitis air pada kain lap dan gelas kaca. Titisan hilang pada kain lap tetapi kekal pada gelas. Apakah kesimpulan?",
-    answer:"Kain lap menyerap air gelas kaca tidak menyerap air"
+q:"Murid menitis air pada kain lap dan gelas kaca. Titisan hilang pada kain lap tetapi kekal pada gelas. Apakah kesimpulan?",
+answers:[
+"Gelas menyerap air lebih baik daripada kain",
+"Kedua-duanya tidak menyerap air",
+"Kedua-duanya menyerap air",
+"Kain lap menyerap air, gelas kaca tidak menyerap air"
+],
+correct:3
 },
 
 {
-    tp:"TP1",
-    question:"Objek manakah yang menyerap air dan biasa digunakan untuk mengelap?",
-    answer:"Tisu"
+q:"Objek manakah yang menyerap air dan biasa digunakan untuk mengelap?",
+answers:[
+"Klip kertas",
+"Straw",
+"Tisu",
+"Pemadam"
+],
+correct:2
 },
 
 {
-    tp:"TP2",
-    question:"Antara pasangan berikut, yang manakah kedua-duanya menyerap air?",
-    answer:"Tisu dan sapu tangan"
+q:"Antara pasangan berikut, yang manakah kedua-duanya menyerap air?",
+answers:[
+"Tisu dan sapu tangan",
+"Klip kertas dan pemadam",
+"Straw dan mainan plastik",
+"Sudu logam dan gelas kaca"
+],
+correct:0
 },
 
 
-/* ================= STAGE 2 ================= */
+/* =========================
+   STAGE 2
+========================= */
 
 {
-    tp:"TP1",
-    question:"Gelas kaca dikelaskan sebagai objek yang ____.",
-    answer:"Tidak boleh menyerap air"
+q:"Gelas kaca dikelaskan sebagai objek yang ____.",
+answers:[
+"Boleh menyerap air",
+"Tidak boleh menyerap air",
+"Menghasilkan air",
+"Menukar warna air"
+],
+correct:1
 },
 
 {
-    tp:"TP1",
-    question:"Apakah maksud objek tidak menyerap air?",
-    answer:"Objek yang tidak boleh menyerap air"
+q:"Apakah maksud objek tidak menyerap air?",
+answers:[
+"Objek yang menyimpan makanan",
+"Objek yang menghasilkan air",
+"Objek yang boleh menyerap air",
+"Objek yang tidak boleh menyerap air"
+],
+correct:3
 },
 
 {
-    tp:"TP2",
-    question:"Bebola kapas digunakan dalam ujian awal. Jika air hilang apabila dititiskan padanya, ini menunjukkan bebola kapas ____.",
-    answer:"Menyerap air"
+q:"Bebola kapas digunakan dalam ujian awal. Jika air hilang apabila dititiskan padanya, ini menunjukkan bebola kapas ____.",
+answers:[
+"Menghasilkan air",
+"Menyerap air",
+"Tidak menyerap air",
+"Menjadi plastik"
+],
+correct:1
 },
 
 {
-    tp:"TP2",
-    question:"Alas kaki dan pinggan plastik diuji. Pengelasan yang betul ialah ____.",
-    answer:"Alas kaki menyerap air pinggan plastik tidak menyerap air"
+q:"Alas kaki dan pinggan plastik diuji. Pengelasan yang betul ialah ____.",
+answers:[
+"Kedua-duanya menyerap air",
+"Kedua-duanya tidak menyerap air",
+"Alas kaki menyerap air, pinggan plastik tidak menyerap air",
+"Pinggan plastik menyerap air, alas kaki tidak menyerap air"
+],
+correct:2
 },
 
 {
-    tp:"TP1",
-    question:"Objek berbentuk tiub manakah yang tidak boleh menyerap air?",
-    answer:"Straw"
+q:"Objek berbentuk tiub manakah yang tidak boleh menyerap air?",
+answers:[
+"Straw",
+"Tisu",
+"Kain lap",
+"Sapu tangan"
+],
+correct:0
 },
 
 
-/* ================= STAGE 3 ================= */
+/* =========================
+   STAGE 3
+========================= */
 
 {
-    tp:"TP1",
-    question:"Dalam ujian titisan air, objek yang tiada lagi titisan air di atasnya ialah objek yang ____.",
-    answer:"Menyerap air"
+q:"Dalam ujian titisan air, objek yang tiada lagi titisan air di atasnya ialah objek yang ____.",
+answers:[
+"Menolak air",
+"Menyerap air",
+"Menghasilkan air",
+"Tidak menyerap air"
+],
+correct:1
 },
 
 {
-    tp:"TP2",
-    question:"Mengapakah ketebalan objek perlu dimalarkan dalam aktiviti perbandingan?",
-    answer:"Supaya perbandingan keupayaan menyerap air lebih adil"
+q:"Mengapakah ketebalan objek perlu dimalarkan dalam aktiviti perbandingan?",
+answers:[
+"Supaya semua objek tidak menyerap air",
+"Supaya air menjadi pepejal",
+"Supaya objek menghasilkan air",
+"Supaya perbandingan keupayaan menyerap air lebih adil"
+],
+correct:3
 },
 
 {
-    tp:"TP1",
-    question:"Dalam aktiviti mop mini, tali pengikat digunakan kerana perlu membantu mop ____.",
-    answer:"Menyerap air"
+q:"Dalam aktiviti mop mini, tali pengikat digunakan kerana perlu membantu mop ____.",
+answers:[
+"Menjadi logam",
+"Menghalang cahaya",
+"Menyerap air",
+"Menjadi kaca"
+],
+correct:2
 },
 
 {
-    tp:"TP1",
-    question:"Bebola kapas sesuai untuk mengelap luka kerana bebola kapas ____.",
-    answer:"Boleh menyerap cecair"
+q:"Bebola kapas sesuai untuk mengelap luka kerana bebola kapas ____.",
+answers:[
+"Boleh menyerap cecair",
+"Diperbuat daripada logam",
+"Tidak boleh menyerap air",
+"Menghalang hujan"
+],
+correct:0
 },
 
 {
-    tp:"TP1",
-    question:"Tong besi perlu tidak menyerap air supaya ____.",
-    answer:"Boleh menadah dan menyimpan air"
+q:"Tong besi perlu tidak menyerap air supaya ____.",
+answers:[
+"Tong menyerap semua air",
+"Tong mengeringkan badan",
+"Tong menjadi tisu",
+"Boleh menadah dan menyimpan air"
+],
+correct:3
 },
 
 
-/* ================= STAGE 4 ================= */
+/* =========================
+   STAGE 4
+========================= */
 
 {
-    tp:"TP2",
-    question:"Badan adik basah selepas mandi. Objek manakah paling sesuai digunakan?",
-    answer:"Tuala"
+q:"Badan adik basah selepas mandi. Objek manakah paling sesuai digunakan?",
+answers:[
+"Pinggan plastik",
+"Tuala",
+"Sudu logam",
+"Gelas kaca"
+],
+correct:1
 },
 
 {
-    tp:"TP2",
-    question:"Imran berpeluh selepas bermain. Apakah objek yang sesuai digunakan?",
-    answer:"Sapu tangan"
+q:"Imran berpeluh selepas bermain. Apakah objek yang sesuai digunakan?",
+answers:[
+"Tong besi",
+"Gelas kaca",
+"Sapu tangan",
+"Payung plastik"
+],
+correct:2
 },
 
 {
-    tp:"TP1",
-    question:"Objek menyerap air penting untuk ____.",
-    answer:"Mengelap cecair"
+q:"Objek menyerap air penting untuk ____.",
+answers:[
+"Mengelap cecair",
+"Menghasilkan air",
+"Menukar air menjadi logam",
+"Menghalang semua cahaya"
+],
+correct:0
 },
 
 {
-    tp:"TP1",
-    question:"Tong besi penting kerana boleh ____.",
-    answer:"Menadah dan menyimpan air hujan"
+q:"Tong besi penting kerana boleh ____.",
+answers:[
+"Mengelap peluh",
+"Menadah dan menyimpan air hujan",
+"Mengeringkan badan",
+"Menyerap semua air hujan"
+],
+correct:1
 },
 
 {
-    tp:"TP1",
-    question:"Payung plastik penting kerana dapat ____.",
-    answer:"Menghalang diri daripada terkena air hujan"
+q:"Payung plastik penting kerana dapat ____.",
+answers:[
+"Mengelap peluh",
+"Mengeringkan badan",
+"Menyerap semua air hujan",
+"Menghalang diri daripada terkena air hujan"
+],
+correct:3
 },
 
 
-/* ================= STAGE 5 ================= */
+/* =========================
+   STAGE 5
+========================= */
 
 {
-    tp:"TP2",
-    question:"Mengapakah kasut getah sesuai digunakan ketika hujan?",
-    answer:"Tidak menyerap air dan membantu kaki kekal kering"
+q:"Mengapakah kasut getah sesuai digunakan ketika hujan?",
+answers:[
+"Kerana menyimpan air hujan",
+"Kerana menyerap air ke dalam kasut",
+"Kerana tidak menyerap air dan membantu kaki kekal kering",
+"Kerana digunakan untuk mengelap meja"
+],
+correct:2
 },
 
 {
-    tp:"TP1",
-    question:"Objek yang boleh menyerap air dan objek yang tidak boleh menyerap air adalah ____.",
-    answer:"Penting dalam kehidupan"
+q:"Objek yang boleh menyerap air dan objek yang tidak boleh menyerap air adalah ____.",
+answers:[
+"Penting dalam kehidupan",
+"Hanya digunakan di sekolah",
+"Tidak berguna",
+"Hanya digunakan ketika malam"
+],
+correct:0
 },
 
 {
-    tp:"TP2",
-    question:"Seorang murid memilih tisu untuk mengelakkan hujan membasahi badannya. Mengapakah pilihan itu kurang sesuai?",
-    answer:"Tisu menyerap air"
+q:"Seorang murid memilih tisu untuk mengelakkan hujan membasahi badannya. Mengapakah pilihan itu kurang sesuai?",
+answers:[
+"Tisu tidak menyerap air",
+"Tisu diperbuat daripada logam",
+"Tisu menyerap air",
+"Tisu sama seperti payung plastik"
+],
+correct:2
 },
 
 {
-    tp:"TP2",
-    question:"Mengapakah tuala sesuai digunakan selepas mandi?",
-    answer:"Menyerap air pada badan"
+q:"Mengapakah tuala sesuai digunakan selepas mandi?",
+answers:[
+"Kerana diperbuat daripada kaca",
+"Kerana menyerap air pada badan",
+"Kerana menadah air hujan",
+"Kerana tidak menyerap air"
+],
+correct:1
 },
 
 {
-    tp:"TP2",
-    question:"Mengapakah payung plastik sesuai digunakan ketika hujan?",
-    answer:"Tidak menyerap air dan menghalang hujan"
+q:"Mengapakah payung plastik sesuai digunakan ketika hujan?",
+answers:[
+"Kerana menyerap air dengan cepat",
+"Kerana mengeringkan lantai",
+"Kerana menyerap peluh",
+"Kerana tidak menyerap air dan menghalang hujan"
+],
+correct:3
 }
 
 ];
 
 
-/* =========================================================
-   STAGE
-========================================================= */
+/* ========================================================
+   STAGE THEMES
+======================================================== */
 
 const STAGES = [
 
 {
-    name:"STAGE 1",
-    title:"MISTERI TITISAN",
-    top:0x344d91,
-    bottom:0x82d8ff,
-    accent:0xffd55a
+name:"STAGE 1",
+title:"MISTERI KACA",
+top:0x4169a8,
+bottom:0x82d5ef,
+door:0x526ca5
 },
 
 {
-    name:"STAGE 2",
-    title:"PENGEMBARA AIR",
-    top:0x495ba8,
-    bottom:0x84efd5,
-    accent:0xffd35c
+name:"STAGE 2",
+title:"UJIAN TITISAN",
+top:0x4f5f9e,
+bottom:0x8be4db,
+door:0x4c8d86
 },
 
 {
-    name:"STAGE 3",
-    title:"MAKMAL AIR",
-    top:0x6a50a7,
-    bottom:0xe2a6db,
-    accent:0xffdb69
+name:"STAGE 3",
+title:"MAKMAL AIR",
+top:0x684d91,
+bottom:0xd1a2d9,
+door:0x78568f
 },
 
 {
-    name:"STAGE 4",
-    title:"MISI HARIAN",
-    top:0xd46d72,
-    bottom:0xffcf9c,
-    accent:0xffec76
+name:"STAGE 4",
+title:"MISI HARIAN",
+top:0x397a68,
+bottom:0x9bd4ad,
+door:0x438566
 },
 
 {
-    name:"STAGE 5",
-    title:"PEMBURU HUJAN",
-    top:0x324b86,
-    bottom:0x8fc7f1,
-    accent:0xffdd65
+name:"STAGE 5",
+title:"CABARAN HUJAN",
+top:0x314e87,
+bottom:0x88bde8,
+door:0x3d619d
 }
 
 ];
 
 
-/* =========================================================
-   UTILITI
-========================================================= */
+/* ========================================================
+   UTILITY
+======================================================== */
 
-function shuffleArray(array){
+function shuffle(array){
 
     const a = [...array];
 
-    for(let i = a.length - 1; i > 0; i--){
+    for(let i=a.length-1;i>0;i--){
 
         const j =
-            Math.floor(
-                Math.random() * (i + 1)
-            );
+        Math.floor(
+            Math.random() *
+            (i+1)
+        );
 
-        [a[i], a[j]] =
-        [a[j], a[i]];
+        [a[i],a[j]] =
+        [a[j],a[i]];
     }
 
     return a;
 }
 
 
-function cleanWord(word){
-
-    return word
-        .toUpperCase()
-        .replace(/[^A-Z]/g,"");
-
-}
-
-
-function splitAnswer(answer){
-
-    return answer
-        .toUpperCase()
-        .replace(/[.,!?]/g,"")
-        .split(/\s+/)
-        .filter(Boolean);
-
-}
-
-
-/* =========================================================
+/* ========================================================
    AUDIO
-========================================================= */
+======================================================== */
 
-class MiniAudio{
+class AudioSystem{
 
     constructor(){
 
-        this.ctx = null;
-        this.enabled = true;
-        this.started = false;
-        this.musicTimer = null;
+        this.ctx=null;
+        this.enabled=true;
 
     }
 
 
-    start(){
+    init(){
 
-        if(this.started)
+        if(this.ctx)
             return;
 
         try{
 
             this.ctx =
-                new(
-                    window.AudioContext ||
-                    window.webkitAudioContext
-                )();
-
-            this.started = true;
-
-            this.startMusic();
+            new(
+                window.AudioContext ||
+                window.webkitAudioContext
+            )();
 
         }
         catch(e){}
@@ -444,37 +553,42 @@ class MiniAudio{
 
 
     tone(
-        frequency = 440,
-        duration = .12,
-        volume = .05,
-        type = "sine"
+        f=440,
+        duration=.1,
+        volume=.04,
+        type="sine"
     ){
 
         if(
-            !this.enabled ||
-            !this.ctx
+            !this.ctx ||
+            !this.enabled
         )
             return;
 
 
-        const oscillator =
-            this.ctx.createOscillator();
+        if(
+            this.ctx.state ===
+            "suspended"
+        )
+            this.ctx.resume();
+
+
+        const osc =
+        this.ctx.createOscillator();
 
         const gain =
-            this.ctx.createGain();
+        this.ctx.createGain();
 
 
-        oscillator.type = type;
+        osc.type=type;
 
-        oscillator.frequency.value =
-            frequency;
-
-
-        gain.gain.value =
-            volume;
+        osc.frequency.value=f;
 
 
-        oscillator.connect(gain);
+        gain.gain.value=volume;
+
+
+        osc.connect(gain);
 
         gain.connect(
             this.ctx.destination
@@ -482,7 +596,7 @@ class MiniAudio{
 
 
         const now =
-            this.ctx.currentTime;
+        this.ctx.currentTime;
 
 
         gain.gain.setValueAtTime(
@@ -493,26 +607,37 @@ class MiniAudio{
 
         gain.gain.exponentialRampToValueAtTime(
             .0001,
-            now + duration
+            now+duration
         );
 
 
-        oscillator.start(now);
+        osc.start(now);
 
-        oscillator.stop(
-            now + duration
+        osc.stop(
+            now+duration
         );
 
     }
 
 
-    letter(){
+    tap(){
 
         this.tone(
-            520,
-            .055,
-            .022,
-            "sine"
+            430,
+            .06,
+            .025
+        );
+
+    }
+
+
+    door(){
+
+        this.tone(
+            250,
+            .09,
+            .03,
+            "triangle"
         );
 
     }
@@ -521,20 +646,27 @@ class MiniAudio{
     correct(){
 
         this.tone(
-            620,
+            570,
             .10,
-            .05,
-            "sine"
+            .05
         );
 
         setTimeout(
-            () => this.tone(
-                820,
-                .13,
-                .05,
-                "sine"
+            ()=>this.tone(
+                760,
+                .11,
+                .05
             ),
             80
+        );
+
+        setTimeout(
+            ()=>this.tone(
+                960,
+                .15,
+                .04
+            ),
+            160
         );
 
     }
@@ -543,10 +675,20 @@ class MiniAudio{
     wrong(){
 
         this.tone(
-            180,
+            170,
             .16,
-            .045,
+            .04,
             "square"
+        );
+
+        setTimeout(
+            ()=>this.tone(
+                130,
+                .12,
+                .03,
+                "square"
+            ),
+            100
         );
 
     }
@@ -556,73 +698,23 @@ class MiniAudio{
 
         [
             440,
-            550,
-            660,
-            880
+            560,
+            690,
+            870
         ].forEach(
-            (n,i) => {
+            (f,i)=>{
 
                 setTimeout(
-                    () =>
-                        this.tone(
-                            n,
-                            .2,
-                            .035
-                        ),
-                    i * 100
+                    ()=>this.tone(
+                        f,
+                        .18,
+                        .035
+                    ),
+                    i*90
                 );
 
             }
         );
-
-    }
-
-
-    startMusic(){
-
-        if(
-            !this.ctx ||
-            this.musicTimer
-        )
-            return;
-
-
-        const notes = [
-            220,
-            247,
-            294,
-            330,
-            294,
-            247
-        ];
-
-        let i = 0;
-
-
-        this.musicTimer =
-            setInterval(
-                () => {
-
-                    if(
-                        !this.enabled
-                    )
-                        return;
-
-                    this.tone(
-                        notes[
-                            i %
-                            notes.length
-                        ],
-                        .55,
-                        .008,
-                        "sine"
-                    );
-
-                    i++;
-
-                },
-                900
-            );
 
     }
 
@@ -630,330 +722,137 @@ class MiniAudio{
 
 
 const AUDIO =
-    new MiniAudio();
+new AudioSystem();
 
 
-/* =========================================================
-   GAME SCENE
-========================================================= */
+/* ========================================================
+   SCENE
+======================================================== */
 
-class WordWonderScene
+class MysteryDoorGame
 extends Phaser.Scene{
 
     constructor(){
 
-        super("WordWonderScene");
+        super(
+            "MysteryDoorGame"
+        );
 
     }
 
 
     create(){
 
-        this.questionIndex = 0;
+        this.questionIndex=0;
 
-        this.stageIndex = 0;
+        this.stageIndex=0;
 
-        this.score = 0;
+        this.score=0;
 
-        this.words = [];
+        this.correctCount=0;
 
-        this.currentWordIndex = 0;
+        this.locked=false;
 
-        this.hintCount = 0;
-
-        this.solvedWords = [];
-
-
-        this.dragging = false;
-
-        this.selectedLetters = [];
-
-        this.letterObjects = [];
+        this.doorObjects=[];
 
 
         this.backgroundLayer =
-            this.add.container(
-                0,
-                0
-            );
+        this.add.container();
 
+        this.gameLayer =
+        this.add.container();
 
         this.uiLayer =
-            this.add.container(
-                0,
-                0
-            );
+        this.add.container();
+
+        this.fxLayer =
+        this.add.container();
 
 
-        this.boardLayer =
-            this.add.container(
-                0,
-                0
-            );
-
-
-        this.wheelLayer =
-            this.add.container(
-                0,
-                0
-            );
-
-
-        this.feedbackLayer =
-            this.add.container(
-                0,
-                0
-            );
-
-
-        this.pathGraphics =
-            this.add.graphics();
-
-        this.pathGraphics
-            .setDepth(50);
-
-
-        this.createPermanentUI();
-
-        this.setupInput();
+        this.createTopUI();
 
         this.loadQuestion();
 
-    }
 
+        this.input.on(
+            "pointerdown",
+            ()=>{
 
+                AUDIO.init();
 
-/* =========================================================
-   BACKGROUND
-========================================================= */
-
-    drawBackground(){
-
-        this.backgroundLayer
-            .removeAll(true);
-
-
-        const stage =
-            STAGES[
-                this.stageIndex
-            ];
-
-
-        const bg =
-            this.add.graphics();
-
-
-        bg.fillGradientStyle(
-            stage.top,
-            stage.top,
-            stage.bottom,
-            stage.bottom,
-            1
+            }
         );
-
-
-        bg.fillRect(
-            0,
-            0,
-            720,
-            1080
-        );
-
-
-        /* decorative glow */
-
-        bg.fillStyle(
-            0xffffff,
-            .12
-        );
-
-        bg.fillCircle(
-            615,
-            155,
-            170
-        );
-
-
-        bg.fillCircle(
-            80,
-            590,
-            145
-        );
-
-
-        /* distant mountains */
-
-        bg.fillStyle(
-            0xffffff,
-            .10
-        );
-
-
-        bg.fillTriangle(
-            0,
-            570,
-            200,
-            260,
-            390,
-            570
-        );
-
-
-        bg.fillTriangle(
-            270,
-            570,
-            500,
-            330,
-            720,
-            570
-        );
-
-
-        /* bottom terrain */
-
-        bg.fillStyle(
-            0x17264b,
-            .13
-        );
-
-
-        bg.fillEllipse(
-            370,
-            1070,
-            920,
-            330
-        );
-
-
-        bg.fillStyle(
-            stage.accent,
-            .09
-        );
-
-
-        bg.fillCircle(
-            100,
-            970,
-            120
-        );
-
-
-        bg.fillCircle(
-            645,
-            900,
-            90
-        );
-
-
-        this.backgroundLayer
-            .add(bg);
 
     }
 
 
+/* ========================================================
+   TOP UI
+======================================================== */
 
-/* =========================================================
-   PERMANENT UI
-========================================================= */
-
-    createPermanentUI(){
+    createTopUI(){
 
         /* HOME */
 
         const home =
-            this.makeButton(
-                68,
-                45,
-                112,
-                55,
-                "⌂  HOME",
-                22,
-                0x34335b
-            );
+        this.makeTopButton(
+            70,
+            40,
+            115,
+            52,
+            "⌂ HOME"
+        );
 
 
         home.hit.on(
             "pointerdown",
-            () => {
+            ()=>{
 
                 window.location.href =
-                    "index.html";
+                "index.html";
 
             }
         );
 
 
-        /* SOUND */
-
-        const sound =
-            this.makeButton(
-                659,
-                45,
-                70,
-                55,
-                "♪",
-                27,
-                0x34335b
-            );
-
-
-        sound.hit.on(
-            "pointerdown",
-            () => {
-
-                AUDIO.start();
-
-                AUDIO.enabled =
-                    !AUDIO.enabled;
-
-                sound.text.setText(
-                    AUDIO.enabled ?
-                    "♪" :
-                    "×"
-                );
-
-            }
-        );
-
-
-        /* SCORE PILL */
+        /* SCORE */
 
         const scoreBG =
-            this.add.graphics();
+        this.add.graphics();
 
 
         scoreBG.fillStyle(
-            0x1d2447,
-            .78
+            0x172343,
+            .82
         );
 
 
         scoreBG.fillRoundedRect(
-            245,
-            17,
-            230,
-            58,
-            29
+            265,
+            14,
+            190,
+            54,
+            27
         );
 
 
         this.scoreText =
-            this.add.text(
-                360,
-                45,
-                "◆ 0",
-                {
-                    fontFamily:
-                        "Trebuchet MS",
+        this.add.text(
+            360,
+            41,
+            "★ 0",
+            {
+                fontFamily:
+                "Trebuchet MS",
 
-                    fontSize:"26px",
+                fontSize:"24px",
 
-                    fontStyle:"bold",
+                fontStyle:"bold",
 
-                    color:"#ffffff"
-                }
-            )
-            .setOrigin(.5);
+                color:"#ffffff"
+            }
+        )
+        .setOrigin(.5);
 
 
         this.uiLayer.add(
@@ -964,96 +863,121 @@ extends Phaser.Scene{
             this.scoreText
         );
 
+
+        /* SOUND */
+
+        const sound =
+        this.makeTopButton(
+            665,
+            40,
+            75,
+            52,
+            "♪"
+        );
+
+
+        sound.hit.on(
+            "pointerdown",
+            ()=>{
+
+                AUDIO.init();
+
+                AUDIO.enabled =
+                !AUDIO.enabled;
+
+
+                sound.text.setText(
+                    AUDIO.enabled
+                    ?
+                    "♪"
+                    :
+                    "×"
+                );
+
+            }
+        );
+
     }
 
 
-
-/* =========================================================
-   BUTTON
-========================================================= */
-
-    makeButton(
+    makeTopButton(
         x,
         y,
         width,
         height,
-        label,
-        fontSize,
-        color
+        label
     ){
 
         const container =
-            this.add.container(
-                x,
-                y
-            );
+        this.add.container(
+            x,
+            y
+        );
 
 
         const bg =
-            this.add.graphics();
+        this.add.graphics();
 
 
         bg.fillStyle(
-            color,
-            .91
+            0x20294b,
+            .92
         );
 
 
         bg.fillRoundedRect(
-            -width / 2,
-            -height / 2,
+            -width/2,
+            -height/2,
             width,
             height,
-            height / 2
+            18
         );
 
 
         bg.lineStyle(
             2,
             0xffffff,
-            .7
+            .6
         );
 
 
         bg.strokeRoundedRect(
-            -width / 2,
-            -height / 2,
+            -width/2,
+            -height/2,
             width,
             height,
-            height / 2
+            18
         );
 
 
         const text =
-            this.add.text(
-                0,
-                0,
-                label,
-                {
-                    fontFamily:
-                        "Trebuchet MS",
+        this.add.text(
+            0,
+            0,
+            label,
+            {
+                fontFamily:
+                "Trebuchet MS",
 
-                    fontSize:
-                        fontSize +
-                        "px",
+                fontSize:"18px",
 
-                    fontStyle:"bold",
+                fontStyle:"bold",
 
-                    color:"#ffffff"
-                }
-            )
-            .setOrigin(.5);
+                color:"#ffffff"
+            }
+        )
+        .setOrigin(.5);
 
 
         const hit =
-            this.add.rectangle(
-                0,
-                0,
-                width,
-                height,
-                0xffffff,
-                .001
-            );
+        this.add.rectangle(
+            0,
+            0,
+            width,
+            height,
+            0xffffff,
+            .001
+        );
 
 
         hit.setInteractive({
@@ -1083,1824 +1007,840 @@ extends Phaser.Scene{
     }
 
 
-
-/* =========================================================
+/* ========================================================
    LOAD QUESTION
-========================================================= */
+======================================================== */
 
     loadQuestion(){
 
-        this.clearQuestionObjects();
+        this.locked=false;
+
+        this.doorObjects=[];
+
+
+        this.gameLayer
+        .removeAll(true);
+
+
+        this.fxLayer
+        .removeAll(true);
+
 
         this.stageIndex =
-            Math.floor(
-                this.questionIndex /
-                5
-            );
+        Math.floor(
+            this.questionIndex /
+            5
+        );
 
 
         this.drawBackground();
 
+        this.createStagePanel();
 
-        const data =
-            QUESTIONS[
-                this.questionIndex
-            ];
+        this.createQuestionCard();
 
+        this.createDoors();
 
-        this.words =
-            splitAnswer(
-                data.answer
-            );
-
-
-        this.solvedWords =
-            new Array(
-                this.words.length
-            ).fill(false);
-
-
-        this.currentWordIndex =
-            0;
-
-
-        this.hintCount =
-            0;
-
-
-        this.createStageHeader();
-
-        this.createQuestionCard(
-            data
-        );
-
-        this.renderAnswerBoard();
-
-        this.createWordInfo();
-
-        this.buildWheel();
-
-        this.createBottomControls();
+        this.createProgress();
 
     }
 
 
+/* ========================================================
+   BACKGROUND
+======================================================== */
 
-/* =========================================================
-   CLEAR
-========================================================= */
+    drawBackground(){
 
-    clearQuestionObjects(){
+        this.backgroundLayer
+        .removeAll(true);
 
-        this.boardLayer
-            .removeAll(true);
-
-
-        this.wheelLayer
-            .removeAll(true);
-
-
-        this.feedbackLayer
-            .removeAll(true);
-
-
-        this.pathGraphics
-            .clear();
-
-
-        this.letterObjects = [];
-
-        this.selectedLetters = [];
-
-        this.dragging = false;
-
-    }
-
-
-
-/* =========================================================
-   STAGE HEADER
-========================================================= */
-
-    createStageHeader(){
 
         const stage =
-            STAGES[
-                this.stageIndex
-            ];
+        STAGES[
+            this.stageIndex
+        ];
 
 
-        const panel =
-            this.add.graphics();
+        const bg =
+        this.add.graphics();
 
 
-        panel.fillStyle(
+        bg.fillGradientStyle(
+            stage.top,
+            stage.top,
+            stage.bottom,
+            stage.bottom,
+            1
+        );
+
+
+        bg.fillRect(
+            0,
+            0,
+            720,
+            1120
+        );
+
+
+        /* moon / light */
+
+        bg.fillStyle(
             0xffffff,
-            .20
+            .10
+        );
+
+        bg.fillCircle(
+            590,
+            175,
+            145
         );
 
 
-        panel.fillRoundedRect(
-            56,
-            94,
-            608,
-            70,
-            28
-        );
-
-
-        panel.lineStyle(
-            2,
-            0xffffff,
-            .34
-        );
-
-
-        panel.strokeRoundedRect(
-            56,
-            94,
-            608,
-            70,
-            28
-        );
-
-
-        const stageText =
-            this.add.text(
-                80,
-                113,
-                stage.name,
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontSize:"19px",
-
-                    fontStyle:"bold",
-
-                    color:"#ffffff"
-                }
-            );
-
-
-        const titleText =
-            this.add.text(
-                80,
-                137,
-                stage.title,
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontSize:"24px",
-
-                    fontStyle:"bold",
-
-                    color:"#ffffff"
-                }
-            );
-
-
-        const localQ =
-            (
-                this.questionIndex %
-                5
-            ) + 1;
-
-
-        const progress =
-            this.add.text(
-                635,
-                129,
-                localQ + "/5",
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontSize:"27px",
-
-                    fontStyle:"bold",
-
-                    color:"#ffffff"
-                }
-            )
-            .setOrigin(1,.5);
-
-
-        this.boardLayer.add([
-            panel,
-            stageText,
-            titleText,
-            progress
-        ]);
-
-    }
-
-
-
-/* =========================================================
-   QUESTION
-========================================================= */
-
-    createQuestionCard(
-        data
-    ){
-
-        const card =
-            this.add.graphics();
-
-
-        card.fillStyle(
-            0xffffff,
-            .93
-        );
-
-
-        card.fillRoundedRect(
-            48,
-            180,
-            624,
-            190,
-            28
-        );
-
-
-        card.lineStyle(
-            3,
-            0xffffff,
-            .75
-        );
-
-
-        card.strokeRoundedRect(
-            48,
-            180,
-            624,
-            190,
-            28
-        );
-
-
-        const tp =
-            this.add.text(
-                75,
-                204,
-                data.tp,
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontSize:"18px",
-
-                    fontStyle:"bold",
-
-                    color:"#ffffff",
-
-                    backgroundColor:
-                        "#5863a8",
-
-                    padding:{
-                        x:12,
-                        y:6
-                    }
-                }
-            );
-
-
-        let size = 25;
-
-
-        if(
-            data.question.length >
+        bg.fillCircle(
+            95,
+            760,
             120
-        )
-            size = 21;
-
-
-        if(
-            data.question.length >
-            165
-        )
-            size = 19;
-
-
-        const question =
-            this.add.text(
-                75,
-                250,
-                data.question,
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontSize:
-                        size +
-                        "px",
-
-                    fontStyle:"bold",
-
-                    color:"#283154",
-
-                    wordWrap:{
-                        width:570
-                    },
-
-                    lineSpacing:5
-                }
-            );
-
-
-        this.boardLayer.add([
-            card,
-            tp,
-            question
-        ]);
-
-    }
-
-
-
-/* =========================================================
-   ANSWER BOARD
-========================================================= */
-
-    renderAnswerBoard(){
-
-        if(
-            this.answerBoardGroup
-        ){
-
-            this.answerBoardGroup
-                .destroy(true);
-
-        }
-
-
-        this.answerBoardGroup =
-            this.add.container(
-                0,
-                0
-            );
-
-
-        this.boardLayer.add(
-            this.answerBoardGroup
         );
 
 
-        const startX = 65;
+        /* distant hills */
 
-        const maxX = 655;
-
-        let x = startX;
-
-        let y = 395;
-
-
-        this.words.forEach(
-            (word,index) => {
-
-                const length =
-                    cleanWord(
-                        word
-                    ).length;
-
-
-                let w =
-                    Math.max(
-                        70,
-                        length * 19 +
-                        32
-                    );
-
-
-                w =
-                    Math.min(
-                        w,
-                        230
-                    );
-
-
-                if(
-                    x + w >
-                    maxX
-                ){
-
-                    x =
-                        startX;
-
-                    y += 57;
-
-                }
-
-
-                const solved =
-                    this.solvedWords[
-                        index
-                    ];
-
-
-                const current =
-                    index ===
-                    this.currentWordIndex;
-
-
-                const bg =
-                    this.add.graphics();
-
-
-                let fill =
-                    0xffffff;
-
-                let alpha =
-                    .86;
-
-
-                if(solved){
-
-                    fill =
-                        0x59cf89;
-
-                    alpha =
-                        .95;
-
-                }
-                else if(current){
-
-                    fill =
-                        0xffe887;
-
-                    alpha =
-                        .98;
-
-                }
-
-
-                bg.fillStyle(
-                    fill,
-                    alpha
-                );
-
-
-                bg.fillRoundedRect(
-                    x,
-                    y,
-                    w,
-                    45,
-                    13
-                );
-
-
-                bg.lineStyle(
-                    current ?
-                    3 :
-                    1.5,
-
-                    current ?
-                    0xd29b22 :
-                    0xffffff,
-
-                    .9
-                );
-
-
-                bg.strokeRoundedRect(
-                    x,
-                    y,
-                    w,
-                    45,
-                    13
-                );
-
-
-                let display = "";
-
-
-                if(solved){
-
-                    display =
-                        word;
-
-                }
-                else{
-
-                    const letters =
-                        cleanWord(
-                            word
-                        );
-
-
-                    for(
-                        let i=0;
-                        i<
-                        letters.length;
-                        i++
-                    ){
-
-                        if(
-                            current &&
-                            i <
-                            this.hintCount
-                        ){
-
-                            display +=
-                                letters[i];
-
-                        }
-                        else{
-
-                            display +=
-                                "_";
-
-                        }
-
-
-                        if(
-                            i <
-                            letters.length - 1
-                        )
-                            display +=
-                                " ";
-
-                    }
-
-                }
-
-
-                const label =
-                    this.add.text(
-                        x + w/2,
-                        y + 22.5,
-                        display,
-                        {
-                            fontFamily:
-                                "Trebuchet MS",
-
-                            fontSize:
-                                length > 9 ?
-                                "15px" :
-                                "17px",
-
-                            fontStyle:"bold",
-
-                            color:
-                                solved ?
-                                "#ffffff" :
-                                "#343b61"
-                        }
-                    )
-                    .setOrigin(.5);
-
-
-                this.answerBoardGroup
-                    .add(bg);
-
-                this.answerBoardGroup
-                    .add(label);
-
-
-                x +=
-                    w + 10;
-
-            }
-        );
-
-    }
-
-
-
-/* =========================================================
-   CURRENT WORD
-========================================================= */
-
-    createWordInfo(){
-
-        this.wordInfo =
-            this.add.text(
-                360,
-                606,
-                "",
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontSize:"21px",
-
-                    fontStyle:"bold",
-
-                    color:"#ffffff",
-
-                    align:"center"
-                }
-            )
-            .setOrigin(.5);
-
-
-        this.wheelLayer
-            .add(
-                this.wordInfo
-            );
-
-
-        this.updateWordInfo();
-
-    }
-
-
-    updateWordInfo(){
-
-        const current =
-            this.words[
-                this.currentWordIndex
-            ];
-
-
-        if(!current)
-            return;
-
-
-        this.wordInfo.setText(
-            "BINA PERKATAAN  •  " +
-            cleanWord(
-                current
-            ).length +
-            " HURUF"
-        );
-
-    }
-
-
-
-/* =========================================================
-   LETTER WHEEL
-========================================================= */
-
-    buildWheel(){
-
-        this.removeWheelLetters();
-
-
-        this.pathGraphics
-            .clear();
-
-
-        this.selectedLetters =
-            [];
-
-
-        const currentWord =
-            cleanWord(
-                this.words[
-                    this.currentWordIndex
-                ]
-            );
-
-
-        const letters =
-            [...currentWord];
-
-
-        const alphabet =
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-
-        let minimumLetters =
-            Math.max(
-                5,
-                letters.length
-            );
-
-
-        if(
-            letters.length <= 4
-        ){
-
-            minimumLetters =
-                6;
-
-        }
-        else if(
-            letters.length <= 6
-        ){
-
-            minimumLetters =
-                letters.length + 1;
-
-        }
-
-
-        while(
-            letters.length <
-            minimumLetters
-        ){
-
-            let char =
-                alphabet[
-                    Math.floor(
-                        Math.random() *
-                        alphabet.length
-                    )
-                ];
-
-
-            letters.push(char);
-
-        }
-
-
-        const shuffled =
-            shuffleArray(
-                letters
-            );
-
-
-        /* wheel base */
-
-        this.wheelBase =
-            this.add.graphics();
-
-
-        this.wheelBase.fillStyle(
+        bg.fillStyle(
             0xffffff,
-            .22
+            .07
         );
 
 
-        this.wheelBase.fillCircle(
-            360,
-            825,
-            184
-        );
-
-
-        this.wheelBase.lineStyle(
-            4,
-            0xffffff,
-            .36
-        );
-
-
-        this.wheelBase.strokeCircle(
-            360,
-            825,
-            184
-        );
-
-
-        this.wheelLayer.add(
-            this.wheelBase
-        );
-
-
-        /* shuffle center */
-
-        const centerBG =
-            this.add.circle(
-                360,
-                825,
-                48,
-                0xffffff,
-                .82
-            );
-
-
-        centerBG.setStrokeStyle(
-            3,
-            0xd8dbea,
-            1
-        );
-
-
-        centerBG.setInteractive({
-            useHandCursor:true
-        });
-
-
-        const centerText =
-            this.add.text(
-                360,
-                825,
-                "↻",
-                {
-                    fontFamily:
-                        "Arial",
-
-                    fontSize:"40px",
-
-                    fontStyle:"bold",
-
-                    color:"#60698e"
-                }
-            )
-            .setOrigin(.5);
-
-
-        centerBG.on(
-            "pointerdown",
-            () => {
-
-                AUDIO.start();
-
-                this.shuffleWheel();
-
-            }
-        );
-
-
-        this.wheelLayer.add([
-            centerBG,
-            centerText
-        ]);
-
-
-        const count =
-            shuffled.length;
-
-
-        let radius = 128;
-
-        let tileRadius = 34;
-
-
-        if(
-            count >= 8
-        ){
-
-            radius = 132;
-
-            tileRadius = 31;
-
-        }
-
-
-        if(
-            count >= 10
-        ){
-
-            radius = 137;
-
-            tileRadius = 27;
-
-        }
-
-
-        if(
-            count >= 12
-        ){
-
-            radius = 142;
-
-            tileRadius = 24;
-
-        }
-
-
-        shuffled.forEach(
-            (letter,index) => {
-
-                const angle =
-                    -Math.PI/2 +
-                    (
-                        index /
-                        count
-                    ) *
-                    Math.PI *
-                    2;
-
-
-                const x =
-                    360 +
-                    Math.cos(angle) *
-                    radius;
-
-
-                const y =
-                    825 +
-                    Math.sin(angle) *
-                    radius;
-
-
-                const circle =
-                    this.add.circle(
-                        x,
-                        y,
-                        tileRadius,
-                        0xffffff,
-                        .98
-                    );
-
-
-                circle.setStrokeStyle(
-                    3,
-                    0xffffff,
-                    .55
-                );
-
-
-                const fontSize =
-                    count >= 11 ?
-                    23 :
-                    count >= 8 ?
-                    27 :
-                    31;
-
-
-                const text =
-                    this.add.text(
-                        x,
-                        y,
-                        letter,
-                        {
-                            fontFamily:
-                                "Trebuchet MS",
-
-                            fontSize:
-                                fontSize +
-                                "px",
-
-                            fontStyle:"bold",
-
-                            color:"#39416f"
-                        }
-                    )
-                    .setOrigin(.5);
-
-
-                const item = {
-
-                    letter,
-
-                    circle,
-
-                    text,
-
-                    x,
-
-                    y,
-
-                    radius:
-                        tileRadius + 9,
-
-                    selected:false
-
-                };
-
-
-                this.letterObjects
-                    .push(item);
-
-
-                this.wheelLayer.add(
-                    circle
-                );
-
-                this.wheelLayer.add(
-                    text
-                );
-
-            }
-        );
-
-
-        /* selection display */
-
-        this.selectionBG =
-            this.add.graphics();
-
-
-        this.selectionBG.fillStyle(
-            0x1c284f,
-            .72
-        );
-
-
-        this.selectionBG.fillRoundedRect(
-            165,
-            631,
+        bg.fillTriangle(
+            0,
+            710,
+            180,
             390,
-            58,
-            29
+            365,
+            710
         );
 
 
-        this.selectionText =
-            this.add.text(
-                360,
-                660,
-                "SERET HURUF",
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontSize:"25px",
-
-                    fontStyle:"bold",
-
-                    color:"#ffffff"
-                }
-            )
-            .setOrigin(.5);
-
-
-        this.wheelLayer.add(
-            this.selectionBG
-        );
-
-        this.wheelLayer.add(
-            this.selectionText
-        );
-
-    }
-
-
-
-/* =========================================================
-   REMOVE WHEEL
-========================================================= */
-
-    removeWheelLetters(){
-
-        this.letterObjects
-            .forEach(
-                item => {
-
-                    item.circle
-                        .destroy();
-
-                    item.text
-                        .destroy();
-
-                }
-            );
-
-
-        this.letterObjects =
-            [];
-
-
-        if(
-            this.wheelBase
-        ){
-
-            this.wheelBase
-                .destroy();
-
-            this.wheelBase =
-                null;
-
-        }
-
-
-        if(
-            this.selectionBG
-        ){
-
-            this.selectionBG
-                .destroy();
-
-            this.selectionBG =
-                null;
-
-        }
-
-
-        if(
-            this.selectionText
-        ){
-
-            this.selectionText
-                .destroy();
-
-            this.selectionText =
-                null;
-
-        }
-
-    }
-
-
-
-/* =========================================================
-   SHUFFLE
-========================================================= */
-
-    shuffleWheel(){
-
-        if(
-            this.dragging
-        )
-            return;
-
-
-        this.resetSelection();
-
-        this.buildWheel();
-
-
-        AUDIO.tone(
-            380,
-            .08,
-            .025
-        );
-
-    }
-
-
-
-/* =========================================================
-   INPUT
-========================================================= */
-
-    setupInput(){
-
-        this.input.on(
-            "pointerdown",
-            pointer => {
-
-                AUDIO.start();
-
-
-                const letter =
-                    this.findLetterAt(
-                        pointer.x,
-                        pointer.y
-                    );
-
-
-                if(!letter)
-                    return;
-
-
-                this.dragging = true;
-
-                this.resetSelection();
-
-                this.addLetterToSelection(
-                    letter
-                );
-
-            }
+        bg.fillTriangle(
+            270,
+            710,
+            520,
+            420,
+            720,
+            710
         );
 
 
-        this.input.on(
-            "pointermove",
-            pointer => {
+        /* ground */
 
-                if(
-                    !this.dragging
-                )
-                    return;
-
-
-                const letter =
-                    this.findLetterAt(
-                        pointer.x,
-                        pointer.y
-                    );
-
-
-                if(
-                    letter &&
-                    !letter.selected
-                ){
-
-                    this.addLetterToSelection(
-                        letter
-                    );
-
-                }
-
-
-                this.drawSelectionPath(
-                    pointer
-                );
-
-            }
+        bg.fillStyle(
+            0x101b38,
+            .16
         );
 
 
-        this.input.on(
-            "pointerup",
-            () => {
-
-                if(
-                    !this.dragging
-                )
-                    return;
-
-
-                this.dragging = false;
-
-                this.checkSelection();
-
-            }
+        bg.fillEllipse(
+            360,
+            1090,
+            930,
+            280
         );
 
 
-        this.input.on(
-            "pointerupoutside",
-            () => {
-
-                if(
-                    !this.dragging
-                )
-                    return;
-
-
-                this.dragging = false;
-
-                this.checkSelection();
-
-            }
-        );
-
-    }
-
-
-
-/* =========================================================
-   FIND LETTER
-========================================================= */
-
-    findLetterAt(
-        x,
-        y
-    ){
+        /* floating droplets */
 
         for(
-            let i =
-                this.letterObjects.length -
-                1;
-
-            i >= 0;
-
-            i--
-        ){
-
-            const item =
-                this.letterObjects[i];
-
-
-            const d =
-                Phaser.Math.Distance.Between(
-                    x,
-                    y,
-                    item.x,
-                    item.y
-                );
-
-
-            if(
-                d <=
-                item.radius
-            ){
-
-                return item;
-
-            }
-
-        }
-
-
-        return null;
-
-    }
-
-
-
-/* =========================================================
-   ADD LETTER
-========================================================= */
-
-    addLetterToSelection(
-        item
-    ){
-
-        if(
-            item.selected
-        )
-            return;
-
-
-        item.selected =
-            true;
-
-
-        item.circle.setFillStyle(
-            0xffe078,
-            1
-        );
-
-
-        item.text.setColor(
-            "#283154"
-        );
-
-
-        this.selectedLetters
-            .push(item);
-
-
-        AUDIO.letter();
-
-
-        const text =
-            this.selectedLetters
-                .map(
-                    x =>
-                        x.letter
-                )
-                .join("");
-
-
-        this.selectionText
-            .setText(text);
-
-
-        this.drawSelectionPath();
-
-    }
-
-
-
-/* =========================================================
-   DRAW PATH
-========================================================= */
-
-    drawSelectionPath(
-        pointer = null
-    ){
-
-        this.pathGraphics
-            .clear();
-
-
-        if(
-            this.selectedLetters
-                .length === 0
-        )
-            return;
-
-
-        this.pathGraphics.lineStyle(
-            13,
-            0xffd85e,
-            .76
-        );
-
-
-        this.pathGraphics
-            .beginPath();
-
-
-        const first =
-            this.selectedLetters[0];
-
-
-        this.pathGraphics
-            .moveTo(
-                first.x,
-                first.y
-            );
-
-
-        for(
-            let i=1;
-            i<
-            this.selectedLetters.length;
+            let i=0;
+            i<16;
             i++
         ){
 
-            this.pathGraphics.lineTo(
-                this.selectedLetters[i].x,
-                this.selectedLetters[i].y
+            const x =
+            (
+                i*127 +
+                75
+            ) % 720;
+
+
+            const y =
+            (
+                i*91 +
+                110
+            ) % 1050;
+
+
+            bg.fillStyle(
+                0xffffff,
+                .055
+            );
+
+
+            bg.fillCircle(
+                x,
+                y,
+                5+(i%4)*3
             );
 
         }
 
 
-        if(
-            pointer
-        ){
-
-            this.pathGraphics.lineTo(
-                pointer.x,
-                pointer.y
-            );
-
-        }
-
-
-        this.pathGraphics
-            .strokePath();
+        this.backgroundLayer
+        .add(bg);
 
     }
 
 
+/* ========================================================
+   STAGE PANEL
+======================================================== */
 
-/* =========================================================
-   CHECK WORD
-========================================================= */
+    createStagePanel(){
 
-    checkSelection(){
+        const stage =
+        STAGES[
+            this.stageIndex
+        ];
 
-        const selected =
-            this.selectedLetters
-                .map(
-                    x =>
-                        x.letter
-                )
-                .join("");
-
-
-        const correct =
-            cleanWord(
-                this.words[
-                    this.currentWordIndex
-                ]
-            );
-
-
-        if(
-            selected === correct
-        ){
-
-            this.correctWord();
-
-        }
-        else{
-
-            this.wrongWord();
-
-        }
-
-    }
-
-
-
-/* =========================================================
-   CORRECT
-========================================================= */
-
-    correctWord(){
-
-        AUDIO.correct();
-
-
-        this.selectedLetters
-            .forEach(
-                item => {
-
-                    item.circle
-                        .setFillStyle(
-                            0x58d58c,
-                            1
-                        );
-
-
-                    item.text
-                        .setColor(
-                            "#ffffff"
-                        );
-
-                }
-            );
-
-
-        this.selectionText
-            .setText(
-                "BETUL! ✓"
-            );
-
-
-        this.score +=
-            10;
-
-
-        this.updateScore();
-
-
-        this.time.delayedCall(
-            420,
-            () => {
-
-                this.solvedWords[
-                    this.currentWordIndex
-                ] = true;
-
-
-                this.renderAnswerBoard();
-
-
-                this.currentWordIndex++;
-
-
-                this.hintCount =
-                    0;
-
-
-                if(
-                    this.currentWordIndex >=
-                    this.words.length
-                ){
-
-                    this.completeQuestion();
-
-                }
-                else{
-
-                    this.resetSelection();
-
-                    this.updateWordInfo();
-
-                    this.buildWheel();
-
-                    this.renderAnswerBoard();
-
-                }
-
-            }
-        );
-
-    }
-
-
-
-/* =========================================================
-   WRONG
-========================================================= */
-
-    wrongWord(){
-
-        AUDIO.wrong();
-
-
-        this.selectionText
-            .setText(
-                "CUBA LAGI"
-            );
-
-
-        this.selectedLetters
-            .forEach(
-                item => {
-
-                    item.circle
-                        .setFillStyle(
-                            0xef5f66,
-                            1
-                        );
-
-
-                    item.text
-                        .setColor(
-                            "#ffffff"
-                        );
-
-                }
-            );
-
-
-        this.cameras.main.shake(
-            120,
-            .004
-        );
-
-
-        this.time.delayedCall(
-            500,
-            () => {
-
-                this.resetSelection();
-
-            }
-        );
-
-    }
-
-
-
-/* =========================================================
-   RESET SELECTION
-========================================================= */
-
-    resetSelection(){
-
-        this.pathGraphics
-            .clear();
-
-
-        this.letterObjects
-            .forEach(
-                item => {
-
-                    item.selected =
-                        false;
-
-
-                    item.circle
-                        .setFillStyle(
-                            0xffffff,
-                            .98
-                        );
-
-
-                    item.text
-                        .setColor(
-                            "#39416f"
-                        );
-
-                }
-            );
-
-
-        this.selectedLetters =
-            [];
-
-
-        if(
-            this.selectionText
-        ){
-
-            this.selectionText
-                .setText(
-                    "SERET HURUF"
-                );
-
-        }
-
-    }
-
-
-
-/* =========================================================
-   SCORE
-========================================================= */
-
-    updateScore(){
-
-        this.scoreText
-            .setText(
-                "◆ " +
-                this.score
-            );
-
-    }
-
-
-
-/* =========================================================
-   CONTROLS
-========================================================= */
-
-    createBottomControls(){
-
-        const hint =
-            this.makeLocalButton(
-                120,
-                1025,
-                175,
-                62,
-                "💡 HINT",
-                0x56547e
-            );
-
-
-        hint.on(
-            "pointerdown",
-            () => {
-
-                AUDIO.start();
-
-                this.useHint();
-
-            }
-        );
-
-
-        const shuffle =
-            this.makeLocalButton(
-                600,
-                1025,
-                175,
-                62,
-                "↻ SUSUN",
-                0x56547e
-            );
-
-
-        shuffle.on(
-            "pointerdown",
-            () => {
-
-                AUDIO.start();
-
-                this.shuffleWheel();
-
-            }
-        );
-
-
-        const guide =
-            this.add.text(
-                360,
-                979,
-                "Seret dari satu huruf ke huruf seterusnya",
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontSize:"18px",
-
-                    fontStyle:"bold",
-
-                    color:"#ffffff"
-                }
-            )
-            .setOrigin(.5);
-
-
-        this.wheelLayer.add(
-            guide
-        );
-
-    }
-
-
-
-    makeLocalButton(
-        x,
-        y,
-        width,
-        height,
-        label,
-        color
-    ){
 
         const bg =
-            this.add.graphics();
+        this.add.graphics();
 
 
         bg.fillStyle(
-            color,
-            .88
+            0xffffff,
+            .15
         );
 
 
         bg.fillRoundedRect(
-            x - width/2,
-            y - height/2,
-            width,
-            height,
-            height/2
+            37,
+            88,
+            646,
+            72,
+            25
         );
 
 
         bg.lineStyle(
             2,
             0xffffff,
-            .65
+            .32
         );
 
 
         bg.strokeRoundedRect(
-            x - width/2,
-            y - height/2,
-            width,
-            height,
-            height/2
+            37,
+            88,
+            646,
+            72,
+            25
         );
 
 
-        const text =
-            this.add.text(
-                x,
-                y,
-                label,
-                {
-                    fontFamily:
-                        "Trebuchet MS",
+        const label =
+        this.add.text(
+            63,
+            106,
+            stage.name,
+            {
+                fontFamily:
+                "Trebuchet MS",
 
-                    fontSize:"21px",
+                fontSize:"18px",
 
-                    fontStyle:"bold",
+                fontStyle:"bold",
 
-                    color:"#ffffff"
+                color:"#ffffff"
+            }
+        );
+
+
+        const title =
+        this.add.text(
+            63,
+            132,
+            stage.title,
+            {
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:"24px",
+
+                fontStyle:"bold",
+
+                color:"#ffffff"
+            }
+        );
+
+
+        const local =
+        (
+            this.questionIndex %
+            5
+        ) + 1;
+
+
+        const count =
+        this.add.text(
+            655,
+            126,
+            local+"/5",
+            {
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:"26px",
+
+                fontStyle:"bold",
+
+                color:"#ffffff"
+            }
+        )
+        .setOrigin(
+            1,
+            .5
+        );
+
+
+        this.gameLayer.add([
+            bg,
+            label,
+            title,
+            count
+        ]);
+
+    }
+
+
+/* ========================================================
+   QUESTION CARD
+======================================================== */
+
+    createQuestionCard(){
+
+        const data =
+        QUESTIONS[
+            this.questionIndex
+        ];
+
+
+        const panel =
+        this.add.graphics();
+
+
+        panel.fillStyle(
+            0xffffff,
+            .95
+        );
+
+
+        panel.fillRoundedRect(
+            38,
+            184,
+            644,
+            235,
+            27
+        );
+
+
+        panel.lineStyle(
+            3,
+            0xffffff,
+            .65
+        );
+
+
+        panel.strokeRoundedRect(
+            38,
+            184,
+            644,
+            235,
+            27
+        );
+
+
+        const badge =
+        this.add.text(
+            65,
+            207,
+            "SOALAN "+
+            (
+                this.questionIndex+1
+            ),
+            {
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:"17px",
+
+                fontStyle:"bold",
+
+                color:"#ffffff",
+
+                backgroundColor:
+                "#485b91",
+
+                padding:{
+                    x:13,
+                    y:6
                 }
-            )
-            .setOrigin(.5);
+            }
+        );
 
+
+        let size=25;
+
+
+        if(
+            data.q.length>75
+        )
+            size=22;
+
+
+        if(
+            data.q.length>115
+        )
+            size=19;
+
+
+        if(
+            data.q.length>160
+        )
+            size=17;
+
+
+        const question =
+        this.add.text(
+            65,
+            262,
+            data.q,
+            {
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:
+                size+"px",
+
+                fontStyle:"bold",
+
+                color:"#293451",
+
+                wordWrap:{
+                    width:590
+                },
+
+                lineSpacing:5
+            }
+        );
+
+
+        this.gameLayer.add([
+            panel,
+            badge,
+            question
+        ]);
+
+    }
+
+
+/* ========================================================
+   CREATE DOORS
+======================================================== */
+
+    createDoors(){
+
+        const data =
+        QUESTIONS[
+            this.questionIndex
+        ];
+
+
+        const choices =
+        data.answers.map(
+            (text,index)=>({
+                text,
+                originalIndex:index
+            })
+        );
+
+
+        const shuffled =
+        shuffle(
+            choices
+        );
+
+
+        const positions = [
+
+            {
+                x:188,
+                y:585
+            },
+
+            {
+                x:532,
+                y:585
+            },
+
+            {
+                x:188,
+                y:845
+            },
+
+            {
+                x:532,
+                y:845
+            }
+
+        ];
+
+
+        shuffled.forEach(
+            (choice,index)=>{
+
+                const door =
+                this.createDoor(
+                    positions[index].x,
+                    positions[index].y,
+                    choice,
+                    index
+                );
+
+
+                this.doorObjects
+                .push(door);
+
+            }
+        );
+
+    }
+
+
+/* ========================================================
+   DOOR
+======================================================== */
+
+    createDoor(
+        x,
+        y,
+        choice,
+        displayIndex
+    ){
+
+        const stage =
+        STAGES[
+            this.stageIndex
+        ];
+
+
+        const container =
+        this.add.container(
+            x,
+            y
+        );
+
+
+        const width=285;
+
+        const height=215;
+
+
+        /* shadow */
+
+        const shadow =
+        this.add.graphics();
+
+
+        shadow.fillStyle(
+            0x000000,
+            .16
+        );
+
+
+        shadow.fillRoundedRect(
+            -width/2+8,
+            -height/2+12,
+            width,
+            height,
+            24
+        );
+
+
+        /* frame */
+
+        const frame =
+        this.add.graphics();
+
+
+        frame.fillStyle(
+            0x273552,
+            .95
+        );
+
+
+        frame.fillRoundedRect(
+            -width/2,
+            -height/2,
+            width,
+            height,
+            25
+        );
+
+
+        frame.fillStyle(
+            0xffffff,
+            .13
+        );
+
+
+        frame.fillRoundedRect(
+            -width/2+10,
+            -height/2+10,
+            width-20,
+            height-20,
+            19
+        );
+
+
+        /* inside darkness */
+
+        const inside =
+        this.add.graphics();
+
+
+        inside.fillStyle(
+            0x10172a,
+            1
+        );
+
+
+        inside.fillRoundedRect(
+            -118,
+            -86,
+            236,
+            172,
+            16
+        );
+
+
+        /* treasure */
+
+        const treasureGlow =
+        this.add.circle(
+            0,
+            20,
+            42,
+            0xffe069,
+            .20
+        );
+
+
+        treasureGlow.setVisible(
+            false
+        );
+
+
+        const treasure =
+        this.add.text(
+            0,
+            18,
+            "💧",
+            {
+                fontSize:"56px"
+            }
+        )
+        .setOrigin(.5)
+        .setVisible(false);
+
+
+        /* actual door */
+
+        const panel =
+        this.add.container(
+            0,
+            0
+        );
+
+
+        const doorBG =
+        this.add.graphics();
+
+
+        doorBG.fillStyle(
+            stage.door,
+            1
+        );
+
+
+        doorBG.fillRoundedRect(
+            -118,
+            -86,
+            236,
+            172,
+            16
+        );
+
+
+        doorBG.lineStyle(
+            4,
+            0xffffff,
+            .33
+        );
+
+
+        doorBG.strokeRoundedRect(
+            -118,
+            -86,
+            236,
+            172,
+            16
+        );
+
+
+        /* door decorative strips */
+
+        doorBG.lineStyle(
+            3,
+            0xffffff,
+            .16
+        );
+
+
+        doorBG.strokeRoundedRect(
+            -98,
+            -65,
+            196,
+            48,
+            9
+        );
+
+
+        doorBG.strokeRoundedRect(
+            -98,
+            3,
+            196,
+            60,
+            9
+        );
+
+
+        const letters =
+        ["A","B","C","D"];
+
+
+        const letterCircle =
+        this.add.circle(
+            0,
+            -52,
+            27,
+            0xffffff,
+            .93
+        );
+
+
+        const letterText =
+        this.add.text(
+            0,
+            -52,
+            letters[
+                choice.originalIndex
+            ],
+            {
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:"28px",
+
+                fontStyle:"bold",
+
+                color:"#354266"
+            }
+        )
+        .setOrigin(.5);
+
+
+        let fontSize=18;
+
+
+        if(
+            choice.text.length>38
+        )
+            fontSize=16;
+
+
+        if(
+            choice.text.length>65
+        )
+            fontSize=14;
+
+
+        if(
+            choice.text.length>90
+        )
+            fontSize=12;
+
+
+        const answerText =
+        this.add.text(
+            0,
+            30,
+            choice.text,
+            {
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:
+                fontSize+"px",
+
+                fontStyle:"bold",
+
+                color:"#ffffff",
+
+                align:"center",
+
+                wordWrap:{
+                    width:195
+                },
+
+                lineSpacing:3
+            }
+        )
+        .setOrigin(.5);
+
+
+        /* knob */
+
+        const knob =
+        this.add.circle(
+            91,
+            8,
+            7,
+            0xffdd73,
+            1
+        );
+
+
+        panel.add([
+            doorBG,
+            letterCircle,
+            letterText,
+            answerText,
+            knob
+        ]);
+
+
+        /* hit */
 
         const hit =
-            this.add.rectangle(
-                x,
-                y,
-                width,
-                height,
-                0xffffff,
-                .001
-            );
+        this.add.rectangle(
+            0,
+            0,
+            width,
+            height,
+            0xffffff,
+            .001
+        );
 
 
         hit.setInteractive({
@@ -2908,251 +1848,234 @@ extends Phaser.Scene{
         });
 
 
-        this.wheelLayer.add([
-            bg,
-            text,
+        container.add([
+            shadow,
+            frame,
+            inside,
+            treasureGlow,
+            treasure,
+            panel,
             hit
         ]);
 
 
-        return hit;
+        this.gameLayer.add(
+            container
+        );
+
+
+        const object = {
+
+            container,
+
+            panel,
+
+            doorBG,
+
+            letterCircle,
+
+            letterText,
+
+            answerText,
+
+            knob,
+
+            treasure,
+
+            treasureGlow,
+
+            hit,
+
+            choice,
+
+            opened:false,
+
+            x,
+            y
+
+        };
+
+
+        hit.on(
+            "pointerdown",
+            ()=>{
+
+                AUDIO.init();
+
+
+                if(
+                    this.locked ||
+                    object.opened
+                )
+                    return;
+
+
+                AUDIO.tap();
+
+                this.chooseDoor(
+                    object
+                );
+
+            }
+        );
+
+
+        return object;
 
     }
 
 
+/* ========================================================
+   SELECT DOOR
+======================================================== */
 
-/* =========================================================
-   HINT
-========================================================= */
+    chooseDoor(door){
 
-    useHint(){
-
-        const word =
-            cleanWord(
-                this.words[
-                    this.currentWordIndex
-                ]
-            );
+        this.locked=true;
 
 
-        if(
-            this.hintCount <
-            word.length
-        ){
-
-            this.hintCount++;
+        AUDIO.door();
 
 
-            if(
-                this.score >= 2
-            ){
-
-                this.score -=
-                    2;
-
-                this.updateScore();
-
-            }
+        door.opened=true;
 
 
-            this.renderAnswerBoard();
+        this.tweens.add({
 
+            targets:
+            door.panel,
 
-            AUDIO.tone(
-                700,
-                .12,
-                .035
-            );
+            scaleX:.06,
 
+            x:-108,
 
-            const targetLetter =
-                word[
-                    this.hintCount - 1
-                ];
+            duration:340,
 
+            ease:"Sine.InOut",
 
-            const candidates =
-                this.letterObjects
-                    .filter(
-                        item =>
-                            item.letter ===
-                            targetLetter
-                    );
+            onComplete:
+            ()=>{
 
-
-            if(
-                candidates.length
-            ){
-
-                const chosen =
-                    candidates[
-                        Math.floor(
-                            Math.random() *
-                            candidates.length
-                        )
-                    ];
-
-
-                this.tweens.add({
-
-                    targets:[
-                        chosen.circle,
-                        chosen.text
-                    ],
-
-                    scale:1.22,
-
-                    duration:160,
-
-                    yoyo:true,
-
-                    repeat:2
-
-                });
+                this.checkDoor(
+                    door
+                );
 
             }
+
+        });
+
+    }
+
+
+/* ========================================================
+   CHECK
+======================================================== */
+
+    checkDoor(door){
+
+        const data =
+        QUESTIONS[
+            this.questionIndex
+        ];
+
+
+        const correct =
+        door.choice.originalIndex ===
+        data.correct;
+
+
+        if(correct){
+
+            this.correctDoor(
+                door
+            );
+
+        }
+        else{
+
+            this.wrongDoor(
+                door
+            );
 
         }
 
     }
 
 
+/* ========================================================
+   CORRECT
+======================================================== */
 
-/* =========================================================
-   COMPLETE QUESTION
-========================================================= */
+    correctDoor(door){
 
-    completeQuestion(){
-
-        this.score +=
-            25;
+        AUDIO.correct();
 
 
-        this.updateScore();
+        door.treasure
+        .setVisible(true);
 
 
-        const panel =
-            this.add.container(
-                360,
-                620
-            );
-
-
-        const bg =
-            this.add.graphics();
-
-
-        bg.fillStyle(
-            0x15254a,
-            .95
-        );
-
-
-        bg.fillRoundedRect(
-            -235,
-            -80,
-            470,
-            160,
-            34
-        );
-
-
-        bg.lineStyle(
-            4,
-            0xffffff,
-            .75
-        );
-
-
-        bg.strokeRoundedRect(
-            -235,
-            -80,
-            470,
-            160,
-            34
-        );
-
-
-        const tick =
-            this.add.text(
-                0,
-                -28,
-                "✓",
-                {
-                    fontFamily:"Arial",
-                    fontSize:"48px",
-                    fontStyle:"bold",
-                    color:"#76e5a5"
-                }
-            )
-            .setOrigin(.5);
-
-
-        const text =
-            this.add.text(
-                0,
-                35,
-                "SOALAN SELESAI!",
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontSize:"27px",
-
-                    fontStyle:"bold",
-
-                    color:"#ffffff"
-                }
-            )
-            .setOrigin(.5);
-
-
-        panel.add([
-            bg,
-            tick,
-            text
-        ]);
-
-
-        this.feedbackLayer
-            .add(panel);
-
-
-        panel.setScale(.8);
-
-        panel.setAlpha(0);
+        door.treasureGlow
+        .setVisible(true);
 
 
         this.tweens.add({
 
-            targets:panel,
+            targets:[
+                door.treasure,
+                door.treasureGlow
+            ],
 
-            alpha:1,
+            scale:{
+                from:.3,
+                to:1.15
+            },
 
-            scale:1,
+            alpha:{
+                from:.2,
+                to:1
+            },
 
-            duration:250,
+            duration:380,
 
             ease:"Back.Out"
 
         });
 
 
+        this.score +=
+        20;
+
+
+        this.correctCount++;
+
+
+        this.scoreText
+        .setText(
+            "★ "+
+            this.score
+        );
+
+
+        this.showMessage(
+            "BETUL!",
+            "Pintu jawapan yang tepat.",
+            true
+        );
+
+
+        this.spawnStars(
+            door.x,
+            door.y
+        );
+
+
         this.time.delayedCall(
-            1100,
-            () => {
+            1150,
+            ()=>{
 
-                panel.destroy();
-
-
-                const finishedStage =
-                    (
-                        (
-                            this.questionIndex +
-                            1
-                        ) %
-                        5
-                    ) === 0;
+                const oldStage =
+                this.stageIndex;
 
 
                 this.questionIndex++;
@@ -3163,18 +2086,28 @@ extends Phaser.Scene{
                     QUESTIONS.length
                 ){
 
-                    this.showFinalScreen();
+                    this.showFinal();
 
                     return;
 
                 }
 
 
+                const newStage =
+                Math.floor(
+                    this.questionIndex /
+                    5
+                );
+
+
                 if(
-                    finishedStage
+                    newStage !==
+                    oldStage
                 ){
 
-                    this.showStageComplete();
+                    this.showStageComplete(
+                        oldStage
+                    );
 
                 }
                 else{
@@ -3189,181 +2122,100 @@ extends Phaser.Scene{
     }
 
 
+/* ========================================================
+   WRONG
+======================================================== */
 
-/* =========================================================
-   STAGE COMPLETE
-========================================================= */
+    wrongDoor(door){
 
-    showStageComplete(){
-
-        const oldStage =
-            Math.floor(
-                (
-                    this.questionIndex -
-                    1
-                ) /
-                5
-            );
+        AUDIO.wrong();
 
 
-        const nextStage =
-            Math.floor(
-                this.questionIndex /
-                5
-            );
-
-
-        AUDIO.stage();
-
-
-        const banner =
-            this.add.container(
-                360,
-                560
-            );
-
-
-        const glow =
-            this.add.circle(
-                0,
-                0,
-                170,
-                0xffffff,
-                .16
-            );
-
-
-        const bg =
-            this.add.graphics();
-
-
-        bg.fillStyle(
-            0x202c57,
-            .96
+        this.showMessage(
+            "BELUM TEPAT",
+            "Cuba pintu yang lain.",
+            false
         );
 
 
-        bg.fillRoundedRect(
-            -270,
-            -125,
-            540,
-            250,
-            38
+        this.cameras.main.shake(
+            130,
+            .004
         );
 
 
-        bg.lineStyle(
-            4,
-            0xffe27a,
-            .9
+        /* red glow */
+
+        const red =
+        this.add.rectangle(
+            door.x,
+            door.y,
+            245,
+            180,
+            0xe74b58,
+            .35
         );
 
 
-        bg.strokeRoundedRect(
-            -270,
-            -125,
-            540,
-            250,
-            38
+        red.setDepth(
+            500
         );
 
 
-        const star =
-            this.add.text(
-                0,
-                -67,
-                "★",
-                {
-                    fontSize:"58px",
-                    color:"#ffe26e"
-                }
-            )
-            .setOrigin(.5);
-
-
-        const title =
-            this.add.text(
-                0,
-                5,
-                "STAGE " +
-                (oldStage + 1) +
-                " SELESAI!",
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontSize:"31px",
-
-                    fontStyle:"bold",
-
-                    color:"#ffffff"
-                }
-            )
-            .setOrigin(.5);
-
-
-        const next =
-            this.add.text(
-                0,
-                61,
-                "Seterusnya: " +
-                STAGES[
-                    nextStage
-                ].title,
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontSize:"21px",
-
-                    fontStyle:"bold",
-
-                    color:"#d9e8ff"
-                }
-            )
-            .setOrigin(.5);
-
-
-        banner.add([
-            glow,
-            bg,
-            star,
-            title,
-            next
-        ]);
-
-
-        this.feedbackLayer
-            .add(banner);
-
-
-        banner.setScale(.65);
-
-        banner.setAlpha(0);
+        this.fxLayer.add(
+            red
+        );
 
 
         this.tweens.add({
 
-            targets:banner,
+            targets:red,
 
-            scale:1,
+            alpha:0,
 
-            alpha:1,
+            duration:500,
 
-            duration:430,
-
-            ease:"Back.Out"
+            onComplete:
+            ()=>red.destroy()
 
         });
 
 
         this.time.delayedCall(
-            1800,
-            () => {
+            450,
+            ()=>{
 
-                banner.destroy();
+                door.treasure
+                .setVisible(false);
 
-                this.loadQuestion();
+
+                door.treasureGlow
+                .setVisible(false);
+
+
+                this.tweens.add({
+
+                    targets:
+                    door.panel,
+
+                    scaleX:1,
+
+                    x:0,
+
+                    duration:300,
+
+                    ease:"Sine.Out",
+
+                    onComplete:
+                    ()=>{
+
+                        door.opened=false;
+
+                        this.locked=false;
+
+                    }
+
+                });
 
             }
         );
@@ -3371,23 +2223,339 @@ extends Phaser.Scene{
     }
 
 
+/* ========================================================
+   MESSAGE
+======================================================== */
 
-/* =========================================================
-   FINAL
-========================================================= */
+    showMessage(
+        title,
+        subtitle,
+        good
+    ){
 
-    showFinalScreen(){
-
-        this.wheelLayer
-            .removeAll(true);
-
-
-        this.boardLayer
-            .removeAll(true);
+        if(
+            this.resultBox &&
+            this.resultBox.active
+        )
+            this.resultBox.destroy();
 
 
-        this.pathGraphics
-            .clear();
+        const container =
+        this.add.container(
+            360,
+            1015
+        );
+
+
+        const bg =
+        this.add.graphics();
+
+
+        bg.fillStyle(
+            good
+            ?
+            0x23885b
+            :
+            0xb7454d,
+            .97
+        );
+
+
+        bg.fillRoundedRect(
+            -235,
+            -48,
+            470,
+            96,
+            28
+        );
+
+
+        bg.lineStyle(
+            3,
+            0xffffff,
+            .55
+        );
+
+
+        bg.strokeRoundedRect(
+            -235,
+            -48,
+            470,
+            96,
+            28
+        );
+
+
+        const titleText =
+        this.add.text(
+            0,
+            -15,
+            title,
+            {
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:"23px",
+
+                fontStyle:"bold",
+
+                color:"#ffffff"
+            }
+        )
+        .setOrigin(.5);
+
+
+        const sub =
+        this.add.text(
+            0,
+            19,
+            subtitle,
+            {
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:"16px",
+
+                fontStyle:"bold",
+
+                color:"#ffffff"
+            }
+        )
+        .setOrigin(.5);
+
+
+        container.add([
+            bg,
+            titleText,
+            sub
+        ]);
+
+
+        this.fxLayer.add(
+            container
+        );
+
+
+        this.resultBox =
+        container;
+
+
+        container.setScale(.8);
+
+        container.setAlpha(0);
+
+
+        this.tweens.add({
+
+            targets:container,
+
+            scale:1,
+
+            alpha:1,
+
+            duration:180,
+
+            ease:"Back.Out"
+
+        });
+
+
+        if(!good){
+
+            this.time.delayedCall(
+                800,
+                ()=>{
+
+                    if(
+                        !container.active
+                    )
+                        return;
+
+
+                    this.tweens.add({
+
+                        targets:
+                        container,
+
+                        alpha:0,
+
+                        duration:180,
+
+                        onComplete:
+                        ()=>{
+
+                            if(
+                                container.active
+                            )
+                                container.destroy();
+
+                        }
+
+                    });
+
+                }
+            );
+
+        }
+
+    }
+
+
+/* ========================================================
+   STARS
+======================================================== */
+
+    spawnStars(
+        x,
+        y
+    ){
+
+        for(
+            let i=0;
+            i<10;
+            i++
+        ){
+
+            const star =
+            this.add.text(
+                x,
+                y,
+                "★",
+                {
+                    fontSize:
+                    (16+Math.random()*17)+"px",
+
+                    color:"#ffe36a"
+                }
+            )
+            .setOrigin(.5);
+
+
+            this.fxLayer.add(
+                star
+            );
+
+
+            const angle =
+            Math.random() *
+            Math.PI *
+            2;
+
+
+            const distance =
+            70+
+            Math.random()*90;
+
+
+            this.tweens.add({
+
+                targets:star,
+
+                x:
+                x+
+                Math.cos(angle)*
+                distance,
+
+                y:
+                y+
+                Math.sin(angle)*
+                distance,
+
+                alpha:0,
+
+                scale:1.5,
+
+                duration:
+                650+
+                Math.random()*300,
+
+                ease:"Cubic.Out",
+
+                onComplete:
+                ()=>star.destroy()
+
+            });
+
+        }
+
+    }
+
+
+/* ========================================================
+   PROGRESS DOTS
+======================================================== */
+
+    createProgress(){
+
+        const baseX=280;
+
+        const y=1080;
+
+
+        const local =
+        this.questionIndex %
+        5;
+
+
+        for(
+            let i=0;
+            i<5;
+            i++
+        ){
+
+            const circle =
+            this.add.circle(
+                baseX+
+                i*40,
+                y,
+                10,
+                i<local
+                ?
+                0x75e3a1
+                :
+                i===local
+                ?
+                0xffdd69
+                :
+                0xffffff,
+                i<=local
+                ?
+                1
+                :
+                .35
+            );
+
+
+            circle.setStrokeStyle(
+                2,
+                0xffffff,
+                .65
+            );
+
+
+            this.gameLayer.add(
+                circle
+            );
+
+        }
+
+    }
+
+
+/* ========================================================
+   STAGE COMPLETE
+======================================================== */
+
+    showStageComplete(
+        oldStage
+    ){
+
+        this.gameLayer
+        .removeAll(true);
+
+
+        this.fxLayer
+        .removeAll(true);
 
 
         this.drawBackground();
@@ -3396,255 +2564,561 @@ extends Phaser.Scene{
         AUDIO.stage();
 
 
-        const top =
-            this.add.text(
-                360,
-                145,
-                "★ ★ ★",
-                {
-                    fontSize:"55px",
-                    color:"#ffe376"
-                }
-            )
-            .setOrigin(.5);
+        const stage =
+        STAGES[
+            oldStage
+        ];
+
+
+        const glow =
+        this.add.circle(
+            360,
+            400,
+            180,
+            0xffffff,
+            .10
+        );
+
+
+        const panel =
+        this.add.graphics();
+
+
+        panel.fillStyle(
+            0x1b294d,
+            .95
+        );
+
+
+        panel.fillRoundedRect(
+            75,
+            275,
+            570,
+            390,
+            38
+        );
+
+
+        panel.lineStyle(
+            4,
+            0xffde6c,
+            .9
+        );
+
+
+        panel.strokeRoundedRect(
+            75,
+            275,
+            570,
+            390,
+            38
+        );
+
+
+        const star =
+        this.add.text(
+            360,
+            345,
+            "★",
+            {
+                fontSize:"72px",
+                color:"#ffe16d"
+            }
+        )
+        .setOrigin(.5);
 
 
         const title =
-            this.add.text(
-                360,
-                235,
-                "TAHNIAH!",
-                {
-                    fontFamily:
-                        "Trebuchet MS",
+        this.add.text(
+            360,
+            425,
+            "STAGE "+
+            (
+                oldStage+1
+            )+
+            " SELESAI!",
+            {
+                fontFamily:
+                "Trebuchet MS",
 
-                    fontSize:"52px",
+                fontSize:"36px",
 
-                    fontStyle:"bold",
+                fontStyle:"bold",
 
-                    color:"#ffffff"
-                }
-            )
-            .setOrigin(.5);
-
-
-        const subtitle =
-            this.add.text(
-                360,
-                295,
-                "Semua 5 stage telah diselesaikan.",
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontSize:"24px",
-
-                    fontStyle:"bold",
-
-                    color:"#ffffff",
-
-                    align:"center"
-                }
-            )
-            .setOrigin(.5);
+                color:"#ffffff"
+            }
+        )
+        .setOrigin(.5);
 
 
-        const card =
-            this.add.graphics();
+        const name =
+        this.add.text(
+            360,
+            480,
+            stage.title,
+            {
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:"23px",
+
+                fontStyle:"bold",
+
+                color:"#d9e7ff"
+            }
+        )
+        .setOrigin(.5);
 
 
-        card.fillStyle(
-            0xffffff,
-            .91
-        );
+        const result =
+        this.add.text(
+            360,
+            555,
+            "5 / 5 PINTU DITEMUI",
+            {
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:"21px",
+
+                fontStyle:"bold",
+
+                color:"#ffe47c"
+            }
+        )
+        .setOrigin(.5);
 
 
-        card.fillRoundedRect(
-            95,
-            370,
-            530,
-            270,
-            40
-        );
+        const next =
+        this.add.text(
+            360,
+            615,
+            "Stage seterusnya...",
+            {
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:"18px",
+
+                fontStyle:"bold",
+
+                color:"#ffffff"
+            }
+        )
+        .setOrigin(.5);
 
 
-        const complete =
-            this.add.text(
-                360,
-                430,
-                "25 / 25",
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontSize:"52px",
-
-                    fontStyle:"bold",
-
-                    color:"#374273"
-                }
-            )
-            .setOrigin(.5);
-
-
-        const label =
-            this.add.text(
-                360,
-                485,
-                "SOALAN SELESAI",
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontSize:"21px",
-
-                    fontStyle:"bold",
-
-                    color:"#66709c"
-                }
-            )
-            .setOrigin(.5);
-
-
-        const finalScore =
-            this.add.text(
-                360,
-                560,
-                "◆ " +
-                this.score,
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontSize:"36px",
-
-                    fontStyle:"bold",
-
-                    color:"#e3a62d"
-                }
-            )
-            .setOrigin(.5);
-
-
-        const scoreLabel =
-            this.add.text(
-                360,
-                605,
-                "SKOR AKHIR",
-                {
-                    fontFamily:
-                        "Trebuchet MS",
-
-                    fontSize:"18px",
-
-                    fontStyle:"bold",
-
-                    color:"#6f789b"
-                }
-            )
-            .setOrigin(.5);
-
-
-        this.boardLayer.add([
-            top,
+        this.gameLayer.add([
+            glow,
+            panel,
+            star,
             title,
-            subtitle,
-            card,
-            complete,
-            label,
-            finalScore,
-            scoreLabel
+            name,
+            result,
+            next
         ]);
 
 
-        const replay =
-            this.makeLocalButton(
-                360,
-                745,
-                320,
-                75,
-                "↻  MAIN SEMULA",
-                0x48558d
-            );
-
-
-        replay.on(
-            "pointerdown",
-            () => {
-
-                this.questionIndex =
-                    0;
-
-                this.stageIndex =
-                    0;
-
-                this.score =
-                    0;
-
-
-                this.updateScore();
+        this.time.delayedCall(
+            1700,
+            ()=>{
 
                 this.loadQuestion();
 
             }
         );
 
-
-        const home =
-            this.makeLocalButton(
-                360,
-                845,
-                320,
-                75,
-                "⌂  MENU UTAMA",
-                0x31375e
-            );
+    }
 
 
-        home.on(
+/* ========================================================
+   FINAL SCREEN
+======================================================== */
+
+    showFinal(){
+
+        this.locked=true;
+
+
+        this.gameLayer
+        .removeAll(true);
+
+
+        this.fxLayer
+        .removeAll(true);
+
+
+        this.drawBackground();
+
+
+        AUDIO.stage();
+
+
+        const glow =
+        this.add.circle(
+            360,
+            320,
+            190,
+            0xffffff,
+            .11
+        );
+
+
+        const stars =
+        this.add.text(
+            360,
+            190,
+            "★  ★  ★",
+            {
+                fontSize:"52px",
+                color:"#ffe16c"
+            }
+        )
+        .setOrigin(.5);
+
+
+        const title =
+        this.add.text(
+            360,
+            290,
+            "TAHNIAH!",
+            {
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:"53px",
+
+                fontStyle:"bold",
+
+                color:"#ffffff"
+            }
+        )
+        .setOrigin(.5);
+
+
+        const sub =
+        this.add.text(
+            360,
+            355,
+            "Semua pintu misteri berjaya dibuka.",
+            {
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:"22px",
+
+                fontStyle:"bold",
+
+                color:"#ffffff",
+
+                align:"center"
+            }
+        )
+        .setOrigin(.5);
+
+
+        const card =
+        this.add.graphics();
+
+
+        card.fillStyle(
+            0xffffff,
+            .94
+        );
+
+
+        card.fillRoundedRect(
+            95,
+            425,
+            530,
+            290,
+            38
+        );
+
+
+        const count =
+        this.add.text(
+            360,
+            500,
+            "25 / 25",
+            {
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:"58px",
+
+                fontStyle:"bold",
+
+                color:"#35426d"
+            }
+        )
+        .setOrigin(.5);
+
+
+        const countLabel =
+        this.add.text(
+            360,
+            555,
+            "SOALAN SELESAI",
+            {
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:"19px",
+
+                fontStyle:"bold",
+
+                color:"#77809d"
+            }
+        )
+        .setOrigin(.5);
+
+
+        const score =
+        this.add.text(
+            360,
+            635,
+            "★ "+
+            this.score,
+            {
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:"39px",
+
+                fontStyle:"bold",
+
+                color:"#dca831"
+            }
+        )
+        .setOrigin(.5);
+
+
+        const scoreLabel =
+        this.add.text(
+            360,
+            680,
+            "SKOR",
+            {
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:"17px",
+
+                fontStyle:"bold",
+
+                color:"#77809d"
+            }
+        )
+        .setOrigin(.5);
+
+
+        this.gameLayer.add([
+            glow,
+            stars,
+            title,
+            sub,
+            card,
+            count,
+            countLabel,
+            score,
+            scoreLabel
+        ]);
+
+
+        this.createFinalButton(
+            360,
+            810,
+            "↻  MAIN SEMULA",
+            ()=>{
+                this.restartGame();
+            }
+        );
+
+
+        this.createFinalButton(
+            360,
+            910,
+            "⌂  MENU UTAMA",
+            ()=>{
+                window.location.href=
+                "index.html";
+            }
+        );
+
+    }
+
+
+/* ========================================================
+   FINAL BUTTON
+======================================================== */
+
+    createFinalButton(
+        x,
+        y,
+        label,
+        callback
+    ){
+
+        const container =
+        this.add.container(
+            x,
+            y
+        );
+
+
+        const bg =
+        this.add.graphics();
+
+
+        bg.fillStyle(
+            0x27375f,
+            .95
+        );
+
+
+        bg.fillRoundedRect(
+            -175,
+            -37,
+            350,
+            74,
+            30
+        );
+
+
+        bg.lineStyle(
+            3,
+            0xffffff,
+            .55
+        );
+
+
+        bg.strokeRoundedRect(
+            -175,
+            -37,
+            350,
+            74,
+            30
+        );
+
+
+        const text =
+        this.add.text(
+            0,
+            0,
+            label,
+            {
+                fontFamily:
+                "Trebuchet MS",
+
+                fontSize:"23px",
+
+                fontStyle:"bold",
+
+                color:"#ffffff"
+            }
+        )
+        .setOrigin(.5);
+
+
+        const hit =
+        this.add.rectangle(
+            0,
+            0,
+            350,
+            74,
+            0xffffff,
+            .001
+        );
+
+
+        hit.setInteractive({
+            useHandCursor:true
+        });
+
+
+        hit.on(
             "pointerdown",
-            () => {
+            ()=>{
 
-                window.location.href =
-                    "index.html";
+                AUDIO.tap();
+
+                callback();
 
             }
         );
+
+
+        container.add([
+            bg,
+            text,
+            hit
+        ]);
+
+
+        this.gameLayer.add(
+            container
+        );
+
+    }
+
+
+/* ========================================================
+   RESTART
+======================================================== */
+
+    restartGame(){
+
+        this.questionIndex=0;
+
+        this.stageIndex=0;
+
+        this.score=0;
+
+        this.correctCount=0;
+
+        this.locked=false;
+
+
+        this.scoreText
+        .setText(
+            "★ 0"
+        );
+
+
+        this.loadQuestion();
 
     }
 
 }
 
 
-/* =========================================================
+/* ========================================================
    PHASER CONFIG
-========================================================= */
+======================================================== */
 
-const config = {
+const config={
 
     type:
-        Phaser.AUTO,
+    Phaser.AUTO,
 
     width:
-        720,
+    720,
 
     height:
-        1080,
+    1120,
 
     parent:
-        "game",
-
-    transparent:
-        true,
+    "game",
 
     backgroundColor:
-        "rgba(0,0,0,0)",
+    "#dceeff",
 
     antialias:
-        true,
+    true,
 
     roundPixels:
-        true,
+    true,
 
     render:{
 
@@ -3653,47 +3127,48 @@ const config = {
         pixelArt:false,
 
         powerPreference:
-            "high-performance"
+        "high-performance"
 
     },
 
     scale:{
 
         mode:
-            Phaser.Scale.FIT,
+        Phaser.Scale.FIT,
 
         autoCenter:
-            Phaser.Scale.CENTER_BOTH,
+        Phaser.Scale.CENTER_BOTH,
 
         width:
-            720,
+        720,
 
         height:
-            1080
-
+        1120
     },
 
     input:{
 
         activePointers:
-            3
+        3
 
     },
 
     scene:[
-        WordWonderScene
+        MysteryDoorGame
     ]
 
 };
 
 
 const game =
-    new Phaser.Game(
-        config
-    );
+new Phaser.Game(
+    config
+);
 
 
-/* Prevent accidental page drag while playing */
+/* ========================================================
+   PREVENT MOBILE PAGE SCROLL
+======================================================== */
 
 document.addEventListener(
     "touchmove",
