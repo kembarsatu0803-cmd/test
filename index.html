@@ -2,17 +2,9 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-<meta
-    name="viewport"
-    content="width=device-width,
-    initial-scale=1,
-    maximum-scale=1,
-    user-scalable=no,
-    viewport-fit=cover"
->
-
-<title>Feed The Frog - Set 3</title>
+<title>Feed The Frog • Set 3</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
@@ -22,89 +14,326 @@
     -webkit-tap-highlight-color:transparent;
 }
 
-html,body{
-    margin:0;
-    padding:0;
-    width:100%;
-    min-height:100%;
-
-    font-family:
-    "Trebuchet MS",
-    Arial,
-    sans-serif;
-
-    background:
-    linear-gradient(
-        135deg,
-        #d8f3ff,
-        #f6fcff,
-        #c8eaff
-    );
-
-    overscroll-behavior:none;
+:root{
+    font-family:"Trebuchet MS",Arial,sans-serif;
+    color:#253c30;
+    background:#eaf2df;
 }
 
 body{
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-
-    padding:
-    max(5px,env(safe-area-inset-top))
-    4px
-    max(10px,env(safe-area-inset-bottom));
+    margin:0;
+    padding:clamp(8px,2vw,24px);
+    padding-bottom:max(12px,env(safe-area-inset-bottom));
+    background:
+        radial-gradient(
+            ellipse at 10% 0%,
+            #fff8d9,
+            transparent 55%
+        ),
+        linear-gradient(135deg,#edf5e1,#d8ece5);
+    min-height:100svh;
 }
 
-#game-shell{
-    width:min(98vw,1080px);
-    aspect-ratio: 10 / 7.2;
+button{
+    font:inherit;
+    cursor:pointer;
+    touch-action:manipulation;
+}
 
-    min-height:620px;
-    max-height:92svh;
-
-    border-radius:22px;
+.shell{
+    width:100%;
+    max-width:1050px;
+    margin:auto;
+    background:#fffcf2;
+    border:1px solid #fff;
+    border-radius:26px;
     overflow:hidden;
+    box-shadow:0 18px 55px #294e3521;
+}
 
-    background:#aee8ff;
+.header{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:16px 22px;
+    background:#254d3c;
+    color:white;
+}
 
-    box-shadow:
-    0 12px 35px rgba(0,50,90,.18);
+.brand{
+    flex:1;
+    min-width:0;
+}
 
+.brand h1{
+    font-size:clamp(19px,3vw,28px);
+    margin:0;
+    letter-spacing:-.6px;
+}
+
+.brand p{
+    margin:4px 0 0;
+    font-size:12px;
+    color:#d1e5b9;
+}
+
+.icon{
+    display:grid;
+    place-items:center;
+    width:44px;
+    height:44px;
+    background:#ffffff16;
+    border:1px solid #ffffff30;
+    border-radius:14px;
+    color:white;
+    font-size:20px;
+}
+
+.counter{
+    font-size:15px;
+    white-space:nowrap;
+    background:#ffffff14;
+    border-radius:12px;
+    padding:10px 12px;
+    font-weight:bold;
+}
+
+.quiz{
+    padding:18px 22px 16px;
+}
+
+.eyebrow{
+    font-size:11px;
+    letter-spacing:1.3px;
+    font-weight:bold;
+    color:#70804c;
+    margin:0 0 8px;
+}
+
+.question{
+    font-size:clamp(16px,2vw,21px);
+    line-height:1.4;
+    margin:0 0 14px;
+    overflow-wrap:anywhere;
+}
+
+.options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px 12px;
+}
+
+.option{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#f0f3e8;
+    border:1px solid #e2e8d6;
+    border-radius:13px;
+    padding:10px 12px;
+    font-size:clamp(13px,1.5vw,16px);
+    line-height:1.35;
+    min-width:0;
+}
+
+.letter{
+    display:grid;
+    place-items:center;
+    flex:0 0 29px;
+    height:29px;
+    background:white;
+    border-radius:9px;
+    box-shadow:0 2px 0 #d9e1c8;
+    color:#365940;
+    font-weight:bold;
+}
+
+.option span:last-child{
+    overflow-wrap:anywhere;
+}
+
+.track{
+    height:6px;
+    background:#e5eadc;
+}
+
+.track div{
+    height:100%;
+    width:0;
+    background:linear-gradient(90deg,#a2ca56,#4b9969);
+    transition:width .3s;
+}
+
+#stage{
+    width:100%;
+    aspect-ratio:16/8;
     position:relative;
+    background:#f6d989;
+    overflow:hidden;
 }
 
-#game-container{
-    position:absolute;
-    inset:0;
-}
-
-#game-container canvas{
+canvas{
     display:block;
-    width:100% !important;
-    height:100% !important;
+    touch-action:none;
 }
 
-@media(max-width:650px){
+.controls{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    padding:16px 22px;
+    background:#fffaf0;
+    border-top:1px solid #e9dfc8;
+}
 
+.info{
+    flex:1;
+    min-width:0;
+}
+
+.info strong{
+    display:block;
+    font-size:16px;
+    color:#36533c;
+}
+
+.info small{
+    display:block;
+    margin-top:5px;
+    font-size:12px;
+    line-height:1.5;
+    color:#7b806c;
+}
+
+#eat{
+    flex:0 0 205px;
+    min-height:64px;
+    border:0;
+    border-bottom:5px solid #bf611d;
+    border-radius:18px;
+    background:linear-gradient(#ffb649,#f78b2f);
+    box-shadow:0 5px 12px #db8a2929;
+    color:#492e18;
+    font-size:23px;
+    font-weight:900;
+    letter-spacing:1px;
+    transition:transform .08s;
+}
+
+#eat:active{
+    transform:translateY(3px);
+    border-bottom-width:2px;
+}
+
+#eat:focus-visible,
+.icon:focus-visible{
+    outline:3px solid #389cf1;
+    outline-offset:-4px;
+}
+
+#eat.busy{
+    background:linear-gradient(#ffd17b,#efae59);
+}
+
+@media(max-width:600px){
     body{
-        padding-left:2px;
-        padding-right:2px;
+        padding:6px;
     }
 
-    #game-shell{
-        width:99vw;
-        height:min(94svh,920px);
-        max-height:none;
-        min-height:700px;
-        aspect-ratio:auto;
-        border-radius:14px;
+    .shell{
+        border-radius:18px;
+    }
+
+    .header{
+        padding:12px;
+        gap:8px;
+    }
+
+    .brand p{
+        font-size:10px;
+    }
+
+    .icon{
+        width:37px;
+        height:37px;
+    }
+
+    .counter{
+        padding:9px;
+        font-size:13px;
+    }
+
+    .quiz{
+        padding:14px 12px;
+    }
+
+    .question{
+        font-size:16px;
+    }
+
+    .options{
+        gap:7px;
+        grid-template-columns:1fr;
+    }
+
+    .option{
+        padding:7px 9px;
+        font-size:13px;
+        gap:9px;
+    }
+
+    .letter{
+        flex-basis:25px;
+        height:25px;
+        border-radius:7px;
+    }
+
+    #stage{
+        aspect-ratio:1.15;
+        min-height:290px;
+    }
+
+    .controls{
+        padding:12px;
+        gap:10px;
+    }
+
+    .info strong{
+        font-size:13px;
+    }
+
+    .info small{
+        font-size:11px;
+    }
+
+    #eat{
+        flex-basis:43%;
+        min-height:62px;
+        font-size:21px;
     }
 }
 
-@media(min-width:651px) and (max-width:900px){
-    #game-shell{
-        width:98vw;
-        min-height:650px;
+@media(min-width:601px) and (max-width:900px){
+    #stage{
+        aspect-ratio:1.65;
+    }
+}
+
+@media(max-height:500px) and (orientation:landscape){
+    .shell{
+        max-width:850px;
+    }
+
+    #stage{
+        aspect-ratio:2;
+    }
+
+    .header{
+        padding:10px 16px;
+    }
+
+    .quiz{
+        padding:12px 16px;
     }
 }
 </style>
@@ -112,2959 +341,1633 @@ body{
 
 <body>
 
-<div id="game-shell">
-    <div id="game-container"></div>
-</div>
+<main class="shell">
+
+    <header class="header">
+        <div class="brand">
+            <h1>Feed The Frog</h1>
+            <p>SAINS TAHUN 1 · SET 3</p>
+        </div>
+
+        <div class="counter" id="counter">
+            1 / 25
+        </div>
+
+        <button
+            class="icon"
+            id="sound"
+            aria-label="Matikan bunyi"
+            aria-pressed="true"
+        >♪</button>
+    </header>
+
+    <section class="quiz">
+        <p class="eyebrow">
+            OBJEK MENYERAP AIR
+        </p>
+
+        <h2 class="question" id="question"></h2>
+
+        <div class="options" id="options"></div>
+    </section>
+
+    <div
+        class="track"
+        role="progressbar"
+        aria-label="Soalan selesai"
+        aria-valuemin="0"
+        aria-valuemax="25"
+        aria-valuenow="0"
+        id="progress"
+    >
+        <div id="bar"></div>
+    </div>
+
+    <div
+        id="stage"
+        aria-label="Buah A hingga D bergerak dan jatuh ke arah katak"
+    ></div>
+
+    <footer class="controls">
+        <div class="info">
+            <strong id="status" role="status">
+                Tunggu buah pilihan jatuh
+            </strong>
+
+            <small id="hint">
+                Tekan TELAN atau katak untuk makan.<br>
+                Laptop: tekan Space.
+            </small>
+        </div>
+
+        <button id="eat">TELAN!</button>
+    </footer>
+
+</main>
 
 <script>
-/* =========================================================
-   FEED THE FROG
-   SET 3
-   HTML + CSS + JAVASCRIPT + PHASER 3
-   ========================================================= */
+'use strict';
 
-
-/* =========================================================
+/* ======================================================
    SOALAN
-   ========================================================= */
+   ====================================================== */
 
 const QUESTIONS = [
-
-{
-q:"Air berwarna dititiskan pada duit syiling dan masih ada di permukaannya. Apakah kesimpulan yang betul?",
-options:[
-"Duit syiling menghasilkan air",
-"Duit syiling berubah menjadi tisu",
-"Duit syiling menyerap air",
-"Duit syiling tidak menyerap air"
-],
-answer:"D"
-},
-
-{
-q:"Apakah cara paling mudah untuk menentukan sama ada sesuatu objek menyerap air?",
-options:[
-"Hidu objek",
-"Lihat warna objek sahaja",
-"Titiskan air dan perhatikan sama ada air diserap",
-"Dengar bunyi objek"
-],
-answer:"C"
-},
-
-{
-q:"Objek kain manakah yang boleh menyerap air?",
-options:[
-"Kain lap",
-"Straw",
-"Pemadam",
-"Klip kertas"
-],
-answer:"A"
-},
-
-{
-q:"Dalam ujian titisan air, objek yang masih mempunyai titisan air di atasnya ialah objek yang ____.",
-options:[
-"Menjadi lembut",
-"Tidak menyerap air",
-"Menghasilkan air",
-"Menyerap air"
-],
-answer:"B"
-},
-
-{
-q:"Antara bahan yang diuji untuk keupayaan menyerap air ialah ____.",
-options:[
-"Kain",
-"Sudu logam",
-"Pinggan plastik",
-"Gelas kaca"
-],
-answer:"A"
-},
-
-{
-q:"Antara pasangan berikut, yang manakah kedua-duanya tidak menyerap air?",
-options:[
-"Mop dan tisu dapur",
-"Tisu dan kain lap",
-"Klip kertas dan pemadam",
-"Sapu tangan dan surat khabar"
-],
-answer:"C"
-},
-
-{
-q:"Pinggan plastik dikelaskan sebagai objek yang ____.",
-options:[
-"Menukar air menjadi pepejal",
-"Tidak boleh menyerap air",
-"Boleh menyerap air",
-"Menghasilkan air"
-],
-answer:"B"
-},
-
-{
-q:"Jika titisan air hilang selepas dititiskan pada sapu tangan, sapu tangan ialah objek yang ____.",
-options:[
-"Menolak udara",
-"Menghasilkan air",
-"Tidak menyerap air",
-"Menyerap air"
-],
-answer:"D"
-},
-
-{
-q:"Objek alat tulis manakah yang tidak boleh menyerap air?",
-options:[
-"Kertas surat khabar",
-"Sapu tangan",
-"Pemadam",
-"Tisu"
-],
-answer:"C"
-},
-
-{
-q:"Tisu dapur menyerap lebih banyak air berbanding surat khabar dalam aktiviti buku. Apakah yang boleh dikatakan?",
-options:[
-"Kedua-duanya mempunyai keupayaan yang sama",
-"Kedua-duanya tidak menyerap air",
-"Keupayaan surat khabar lebih tinggi",
-"Keupayaan tisu dapur menyerap air lebih tinggi"
-],
-answer:"D"
-},
-
-{
-q:"Kertas dan kain sama-sama boleh menyerap air. Apakah persamaan kedua-duanya?",
-options:[
-"Kedua-duanya objek menyerap air",
-"Kedua-duanya plastik",
-"Kedua-duanya logam",
-"Kedua-duanya objek tidak menyerap air"
-],
-answer:"A"
-},
-
-{
-q:"Dalam aktiviti perbandingan, objek yang menyerap air paling rendah ialah ____.",
-options:[
-"Kain lap",
-"Mop",
-"Kertas surat khabar",
-"Tisu dapur"
-],
-answer:"C"
-},
-
-{
-q:"Sapu tangan dan kertas surat khabar boleh diletakkan dalam kumpulan yang sama kerana kedua-duanya ____.",
-options:[
-"Tidak menyerap air",
-"Menyerap air",
-"Diperbuat daripada plastik",
-"Diperbuat daripada logam"
-],
-answer:"B"
-},
-
-{
-q:"Mengapakah cermin kaca pada kereta berguna ketika hujan?",
-options:[
-"Kerana menyerap luka",
-"Kerana menyerap air seperti tisu",
-"Kerana mengelap peluh",
-"Kerana membantu menghalang air hujan daripada terkena kita"
-],
-answer:"D"
-},
-
-{
-q:"Apakah ciri bahan yang baik untuk menghasilkan mop mini?",
-options:[
-"Tidak boleh menyerap air",
-"Licin seperti logam",
-"Boleh menyerap air",
-"Keras seperti kaca"
-],
-answer:"C"
-},
-
-{
-q:"Sapu tangan membantu kita ketika berpeluh dengan cara ____.",
-options:[
-"Menyerap peluh",
-"Menyimpan hujan",
-"Menghalang angin",
-"Menolak peluh"
-],
-answer:"A"
-},
-
-{
-q:"Tuala ialah contoh objek yang penting kerana boleh ____.",
-options:[
-"Menyimpan air hujan seperti tong",
-"Menyerap air pada badan",
-"Menjadi cermin kereta",
-"Menghalang hujan seperti payung"
-],
-answer:"B"
-},
-
-{
-q:"Apakah kegunaan sapu tangan ketika berpeluh?",
-options:[
-"Mengelap peluh",
-"Menadah air hujan",
-"Melindungi kasut",
-"Menyimpan air"
-],
-answer:"A"
-},
-
-{
-q:"Seseorang mahu memastikan kakinya tidak basah ketika berjalan dalam hujan. Apakah yang sesuai dipakai?",
-options:[
-"Sapu tangan",
-"Tisu",
-"Kasut getah",
-"Kain lap"
-],
-answer:"C"
-},
-
-{
-q:"Jika objek digunakan untuk mengeringkan sesuatu yang basah, objek itu sebaiknya ____.",
-options:[
-"Diperbuat daripada logam",
-"Menyerap air",
-"Tidak menyerap air",
-"Diperbuat daripada kaca"
-],
-answer:"B"
-},
-
-{
-q:"Mengapakah mop sesuai digunakan pada lantai basah?",
-options:[
-"Kerana mop dibuat daripada kaca",
-"Kerana mop tidak menyerap air",
-"Kerana mop menadah hujan",
-"Kerana mop boleh menyerap air"
-],
-answer:"D"
-},
-
-{
-q:"Mengapakah tali pengikat sesuai digunakan pada mop mini?",
-options:[
-"Kerana boleh membantu menyerap air",
-"Kerana sama seperti kaca",
-"Kerana digunakan untuk menadah hujan",
-"Kerana tidak boleh menyerap air"
-],
-answer:"A"
-},
-
-{
-q:"Apakah objek yang boleh digunakan untuk mengeringkan jag?",
-options:[
-"Sudu logam",
-"Gelas kaca",
-"Pinggan plastik",
-"Kain lap"
-],
-answer:"D"
-},
-
-{
-q:"Mengapakah bebola kapas digunakan untuk mengelap luka?",
-options:[
-"Kerana tidak menyerap air",
-"Kerana boleh menyerap cecair",
-"Kerana menghalang hujan",
-"Kerana diperbuat daripada logam"
-],
-answer:"B"
-},
-
-{
-q:"Cermin kaca kereta tidak menyerap air dan membantu ____.",
-options:[
-"Menyerap peluh",
-"Mengelap luka",
-"Melindungi penumpang daripada air hujan",
-"Mengeringkan lantai"
-],
-answer:"C"
-}
-
+    [
+        "Air berwarna dititiskan pada duit syiling dan masih ada di permukaannya. Apakah kesimpulan yang betul?",
+        [
+            "Duit syiling menghasilkan air",
+            "Duit syiling berubah menjadi tisu",
+            "Duit syiling menyerap air",
+            "Duit syiling tidak menyerap air"
+        ],
+        "D"
+    ],
+    [
+        "Apakah cara paling mudah untuk menentukan sama ada sesuatu objek menyerap air?",
+        [
+            "Hidu objek",
+            "Lihat warna objek sahaja",
+            "Titiskan air dan perhatikan sama ada air diserap",
+            "Dengar bunyi objek"
+        ],
+        "C"
+    ],
+    [
+        "Objek kain manakah yang boleh menyerap air?",
+        [
+            "Kain lap",
+            "Straw",
+            "Pemadam",
+            "Klip kertas"
+        ],
+        "A"
+    ],
+    [
+        "Dalam ujian titisan air, objek yang masih mempunyai titisan air di atasnya ialah objek yang ____.",
+        [
+            "Menjadi lembut",
+            "Tidak menyerap air",
+            "Menghasilkan air",
+            "Menyerap air"
+        ],
+        "B"
+    ],
+    [
+        "Antara bahan yang diuji untuk keupayaan menyerap air ialah ____.",
+        [
+            "Kain",
+            "Sudu logam",
+            "Pinggan plastik",
+            "Gelas kaca"
+        ],
+        "A"
+    ],
+    [
+        "Antara pasangan berikut, yang manakah kedua-duanya tidak menyerap air?",
+        [
+            "Mop dan tisu dapur",
+            "Tisu dan kain lap",
+            "Klip kertas dan pemadam",
+            "Sapu tangan dan surat khabar"
+        ],
+        "C"
+    ],
+    [
+        "Pinggan plastik dikelaskan sebagai objek yang ____.",
+        [
+            "Menukar air menjadi pepejal",
+            "Tidak boleh menyerap air",
+            "Boleh menyerap air",
+            "Menghasilkan air"
+        ],
+        "B"
+    ],
+    [
+        "Jika titisan air hilang selepas dititiskan pada sapu tangan, sapu tangan ialah objek yang ____.",
+        [
+            "Menolak udara",
+            "Menghasilkan air",
+            "Tidak menyerap air",
+            "Menyerap air"
+        ],
+        "D"
+    ],
+    [
+        "Objek alat tulis manakah yang tidak boleh menyerap air?",
+        [
+            "Kertas surat khabar",
+            "Sapu tangan",
+            "Pemadam",
+            "Tisu"
+        ],
+        "C"
+    ],
+    [
+        "Tisu dapur menyerap lebih banyak air berbanding surat khabar dalam aktiviti buku. Apakah yang boleh dikatakan?",
+        [
+            "Kedua-duanya mempunyai keupayaan yang sama",
+            "Kedua-duanya tidak menyerap air",
+            "Keupayaan surat khabar lebih tinggi",
+            "Keupayaan tisu dapur menyerap air lebih tinggi"
+        ],
+        "D"
+    ],
+    [
+        "Kertas dan kain sama-sama boleh menyerap air. Apakah persamaan kedua-duanya?",
+        [
+            "Kedua-duanya objek menyerap air",
+            "Kedua-duanya plastik",
+            "Kedua-duanya logam",
+            "Kedua-duanya objek tidak menyerap air"
+        ],
+        "A"
+    ],
+    [
+        "Dalam aktiviti perbandingan, objek yang menyerap air paling rendah ialah ____.",
+        [
+            "Kain lap",
+            "Mop",
+            "Kertas surat khabar",
+            "Tisu dapur"
+        ],
+        "C"
+    ],
+    [
+        "Sapu tangan dan kertas surat khabar boleh diletakkan dalam kumpulan yang sama kerana kedua-duanya ____.",
+        [
+            "Tidak menyerap air",
+            "Menyerap air",
+            "Diperbuat daripada plastik",
+            "Diperbuat daripada logam"
+        ],
+        "B"
+    ],
+    [
+        "Mengapakah cermin kaca pada kereta berguna ketika hujan?",
+        [
+            "Kerana menyerap luka",
+            "Kerana menyerap air seperti tisu",
+            "Kerana mengelap peluh",
+            "Kerana membantu menghalang air hujan daripada terkena kita"
+        ],
+        "D"
+    ],
+    [
+        "Apakah ciri bahan yang baik untuk menghasilkan mop mini?",
+        [
+            "Tidak boleh menyerap air",
+            "Licin seperti logam",
+            "Boleh menyerap air",
+            "Keras seperti kaca"
+        ],
+        "C"
+    ],
+    [
+        "Sapu tangan membantu kita ketika berpeluh dengan cara ____.",
+        [
+            "Menyerap peluh",
+            "Menyimpan hujan",
+            "Menghalang angin",
+            "Menolak peluh"
+        ],
+        "A"
+    ],
+    [
+        "Tuala ialah contoh objek yang penting kerana boleh ____.",
+        [
+            "Menyimpan air hujan seperti tong",
+            "Menyerap air pada badan",
+            "Menjadi cermin kereta",
+            "Menghalang hujan seperti payung"
+        ],
+        "B"
+    ],
+    [
+        "Apakah kegunaan sapu tangan ketika berpeluh?",
+        [
+            "Mengelap peluh",
+            "Menadah air hujan",
+            "Melindungi kasut",
+            "Menyimpan air"
+        ],
+        "A"
+    ],
+    [
+        "Seseorang mahu memastikan kakinya tidak basah ketika berjalan dalam hujan. Apakah yang sesuai dipakai?",
+        [
+            "Sapu tangan",
+            "Tisu",
+            "Kasut getah",
+            "Kain lap"
+        ],
+        "C"
+    ],
+    [
+        "Jika objek digunakan untuk mengeringkan sesuatu yang basah, objek itu sebaiknya ____.",
+        [
+            "Diperbuat daripada logam",
+            "Menyerap air",
+            "Tidak menyerap air",
+            "Diperbuat daripada kaca"
+        ],
+        "B"
+    ],
+    [
+        "Mengapakah mop sesuai digunakan pada lantai basah?",
+        [
+            "Kerana mop dibuat daripada kaca",
+            "Kerana mop tidak menyerap air",
+            "Kerana mop menadah hujan",
+            "Kerana mop boleh menyerap air"
+        ],
+        "D"
+    ],
+    [
+        "Mengapakah tali pengikat sesuai digunakan pada mop mini?",
+        [
+            "Kerana boleh membantu menyerap air",
+            "Kerana sama seperti kaca",
+            "Kerana digunakan untuk menadah hujan",
+            "Kerana tidak boleh menyerap air"
+        ],
+        "A"
+    ],
+    [
+        "Apakah objek yang boleh digunakan untuk mengeringkan jag?",
+        [
+            "Sudu logam",
+            "Gelas kaca",
+            "Pinggan plastik",
+            "Kain lap"
+        ],
+        "D"
+    ],
+    [
+        "Mengapakah bebola kapas digunakan untuk mengelap luka?",
+        [
+            "Kerana tidak menyerap air",
+            "Kerana boleh menyerap cecair",
+            "Kerana menghalang hujan",
+            "Kerana diperbuat daripada logam"
+        ],
+        "B"
+    ],
+    [
+        "Cermin kaca kereta tidak menyerap air dan membantu ____.",
+        [
+            "Menyerap peluh",
+            "Mengelap luka",
+            "Melindungi penumpang daripada air hujan",
+            "Mengeringkan lantai"
+        ],
+        "C"
+    ]
 ];
 
-
-/* =========================================================
-   GLOBAL
-   ========================================================= */
-
-let currentQuestion = 0;
-
-let fruits = [];
-let fallingFruits = [];
-
-let frog;
-
-let conveyorY = 0;
-let conveyorLeft = 0;
-let conveyorRight = 0;
-let dropX = 0;
-
-let swallowBusy = false;
-let gameFinished = false;
-
-let questionText;
-let optionTexts = [];
-let progressText;
-
-let eatButton;
-let eatButtonText;
-
-let feedbackText;
-
-let backgroundGraphics;
-let conveyorGraphics;
-let roomGraphics;
-
-let lastSpawn = 0;
-let spawnDelay = 1250;
-
-let labelIndex = 0;
-
+const $ = id => document.getElementById(id);
 const LABELS = ["A","B","C","D"];
 
-let audioStarted = false;
-let audioCtx = null;
-let musicTimer = null;
+let audioCtx;
+let muted = false;
+let musicTimer;
+let musicStep = 0;
+let scene;
 
-
-/* =========================================================
+/* ======================================================
    AUDIO
-   ========================================================= */
+   ====================================================== */
 
-function startAudio(){
+function tone(
+    frequency,
+    duration = .1,
+    type = "sine",
+    volume = .04
+){
+    if(
+        !audioCtx ||
+        muted ||
+        audioCtx.state !== "running"
+    ){
+        return;
+    }
 
-    if(audioStarted) return;
-
-    audioStarted = true;
-
-    try{
-
-        audioCtx =
-            new (window.AudioContext ||
-                 window.webkitAudioContext)();
-
-        startMusic();
-
-    }catch(e){}
-}
-
-
-function playTone(freq,duration=0.08,type="sine",volume=0.05){
-
-    if(!audioCtx) return;
-
-    const osc = audioCtx.createOscillator();
+    const oscillator = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
+    const now = audioCtx.currentTime;
 
-    osc.type = type;
-    osc.frequency.value = freq;
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(frequency,now);
 
-    gain.gain.setValueAtTime(
-        volume,
-        audioCtx.currentTime
-    );
-
+    gain.gain.setValueAtTime(volume,now);
     gain.gain.exponentialRampToValueAtTime(
-        0.001,
-        audioCtx.currentTime + duration
+        .001,
+        now + duration
     );
 
-    osc.connect(gain);
+    oscillator.connect(gain);
     gain.connect(audioCtx.destination);
 
-    osc.start();
-    osc.stop(
-        audioCtx.currentTime + duration
+    oscillator.start(now);
+    oscillator.stop(now + duration);
+
+    oscillator.onended = () => {
+        oscillator.disconnect();
+        gain.disconnect();
+    };
+}
+
+function unlockAudio(){
+    try{
+        if(!audioCtx){
+            audioCtx = new (
+                window.AudioContext ||
+                window.webkitAudioContext
+            )();
+        }
+
+        if(audioCtx.state === "suspended"){
+            audioCtx.resume().catch(() => {});
+        }
+
+        if(!musicTimer){
+            musicTimer = setInterval(() => {
+                if(document.hidden) return;
+
+                const notes = [
+                    262,330,392,330,
+                    294,349,440,349
+                ];
+
+                tone(
+                    notes[musicStep++ % notes.length],
+                    .18,
+                    "triangle",
+                    .011
+                );
+            },420);
+        }
+    }catch(error){}
+}
+
+$("sound").onclick = () => {
+    muted = !muted;
+
+    unlockAudio();
+
+    $("sound").textContent = muted ? "♪ ×" : "♪";
+
+    $("sound").setAttribute(
+        "aria-pressed",
+        String(!muted)
     );
-}
 
+    $("sound").setAttribute(
+        "aria-label",
+        muted ? "Hidupkan bunyi" : "Matikan bunyi"
+    );
+};
 
-function correctSound(){
-
-    playTone(520,.09,"sine",.08);
-
-    setTimeout(()=>{
-        playTone(660,.09,"sine",.07);
-    },80);
-
-    setTimeout(()=>{
-        playTone(820,.14,"sine",.07);
-    },160);
-}
-
-
-function wrongSound(){
-
-    playTone(210,.12,"sawtooth",.06);
-
-    setTimeout(()=>{
-        playTone(160,.15,"sawtooth",.055);
-    },90);
-}
-
-
-function eatSound(){
-
-    playTone(330,.05,"square",.035);
-
-    setTimeout(()=>{
-        playTone(420,.05,"square",.035);
-    },45);
-}
-
-
-function startMusic(){
-
+document.addEventListener("visibilitychange",() => {
     if(!audioCtx) return;
 
-    let step = 0;
+    if(document.hidden){
+        audioCtx.suspend().catch(() => {});
+    }else if(!muted){
+        audioCtx.resume().catch(() => {});
+    }
+});
 
-    const melody = [
-        262,330,392,330,
-        294,349,440,349,
-        330,392,494,392,
-        294,349,392,330
-    ];
+/* ======================================================
+   DRAW HELPER
+   ====================================================== */
 
-    musicTimer = setInterval(()=>{
-
-        if(
-            !audioCtx ||
-            document.hidden
-        ) return;
-
-        const f =
-            melody[
-                step % melody.length
-            ];
-
-        playTone(
-            f,
-            .15,
-            "triangle",
-            .012
-        );
-
-        step++;
-
-    },390);
+function round(g,x,y,w,h,r,color){
+    g.fillStyle(color,1);
+    g.fillRoundedRect(x,y,w,h,r);
 }
 
+/* ======================================================
+   GAME
+   ====================================================== */
 
-/* =========================================================
-   PHASER
-   ========================================================= */
+class FrogGame extends Phaser.Scene{
+    constructor(){
+        super("FrogGame");
+    }
 
-const config = {
+    create(){
+        scene = this;
 
+        this.index = 0;
+        this.items = [];
+        this.label = 0;
+
+        this.busy = false;
+        this.done = false;
+
+        this.clock = 0;
+        this.beltOffset = 0;
+        this.face = "normal";
+
+        this.bg = this.add.graphics();
+        this.belt = this.add.graphics();
+
+        this.ring = this.add.graphics()
+            .setDepth(3);
+
+        this.frog = this.add.container(0,0)
+            .setDepth(20);
+
+        this.body = this.add.graphics();
+        this.mouth = this.add.graphics();
+
+        this.frog.add([
+            this.body,
+            this.mouth
+        ]);
+
+        this.tongue = this.add.graphics()
+            .setDepth(24);
+
+        this.bubble = this.add.text(
+            0,0,"",
+            {
+                fontFamily:"Trebuchet MS, Arial",
+                fontSize:"22px",
+                fontStyle:"bold",
+                color:"#ffffff",
+                stroke:"#294c35",
+                strokeThickness:5,
+                align:"center"
+            }
+        )
+        .setOrigin(.5)
+        .setDepth(40);
+
+        this.sign = this.add.text(
+            0,0,
+            "DAPUR SI KATAK",
+            {
+                fontFamily:"Trebuchet MS, Arial",
+                fontSize:"12px",
+                fontStyle:"bold",
+                color:"#80602e",
+                letterSpacing:2
+            }
+        )
+        .setOrigin(.5);
+
+        this.frog.setInteractive(
+            new Phaser.Geom.Rectangle(
+                -105,-125,210,225
+            ),
+            Phaser.Geom.Rectangle.Contains
+        );
+
+        this.frog.on("pointerdown",() => {
+            unlockAudio();
+            this.eat();
+        });
+
+        this.scale.on("resize",() => {
+            this.layout();
+        });
+
+        this.layout();
+        this.showQuestion();
+
+        this.spawn(this.W * .69);
+        this.spawn(this.W * .69 + this.gap);
+
+        this.input.keyboard.on(
+            "keydown-SPACE",
+            event => {
+                if(
+                    event.repeat ||
+                    event.target?.tagName === "BUTTON"
+                ){
+                    return;
+                }
+
+                event.preventDefault();
+
+                unlockAudio();
+                this.eat();
+            }
+        );
+    }
+
+    /* ==================================================
+       RESPONSIVE LAYOUT
+       ================================================== */
+
+    layout(){
+        const oldW = this.W || this.scale.width;
+        const oldH = this.H || this.scale.height;
+
+        this.W = this.scale.width;
+        this.H = this.scale.height;
+
+        const W = this.W;
+        const H = this.H;
+
+        this.s = Math.min(
+            W / 520,
+            H / 420,
+            1.18
+        );
+
+        this.fs = Math.max(.52,this.s * .88);
+        this.gap = 95 * this.fs;
+
+        this.drop = W * .29;
+        this.beltY = H * .29;
+
+        this.fx = this.drop - 7 * this.s;
+        this.fy = H * .74;
+
+        this.frog
+            .setPosition(this.fx,this.fy)
+            .setScale(this.s);
+
+        this.sign
+            .setPosition(W * .66,H * .075)
+            .setFontSize(
+                Math.max(10,13 * this.s)
+            );
+
+        this.items.forEach(fruit => {
+            fruit.c.x *= W / oldW;
+
+            fruit.c.y = fruit.state === "belt"
+                ? this.beltY - 30 * this.fs
+                : fruit.c.y * H / oldH;
+
+            if(fruit.state !== "eating"){
+                fruit.c.setScale(this.fs);
+            }
+        });
+
+        this.drawRoom();
+        this.drawFrog();
+        this.drawBelt();
+    }
+
+    /* ==================================================
+       ROOM
+       ================================================== */
+
+    drawRoom(){
+        const g = this.bg;
+        const W = this.W;
+        const H = this.H;
+        const s = this.s;
+
+        g.clear();
+
+        g.fillStyle(0xf6d989);
+        g.fillRect(0,0,W,H);
+
+        g.fillStyle(0xffedb3,.55);
+
+        for(let x=0;x<W;x+=58){
+            g.fillRect(x,0,24,H * .77);
+        }
+
+        // Window frame
+        round(
+            g,
+            W * .045,
+            H * .07,
+            70 * s,
+            95 * s,
+            12 * s,
+            0xd4ae62
+        );
+
+        round(
+            g,
+            W * .045 + 5 * s,
+            H * .07 + 5 * s,
+            60 * s,
+            82 * s,
+            8 * s,
+            0xbde4d3
+        );
+
+        g.lineStyle(4 * s,0xfff4ce);
+
+        g.lineBetween(
+            W * .045 + 35 * s,
+            H * .07 + 6 * s,
+            W * .045 + 35 * s,
+            H * .07 + 86 * s
+        );
+
+        g.lineBetween(
+            W * .045 + 5 * s,
+            H * .07 + 44 * s,
+            W * .045 + 65 * s,
+            H * .07 + 44 * s
+        );
+
+        // Floor
+        g.fillStyle(0xc5965f);
+        g.fillRect(0,H * .77,W,H * .23);
+
+        g.fillStyle(0xe7b879);
+        g.fillRect(0,H * .77,W,10 * s);
+
+        g.lineStyle(2,0x996c42,.25);
+
+        for(let y=H*.8;y<H;y+=35*s){
+            g.lineBetween(0,y,W,y);
+        }
+
+        for(let x=0;x<W;x+=95*s){
+            g.lineBetween(
+                x,H * .79,
+                x - 35 * s,H
+            );
+        }
+
+        // Fruit crate
+        round(
+            g,
+            W * .69,
+            H * .52,
+            110 * s,
+            78 * s,
+            8 * s,
+            0xb98548
+        );
+
+        round(
+            g,
+            W * .69 + 5 * s,
+            H * .52 + 5 * s,
+            100 * s,
+            65 * s,
+            5 * s,
+            0xd7a05b
+        );
+
+        g.lineStyle(5 * s,0xb98548);
+
+        g.lineBetween(
+            W * .69 + 8 * s,
+            H * .52 + 27 * s,
+            W * .69 + 99 * s,
+            H * .52 + 27 * s
+        );
+
+        g.lineBetween(
+            W * .69 + 8 * s,
+            H * .52 + 49 * s,
+            W * .69 + 99 * s,
+            H * .52 + 49 * s
+        );
+
+        g.fillStyle(0xf19a35);
+        g.fillCircle(
+            W * .74,
+            H * .51,
+            17 * s
+        );
+
+        g.fillStyle(0xe96f53);
+        g.fillCircle(
+            W * .79,
+            H * .51,
+            18 * s
+        );
+
+        g.fillStyle(0x599b42);
+        g.fillEllipse(
+            W * .79,
+            H * .51 - 20 * s,
+            20 * s,
+            9 * s
+        );
+
+        // Frog shadow
+        g.fillStyle(0x624b32,.18);
+        g.fillEllipse(
+            this.fx,
+            this.fy + 83 * s,
+            210 * s,
+            30 * s
+        );
+    }
+
+    /* ==================================================
+       CONVEYOR
+       ================================================== */
+
+    drawBelt(){
+        const g = this.belt;
+        const W = this.W;
+        const s = this.s;
+        const x = this.drop;
+        const y = this.beltY;
+
+        g.clear();
+
+        round(
+            g,
+            x + 35 * s,
+            y + 27 * s,
+            15 * s,
+            this.H * .45,
+            5 * s,
+            0x658b7d
+        );
+
+        round(
+            g,
+            W * .87,
+            y + 27 * s,
+            15 * s,
+            this.H * .45,
+            5 * s,
+            0x658b7d
+        );
+
+        round(
+            g,
+            x - 15 * s,
+            y - 8 * s,
+            W - x + 40 * s,
+            67 * s,
+            24 * s,
+            0x385e54
+        );
+
+        round(
+            g,
+            x - 11 * s,
+            y - 10 * s,
+            W - x + 35 * s,
+            14 * s,
+            6 * s,
+            0xa5bfb0
+        );
+
+        round(
+            g,
+            x - 8 * s,
+            y + 10 * s,
+            W - x + 30 * s,
+            37 * s,
+            17 * s,
+            0x254b43
+        );
+
+        for(
+            let rx=x+15*s;
+            rx<W+30*s;
+            rx+=46*s
+        ){
+            g.fillStyle(0x85ad98);
+            g.fillCircle(
+                rx,
+                y + 29 * s,
+                13 * s
+            );
+
+            g.fillStyle(0x355e50);
+            g.fillCircle(
+                rx,
+                y + 29 * s,
+                6 * s
+            );
+
+            const angle = this.beltOffset / 15;
+
+            g.lineStyle(2 * s,0xc7ddbb);
+
+            g.lineBetween(
+                rx,
+                y + 29 * s,
+                rx + 10 * s * Math.cos(angle),
+                y + 29 * s + 10 * s * Math.sin(angle)
+            );
+        }
+    }
+
+    /* ==================================================
+       FROG GRAPHIC
+       ================================================== */
+
+    drawFrog(){
+        const g = this.body;
+        const sick = this.face === "sick";
+
+        g.clear();
+
+        // Feet
+        g.fillStyle(
+            sick ? 0x79ad48 : 0x4c9c48
+        );
+
+        g.fillEllipse(-68,65,76,38);
+        g.fillEllipse(68,65,76,38);
+
+        // Body
+        g.fillStyle(
+            sick ? 0xa3c94e : 0x7ec94c
+        );
+
+        g.fillEllipse(0,28,154,132);
+
+        // Belly
+        g.fillStyle(0xc9e988);
+        g.fillEllipse(0,46,104,83);
+
+        // Head
+        g.fillStyle(
+            sick ? 0xacc951 : 0x91d65b
+        );
+
+        g.fillEllipse(0,-35,155,102);
+
+        // Eyes
+        [-42,42].forEach(x => {
+            g.fillStyle(0x6db34a);
+            g.fillCircle(x,-82,33);
+
+            g.fillStyle(0xfffdf1);
+            g.fillCircle(x,-84,26);
+
+            if(sick){
+                g.lineStyle(5,0x30472e);
+
+                g.lineBetween(
+                    x-10,-93,
+                    x+10,-78
+                );
+
+                g.lineBetween(
+                    x+10,-93,
+                    x-10,-78
+                );
+            }else{
+                g.fillStyle(0x263f30);
+
+                g.fillEllipse(
+                    x+3,-84,17,23
+                );
+
+                g.fillStyle(0xffffff);
+                g.fillCircle(x+6,-90,4);
+            }
+        });
+
+        // Cheeks
+        g.fillStyle(0xf49f86,.8);
+        g.fillEllipse(-54,-29,23,12);
+        g.fillEllipse(54,-29,23,12);
+
+        // Nose
+        g.fillStyle(0x598d3b);
+        g.fillCircle(-10,-47,3);
+        g.fillCircle(10,-47,3);
+
+        // Mouth
+        const m = this.mouth;
+        m.clear();
+
+        if(this.face === "happy"){
+            m.lineStyle(7,0x30462c);
+
+            m.beginPath();
+
+            m.arc(
+                0,-31,31,
+                .1,
+                Math.PI-.1
+            );
+
+            m.strokePath();
+        }else{
+            m.fillStyle(0x3b2827);
+
+            m.fillEllipse(
+                0,
+                -15,
+                this.face === "eating" ? 72 : 65,
+                this.face === "eating" ? 64 : 32
+            );
+
+            m.fillStyle(
+                sick ? 0x98ba36 : 0xed7c88
+            );
+
+            m.fillEllipse(0,-6,38,12);
+        }
+    }
+
+    /* ==================================================
+       QUESTION DISPLAY
+       ================================================== */
+
+    showQuestion(){
+        const question = QUESTIONS[this.index];
+
+        $("question").textContent =
+            (this.index+1) + ". " + question[0];
+
+        $("counter").textContent =
+            (this.index+1) + " / 25";
+
+        $("options").replaceChildren();
+
+        question[1].forEach((text,i) => {
+            const row = document.createElement("div");
+            row.className = "option";
+
+            const tag = document.createElement("span");
+            tag.className = "letter";
+            tag.textContent = LABELS[i];
+
+            const value = document.createElement("span");
+            value.textContent = text;
+
+            row.append(tag,value);
+            $("options").append(row);
+        });
+
+        $("bar").style.width =
+            (this.index / 25 * 100) + "%";
+
+        $("progress").setAttribute(
+            "aria-valuenow",
+            this.index
+        );
+    }
+
+    /* ==================================================
+       FRUIT
+       ================================================== */
+
+    spawn(x){
+        const label = LABELS[this.label++ % 4];
+
+        const container = this.add.container(
+            x ?? this.W + 50 * this.fs,
+            this.beltY - 30 * this.fs
+        )
+        .setScale(this.fs)
+        .setDepth(12);
+
+        const g = this.add.graphics();
+
+        const type = Phaser.Math.Between(0,3);
+
+        const colors = [
+            0xe96952,
+            0xf6ab32,
+            0x8abd49,
+            0x9982cb
+        ];
+
+        g.fillStyle(0x345038,.12);
+        g.fillEllipse(1,34,60,12);
+
+        g.fillStyle(colors[type]);
+
+        if(type === 0){
+            g.fillCircle(-12,0,25);
+            g.fillCircle(12,0,25);
+            g.fillEllipse(0,13,54,44);
+        }else{
+            g.fillEllipse(
+                0,2,
+                type === 2 ? 68 : 61,
+                62
+            );
+        }
+
+        if(type === 2){
+            g.lineStyle(4,0x5a903a);
+            g.beginPath();
+            g.arc(0,2,25,-1.2,1.2);
+            g.strokePath();
+        }
+
+        g.fillStyle(0x6d5034);
+        g.fillRoundedRect(-3,-39,6,15,2);
+
+        g.fillStyle(0x4c944b);
+        g.fillEllipse(11,-32,23,10);
+
+        g.fillStyle(0xffffff,.3);
+        g.fillEllipse(-17,-12,9,16);
+
+        // Letter badge
+        g.fillStyle(0xfffdf0);
+        g.fillCircle(0,4,20);
+
+        g.lineStyle(2,0x344d37);
+        g.strokeCircle(0,4,20);
+
+        const text = this.add.text(
+            0,4,label,
+            {
+                fontFamily:"Arial",
+                fontSize:"27px",
+                fontStyle:"bold",
+                color:"#263c2c"
+            }
+        )
+        .setOrigin(.5);
+
+        container.add([g,text]);
+
+        this.items.push({
+            c:container,
+            label,
+            state:"belt",
+            vy:0
+        });
+    }
+
+    /* ==================================================
+       UPDATE
+       ================================================== */
+
+    update(time,delta){
+        const dt = Math.min(delta / 1000,.035);
+
+        if(this.done) return;
+
+        const speed =
+            (66 + this.index * 1.4) * this.s;
+
+        this.beltOffset -= speed * dt;
+        this.drawBelt();
+
+        this.clock += dt;
+
+        const last = this.items
+            .filter(fruit => fruit.state === "belt")
+            .reduce(
+                (maximum,fruit) =>
+                    Math.max(maximum,fruit.c.x),
+                0
+            );
+
+        if(
+            last <
+            this.W + 50 * this.fs - this.gap
+        ){
+            this.spawn();
+        }
+
+        for(let i=this.items.length-1;i>=0;i--){
+            const fruit = this.items[i];
+
+            if(fruit.state === "belt"){
+                fruit.c.x -= speed * dt;
+
+                if(fruit.c.x <= this.drop){
+                    fruit.c.x = this.drop;
+                    fruit.state = "falling";
+                    fruit.vy = 40 * this.s;
+                }
+            }else if(fruit.state === "falling"){
+                fruit.vy += 380 * this.s * dt;
+                fruit.c.y += fruit.vy * dt;
+                fruit.c.angle += 30 * dt;
+
+                if(fruit.c.y > this.H + 70){
+                    fruit.c.destroy();
+                    this.items.splice(i,1);
+                }
+            }
+        }
+
+        this.ring.clear();
+
+        const target = this.target();
+
+        if(target && !this.busy){
+            this.ring.lineStyle(
+                3,
+                0xfffff0,
+                .85
+            );
+
+            this.ring.strokeCircle(
+                target.c.x,
+                target.c.y,
+                43 * this.fs
+            );
+        }
+    }
+
+    /* ==================================================
+       FIND FRUIT NEAR MOUTH
+       ================================================== */
+
+    target(){
+        let chosen = null;
+        let best = Infinity;
+
+        const mouthY = this.fy - 15 * this.s;
+
+        for(const fruit of this.items){
+            if(fruit.state !== "falling") continue;
+
+            const dy = fruit.c.y - mouthY;
+
+            const distance = Math.hypot(
+                fruit.c.x - this.fx,
+                dy
+            );
+
+            if(
+                distance < 145 * this.s &&
+                dy < 65 * this.s &&
+                distance < best
+            ){
+                best = distance;
+                chosen = fruit;
+            }
+        }
+
+        return chosen;
+    }
+
+    /* ==================================================
+       EAT
+       ================================================== */
+
+    eat(){
+        if(this.done){
+            this.restart();
+            return;
+        }
+
+        if(this.busy) return;
+
+        const fruit = this.target();
+
+        if(!fruit){
+            $("status").textContent =
+                "Tunggu buah dekat mulut katak";
+
+            this.face = "eating";
+            this.drawFrog();
+
+            this.time.delayedCall(140,() => {
+                if(!this.busy){
+                    this.face = "normal";
+                    this.drawFrog();
+                }
+            });
+
+            tone(260,.06,"triangle");
+            return;
+        }
+
+        this.busy = true;
+        fruit.state = "eating";
+
+        $("eat").classList.add("busy");
+        $("status").textContent = "Nyam…";
+
+        this.face = "eating";
+        this.drawFrog();
+
+        tone(360,.08,"square",.02);
+
+        const start = {
+            x:fruit.c.x,
+            y:fruit.c.y,
+            scale:fruit.c.scaleX
+        };
+
+        const motion = {p:0};
+
+        this.tweens.add({
+            targets:motion,
+            p:1,
+            duration:260,
+            ease:"Quad.easeIn",
+
+            onUpdate:() => {
+                const p = motion.p;
+                const mouthX = this.fx;
+                const mouthY = this.fy - 15 * this.s;
+
+                fruit.c.setPosition(
+                    Phaser.Math.Linear(
+                        start.x,mouthX,p
+                    ),
+                    Phaser.Math.Linear(
+                        start.y,mouthY,p
+                    )
+                );
+
+                fruit.c.setScale(
+                    start.scale * (1-p) + .035 * p
+                );
+
+                this.tongue.clear();
+
+                this.tongue.lineStyle(
+                    12 * this.s,
+                    0xed8193
+                );
+
+                this.tongue.lineBetween(
+                    mouthX,mouthY,
+                    fruit.c.x,fruit.c.y
+                );
+            },
+
+            onComplete:() => {
+                this.tongue.clear();
+
+                fruit.c.destroy();
+
+                this.items = this.items.filter(
+                    item => item !== fruit
+                );
+
+                this.resolve(fruit.label);
+            }
+        });
+    }
+
+    /* ==================================================
+       ANSWER FEEDBACK
+       ================================================== */
+
+    resolve(label){
+        const correct =
+            label === QUESTIONS[this.index][2];
+
+        this.face = correct ? "happy" : "sick";
+        this.drawFrog();
+
+        this.bubble
+            .setPosition(
+                this.W * .60,
+                this.H * .68
+            )
+            .setFontSize(
+                Math.max(18,26 * this.s)
+            )
+            .setText(
+                correct ? "SEDAP! ✓" : "BLEKK! ✕"
+            )
+            .setVisible(true);
+
+        $("status").textContent = correct
+            ? "Betul! Bagus sekali."
+            : label + " salah. Cuba buah lain.";
+
+        if(correct){
+            tone(523,.12);
+
+            this.time.delayedCall(
+                110,
+                () => tone(659,.12)
+            );
+
+            this.time.delayedCall(
+                220,
+                () => tone(784,.18)
+            );
+
+            const pulse = {p:0};
+
+            this.tweens.add({
+                targets:pulse,
+                p:1,
+                duration:130,
+                yoyo:true,
+                repeat:1,
+
+                onUpdate:() => {
+                    this.frog.setScale(
+                        this.s * (1 + .07 * pulse.p),
+                        this.s * (1 - .05 * pulse.p)
+                    );
+                },
+
+                onComplete:() => {
+                    this.frog.setScale(this.s);
+                }
+            });
+
+            for(let i=0;i<8;i++){
+                const star = this.add.star(
+                    this.fx,
+                    this.fy - 25 * this.s,
+                    5,
+                    3 * this.s,
+                    8 * this.s,
+                    0xffe997
+                )
+                .setDepth(35);
+
+                this.tweens.add({
+                    targets:star,
+
+                    x:this.fx +
+                        Phaser.Math.Between(-110,110) *
+                        this.s,
+
+                    y:this.fy -
+                        Phaser.Math.Between(85,160) *
+                        this.s,
+
+                    alpha:0,
+                    angle:90,
+                    duration:650,
+
+                    onComplete:() => {
+                        star.destroy();
+                    }
+                });
+            }
+        }else{
+            tone(180,.2,"sawtooth",.025);
+            this.vomit();
+        }
+
+        this.time.delayedCall(
+            correct ? 800 : 1000,
+            () => {
+                this.bubble.setVisible(false);
+
+                this.face = "normal";
+                this.drawFrog();
+
+                this.busy = false;
+                $("eat").classList.remove("busy");
+
+                if(correct){
+                    this.index++;
+
+                    if(this.index === 25){
+                        this.finish();
+                        return;
+                    }
+
+                    this.showQuestion();
+
+                    $("status").textContent =
+                        "Tunggu buah pilihan jatuh";
+                }
+            }
+        );
+    }
+
+    /* ==================================================
+       VOMIT
+       ================================================== */
+
+    vomit(){
+        for(let i=0;i<11;i++){
+            const particle = this.add.circle(
+                this.fx,
+                this.fy - 9 * this.s,
+                Phaser.Math.Between(4,9) * this.s,
+                i % 2 ? 0xa0bf45 : 0xdbcb57
+            )
+            .setDepth(30);
+
+            const motion = {t:0};
+
+            const vx =
+                Phaser.Math.Between(55,120) *
+                this.s;
+
+            const vy =
+                Phaser.Math.Between(20,60) *
+                this.s;
+
+            this.tweens.add({
+                targets:motion,
+                t:1,
+                duration:600,
+
+                onUpdate:() => {
+                    particle.x =
+                        this.fx + vx * motion.t;
+
+                    particle.y =
+                        this.fy -
+                        9 * this.s -
+                        vy * motion.t +
+                        110 * this.s *
+                        motion.t * motion.t;
+
+                    particle.alpha = 1 - motion.t;
+                },
+
+                onComplete:() => {
+                    particle.destroy();
+                }
+            });
+        }
+    }
+
+    /* ==================================================
+       FINISH
+       ================================================== */
+
+    finish(){
+        this.done = true;
+        this.face = "happy";
+
+        this.drawFrog();
+
+        this.items.forEach(fruit => {
+            fruit.c.destroy();
+        });
+
+        this.items = [];
+        this.ring.clear();
+
+        $("question").textContent =
+            "Tahniah! Semua 25 soalan telah dijawab.";
+
+        $("options").replaceChildren();
+
+        $("counter").textContent = "25 / 25";
+        $("bar").style.width = "100%";
+
+        $("progress").setAttribute(
+            "aria-valuenow",
+            "25"
+        );
+
+        $("status").textContent =
+            "Hebat! Misi selesai.";
+
+        $("hint").textContent =
+            "Tekan MAIN LAGI untuk bermain semula.";
+
+        $("eat").textContent = "MAIN LAGI";
+
+        this.bubble
+            .setPosition(
+                this.W * .63,
+                this.H * .62
+            )
+            .setText("TAHNIAH!\n25 / 25 ★")
+            .setVisible(true);
+    }
+
+    /* ==================================================
+       RESTART
+       ================================================== */
+
+    restart(){
+        this.index = 0;
+        this.label = 0;
+
+        this.done = false;
+        this.busy = false;
+
+        this.face = "normal";
+        this.bubble.setVisible(false);
+
+        this.drawFrog();
+        this.showQuestion();
+
+        $("eat").textContent = "TELAN!";
+
+        $("status").textContent =
+            "Tunggu buah pilihan jatuh";
+
+        $("hint").textContent =
+            "Tekan TELAN atau katak. Laptop: tekan Space.";
+
+        this.spawn(this.W * .69);
+        this.spawn(this.W * .69 + this.gap);
+    }
+}
+
+/* ======================================================
+   BUTTON INPUT
+   ====================================================== */
+
+$("eat").addEventListener("pointerdown",event => {
+    if(event.button !== 0) return;
+
+    event.preventDefault();
+
+    unlockAudio();
+    scene?.eat();
+});
+
+// Keyboard / accessibility click
+$("eat").addEventListener("click",event => {
+    if(event.detail === 0){
+        unlockAudio();
+        scene?.eat();
+    }
+});
+
+/* ======================================================
+   START PHASER
+   ====================================================== */
+
+const stage = $("stage");
+
+const game = new Phaser.Game({
     type:Phaser.AUTO,
 
-    parent:"game-container",
+    parent:"stage",
 
-    backgroundColor:"#f7c953",
+    width:stage.clientWidth,
+    height:stage.clientHeight,
+
+    backgroundColor:"#f6d989",
+
+    antialias:true,
+
+    resolution:Math.min(
+        window.devicePixelRatio || 1,
+        2
+    ),
 
     scale:{
         mode:Phaser.Scale.RESIZE,
         autoCenter:Phaser.Scale.CENTER_BOTH
     },
 
-    physics:{
-        default:"arcade",
-        arcade:{
-            gravity:{y:0},
-            debug:false
-        }
-    },
-
-    scene:{
-        create:create,
-        update:update
-    }
-};
-
-const game =
-    new Phaser.Game(config);
-
-
-/* =========================================================
-   CREATE
-   ========================================================= */
-
-function create(){
-
-    const scene = this;
-
-    this.input.on("pointerdown",()=>{
-        startAudio();
-    });
-
-    this.input.keyboard.on(
-        "keydown-SPACE",
-        ()=>{
-            startAudio();
-            tryEat.call(scene);
-        }
-    );
-
-
-    /* -------------------------
-       GRAPHIC LAYERS
-       ------------------------- */
-
-    backgroundGraphics =
-        this.add.graphics();
-
-    roomGraphics =
-        this.add.graphics();
-
-    conveyorGraphics =
-        this.add.graphics();
-
-
-    /* -------------------------
-       QUESTION
-       ------------------------- */
-
-    questionText =
-        this.add.text(
-            0,
-            0,
-            "",
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-
-                fontStyle:"bold",
-
-                color:"#17202a",
-
-                align:"center",
-
-                wordWrap:{
-                    width:600
-                }
-            }
-        )
-        .setOrigin(.5,0);
-
-
-    for(let i=0;i<4;i++){
-
-        const txt =
-            this.add.text(
-                0,
-                0,
-                "",
-                {
-                    fontFamily:
-                    "Trebuchet MS, Arial",
-
-                    color:"#17202a",
-
-                    fontStyle:"bold"
-                }
-            )
-            .setOrigin(0,.5);
-
-        optionTexts.push(txt);
-    }
-
-
-    progressText =
-        this.add.text(
-            0,
-            0,
-            "",
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-                fontStyle:"bold",
-                color:"#ffffff",
-                backgroundColor:"#334155",
-                padding:{
-                    x:12,
-                    y:7
-                }
-            }
-        )
-        .setOrigin(.5);
-
-
-    feedbackText =
-        this.add.text(
-            0,
-            0,
-            "",
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-                fontStyle:"bold",
-                color:"#ffffff",
-                stroke:"#17202a",
-                strokeThickness:5,
-                align:"center"
-            }
-        )
-        .setOrigin(.5)
-        .setDepth(80);
-
-
-    createFrog.call(this);
-
-
-    /* -------------------------
-       EAT BUTTON
-       ------------------------- */
-
-    eatButton =
-        this.add.graphics()
-        .setDepth(70)
-        .setInteractive(
-            new Phaser.Geom.Rectangle(
-                -130,
-                -60,
-                260,
-                120
-            ),
-            Phaser.Geom.Rectangle.Contains
-        );
-
-
-    eatButtonText =
-        this.add.text(
-            0,
-            0,
-            "TELAN!",
-            {
-                fontFamily:
-                "Trebuchet MS, Arial",
-
-                fontSize:"32px",
-
-                fontStyle:"bold",
-
-                color:"#ffffff",
-
-                stroke:"#8b2800",
-                strokeThickness:6
-            }
-        )
-        .setOrigin(.5)
-        .setDepth(71);
-
-
-    eatButton.on(
-        "pointerdown",
-        ()=>{
-            startAudio();
-            tryEat.call(this);
-        }
-    );
-
-
-    frog.container.setInteractive(
-        new Phaser.Geom.Rectangle(
-            -115,-105,230,220
-        ),
-        Phaser.Geom.Rectangle.Contains
-    );
-
-
-    frog.container.on(
-        "pointerdown",
-        ()=>{
-            startAudio();
-            tryEat.call(this);
-        }
-    );
-
-
-    /* -------------------------
-       RESIZE
-       ------------------------- */
-
-    this.scale.on(
-        "resize",
-        ()=>{
-            layout.call(this);
-        }
-    );
-
-
-    layout.call(this);
-    showQuestion.call(this);
-
-
-    /* initial fruits */
-
-    this.time.delayedCall(
-        350,
-        ()=>{
-            spawnFruit.call(this);
-        }
-    );
-}
-
-
-/* =========================================================
-   LAYOUT
-   ========================================================= */
-
-function layout(){
-
-    const W = this.scale.width;
-    const H = this.scale.height;
-
-    const portrait =
-        W < 650 ||
-        H > W * 1.12;
-
-
-    /* =====================================================
-       BACKGROUND
-       ===================================================== */
-
-    backgroundGraphics.clear();
-
-    backgroundGraphics.fillStyle(
-        0xf6c951,
-        1
-    );
-
-    backgroundGraphics.fillRect(
-        0,0,W,H
-    );
-
-
-    /* wall dots/pattern */
-
-    backgroundGraphics.fillStyle(
-        0xe6af36,
-        .27
-    );
-
-    const step =
-        portrait ? 58 : 72;
-
-    for(
-        let y=12;
-        y<H;
-        y+=step
-    ){
-        for(
-            let x=10;
-            x<W;
-            x+=step
-        ){
-
-            backgroundGraphics.fillCircle(
-                x,
-                y,
-                7
-            );
-
-            backgroundGraphics.fillCircle(
-                x+22,
-                y+12,
-                4
-            );
-        }
-    }
-
-
-    /* =====================================================
-       QUESTION PANEL
-       ===================================================== */
-
-    roomGraphics.clear();
-
-    const panelMargin =
-        portrait ? 10 : 24;
-
-    const panelTop =
-        portrait ? 10 : 12;
-
-    const panelHeight =
-        portrait
-        ? Math.min(H*.32,300)
-        : Math.min(H*.32,240);
-
-
-    roomGraphics.fillStyle(
-        0xffffff,
-        .97
-    );
-
-    roomGraphics.fillRoundedRect(
-        panelMargin,
-        panelTop,
-        W-panelMargin*2,
-        panelHeight,
-        18
-    );
-
-    roomGraphics.lineStyle(
-        portrait ? 4 : 5,
-        0x885b20,
-        .18
-    );
-
-    roomGraphics.strokeRoundedRect(
-        panelMargin,
-        panelTop,
-        W-panelMargin*2,
-        panelHeight,
-        18
-    );
-
-
-    /* floor */
-
-    const floorY =
-        portrait
-        ? H*.72
-        : H*.69;
-
-    roomGraphics.fillStyle(
-        0xb9793b,
-        1
-    );
-
-    roomGraphics.fillRect(
-        0,
-        floorY,
-        W,
-        H-floorY
-    );
-
-    roomGraphics.lineStyle(
-        2,
-        0x8d572d,
-        .45
-    );
-
-    const plankW =
-        portrait ? 65 : 105;
-
-    for(
-        let x=-30;
-        x<W+80;
-        x+=plankW
-    ){
-
-        roomGraphics.beginPath();
-
-        roomGraphics.moveTo(
-            x,
-            floorY
-        );
-
-        roomGraphics.lineTo(
-            x-30,
-            H
-        );
-
-        roomGraphics.strokePath();
-    }
-
-
-    for(
-        let y=floorY;
-        y<H;
-        y+=55
-    ){
-
-        roomGraphics.lineBetween(
-            0,y,W,y
-        );
-    }
-
-
-    /* boxes */
-
-    drawBoxes(
-        roomGraphics,
-        W,H,
-        portrait
-    );
-
-
-    /* =====================================================
-       QUESTION TEXT
-       ===================================================== */
-
-    const qFont =
-        portrait
-        ? Phaser.Math.Clamp(W*.044,19,27)
-        : Phaser.Math.Clamp(W*.021,19,26);
-
-
-    questionText.setFontSize(qFont);
-
-    questionText.setWordWrapWidth(
-        W -
-        panelMargin*2 -
-        (portrait ? 25 : 60)
-    );
-
-    questionText.setPosition(
-        W/2,
-        panelTop +
-        (portrait ? 14 : 12)
-    );
-
-
-    /* options */
-
-    const optionFont =
-        portrait
-        ? Phaser.Math.Clamp(W*.034,15,20)
-        : Phaser.Math.Clamp(W*.0165,14,19);
-
-
-    const optionStartY =
-        panelTop +
-        panelHeight*
-        (portrait ? .47 : .45);
-
-
-    const lineGap =
-        portrait
-        ? panelHeight*.12
-        : panelHeight*.125;
-
-
-    optionTexts.forEach(
-        (t,i)=>{
-
-            t.setFontSize(optionFont);
-
-            t.setWordWrapWidth(
-                W -
-                panelMargin*2 -
-                50
-            );
-
-            t.setPosition(
-                panelMargin +
-                (portrait ? 18 : 32),
-                optionStartY +
-                i*lineGap
-            );
-        }
-    );
-
-
-    progressText
-    .setFontSize(
-        portrait ? 15 : 16
-    )
-    .setPosition(
-        W -
-        panelMargin -
-        (portrait ? 40 : 50),
-        panelTop +
-        22
-    );
-
-
-    /* =====================================================
-       CONVEYOR
-       ===================================================== */
-
-    conveyorY =
-        portrait
-        ? H*.45
-        : H*.45;
-
-
-    conveyorLeft =
-        portrait
-        ? W*.24
-        : W*.26;
-
-
-    conveyorRight =
-        W +
-        (portrait ? 15 : 25);
-
-
-    dropX =
-        portrait
-        ? W*.25
-        : W*.275;
-
-
-    drawConveyor(
-        conveyorGraphics,
-        W,H,
-        portrait
-    );
-
-
-    /* =====================================================
-       FROG
-       ===================================================== */
-
-    const frogScale =
-        portrait
-        ? Phaser.Math.Clamp(W/510,.72,1)
-        : Phaser.Math.Clamp(W/950,.78,1.18);
-
-
-    frog.container
-    .setScale(frogScale);
-
-
-    frog.container
-    .setPosition(
-        portrait
-        ? W*.25
-        : W*.26,
-
-        portrait
-        ? H*.705
-        : H*.70
-    );
-
-
-    /* =====================================================
-       BUTTON
-       ===================================================== */
-
-    const btnX =
-        portrait
-        ? W*.70
-        : W*.72;
-
-    const btnY =
-        portrait
-        ? H*.80
-        : H*.82;
-
-
-    const btnW =
-        portrait
-        ? Math.min(W*.44,210)
-        : Math.min(W*.25,250);
-
-    const btnH =
-        portrait
-        ? 72
-        : 76;
-
-
-    eatButton
-    .setPosition(
-        btnX,
-        btnY
-    );
-
-
-    eatButton.input.hitArea.setTo(
-        -btnW/2,
-        -btnH/2,
-        btnW,
-        btnH
-    );
-
-
-    eatButton.clear();
-
-    eatButton.fillStyle(
-        0xff7a18,
-        1
-    );
-
-    eatButton.fillRoundedRect(
-        -btnW/2,
-        -btnH/2,
-        btnW,
-        btnH,
-        22
-    );
-
-    eatButton.lineStyle(
-        5,
-        0xc94806,
-        1
-    );
-
-    eatButton.strokeRoundedRect(
-        -btnW/2,
-        -btnH/2,
-        btnW,
-        btnH,
-        22
-    );
-
-
-    eatButtonText
-    .setPosition(
-        btnX,
-        btnY
-    )
-    .setFontSize(
-        portrait
-        ? Phaser.Math.Clamp(W*.065,24,33)
-        : 31
-    );
-
-
-    feedbackText
-    .setFontSize(
-        portrait
-        ? Phaser.Math.Clamp(W*.07,26,38)
-        : 36
-    )
-    .setPosition(
-        portrait
-        ? W*.55
-        : W*.52,
-
-        portrait
-        ? H*.68
-        : H*.64
-    );
-
-
-    /* reposition current fruits
-       only Y depends on conveyor */
-
-    fruits.forEach(f=>{
-
-        if(
-            f.state === "belt"
-        ){
-
-            f.container.y =
-                conveyorY - 40;
-        }
-    });
-}
-
-
-/* =========================================================
-   ROOM BOXES
-   ========================================================= */
-
-function drawBoxes(
-    g,W,H,portrait
-){
-
-    const floor =
-        portrait
-        ? H*.72
-        : H*.69;
-
-    g.fillStyle(
-        0x9e642f,
-        1
-    );
-
-    g.fillRoundedRect(
-        W*.035,
-        floor-85,
-        portrait ? 62 : 85,
-        84,
-        5
-    );
-
-    g.lineStyle(
-        3,
-        0x76461f,
-        1
-    );
-
-    g.strokeRoundedRect(
-        W*.035,
-        floor-85,
-        portrait ? 62 : 85,
-        84,
-        5
-    );
-
-
-    g.fillStyle(
-        0xb57637,
-        1
-    );
-
-    g.fillRoundedRect(
-        W*.82,
-        floor-105,
-        portrait ? 70 : 110,
-        104,
-        5
-    );
-
-    g.strokeRoundedRect(
-        W*.82,
-        floor-105,
-        portrait ? 70 : 110,
-        104,
-        5
-    );
-
-
-    if(!portrait){
-
-        g.fillStyle(
-            0xa76c35,
-            1
-        );
-
-        g.fillRoundedRect(
-            W*.72,
-            floor-60,
-            92,
-            58,
-            5
-        );
-
-        g.strokeRoundedRect(
-            W*.72,
-            floor-60,
-            92,
-            58,
-            5
-        );
-    }
-}
-
-
-/* =========================================================
-   CONVEYOR
-   ========================================================= */
-
-function drawConveyor(
-    g,W,H,portrait
-){
-
-    g.clear();
-
-    const beltH =
-        portrait ? 76 : 92;
-
-    const top =
-        conveyorY -
-        beltH/2;
-
-
-    /* metal top */
-
-    g.fillStyle(
-        0x7895a5,
-        1
-    );
-
-    g.fillRoundedRect(
-        conveyorLeft,
-        top,
-        conveyorRight-conveyorLeft,
-        beltH,
-        16
-    );
-
-
-    /* dark belt */
-
-    g.fillStyle(
-        0x263c48,
-        1
-    );
-
-    g.fillRoundedRect(
-        conveyorLeft,
-        top+22,
-        conveyorRight-conveyorLeft,
-        beltH-26,
-        13
-    );
-
-
-    /* metal top strip */
-
-    g.fillStyle(
-        0xaac1cb,
-        1
-    );
-
-    g.fillRect(
-        conveyorLeft+8,
-        top+5,
-        conveyorRight-conveyorLeft-8,
-        20
-    );
-
-
-    /* strip divisions */
-
-    g.lineStyle(
-        2,
-        0x708b98,
-        1
-    );
-
-    for(
-        let x=conveyorLeft+15;
-        x<conveyorRight;
-        x+=58
-    ){
-
-        g.lineBetween(
-            x,
-            top+5,
-            x,
-            top+25
-        );
-    }
-
-
-    /* rollers */
-
-    const rollerR =
-        portrait ? 16 : 20;
-
-    const rollerGap =
-        portrait ? 48 : 68;
-
-
-    for(
-        let x=conveyorLeft+30;
-        x<conveyorRight-10;
-        x+=rollerGap
-    ){
-
-        g.fillStyle(
-            0xadc1cc,
-            1
-        );
-
-        g.fillCircle(
-            x,
-            top +
-            beltH*.66,
-            rollerR
-        );
-
-        g.fillStyle(
-            0x607e8e,
-            1
-        );
-
-        g.fillCircle(
-            x,
-            top +
-            beltH*.66,
-            rollerR*.52
-        );
-
-        g.fillStyle(
-            0x263c48,
-            1
-        );
-
-        g.fillCircle(
-            x,
-            top +
-            beltH*.66,
-            rollerR*.20
-        );
-    }
-
-
-    /* end chute */
-
-    g.fillStyle(
-        0x526d7b,
-        1
-    );
-
-    g.fillTriangle(
-        conveyorLeft+4,
-        top+20,
-
-        conveyorLeft-28,
-        top+52,
-
-        conveyorLeft+4,
-        top+beltH-5
-    );
-}
-
-
-/* =========================================================
-   FROG
-   ========================================================= */
-
-function createFrog(){
-
-    const c =
-        this.add.container(0,0)
-        .setDepth(50);
-
-
-    const body =
-        this.add.graphics();
-
-
-    /* legs */
-
-    body.fillStyle(
-        0x71bd22,
-        1
-    );
-
-    body.fillEllipse(
-        -73,
-        62,
-        88,
-        44
-    );
-
-    body.fillEllipse(
-        73,
-        62,
-        88,
-        44
-    );
-
-
-    /* body */
-
-    body.fillStyle(
-        0x87d52c,
-        1
-    );
-
-    body.fillEllipse(
-        0,
-        30,
-        165,
-        142
-    );
-
-
-    /* belly */
-
-    body.fillStyle(
-        0xb8e950,
-        1
-    );
-
-    body.fillEllipse(
-        0,
-        49,
-        115,
-        85
-    );
-
-
-    /* head */
-
-    body.fillStyle(
-        0x8dda2b,
-        1
-    );
-
-    body.fillEllipse(
-        0,
-        -38,
-        150,
-        106
-    );
-
-
-    /* eyes */
-
-    body.fillStyle(
-        0xffffff,
-        1
-    );
-
-    body.fillCircle(
-        -42,
-        -91,
-        34
-    );
-
-    body.fillCircle(
-        38,
-        -92,
-        34
-    );
-
-
-    body.lineStyle(
-        4,
-        0x152012,
-        1
-    );
-
-    body.strokeCircle(
-        -42,
-        -91,
-        34
-    );
-
-    body.strokeCircle(
-        38,
-        -92,
-        34
-    );
-
-
-    body.fillStyle(
-        0x141414,
-        1
-    );
-
-    body.fillCircle(
-        -31,
-        -92,
-        11
-    );
-
-    body.fillCircle(
-        49,
-        -93,
-        11
-    );
-
-
-    /* nostril */
-
-    body.fillStyle(
-        0x3f821c,
-        1
-    );
-
-    body.fillCircle(
-        -13,
-        -54,
-        4
-    );
-
-    body.fillCircle(
-        13,
-        -54,
-        4
-    );
-
-
-    const mouth =
-        this.add.graphics();
-
-
-    const tongue =
-        this.add.graphics()
-        .setVisible(false);
-
-
-    const expression =
-        this.add.text(
-            0,
-            -25,
-            "",
-            {
-                fontSize:"37px",
-                fontStyle:"bold",
-                color:"#ffffff",
-                stroke:"#17202a",
-                strokeThickness:4
-            }
-        )
-        .setOrigin(.5)
-        .setVisible(false);
-
-
-    c.add([
-        body,
-        mouth,
-        tongue,
-        expression
-    ]);
-
-
-    frog = {
-        container:c,
-        body:body,
-        mouth:mouth,
-        tongue:tongue,
-        expression:expression
-    };
-
-
-    setFrogNormal();
-}
-
-
-/* =========================================================
-   FROG EXPRESSIONS
-   ========================================================= */
-
-function setFrogNormal(){
-
-    if(!frog) return;
-
-    frog.mouth.clear();
-
-    frog.mouth.fillStyle(
-        0x471d16,
-        1
-    );
-
-    frog.mouth.fillEllipse(
-        0,
-        -18,
-        90,
-        42
-    );
-
-    frog.mouth.fillStyle(
-        0xef5253,
-        1
-    );
-
-    frog.mouth.fillEllipse(
-        0,
-        -8,
-        54,
-        17
-    );
-
-    frog.expression
-    .setVisible(false);
-
-    frog.container
-    .setAngle(0);
-}
-
-
-function setFrogEating(){
-
-    frog.mouth.clear();
-
-    frog.mouth.fillStyle(
-        0x2d1512,
-        1
-    );
-
-    frog.mouth.fillCircle(
-        0,
-        -16,
-        37
-    );
-}
-
-
-function setFrogHappy(){
-
-    frog.mouth.clear();
-
-    frog.mouth.lineStyle(
-        9,
-        0x351712,
-        1
-    );
-
-    frog.mouth.beginPath();
-
-    frog.mouth.arc(
-        0,
-        -28,
-        41,
-        .20,
-        Math.PI-.20,
-        false
-    );
-
-    frog.mouth.strokePath();
-
-    frog.expression
-    .setText("♥")
-    .setColor("#ff4d71")
-    .setVisible(true);
-}
-
-
-function setFrogSick(){
-
-    frog.mouth.clear();
-
-    frog.mouth.fillStyle(
-        0x38201a,
-        1
-    );
-
-    frog.mouth.fillEllipse(
-        0,
-        -7,
-        65,
-        31
-    );
-
-    frog.mouth.fillStyle(
-        0x8dd441,
-        1
-    );
-
-    frog.mouth.fillEllipse(
-        0,
-        4,
-        38,
-        17
-    );
-
-    frog.expression
-    .setText("×  ×")
-    .setColor("#17202a")
-    .setFontSize(32)
-    .setVisible(true);
-}
-
-
-/* =========================================================
-   QUESTION UI
-   ========================================================= */
-
-function showQuestion(){
+    scene:FrogGame
+});
+
+/* ======================================================
+   CONTAINER RESIZE
+   ====================================================== */
+
+const observer = new ResizeObserver(() => {
+    const width = stage.clientWidth;
+    const height = stage.clientHeight;
 
     if(
-        currentQuestion >=
-        QUESTIONS.length
-    ){
-        finishGame.call(this);
-        return;
-    }
-
-
-    const data =
-        QUESTIONS[currentQuestion];
-
-
-    questionText.setText(
-        (currentQuestion+1) +
-        ". " +
-        data.q
-    );
-
-
-    data.options.forEach(
-        (op,i)=>{
-
-            optionTexts[i]
-            .setText(
-                LABELS[i] +
-                ". " +
-                op
-            );
-        }
-    );
-
-
-    progressText.setText(
-        (currentQuestion+1) +
-        "/25"
-    );
-}
-
-
-/* =========================================================
-   FRUIT
-   ========================================================= */
-
-function spawnFruit(){
-
-    if(gameFinished) return;
-
-    const label =
-        LABELS[
-            labelIndex %
-            LABELS.length
-        ];
-
-    labelIndex++;
-
-
-    const fruit =
-        createFruitGraphic.call(
-            this,
-            label
-        );
-
-
-    const rightMost =
-        fruits
-        .filter(f=>f.state==="belt")
-        .reduce(
-            (max,f)=>
-                Math.max(
-                    max,
-                    f.container.x
-                ),
-            conveyorRight
-        );
-
-
-    fruit.container.x =
-        Math.max(
-            conveyorRight+55,
-            rightMost+105
-        );
-
-    fruit.container.y =
-        conveyorY-40;
-
-
-    fruits.push(fruit);
-}
-
-
-/* =========================================================
-   DRAW FRUIT
-   ========================================================= */
-
-function createFruitGraphic(label){
-
-    const container =
-        this.add.container(
-            0,
-            0
-        )
-        .setDepth(30);
-
-
-    const g =
-        this.add.graphics();
-
-
-    const fruitType =
-        Phaser.Math.Between(
-            0,4
-        );
-
-
-    if(fruitType===0){
-
-        /* APPLE */
-
-        g.fillStyle(
-            0xd92e32,
-            1
-        );
-
-        g.fillCircle(
-            -13,
-            2,
-            29
-        );
-
-        g.fillCircle(
-            14,
-            2,
-            29
-        );
-
-        g.fillEllipse(
-            0,
-            14,
-            56,
-            52
-        );
-
-        g.fillStyle(
-            0x73351b,
-            1
-        );
-
-        g.fillRect(
-            -3,
-            -41,
-            7,
-            18
-        );
-
-        g.fillStyle(
-            0x3f9d31,
-            1
-        );
-
-        g.fillEllipse(
-            13,
-            -37,
-            25,
-            13
-        );
-
-    }else if(fruitType===1){
-
-        /* ORANGE */
-
-        g.fillStyle(
-            0xf58a18,
-            1
-        );
-
-        g.fillCircle(
-            0,
-            4,
-            34
-        );
-
-        g.fillStyle(
-            0xffb13b,
-            .7
-        );
-
-        g.fillCircle(
-            -11,
-            -6,
-            7
-        );
-
-        g.fillStyle(
-            0x448f27,
-            1
-        );
-
-        g.fillEllipse(
-            4,
-            -32,
-            20,
-            10
-        );
-
-    }else if(fruitType===2){
-
-        /* WATERMELON */
-
-        g.fillStyle(
-            0x75c82a,
-            1
-        );
-
-        g.fillCircle(
-            0,
-            4,
-            35
-        );
-
-        g.lineStyle(
-            5,
-            0x358725,
-            1
-        );
-
-        g.beginPath();
-
-        g.arc(
-            0,4,
-            25,
-            -1.4,
-            1.4
-        );
-
-        g.strokePath();
-
-        g.beginPath();
-
-        g.arc(
-            0,4,
-            14,
-            1.7,
-            4.5
-        );
-
-        g.strokePath();
-
-    }else if(fruitType===3){
-
-        /* LEMON */
-
-        g.fillStyle(
-            0xf3d31e,
-            1
-        );
-
-        g.fillEllipse(
-            0,
-            4,
-            71,
-            53
-        );
-
-        g.fillStyle(
-            0x75a728,
-            1
-        );
-
-        g.fillEllipse(
-            22,
-            -22,
-            22,
-            10
-        );
-
-    }else{
-
-        /* BERRY */
-
-        g.fillStyle(
-            0x516ec6,
-            1
-        );
-
-        g.fillCircle(
-            0,
-            4,
-            34
-        );
-
-        g.fillStyle(
-            0x303f86,
-            1
-        );
-
-        g.fillCircle(
-            -12,
-            -8,
-            11
-        );
-
-        g.fillStyle(
-            0x4f982e,
-            1
-        );
-
-        g.fillEllipse(
-            8,
-            -31,
-            22,
-            11
-        );
-    }
-
-
-    /* LABEL BADGE */
-
-    g.fillStyle(
-        0xffffff,
-        .96
-    );
-
-    g.fillCircle(
-        0,
-        4,
-        21
-    );
-
-    g.lineStyle(
-        3,
-        0x1e293b,
-        1
-    );
-
-    g.strokeCircle(
-        0,
-        4,
-        21
-    );
-
-
-    const txt =
-        this.add.text(
-            0,
-            4,
-            label,
-            {
-                fontFamily:
-                "Arial",
-
-                fontSize:"27px",
-
-                fontStyle:"bold",
-
-                color:"#111827"
-            }
-        )
-        .setOrigin(.5);
-
-
-    container.add([
-        g,
-        txt
-    ]);
-
-
-    return{
-
-        container,
-
-        graphics:g,
-
-        label,
-
-        state:"belt",
-
-        velocityY:0,
-
-        eaten:false,
-
-        age:0
-    };
-}
-
-
-/* =========================================================
-   UPDATE
-   ========================================================= */
-
-function update(time,delta){
-
-    if(gameFinished) return;
-
-
-    const dt =
-        Math.min(
-            delta/1000,
-            .035
-        );
-
-
-    /* -----------------------------------------------
-       SPAWN LOOP
-       ----------------------------------------------- */
-
-    if(
-        time-lastSpawn >
-        spawnDelay
-    ){
-
-        lastSpawn=time;
-
-        const beltCount =
-            fruits.filter(
-                f=>f.state==="belt"
-            ).length;
-
-        if(beltCount<7){
-            spawnFruit.call(this);
-        }
-    }
-
-
-    /* -----------------------------------------------
-       SPEED
-       ----------------------------------------------- */
-
-    const difficulty =
-        currentQuestion/24;
-
-    const conveyorSpeed =
-        Phaser.Math.Linear(
-            75,
-            120,
-            difficulty
-        );
-
-
-    const gravity =
-        this.scale.width<650
-        ? 760
-        : 900;
-
-
-    /* -----------------------------------------------
-       MOVE FRUITS
-       ----------------------------------------------- */
-
-    for(
-        let i=fruits.length-1;
-        i>=0;
-        i--
-    ){
-
-        const fruit =
-            fruits[i];
-
-        if(
-            !fruit ||
-            !fruit.container
-        ) continue;
-
-
-        fruit.age += dt;
-
-
-        if(
-            fruit.state ===
-            "belt"
-        ){
-
-            fruit.container.x -=
-                conveyorSpeed*dt;
-
-
-            fruit.container.angle =
-                Math.sin(
-                    fruit.age*5
-                )*3;
-
-
-            /* fall off conveyor */
-
-            if(
-                fruit.container.x <=
-                dropX
-            ){
-
-                fruit.state =
-                    "falling";
-
-                fruit.velocityY =
-                    70;
-
-                fruit.container.angle =
-                    Phaser.Math.Between(
-                        -12,
-                        12
-                    );
-
-                fallingFruits.push(
-                    fruit
-                );
-            }
-
-        }else if(
-            fruit.state ===
-            "falling"
-        ){
-
-            fruit.velocityY +=
-                gravity*dt;
-
-            fruit.container.y +=
-                fruit.velocityY*dt;
-
-            fruit.container.x -=
-                12*dt;
-
-            fruit.container.angle +=
-                80*dt;
-
-
-            if(
-                fruit.container.y >
-                this.scale.height+80
-            ){
-
-                destroyFruit(
-                    fruit
-                );
-
-                fruits.splice(
-                    i,1
-                );
-
-                const idx =
-                    fallingFruits.indexOf(
-                        fruit
-                    );
-
-                if(idx>=0){
-                    fallingFruits.splice(
-                        idx,1
-                    );
-                }
-            }
-
-        }
-
-    }
-
-}
-
-
-/* =========================================================
-   EAT MECHANISM
-   ========================================================= */
-
-function tryEat(){
-
-    if(
-        swallowBusy ||
-        gameFinished
-    ) return;
-
-
-    /* find closest falling fruit */
-
-    let target=null;
-    let best=Infinity;
-
-
-    const mouthX =
-        frog.container.x;
-
-    const mouthY =
-        frog.container.y-20;
-
-
-    for(
-        const fruit of
-        fallingFruits
-    ){
-
-        if(
-            fruit.state !==
-            "falling"
-        ) continue;
-
-
-        const dx =
-            fruit.container.x -
-            mouthX;
-
-        const dy =
-            fruit.container.y -
-            mouthY;
-
-
-        const dist =
-            Math.sqrt(
-                dx*dx+
-                dy*dy
-            );
-
-
-        /* large forgiving range for phone */
-
-        const catchRange =
-            this.scale.width < 650
-            ? 190
-            : 180;
-
-
-        if(
-            dist < catchRange &&
-            fruit.container.y <
-            mouthY+120 &&
-            fruit.container.y >
-            mouthY-190
-        ){
-
-            if(dist<best){
-                best=dist;
-                target=fruit;
-            }
-        }
-    }
-
-
-    if(!target){
-
-        /* frog tongue attempt */
-
-        frog.tongue.clear();
-
-        frog.tongue.lineStyle(
-            13,
-            0xf2637b,
-            1
-        );
-
-        frog.tongue.lineBetween(
-            0,-25,
-            0,-115
-        );
-
-        frog.tongue
-        .setVisible(true);
-
-        playTone(
-            250,
-            .05,
-            "square",
-            .025
-        );
-
-
-        this.time.delayedCall(
-            120,
-            ()=>{
-                frog.tongue
-                .setVisible(false);
-            }
-        );
-
-        return;
-    }
-
-
-    swallowBusy=true;
-
-    target.state="eating";
-
-    const idx =
-        fallingFruits
-        .indexOf(target);
-
-    if(idx>=0){
-        fallingFruits.splice(
-            idx,1
-        );
-    }
-
-
-    setFrogEating();
-
-    eatSound();
-
-
-    /* -----------------------------------------------
-       TONGUE TO FRUIT
-       ----------------------------------------------- */
-
-    const localFruitX =
+        width &&
+        height &&
         (
-            target.container.x -
-            frog.container.x
-        ) /
-        frog.container.scaleX;
-
-    const localFruitY =
-        (
-            target.container.y -
-            frog.container.y
-        ) /
-        frog.container.scaleY;
-
-
-    frog.tongue.clear();
-
-    frog.tongue.lineStyle(
-        15,
-        0xf2647c,
-        1
-    );
-
-    frog.tongue.lineBetween(
-        0,
-        -15,
-        localFruitX,
-        localFruitY
-    );
-
-    frog.tongue
-    .setVisible(true);
-
-
-    this.time.delayedCall(
-        90,
-        ()=>{
-
-            frog.tongue
-            .setVisible(false);
-
-
-            this.tweens.add({
-
-                targets:
-                    target.container,
-
-                x:mouthX,
-                y:mouthY,
-
-                scaleX:.08,
-                scaleY:.08,
-
-                duration:190,
-
-                ease:"Quad.easeIn",
-
-                onComplete:()=>{
-
-                    const chosen =
-                        target.label;
-
-                    destroyFruit(
-                        target
-                    );
-
-
-                    const fidx =
-                        fruits.indexOf(
-                            target
-                        );
-
-                    if(fidx>=0){
-                        fruits.splice(
-                            fidx,1
-                        );
-                    }
-
-
-                    const correct =
-                        QUESTIONS[
-                            currentQuestion
-                        ].answer;
-
-
-                    if(
-                        chosen ===
-                        correct
-                    ){
-
-                        swallowCorrect.call(
-                            this
-                        );
-
-                    }else{
-
-                        swallowWrong.call(
-                            this,
-                            chosen
-                        );
-                    }
-
-                }
-
-            });
-
-        }
-    );
-}
-
-
-/* =========================================================
-   CORRECT
-   ========================================================= */
-
-function swallowCorrect(){
-
-    correctSound();
-
-    setFrogHappy();
-
-
-    feedbackText
-    .setText("SEDAP! ✓")
-    .setColor("#ffffff")
-    .setVisible(true);
-
-
-    this.tweens.add({
-
-        targets:
-            frog.container,
-
-        scaleX:
-            frog.container.scaleX*
-            1.08,
-
-        scaleY:
-            frog.container.scaleY*
-            .93,
-
-        duration:120,
-
-        yoyo:true,
-
-        repeat:1
-    });
-
-
-    this.tweens.add({
-
-        targets:
-            feedbackText,
-
-        y:
-            feedbackText.y-35,
-
-        alpha:0,
-
-        duration:700,
-
-        ease:"Quad.easeOut",
-
-        onComplete:()=>{
-
-            feedbackText
-            .setAlpha(1)
-            .setVisible(false);
-
-            currentQuestion++;
-
-            if(
-                currentQuestion >=
-                QUESTIONS.length
-            ){
-
-                finishGame.call(
-                    this
-                );
-
-                return;
-            }
-
-
-            showQuestion.call(
-                this
-            );
-
-            clearFruits.call(
-                this
-            );
-
-            setFrogNormal();
-
-            swallowBusy=false;
-
-            this.time.delayedCall(
-                300,
-                ()=>{
-                    spawnFruit.call(
-                        this
-                    );
-                }
-            );
-
-        }
-
-    });
-
-}
-
-
-/* =========================================================
-   WRONG / VOMIT
-   ========================================================= */
-
-function swallowWrong(
-    chosen
-){
-
-    wrongSound();
-
-    setFrogSick();
-
-
-    feedbackText
-    .setText(
-        "BLEKK! ✕\n"+
-        chosen+
-        " SALAH"
-    )
-    .setColor("#ffffff")
-    .setVisible(true);
-
-
-    /* shake frog */
-
-    const originalX =
-        frog.container.x;
-
-
-    this.tweens.add({
-
-        targets:
-            frog.container,
-
-        x:originalX+9,
-
-        angle:5,
-
-        duration:55,
-
-        yoyo:true,
-
-        repeat:5,
-
-        onComplete:()=>{
-
-            frog.container
-            .setX(originalX)
-            .setAngle(0);
-        }
-    });
-
-
-    /* VOMIT PARTICLES */
-
-    createVomit.call(
-        this
-    );
-
-
-    this.time.delayedCall(
-        900,
-        ()=>{
-
-            setFrogNormal();
-
-            feedbackText
-            .setVisible(false);
-
-            swallowBusy=false;
-
-        }
-    );
-}
-
-
-/* =========================================================
-   VOMIT ANIMATION
-   ========================================================= */
-
-function createVomit(){
-
-    const baseX =
-        frog.container.x;
-
-    const baseY =
-        frog.container.y-5;
-
-
-    for(
-        let i=0;
-        i<9;
-        i++
-    ){
-
-        const dot =
-            this.add.circle(
-                baseX,
-                baseY,
-                Phaser.Math.Between(
-                    5,10
-                ),
-                0x91cc35
-            )
-            .setDepth(75);
-
-
-        this.tweens.add({
-
-            targets:dot,
-
-            x:
-                baseX +
-                Phaser.Math.Between(
-                    35,115
-                ),
-
-            y:
-                baseY +
-                Phaser.Math.Between(
-                    -35,50
-                ),
-
-            alpha:0,
-
-            scale:.4,
-
-            duration:
-                Phaser.Math.Between(
-                    350,650
-                ),
-
-            ease:"Quad.easeOut",
-
-            onComplete:()=>{
-                dot.destroy();
-            }
-
-        });
-    }
-
-
-    /* ejected fruit symbol */
-
-    const vomitFruit =
-        this.add.circle(
-            baseX+12,
-            baseY,
-            16,
-            0xdce73d
+            game.scale.width !== width ||
+            game.scale.height !== height
         )
-        .setDepth(76);
-
-
-    this.tweens.add({
-
-        targets:
-            vomitFruit,
-
-        x:baseX+120,
-        y:baseY+65,
-
-        angle:360,
-
-        alpha:0,
-
-        duration:650,
-
-        ease:"Quad.easeOut",
-
-        onComplete:()=>{
-            vomitFruit.destroy();
-        }
-
-    });
-}
-
-
-/* =========================================================
-   DESTROY FRUIT
-   ========================================================= */
-
-function destroyFruit(
-    fruit
-){
-
-    if(
-        fruit &&
-        fruit.container &&
-        fruit.container.scene
     ){
-
-        fruit.container.destroy();
+        game.scale.resize(width,height);
     }
-}
+});
 
-
-/* =========================================================
-   CLEAR FRUITS BETWEEN QUESTIONS
-   ========================================================= */
-
-function clearFruits(){
-
-    fruits.forEach(f=>{
-        destroyFruit(f);
-    });
-
-    fruits=[];
-    fallingFruits=[];
-
-    lastSpawn=0;
-
-    labelIndex =
-        Phaser.Math.Between(
-            0,3
-        );
-}
-
-
-/* =========================================================
-   FINISH GAME
-   ========================================================= */
-
-function finishGame(){
-
-    gameFinished=true;
-    swallowBusy=true;
-
-    clearFruits.call(this);
-
-    setFrogHappy();
-
-
-    questionText
-    .setText(
-        "TAHNIAH!\nAnda telah menjawab semua 25 soalan."
-    )
-    .setFontSize(
-        this.scale.width<650
-        ? 30
-        : 38
-    );
-
-
-    optionTexts.forEach(
-        t=>t.setVisible(false)
-    );
-
-
-    progressText
-    .setText("25/25");
-
-
-    eatButton.clear();
-
-    eatButton.fillStyle(
-        0x43a047,
-        1
-    );
-
-    const portrait =
-        this.scale.width<650;
-
-    const btnW =
-        portrait
-        ? Math.min(
-            this.scale.width*.44,
-            210
-        )
-        : Math.min(
-            this.scale.width*.25,
-            250
-        );
-
-    const btnH =
-        portrait
-        ? 72
-        : 76;
-
-
-    eatButton.fillRoundedRect(
-        -btnW/2,
-        -btnH/2,
-        btnW,
-        btnH,
-        22
-    );
-
-
-    eatButtonText
-    .setText("SELESAI ✓");
-
-
-    feedbackText
-    .setText("25 / 25 ★")
-    .setColor("#ffffff")
-    .setVisible(true);
-
-
-    correctSound();
-}
+observer.observe(stage);
 </script>
 
 </body>
