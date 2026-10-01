@@ -4,11 +4,14 @@
 <meta charset="UTF-8">
 
 <meta
-    name="viewport"
-    content="width=device-width,initial-scale=1,viewport-fit=cover"
->
+name="viewport"
+content="width=device-width,
+initial-scale=1,
+maximum-scale=1,
+user-scalable=no,
+viewport-fit=cover">
 
-<title>Mystery Doors Challenge — Set 4</title>
+<title>Game Padankan - Unit 9 Set 1</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
@@ -18,2839 +21,2307 @@
     -webkit-tap-highlight-color:transparent;
 }
 
-:root{
-    font-family:"Trebuchet MS",Arial,sans-serif;
-    color:#fff;
-    background:#eaf2fa;
+html,
+body{
+    margin:0;
+    padding:0;
+    width:100%;
+    min-height:100%;
+
+    font-family:
+    "Trebuchet MS",
+    Arial,
+    sans-serif;
+
+    background:
+    linear-gradient(
+        135deg,
+        #d8f3ff,
+        #f7fcff,
+        #dcefff
+    );
+
+    overscroll-behavior:none;
 }
 
 body{
-    margin:0;
+    min-height:100vh;
     min-height:100svh;
-    padding:16px 10px;
 
-    background:
-        radial-gradient(
-            ellipse at top,
-            #fff 0,
-            #e9f3fc 50%,
-            #dce6f4 100%
-        );
-}
-
-button,
-a{
-    touch-action:manipulation;
-}
-
-button{
-    font:inherit;
-    cursor:pointer;
-}
-
-button:focus-visible,
-a:focus-visible{
-    outline:3px solid #ffdb82;
-    outline-offset:4px;
-}
-
-.shell{
-    --top:#243b68;
-    --bottom:#567bb0;
-
-    max-width:1050px;
-    margin:auto;
-
-    border-radius:28px;
-    overflow:hidden;
-
-    background:
-        linear-gradient(
-            150deg,
-            var(--top),
-            var(--bottom)
-        );
-
-    box-shadow:0 20px 60px #23395e30;
-    border:1px solid #ffffff90;
-    transition:background .3s;
-}
-
-.topbar{
     display:flex;
-    align-items:center;
-    justify-content:space-between;
-
-    padding:15px 20px;
-    border-bottom:1px solid #ffffff18;
-    gap:10px;
-}
-
-.btn{
-    display:inline-flex;
-    align-items:center;
     justify-content:center;
-
-    min-height:44px;
-    border:1px solid #ffffff30;
-    border-radius:14px;
-
-    background:#101f3b55;
-    color:#fff;
-
-    padding:10px 16px;
-    font-weight:bold;
-    text-decoration:none;
-    font-size:13px;
-}
-
-.btn:active{
-    transform:translateY(1px);
-}
-
-.btn:disabled{
-    opacity:.4;
-    cursor:default;
-}
-
-.brand{
-    text-align:center;
-}
-
-.brand strong{
-    display:block;
-    font-size:16px;
-    letter-spacing:1.5px;
-}
-
-.brand small{
-    display:block;
-    color:#d5e3fc;
-    font-size:10px;
-    letter-spacing:2px;
-    margin-top:4px;
-}
-
-.right{
-    display:flex;
-    gap:8px;
     align-items:center;
+
+    padding:
+    max(5px,env(safe-area-inset-top))
+    5px
+    max(5px,env(safe-area-inset-bottom));
 }
 
-.score{
-    color:#ffe49a;
-    background:#ffffff10;
-    border:1px solid #ffffff15;
+#game-shell{
+    width:min(
+        96vw,
+        760px,
+        calc(94svh * 0.75)
+    );
 
-    padding:10px 14px;
-    border-radius:14px;
+    aspect-ratio:3 / 4;
 
-    font-weight:bold;
-    white-space:nowrap;
-}
+    position:relative;
 
-.sound{
-    width:44px;
-    padding:0;
-    font-size:21px;
-}
-
-.content{
-    display:grid;
-    grid-template-columns:320px minmax(0,1fr);
-    gap:20px;
-    padding:24px;
-}
-
-.side{
-    display:flex;
-    flex-direction:column;
-    gap:16px;
-    min-width:0;
-}
-
-.stage-line{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-}
-
-.eyebrow{
-    font-size:11px;
-    letter-spacing:2px;
-    color:#d0dff5;
-    font-weight:bold;
-}
-
-.stage-count{
-    font-size:12px;
-    background:#ffffff14;
-    padding:7px 10px;
-    border-radius:9px;
-}
-
-.stage-title{
-    font-size:24px;
-    margin:8px 0 0;
-    letter-spacing:.5px;
-}
-
-.stage-track{
-    display:flex;
-    gap:6px;
-    margin-top:14px;
-}
-
-.stage-track span{
-    height:5px;
-    background:#ffffff24;
-    border-radius:9px;
-    flex:1;
-}
-
-.stage-track .done{
-    background:#8ae4c5;
-}
-
-.stage-track .now{
-    background:#ffe09a;
-}
-
-.question{
-    background:#f8fbff;
-    color:#24334f;
-
-    padding:22px;
-    border-radius:23px;
-
-    box-shadow:0 8px 0 #162b4b20;
-    border:1px solid #fff;
-}
-
-.q-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:8px;
-    margin-bottom:16px;
-}
-
-.q-tag{
-    font-size:11px;
-    letter-spacing:1px;
-    font-weight:bold;
-    color:#53709a;
-}
-
-.q-count{
-    font-size:12px;
-    color:#8192ac;
-}
-
-.question p{
-    font-size:clamp(17px,1.9vw,21px);
-    line-height:1.55;
-    font-weight:bold;
-    margin:0;
-}
-
-.hint{
-    font-size:13px;
-    line-height:1.6;
-    color:#d7e5f9;
-    margin:0;
-}
-
-.memory{
-    background:#14223c60;
-    border:1px solid #ffffff25;
-
-    padding:12px;
-    border-radius:17px;
-
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.memory[hidden]{
-    display:none;
-}
-
-.clock{
-    font-variant-numeric:tabular-nums;
-    font-family:monospace;
-    font-size:26px;
-    font-weight:bold;
-    color:#ffe49a;
-    min-width:80px;
-}
-
-.memory-info{
-    flex:1;
-    font-size:11px;
-    line-height:1.4;
-    color:#dce8fc;
-}
-
-.memory .btn{
-    font-size:11px;
-    padding:8px;
-    min-height:40px;
-}
-
-.time-track{
-    height:4px;
-    border-radius:4px;
-    background:#ffffff20;
+    border-radius:24px;
     overflow:hidden;
-    margin-top:5px;
+
+    background:#eaf8ff;
+
+    box-shadow:
+        0 18px 45px rgba(30,80,110,.20),
+        0 3px 10px rgba(30,80,110,.15);
+
+    border:3px solid rgba(255,255,255,.95);
 }
 
-.time-fill{
+#game-container{
+    position:absolute;
+    inset:0;
     width:100%;
     height:100%;
-    background:#ffe49a;
-    transition:width .1s linear;
 }
 
-.play{
-    min-width:0;
-}
-
-.status{
-    min-height:45px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    text-align:center;
-    font-size:12px;
-    line-height:1.4;
-    color:#e3edff;
-
-    padding:7px 12px;
-    border:1px solid #ffffff1c;
-    border-radius:13px;
-    background:#10244044;
-
-    margin-bottom:10px;
-}
-
-#game{
-    width:100%;
-    height:500px;
-    border-radius:20px;
-
-    background:
-        radial-gradient(
-            ellipse at center,
-            #ffffff0b,
-            #10213c22
-        );
-
-    overflow:hidden;
-}
-
-canvas{
+#game-container canvas{
     display:block;
+    width:100% !important;
+    height:100% !important;
     touch-action:none;
-}
-
-.feedback{
-    min-height:66px;
-
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-
-    text-align:center;
-    gap:4px;
-
-    padding:10px;
-    border-radius:14px;
-    margin-top:10px;
-
-    background:#ffffff0b;
-}
-
-.feedback strong{
-    font-size:17px;
-    color:#ffe6a4;
-}
-
-.feedback small{
-    font-size:12px;
-    line-height:1.4;
-    color:#e1ebfc;
-}
-
-.feedback.good{
-    background:#0b513b99;
-}
-
-.feedback.bad{
-    background:#8b2f4366;
-}
-
-.footer{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-
-    font-size:11px;
-    color:#d9e6fa;
-    padding:0 24px 20px;
-}
-
-.dots{
-    display:flex;
-    gap:7px;
-}
-
-.dots i{
-    display:block;
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:#ffffff40;
-}
-
-.dots i.done{
-    background:#8ae4c5;
-}
-
-.dots i.now{
-    background:#ffdf93;
-    box-shadow:0 0 0 3px #ffdf931c;
-}
-
-.finish{
-    padding:18px;
-    border-radius:18px;
-    background:#ffffff14;
-    line-height:1.6;
-}
-
-.finish[hidden]{
-    display:none;
-}
-
-.finish strong{
-    display:block;
-    color:#ffe49a;
-    font-size:24px;
-}
-
-.finish .btn{
-    width:100%;
-    margin-top:12px;
-    background:#fff;
-    color:#294568;
-}
-
-@media(max-width:800px){
-
-    body{
-        padding:8px;
-    }
-
-    .shell{
-        max-width:610px;
-        border-radius:23px;
-    }
-
-    .content{
-        grid-template-columns:1fr;
-        gap:16px;
-        padding:18px;
-    }
-
-    .side{
-        gap:12px;
-    }
-
-    .stage-title{
-        font-size:21px;
-    }
-
-    .stage-track{
-        margin-top:10px;
-    }
-
-    .question{
-        padding:18px;
-    }
-
-    .question p{
-        font-size:18px;
-        line-height:1.45;
-    }
-
-    .q-head{
-        margin-bottom:10px;
-    }
-
-    .hint{
-        font-size:12px;
-    }
-
-    .topbar{
-        padding:12px 16px;
-    }
-
-    #game{
-        height:440px;
-    }
-
-    .footer{
-        padding:0 18px 18px;
-    }
-
-}
-
-@media(max-width:420px){
-
-    body{
-        padding:5px;
-    }
-
-    .shell{
-        border-radius:19px;
-    }
-
-    .topbar{
-        padding:10px;
-        gap:6px;
-    }
-
-    .brand strong{
-        font-size:12px;
-        letter-spacing:1px;
-    }
-
-    .brand small{
-        font-size:8px;
-        letter-spacing:1px;
-    }
-
-    .btn{
-        padding:9px 10px;
-        font-size:11px;
-    }
-
-    .score{
-        padding:10px;
-        font-size:13px;
-    }
-
-    .right{
-        gap:5px;
-    }
-
-    .sound{
-        width:40px;
-    }
-
-    .content{
-        padding:13px;
-        gap:12px;
-    }
-
-    .question p{
-        font-size:16px;
-    }
-
-    .question{
-        padding:16px;
-    }
-
-    .stage-title{
-        font-size:20px;
-    }
-
-    .hint{
-        font-size:11px;
-    }
-
-    .footer{
-        padding:0 13px 16px;
-    }
-
-    #game{
-        height:430px;
-    }
-
-}
-
-@media(min-width:801px) and (max-height:700px){
-
-    body{
-        padding:8px;
-    }
-
-    .content{
-        padding:18px;
-        gap:18px;
-    }
-
-    #game{
-        height:430px;
-    }
-
-    .topbar{
-        padding:10px 18px;
-    }
-
-}
-
-@media(prefers-reduced-motion:reduce){
-
-    *{
-        scroll-behavior:auto!important;
-        transition:none!important;
-    }
-
 }
 </style>
 </head>
 
 <body>
 
-<main class="shell" id="shell">
-
-    <header class="topbar">
-
-        <a
-            class="btn"
-            href="index.html"
-            aria-label="Menu utama"
-        >
-            ⌂ HOME
-        </a>
-
-        <div class="brand">
-            <strong>MYSTERY DOORS</strong>
-            <small>CHALLENGE · SET 4</small>
-        </div>
-
-        <div class="right">
-
-            <span class="score" id="score">
-                ★ 0
-            </span>
-
-            <button
-                class="btn sound"
-                id="sound"
-                aria-label="Matikan bunyi"
-                aria-pressed="true"
-            >
-                ♪
-            </button>
-
-        </div>
-
-    </header>
-
-    <div class="content">
-
-        <section class="side">
-
-            <div>
-
-                <div class="stage-line">
-
-                    <span class="eyebrow" id="stage">
-                        STAGE 1 / 5
-                    </span>
-
-                    <span class="stage-count" id="local">
-                        1 / 5
-                    </span>
-
-                </div>
-
-                <h1 class="stage-title" id="title">
-                    MISTERI KACA
-                </h1>
-
-                <div class="stage-track" id="track"></div>
-
-            </div>
-
-            <div class="question">
-
-                <div class="q-head">
-
-                    <span class="q-tag" id="qtag">
-                        SOALAN 01
-                    </span>
-
-                    <span class="q-count" id="total">
-                        1 / 25
-                    </span>
-
-                </div>
-
-                <p id="question"></p>
-
-            </div>
-
-            <p class="hint" id="hint"></p>
-
-            <div class="memory" id="memory" hidden>
-
-                <span class="clock" id="clock">
-                    00:10
-                </span>
-
-                <div class="memory-info">
-
-                    <span id="memoryLabel">
-                        Hafal kedudukan
-                    </span>
-
-                    <div class="time-track">
-                        <div class="time-fill" id="timeFill"></div>
-                    </div>
-
-                </div>
-
-                <button class="btn" id="reveal" disabled>
-                    Lihat semula
-                </button>
-
-            </div>
-
-            <div class="finish" id="finish" hidden>
-
-                <strong>Tahniah! ★★★</strong>
-
-                25 / 25 soalan selesai.
-                <br>
-
-                <span id="finalScore"></span>
-
-                <button class="btn" id="restart">
-                    ↻ MAIN SEMULA
-                </button>
-
-            </div>
-
-        </section>
-
-        <section class="play">
-
-            <div class="status" id="status">
-                Pilih pintu jawapan yang betul.
-            </div>
-
-            <div
-                id="game"
-                aria-label="Pintu jawapan interaktif"
-            ></div>
-
-            <div
-                class="feedback"
-                id="feedback"
-                role="status"
-                aria-live="polite"
-            >
-
-                <strong id="message">
-                    Cari pintu yang betul
-                </strong>
-
-                <small id="submessage">
-                    Baca soalan, kemudian sentuh sebuah pintu.
-                </small>
-
-            </div>
-
-        </section>
-
-    </div>
-
-    <footer class="footer">
-
-        <span id="progressLabel">
-            PERJALANAN ANDA · 0 / 25
-        </span>
-
-        <div class="dots" id="dots"></div>
-
-    </footer>
-
-</main>
+<div id="game-shell">
+    <div id="game-container"></div>
+</div>
 
 <script>
-/* =========================================================
-   SOALAN
-========================================================= */
-
 const QUESTIONS = [
 
     {
-        q:"Meja kaca ialah objek yang ____ air.",
-        answers:[
-            "Menambah",
-            "Menyerap",
-            "Menghasilkan",
-            "Tidak menyerap"
-        ],
-        correct:3
+        id:1,
+        q:"Berapakah bentuk muka bumi yang dinyatakan dalam Unit 9?",
+        a:"Lapan"
     },
 
     {
-        q:"Duit syiling dan klip kertas boleh diletakkan dalam kumpulan yang sama jika kedua-duanya ____.",
-        answers:[
-            "Tidak menyerap air",
-            "Menyerap air",
-            "Diperbuat daripada tisu",
-            "Menghasilkan air"
-        ],
-        correct:0
+        id:2,
+        q:"Pilih bentuk muka bumi yang berupa kawasan tinggi menjulang.",
+        a:"Gunung"
     },
 
     {
-        q:"Murid menitis air pada kain lap dan gelas kaca. Titisan hilang pada kain lap tetapi kekal pada gelas. Apakah kesimpulan?",
-        answers:[
-            "Gelas menyerap air lebih baik daripada kain",
-            "Kedua-duanya tidak menyerap air",
-            "Kedua-duanya menyerap air",
-            "Kain lap menyerap air, gelas kaca tidak menyerap air"
-        ],
-        correct:3
+        id:3,
+        q:"Pilih bentuk muka bumi berupa tanah rendah berhampiran sungai atau kaki gunung/bukit.",
+        a:"Lembah"
     },
 
     {
-        q:"Objek manakah yang menyerap air dan biasa digunakan untuk mengelap?",
-        answers:[
-            "Klip kertas",
-            "Straw",
-            "Tisu",
-            "Pemadam"
-        ],
-        correct:2
+        id:4,
+        q:"Lembah biasanya boleh dijumpai berhampiran ____.",
+        a:"Sungai atau kaki gunung/bukit"
     },
 
     {
-        q:"Antara pasangan berikut, yang manakah kedua-duanya menyerap air?",
-        answers:[
-            "Tisu dan sapu tangan",
-            "Klip kertas dan pemadam",
-            "Straw dan mainan plastik",
-            "Sudu logam dan gelas kaca"
-        ],
-        correct:0
+        id:5,
+        q:"Dalam model bentuk muka bumi, label yang sesuai untuk kawasan air luas di daratan ialah ____.",
+        a:"Tasik"
     },
 
     {
-        q:"Gelas kaca dikelaskan sebagai objek yang ____.",
-        answers:[
-            "Boleh menyerap air",
-            "Tidak boleh menyerap air",
-            "Menghasilkan air",
-            "Menukar warna air"
-        ],
-        correct:1
+        id:6,
+        q:"Dalam sebuah gambar terdapat gunung, sungai dan kawasan tanah rendah di sebelah sungai. Kawasan tanah rendah itu ialah ____.",
+        a:"Lembah"
     },
 
     {
-        q:"Apakah maksud objek tidak menyerap air?",
-        answers:[
-            "Objek yang menyimpan makanan",
-            "Objek yang menghasilkan air",
-            "Objek yang boleh menyerap air",
-            "Objek yang tidak boleh menyerap air"
-        ],
-        correct:3
+        id:7,
+        q:"Bentuk muka bumi berair yang sangat luas ialah ____.",
+        a:"Laut"
     },
 
     {
-        q:"Bebola kapas digunakan dalam ujian awal. Jika air hilang apabila dititiskan padanya, ini menunjukkan bebola kapas ____.",
-        answers:[
-            "Menghasilkan air",
-            "Menyerap air",
-            "Tidak menyerap air",
-            "Menjadi plastik"
-        ],
-        correct:1
+        id:8,
+        q:"Bentuk muka bumi yang terdapat di tepi laut ialah ____.",
+        a:"Pantai"
     },
 
     {
-        q:"Alas kaki dan pinggan plastik diuji. Pengelasan yang betul ialah ____.",
-        answers:[
-            "Kedua-duanya menyerap air",
-            "Kedua-duanya tidak menyerap air",
-            "Alas kaki menyerap air, pinggan plastik tidak menyerap air",
-            "Pinggan plastik menyerap air, alas kaki tidak menyerap air"
-        ],
-        correct:2
+        id:9,
+        q:"Gunung dan bukit mempunyai persamaan kerana kedua-duanya merupakan kawasan ____.",
+        a:"Tinggi"
     },
 
     {
-        q:"Objek berbentuk tiub manakah yang tidak boleh menyerap air?",
-        answers:[
-            "Straw",
-            "Tisu",
-            "Kain lap",
-            "Sapu tangan"
-        ],
-        correct:0
+        id:10,
+        q:"Pilih satu jenis tanah yang dinyatakan dalam Unit 9.",
+        a:"Tanah kebun"
     },
 
     {
-        q:"Dalam ujian titisan air, objek yang tiada lagi titisan air di atasnya ialah objek yang ____.",
-        answers:[
-            "Menolak air",
-            "Menyerap air",
-            "Menghasilkan air",
-            "Tidak menyerap air"
-        ],
-        correct:1
+        id:11,
+        q:"Mengapakah tanah kebun, tanah liat dan pasir diletakkan dalam satu kumpulan?",
+        a:"Ketiga-tiganya ialah jenis tanah"
     },
 
     {
-        q:"Mengapakah ketebalan objek perlu dimalarkan dalam aktiviti perbandingan?",
-        answers:[
-            "Supaya semua objek tidak menyerap air",
-            "Supaya air menjadi pepejal",
-            "Supaya objek menghasilkan air",
-            "Supaya perbandingan keupayaan menyerap air lebih adil"
-        ],
-        correct:3
+        id:12,
+        q:"Ciri utama butiran tanah liat dalam Unit 9 ialah sangat ____.",
+        a:"Halus"
     },
 
     {
-        q:"Dalam aktiviti mop mini, tali pengikat digunakan kerana perlu membantu mop ____.",
-        answers:[
-            "Menjadi logam",
-            "Menghalang cahaya",
-            "Menyerap air",
-            "Menjadi kaca"
-        ],
-        correct:2
+        id:13,
+        q:"Tanah kebun dan pasir disiasat dalam aktiviti kandungan tanah. Apakah persamaan kedua-duanya?",
+        a:"Kedua-duanya jenis tanah"
     },
 
     {
-        q:"Bebola kapas sesuai untuk mengelap luka kerana bebola kapas ____.",
-        answers:[
-            "Boleh menyerap cecair",
-            "Diperbuat daripada logam",
-            "Tidak boleh menyerap air",
-            "Menghalang hujan"
-        ],
-        correct:0
+        id:14,
+        q:"Apakah tiga jenis tanah yang dinyatakan dalam Unit 9?",
+        a:"Tanah kebun, tanah liat dan pasir"
     },
 
     {
-        q:"Tong besi perlu tidak menyerap air supaya ____.",
-        answers:[
-            "Tong menyerap semua air",
-            "Tong mengeringkan badan",
-            "Tong menjadi tisu",
-            "Boleh menadah dan menyimpan air"
-        ],
-        correct:3
+        id:15,
+        q:"Jika satu kad tertulis 'tanah kebun', kad itu perlu diletakkan di bawah tajuk ____.",
+        a:"Jenis tanah"
     },
 
     {
-        q:"Badan adik basah selepas mandi. Objek manakah paling sesuai digunakan?",
-        answers:[
-            "Pinggan plastik",
-            "Tuala",
-            "Sudu logam",
-            "Gelas kaca"
-        ],
-        correct:1
+        id:16,
+        q:"Tanah kebun, tanah liat dan pasir ialah contoh ____.",
+        a:"Jenis tanah"
     },
 
     {
-        q:"Imran berpeluh selepas bermain. Apakah objek yang sesuai digunakan?",
-        answers:[
-            "Tong besi",
-            "Gelas kaca",
-            "Sapu tangan",
-            "Payung plastik"
-        ],
-        correct:2
+        id:17,
+        q:"Jika murid tersalah menyenaraikan gunung sebagai jenis tanah, pembetulan yang betul ialah ____.",
+        a:"Gunung ialah bentuk muka bumi"
     },
 
     {
-        q:"Objek menyerap air penting untuk ____.",
-        answers:[
-            "Mengelap cecair",
-            "Menghasilkan air",
-            "Menukar air menjadi logam",
-            "Menghalang semua cahaya"
-        ],
-        correct:0
+        id:18,
+        q:"Yang manakah kandungan yang boleh terdapat pada tanah kebun tetapi tidak dinyatakan sebagai kandungan pasir?",
+        a:"Daun kering"
     },
 
     {
-        q:"Tong besi penting kerana boleh ____.",
-        answers:[
-            "Mengelap peluh",
-            "Menadah dan menyimpan air hujan",
-            "Mengeringkan badan",
-            "Menyerap semua air hujan"
-        ],
-        correct:1
+        id:19,
+        q:"Seorang murid mahu melihat butiran kecil dalam tanah dengan lebih jelas. Alat yang sesuai ialah ____.",
+        a:"Kanta pembesar"
     },
 
     {
-        q:"Payung plastik penting kerana dapat ____.",
-        answers:[
-            "Mengelap peluh",
-            "Mengeringkan badan",
-            "Menyerap semua air hujan",
-            "Menghalang diri daripada terkena air hujan"
-        ],
-        correct:3
+        id:20,
+        q:"Yang manakah kandungan yang terdapat pada kedua-dua tanah kebun dan pasir?",
+        a:"Butir pasir"
     },
 
     {
-        q:"Mengapakah kasut getah sesuai digunakan ketika hujan?",
-        answers:[
-            "Kerana menyimpan air hujan",
-            "Kerana menyerap air ke dalam kasut",
-            "Kerana tidak menyerap air dan membantu kaki kekal kering",
-            "Kerana digunakan untuk mengelap meja"
-        ],
-        correct:2
+        id:21,
+        q:"Selepas memerhati tanah kebun, kandungannya diasingkan menggunakan ____.",
+        a:"Forsep"
     },
 
     {
-        q:"Objek yang boleh menyerap air dan objek yang tidak boleh menyerap air adalah ____.",
-        answers:[
-            "Penting dalam kehidupan",
-            "Hanya digunakan di sekolah",
-            "Tidak berguna",
-            "Hanya digunakan ketika malam"
-        ],
-        correct:0
+        id:22,
+        q:"Tanah kebun mengandungi lebih pelbagai bahan berbanding ____.",
+        a:"Pasir"
     },
 
     {
-        q:"Seorang murid memilih tisu untuk mengelakkan hujan membasahi badannya. Mengapakah pilihan itu kurang sesuai?",
-        answers:[
-            "Tisu tidak menyerap air",
-            "Tisu diperbuat daripada logam",
-            "Tisu menyerap air",
-            "Tisu sama seperti payung plastik"
-        ],
-        correct:2
+        id:23,
+        q:"Alat yang digunakan untuk mengasingkan kandungan tanah ialah ____.",
+        a:"Forsep"
     },
 
     {
-        q:"Mengapakah tuala sesuai digunakan selepas mandi?",
-        answers:[
-            "Kerana diperbuat daripada kaca",
-            "Kerana menyerap air pada badan",
-            "Kerana menadah air hujan",
-            "Kerana tidak menyerap air"
-        ],
-        correct:1
+        id:24,
+        q:"Mengapakah pemerhatian dicatat dalam jadual?",
+        a:"Untuk merekod kandungan yang diperhatikan"
     },
 
     {
-        q:"Mengapakah payung plastik sesuai digunakan ketika hujan?",
-        answers:[
-            "Kerana menyerap air dengan cepat",
-            "Kerana mengeringkan lantai",
-            "Kerana menyerap peluh",
-            "Kerana tidak menyerap air dan menghalang hujan"
-        ],
-        correct:3
+        id:25,
+        q:"Pasir mengandungi butir pasir dan ____.",
+        a:"Batu-batu kecil"
     }
 
 ];
 
-/* =========================================================
-   TEMA STAGE
-========================================================= */
+
+/* =====================================================
+   STAGE
+===================================================== */
 
 const STAGES = [
 
     {
-        title:"MISTERI KACA",
-        top:"#243b68",
-        bottom:"#567bb0",
-        door:0x517faf,
-        hint:"Baca soalan dan pilih pintu jawapan yang betul."
+        title:"Bentuk Muka Bumi I",
+        ids:[1,2,3,4,5]
     },
 
     {
-        title:"PINTU BERPINDAH",
-        top:"#174957",
-        bottom:"#438b91",
-        door:0x3c9096,
-        hint:"Perhatikan pintu berpindah. Pilih selepas pintu berhenti."
+        title:"Bentuk Muka Bumi II",
+        ids:[6,7,8,9,10]
     },
 
     {
-        title:"UJIAN INGATAN",
-        top:"#453562",
-        bottom:"#886b9e",
-        door:0x8967aa,
-        hint:"Hafal selama 10 saat. Teks dan huruf A–D akan hilang. Lihat semula sekali sahaja."
+        title:"Jenis Tanah I",
+        ids:[11,12,13,14,15]
     },
 
     {
-        title:"MISI HARIAN",
-        top:"#204c49",
-        bottom:"#609780",
-        door:0x4d967d,
-        hint:"Gunakan pengetahuan tentang air dalam kehidupan harian."
+        title:"Jenis Tanah II",
+        ids:[16,17,18,19,20]
     },
 
     {
-        title:"PINTU PENDUA",
-        top:"#293756",
-        bottom:"#627cad",
-        door:0x587eaf,
-        hint:"Ada 6 pintu: 4 sebenar dan 2 pendua. Pintu pendua kelihatan sama tetapi kosong apabila dibuka."
+        title:"Kandungan Tanah",
+        ids:[21,22,23,24,25]
     }
 
 ];
 
-/* =========================================================
-   UTILITIES
-========================================================= */
 
-const $ = id => document.getElementById(id);
+/* =====================================================
+   SHUFFLE
+===================================================== */
 
 function shuffle(array){
 
-    const result = [...array];
+    const result=[...array];
 
-    for(let i=result.length-1;i>0;i--){
+    for(
+        let i=result.length-1;
+        i>0;
+        i--
+    ){
 
-        const j = Math.floor(
-            Math.random()*(i+1)
-        );
+        const j=
+            Math.floor(
+                Math.random()*(i+1)
+            );
 
         [
             result[i],
             result[j]
-        ] = [
+        ]=[
             result[j],
             result[i]
         ];
-
     }
 
     return result;
-
 }
 
-/* =========================================================
-   AUDIO
-========================================================= */
 
-const AUDIO = {
+/* =====================================================
+   SCENE
+===================================================== */
 
-    enabled:true,
-    ctx:null,
-
-    init(){
-
-        try{
-
-            this.ctx ??= new(
-                window.AudioContext ||
-                window.webkitAudioContext
-            )();
-
-            if(this.ctx.state === "suspended"){
-
-                this.ctx.resume().catch(()=>{});
-
-            }
-
-        }
-        catch(error){}
-
-    },
-
-    tone(
-        frequency=440,
-        duration=.12,
-        type="sine",
-        offset=0
-    ){
-
-        if(!this.enabled || !this.ctx){
-            return;
-        }
-
-        const context = this.ctx;
-
-        const oscillator =
-            context.createOscillator();
-
-        const gain =
-            context.createGain();
-
-        const startTime =
-            context.currentTime + offset;
-
-        oscillator.type = type;
-        oscillator.frequency.value = frequency;
-
-        gain.gain.setValueAtTime(
-            .0001,
-            startTime
-        );
-
-        gain.gain.exponentialRampToValueAtTime(
-            .035,
-            startTime+.01
-        );
-
-        gain.gain.exponentialRampToValueAtTime(
-            .0001,
-            startTime+duration
-        );
-
-        oscillator.connect(gain);
-        gain.connect(context.destination);
-
-        oscillator.start(startTime);
-
-        oscillator.stop(
-            startTime+duration+.02
-        );
-
-        oscillator.onended = ()=>{
-
-            oscillator.disconnect();
-            gain.disconnect();
-
-        };
-
-    },
-
-    correct(){
-
-        [540,720,960].forEach((frequency,index)=>{
-
-            this.tone(
-                frequency,
-                .18,
-                "sine",
-                index*.09
-            );
-
-        });
-
-    },
-
-    wrong(){
-
-        this.tone(
-            170,
-            .18,
-            "triangle"
-        );
-
-        this.tone(
-            120,
-            .2,
-            "triangle",
-            .12
-        );
-
-    }
-
-};
-
-/* =========================================================
-   MAIN SCENE
-========================================================= */
-
-class MysteryDoorGame extends Phaser.Scene{
+class MatchScene extends Phaser.Scene{
 
     constructor(){
 
-        super("MysteryDoorGame");
+        super("MatchScene");
 
     }
+
 
     create(){
 
-        this.index = 0;
-        this.score = 0;
+        this.stageIndex=0;
 
-        this.version = 0;
+        this.totalMatched=0;
 
-        this.busy = false;
-        this.finished = false;
+        this.mistakes=0;
 
-        this.doors = [];
+        this.selectedId=null;
 
-        this.memoryLeft = 0;
-        this.memoryTotal = 0;
+        this.matches=[];
 
-        this.layer =
-            this.add.container();
+        this.questionCards=
+            new Map();
 
-        this.effects =
-            this.add.container();
+        this.answerCards=
+            new Map();
 
-        this.scale.on("resize",()=>{
 
-            if(this.busy){
+        /* =========================
+           GRAPHICS
+        ========================= */
 
-                this.needsLayout = true;
-
-            }
-            else{
-
-                this.layout();
-
-            }
-
-        });
-
-        $("reveal").onclick = ()=>{
-
-            this.reveal();
-
-        };
-
-        $("restart").onclick = ()=>{
-
-            AUDIO.init();
-
-            this.index = 0;
-            this.score = 0;
-            this.finished = false;
-
-            this.loadQuestion();
-
-        };
-
-        $("sound").onclick = ()=>{
-
-            AUDIO.init();
-
-            AUDIO.enabled =
-                !AUDIO.enabled;
-
-            $("sound").textContent =
-                AUDIO.enabled ? "♪" : "×";
-
-            $("sound").setAttribute(
-                "aria-pressed",
-                String(AUDIO.enabled)
-            );
-
-            $("sound").setAttribute(
-                "aria-label",
-                AUDIO.enabled
-                    ? "Matikan bunyi"
-                    : "Hidupkan bunyi"
-            );
-
-        };
-
-        /*
-        PENTING:
-        Guna loadQuestion(), BUKAN load().
-        this.load ialah LoaderPlugin milik Phaser.
-        */
-
-        this.loadQuestion();
-
-    }
-
-    /* =====================================================
-       SAFE TIMER
-    ===================================================== */
-
-    after(milliseconds,callback){
-
-        const version = this.version;
-
-        this.time.delayedCall(
-            milliseconds,
-            ()=>{
-
-                if(version === this.version){
-
-                    callback();
-
-                }
-
-            }
-        );
-
-    }
-
-    message(
-        title,
-        subtitle="",
-        type=""
-    ){
-
-        $("message").textContent =
-            title;
-
-        $("submessage").textContent =
-            subtitle;
-
-        $("feedback").className =
-            "feedback " + type;
-
-    }
-
-    status(text){
-
-        $("status").textContent = text;
-
-    }
-
-    /* =====================================================
-       LOAD QUESTION — NAMA SUDAH DIBETULKAN
-    ===================================================== */
-
-    loadQuestion(){
-
-        this.version++;
-
-        this.time.removeAllEvents();
-        this.tweens.killAll();
-
-        this.effects.removeAll(true);
-
-        this.busy = false;
-        this.finished = false;
-
-        this.hiddenAnswers = false;
-        this.revealUsed = false;
-
-        this.memoryLeft = 0;
-
-        this.stage = Math.floor(
-            this.index/5
-        );
-
-        const stage =
-            STAGES[this.stage];
-
-        const question =
-            QUESTIONS[this.index];
-
-        $("shell").style.setProperty(
-            "--top",
-            stage.top
-        );
-
-        $("shell").style.setProperty(
-            "--bottom",
-            stage.bottom
-        );
-
-        $("stage").textContent =
-            "STAGE " +
-            (this.stage+1) +
-            " / 5";
-
-        $("title").textContent =
-            stage.title;
-
-        $("local").textContent =
-            (this.index%5+1) +
-            " / 5";
-
-        $("qtag").textContent =
-            "SOALAN " +
-            String(this.index+1).padStart(2,"0");
-
-        $("total").textContent =
-            (this.index+1) +
-            " / 25";
-
-        $("question").textContent =
-            question.q;
-
-        $("hint").textContent =
-            stage.hint;
-
-        $("score").textContent =
-            "★ " + this.score;
-
-        $("finish").hidden = true;
-
-        $("memory").hidden =
-            this.stage !== 2;
-
-        $("reveal").disabled = true;
-
-        $("reveal").textContent =
-            "Lihat semula";
-
-        $("track").innerHTML =
-            STAGES.map((_,index)=>{
-
-                const className =
-                    index < this.stage
-                        ? "done"
-                        : index === this.stage
-                            ? "now"
-                            : "";
-
-                return (
-                    '<span class="' +
-                    className +
-                    '"></span>'
-                );
-
-            }).join("");
-
-        $("dots").innerHTML =
-            Array.from(
-                {length:5},
-                (_,index)=>{
-
-                    const className =
-                        index < this.index%5
-                            ? "done"
-                            : index === this.index%5
-                                ? "now"
-                                : "";
-
-                    return (
-                        '<i class="' +
-                        className +
-                        '"></i>'
-                    );
-
-                }
-            ).join("");
-
-        $("progressLabel").textContent =
-            "PERJALANAN ANDA · " +
-            this.index +
-            " / 25";
-
-        let choices =
-            question.answers.map((text,index)=>({
-
-                text,
-                answer:index,
-                fake:false
-
-            }));
-
-        /* Stage 5: tambah dua pintu pendua. */
-
-        if(this.stage === 4){
-
-            shuffle([0,1,2,3])
-                .slice(0,2)
-                .forEach(index=>{
-
-                    choices.push({
-
-                        text:
-                            question.answers[index],
-
-                        answer:index,
-
-                        fake:true
-
-                    });
-
-                });
-
-        }
-
-        this.doors =
-            shuffle(choices).map((choice,slot)=>({
-
-                choice,
-                slot,
-
-                opened:false,
-                win:false
-
-            }));
-
-        this.layout();
-
-        this.message(
-            "Cari pintu yang betul",
-            "Sentuh pintu untuk membuka jawapan."
-        );
-
-        this.status(
-            "Pilih pintu jawapan yang betul."
-        );
-
-        /* Stage 2 */
-
-        if(this.stage === 1){
-
-            this.busy = true;
-
-            this.status(
-                "Perhatikan pintu yang sedang berpindah…"
-            );
-
-            this.after(400,()=>{
-
-                this.autoShuffle(1);
-
-            });
-
-        }
-
-        /* Stage 3 */
-
-        if(this.stage === 2){
-
-            this.memoryLeft = 10000;
-            this.memoryTotal = 10000;
-
-            this.status(
-                "Hafal jawapan dan kedudukan pintu."
-            );
-
-            this.updateClock();
-
-        }
-
-        /* Stage 5 */
-
-        if(this.stage === 4){
-
-            this.status(
-                "Awas! Dua daripada enam pintu ialah pintu pendua."
-            );
-
-        }
-
-    }
-
-    /* =====================================================
-       RESPONSIVE LAYOUT
-    ===================================================== */
-
-    layout(){
-
-        if(!this.doors.length){
-            return;
-        }
-
-        this.needsLayout = false;
-
-        const host = $("game");
-
-        const width = Math.max(
-            260,
-            host.clientWidth
-        );
-
-        const columns =
-            this.doors.length === 6 &&
-            width >= 480
-                ? 3
-                : 2;
-
-        const rows = Math.ceil(
-            this.doors.length / columns
-        );
-
-        const height =
-            rows === 3
-                ? 650
-                : width < 420
-                    ? 440
-                    : 500;
-
-        if(
-            host.style.height !==
-            height+"px"
-        ){
-
-            host.style.height =
-                height+"px";
-
-        }
-
-        if(
-            this.scale.width !== width ||
-            this.scale.height !== height
-        ){
-
-            this.scale.resize(
-                width,
-                height
-            );
-
-            return;
-
-        }
-
-        this.layer.removeAll(true);
-
-        const gap =
-            width < 420 ? 12 : 18;
-
-        const padding = 12;
-
-        const cellWidth =
-            (
-                width -
-                padding*2 -
-                gap*(columns-1)
-            ) / columns;
-
-        const cellHeight =
-            (
-                height -
-                padding*2 -
-                gap*(rows-1)
-            ) / rows;
-
-        this.slots =
-            Array.from(
-                {length:this.doors.length},
-                (_,index)=>({
-
-                    x:
-                        padding +
-                        cellWidth/2 +
-                        (index%columns) *
-                        (cellWidth+gap),
-
-                    y:
-                        padding +
-                        cellHeight/2 +
-                        Math.floor(index/columns) *
-                        (cellHeight+gap)
-
-                })
-            );
-
-        this.doors.forEach(door=>{
-
-            this.drawDoor(
-                door,
-                cellWidth,
-                cellHeight
-            );
-
-        });
-
-    }
-
-    /* =====================================================
-       GRAPHIC HELPERS
-    ===================================================== */
-
-    rect(
-        graphics,
-        color,
-        x,
-        y,
-        width,
-        height,
-        radius,
-        alpha=1
-    ){
-
-        graphics.fillStyle(
-            color,
-            alpha
-        );
-
-        graphics.fillRoundedRect(
-            x,
-            y,
-            width,
-            height,
-            radius
-        );
-
-    }
-
-    text(
-        x,
-        y,
-        value,
-        size,
-        color="#fff"
-    ){
-
-        return this.add.text(
-            x,
-            y,
-            value,
-            {
-                fontFamily:
-                    "Trebuchet MS, Arial, sans-serif",
-
-                fontSize:
-                    size+"px",
-
-                fontStyle:"bold",
-
-                color,
-
-                align:"center"
-            }
-        )
-        .setOrigin(.5)
-        .setResolution(
-            Math.min(
-                window.devicePixelRatio || 1,
-                2
-            )
-        );
-
-    }
-
-    /* =====================================================
-       DRAW DOOR
-    ===================================================== */
-
-    drawDoor(
-        door,
-        width,
-        height
-    ){
-
-        const position =
-            this.slots[door.slot];
-
-        const container =
-            this.add.container(
-                position.x,
-                position.y
-            );
-
-        const frame =
+        this.bg=
             this.add.graphics();
 
-        const innerWidth =
-            width-18;
+        this.lines=
+            this.add.graphics();
 
-        const innerHeight =
-            height-20;
+        this.dynamic=
+            this.add.group();
 
-        /* Shadow */
 
-        this.rect(
-            frame,
-            0x101c31,
-            -width/2+3,
-            -height/2+7,
-            width-6,
-            height-8,
-            18,
-            .3
-        );
+        this.drawBackground();
 
-        /* Outer frame */
+        this.buildHeader();
 
-        this.rect(
-            frame,
-            0x142740,
-            -width/2,
-            -height/2,
-            width,
-            height-5,
-            17
-        );
+        this.buildStage();
 
-        /* Frame highlight */
+    }
 
-        this.rect(
-            frame,
-            0xb7cbe2,
-            -width/2+3,
-            -height/2+3,
-            width-6,
-            height-11,
-            14,
-            .35
-        );
 
-        /* Dark empty room */
+    /* =====================================================
+       BACKGROUND
+    ===================================================== */
 
-        this.rect(
-            frame,
-            0x0a1527,
-            -innerWidth/2,
-            -innerHeight/2,
-            innerWidth,
-            innerHeight,
-            11
-        );
+    drawBackground(){
 
-        const glow =
-            this.add.circle(
-                0,
-                8,
-                31,
-                0x71dafa,
-                .16
-            )
-            .setVisible(door.win);
+        const g=this.bg;
 
-        /* Water drop */
+        g.clear();
 
-        const drop =
-            this.add.graphics()
-                .setVisible(door.win);
 
-        drop.fillStyle(
-            0x7be8ff,
+        /* SKY */
+
+        g.fillStyle(
+            0xeaf8ff,
             1
         );
 
-        drop.fillTriangle(
-            0,-26,
-            -18,9,
-            18,9
-        );
-
-        drop.fillCircle(
+        g.fillRect(
             0,
-            10,
-            18
+            0,
+            900,
+            1200
         );
 
-        drop.fillStyle(
-            0xffffff,
-            .8
+
+        g.fillStyle(
+            0xdff4ff,
+            1
         );
 
-        drop.fillEllipse(
-            -6,
-            9,
-            5,
-            13
+        g.fillRect(
+            0,
+            0,
+            900,
+            350
         );
 
-        /* Panel berpusing pada engsel kiri. */
 
-        const panel =
-            this.add.container(
-                -innerWidth/2,
+        /* GROUND */
+
+        g.fillStyle(
+            0xd9efdc,
+            1
+        );
+
+        g.fillRect(
+            0,
+            1010,
+            900,
+            190
+        );
+
+
+        /* MOUNTAINS */
+
+        g.fillStyle(
+            0xb9ddc2,
+            1
+        );
+
+        g.fillTriangle(
+            0,
+            1050,
+
+            185,
+            825,
+
+            370,
+            1050
+        );
+
+
+        g.fillStyle(
+            0xa7d2b3,
+            1
+        );
+
+        g.fillTriangle(
+            220,
+            1050,
+
+            455,
+            770,
+
+            700,
+            1050
+        );
+
+
+        g.fillStyle(
+            0x91c79f,
+            1
+        );
+
+        g.fillTriangle(
+            535,
+            1050,
+
+            735,
+            835,
+
+            900,
+            1050
+        );
+
+
+        /* RIVER */
+
+        g.fillStyle(
+            0x8ac8e8,
+            .88
+        );
+
+        g.beginPath();
+
+        g.moveTo(
+            0,
+            1120
+        );
+
+        g.lineTo(
+            220,
+            1080
+        );
+
+        g.lineTo(
+            480,
+            1145
+        );
+
+        g.lineTo(
+            900,
+            1090
+        );
+
+        g.lineTo(
+            900,
+            1200
+        );
+
+        g.lineTo(
+            0,
+            1200
+        );
+
+        g.closePath();
+
+        g.fillPath();
+
+
+        /* CLOUD DOTS */
+
+        for(
+            let i=0;
+            i<10;
+            i++
+        ){
+
+            const x=
+                38+
+                i*96;
+
+            const y=
+                72+
+                (i%2)*40;
+
+            g.fillStyle(
+                0xffffff,
+                .40
+            );
+
+            g.fillCircle(
+                x,
+                y,
+                17+
+                (i%3)*4
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       HEADER
+    ===================================================== */
+
+    buildHeader(){
+
+        this.add.text(
+            450,
+            42,
+            "PADANKAN!",
+            {
+
+                fontFamily:
+                    "Trebuchet MS, Arial",
+
+                fontSize:
+                    "44px",
+
+                fontStyle:
+                    "bold",
+
+                color:
+                    "#15354a"
+
+            }
+
+        ).setOrigin(.5);
+
+
+        this.add.text(
+            450,
+            88,
+            "Unit 9 • Bentuk Muka Bumi & Tanah",
+            {
+
+                fontFamily:
+                    "Trebuchet MS, Arial",
+
+                fontSize:
+                    "22px",
+
+                fontStyle:
+                    "bold",
+
+                color:
+                    "#416274"
+
+            }
+
+        ).setOrigin(.5);
+
+
+        this.stageText=
+            this.add.text(
+                46,
+                128,
+                "",
+                {
+
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+
+                    fontSize:
+                        "21px",
+
+                    fontStyle:
+                        "bold",
+
+                    color:
+                        "#183b4f"
+
+                }
+            );
+
+
+        this.progressText=
+            this.add.text(
+                854,
+                128,
+                "",
+                {
+
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+
+                    fontSize:
+                        "19px",
+
+                    fontStyle:
+                        "bold",
+
+                    color:
+                        "#183b4f"
+
+                }
+
+            ).setOrigin(
+                1,
                 0
             );
 
-        const face =
-            this.add.graphics();
 
-        /*
-        Semua pintu stage yang sama
-        menggunakan warna sama,
-        termasuk pintu pendua.
-        */
+        this.add.text(
+            450,
+            166,
+            "Pilih soalan → pilih jawapan yang sepadan",
+            {
 
-        this.rect(
-            face,
-            STAGES[this.stage].door,
-            0,
-            -innerHeight/2,
-            innerWidth,
-            innerHeight,
-            11
-        );
+                fontFamily:
+                    "Trebuchet MS, Arial",
 
-        this.rect(
-            face,
-            0xffffff,
-            4,
-            -innerHeight/2+4,
-            innerWidth-8,
-            6,
-            3,
-            .19
-        );
+                fontSize:
+                    "18px",
 
-        face.lineStyle(
-            1,
-            0xffffff,
-            .25
-        );
-
-        face.strokeRoundedRect(
-            8,
-            -innerHeight/2+10,
-            innerWidth-16,
-            innerHeight-20,
-            7
-        );
-
-        face.lineStyle(
-            1,
-            0x071327,
-            .2
-        );
-
-        face.strokeRoundedRect(
-            12,
-            -innerHeight/2+14,
-            innerWidth-24,
-            innerHeight-28,
-            6
-        );
-
-        /* A / B / C / D */
-
-        const badge =
-            this.add.circle(
-                innerWidth/2,
-                -innerHeight/2+35,
-                19,
-                0xffe7ac
-            );
-
-        const letter =
-            this.text(
-                innerWidth/2,
-                -innerHeight/2+35,
-                "ABCD"[door.choice.answer],
-                22,
-                "#2c405f"
-            );
-
-        /* Answer */
-
-        const answer =
-            this.text(
-                innerWidth/2,
-                25,
-                door.choice.text,
-                width < 170 ? 13 : 15
-            );
-
-        answer.setWordWrapWidth(
-            innerWidth-30
-        );
-
-        answer.setLineSpacing(3);
-
-        let fontSize =
-            width < 170 ? 13 : 15;
-
-        while(
-            answer.height > innerHeight-91 &&
-            fontSize > 11
-        ){
-
-            fontSize -= .5;
-
-            answer.setFontSize(
-                fontSize
-            );
-
-        }
-
-        /* Door knob */
-
-        const knob =
-            this.add.circle(
-                innerWidth-12,
-                innerHeight/2-21,
-                4,
-                0xffdd81
-            )
-            .setStrokeStyle(
-                1,
-                0xfff0bd
-            );
-
-        panel.add([
-            face,
-            badge,
-            letter,
-            answer,
-            knob
-        ]);
-
-        /* Full door tap area */
-
-        const hit =
-            this.add.zone(
-                0,
-                0,
-                width,
-                height
-            )
-            .setInteractive({
-                useHandCursor:true
-            });
-
-        hit.on("pointerdown",()=>{
-
-            AUDIO.init();
-
-            if(
-                !this.busy &&
-                !this.finished &&
-                !door.opened
-            ){
-
-                this.choose(door);
+                color:
+                    "#597584"
 
             }
 
-        });
+        ).setOrigin(.5);
 
-        container.add([
-            frame,
-            glow,
-            drop,
-            panel,
-            hit
-        ]);
+    }
 
-        this.layer.add(
-            container
+
+    /* =====================================================
+       BUILD STAGE
+    ===================================================== */
+
+    buildStage(){
+
+        this.dynamic.clear(
+            true,
+            true
         );
 
-        Object.assign(door,{
 
-            container,
-            panel,
-            badge,
-            letter,
-            answer,
-            glow,
-            drop,
+        this.lines.clear();
 
-            iw:innerWidth
 
-        });
+        this.questionCards.clear();
 
-        panel.scaleX =
-            door.opened ? .035 : 1;
+        this.answerCards.clear();
 
-        [
-            badge,
-            letter,
-            answer
-        ]
-        .forEach(object=>{
 
-            object.setVisible(
-                !this.hiddenAnswers
+        this.matches=[];
+
+        this.selectedId=null;
+
+        this.toast=null;
+
+        this.toastBg=null;
+
+
+        const stage=
+            STAGES[
+                this.stageIndex
+            ];
+
+
+        const items=
+            stage.ids.map(
+
+                id=>
+                    QUESTIONS.find(
+                        q=>q.id===id
+                    )
+
             );
 
-        });
 
-    }
+        const answers=
+            shuffle(items);
 
-    /* =====================================================
-       MEMORY: HIDE TEXT + LETTER
-    ===================================================== */
 
-    setHidden(value){
+        this.stageText.setText(
 
-        this.hiddenAnswers = value;
+            "STAGE "+
+            (this.stageIndex+1)+
+            "/5  •  "+
+            stage.title
 
-        this.doors.forEach(door=>{
-
-            [
-                door.badge,
-                door.letter,
-                door.answer
-            ]
-            .forEach(object=>{
-
-                object.setVisible(
-                    !value
-                );
-
-            });
-
-        });
-
-    }
-
-    updateClock(){
-
-        const seconds =
-            Math.ceil(
-                this.memoryLeft/1000
-            );
-
-        $("clock").textContent =
-            "00:" +
-            String(seconds).padStart(2,"0");
-
-        const percentage =
-            this.memoryTotal
-                ? this.memoryLeft /
-                  this.memoryTotal * 100
-                : 0;
-
-        $("timeFill").style.width =
-            percentage+"%";
-
-        $("memoryLabel").textContent =
-            this.memoryLeft > 0
-                ? this.revealUsed
-                    ? "Lihat semula"
-                    : "Hafal kedudukan"
-                : "Jawapan ditutup";
-
-    }
-
-    update(_,delta){
-
-        if(
-            this.stage !== 2 ||
-            this.memoryLeft <= 0 ||
-            this.finished
-        ){
-            return;
-        }
-
-        this.memoryLeft =
-            Math.max(
-                0,
-                this.memoryLeft-delta
-            );
-
-        this.updateClock();
-
-        if(this.memoryLeft === 0){
-
-            this.setHidden(true);
-
-            $("reveal").disabled =
-                this.revealUsed ||
-                this.busy;
-
-            if(!this.busy){
-
-                this.status(
-                    "Jawapan dan A–D ditutup. Ingat kedudukan pintu!"
-                );
-
-            }
-
-        }
-
-    }
-
-    /* =====================================================
-       REVEAL ONCE — 3 SECONDS
-    ===================================================== */
-
-    reveal(){
-
-        if(
-            this.stage !== 2 ||
-            !this.hiddenAnswers ||
-            this.revealUsed ||
-            this.busy ||
-            this.finished
-        ){
-            return;
-        }
-
-        AUDIO.init();
-        AUDIO.tone();
-
-        this.revealUsed = true;
-
-        this.setHidden(false);
-
-        this.memoryLeft = 3000;
-        this.memoryTotal = 3000;
-
-        $("reveal").disabled = true;
-
-        $("reveal").textContent =
-            "Sudah digunakan";
-
-        this.status(
-            "Lihat semula selama 3 saat. Hafal cepat!"
         );
 
-        this.updateClock();
 
-    }
+        this.updateProgress();
 
-    /* =====================================================
-       UNLOCK INPUT
-    ===================================================== */
 
-    unlock(){
+        this.makeQuestionPanel();
 
-        this.busy = false;
 
-        if(this.needsLayout){
+        const leftX=218;
 
-            this.layout();
+        const rightX=682;
 
-        }
+        const startY=435;
 
-        $("reveal").disabled =
-            this.stage !== 2 ||
-            !this.hiddenAnswers ||
-            this.revealUsed ||
-            this.finished;
+        const gapY=125;
 
-    }
 
-    /* =====================================================
-       STAGE 2 AUTO SHUFFLE
-    ===================================================== */
+        /* QUESTION CARDS */
 
-    autoShuffle(round){
+        items.forEach(
+            (q,index)=>{
 
-        this.status(
-            "Pintu sedang berpindah · " +
-            round +
-            " / 4"
-        );
+                const card=
+                    this.makeQuestionCard(
 
-        this.shuffleDoors(()=>{
+                        leftX,
 
-            if(round < 4){
+                        startY+
+                        index*gapY,
 
-                this.after(100,()=>{
+                        q
 
-                    this.autoShuffle(
-                        round+1
                     );
 
-                });
-
-            }
-            else{
-
-                this.unlock();
-
-                this.status(
-                    "Pintu berhenti. Sekarang pilih jawapan."
+                this.questionCards.set(
+                    q.id,
+                    card
                 );
 
             }
+        );
 
-        });
+
+        /* ANSWER CARDS */
+
+        answers.forEach(
+            (q,index)=>{
+
+                const card=
+                    this.makeAnswerCard(
+
+                        rightX,
+
+                        startY+
+                        index*gapY,
+
+                        q
+
+                    );
+
+                this.answerCards.set(
+                    q.id,
+                    card
+                );
+
+            }
+        );
+
+
+        this.setPanelQuestion(
+            null
+        );
+
+
+        this.makeFooter();
 
     }
 
+
     /* =====================================================
-       SHUFFLE ALL DOORS
+       QUESTION DISPLAY PANEL
     ===================================================== */
 
-    shuffleDoors(done){
+    makeQuestionPanel(){
 
-        this.busy = true;
+        const shadow=
+            this.add.rectangle(
+                450,
+                275,
+                820,
+                160,
+                0x15394a,
+                .10
+            );
 
-        AUDIO.tone(
-            310,
-            .08,
-            "triangle"
+        shadow.y+=5;
+
+
+        const panel=
+            this.add.rectangle(
+                450,
+                270,
+                820,
+                160,
+                0xffffff,
+                .97
+            );
+
+        panel.setStrokeStyle(
+            3,
+            0x9fd4e8,
+            1
         );
 
-        let slots =
-            shuffle(
-                this.doors.map(
-                    door=>door.slot
-                )
+
+        const label=
+            this.add.text(
+                70,
+                207,
+                "SOALAN DIPILIH",
+                {
+
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+
+                    fontSize:
+                        "17px",
+
+                    fontStyle:
+                        "bold",
+
+                    color:
+                        "#2780a3"
+
+                }
             );
 
-        const allSame =
-            this.doors.every(
-                (door,index)=>
-                    door.slot === slots[index]
+
+        this.panelQuestion=
+            this.add.text(
+                70,
+                238,
+                "",
+                {
+
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+
+                    fontSize:
+                        "22px",
+
+                    fontStyle:
+                        "bold",
+
+                    color:
+                        "#193849",
+
+                    lineSpacing:
+                        5,
+
+                    wordWrap:{
+                        width:760,
+                        useAdvancedWrap:true
+                    }
+
+                }
             );
 
-        if(allSame){
 
-            slots.push(
-                slots.shift()
+        this.panelHint=
+            this.add.text(
+                70,
+                337,
+                "",
+                {
+
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+
+                    fontSize:
+                        "17px",
+
+                    color:
+                        "#687e89"
+
+                }
             );
 
+
+        this.dynamic.addMultiple([
+
+            shadow,
+            panel,
+            label,
+            this.panelQuestion,
+            this.panelHint
+
+        ]);
+
+    }
+
+
+    setPanelQuestion(q){
+
+        if(!q){
+
+            this.panelQuestion.setText(
+                "Pilih satu kad soalan di sebelah kiri."
+            );
+
+            this.panelHint.setText(
+                "Kemudian cari jawapan yang sepadan di sebelah kanan."
+            );
+
+            return;
         }
 
-        let remaining =
-            this.doors.length;
 
-        this.doors.forEach((door,index)=>{
+        this.panelQuestion.setText(
 
-            door.slot =
-                slots[index];
+            "Q"+
+            q.id+
+            ". "+
+            q.q
 
-            const position =
-                this.slots[door.slot];
+        );
 
-            this.tweens.add({
 
-                targets:
-                    door.container,
+        this.panelHint.setText(
+            "Sekarang pilih satu kad jawapan."
+        );
 
-                x:
-                    position.x,
+    }
 
-                y:
-                    position.y,
 
-                duration:
-                    470,
+    /* =====================================================
+       SHORT TEXT
+    ===================================================== */
 
-                ease:
-                    "Sine.InOut",
+    shortText(
+        text,
+        max=68
+    ){
 
-                onComplete:()=>{
+        if(
+            text.length<=max
+        ){
 
-                    remaining--;
+            return text;
+        }
 
-                    if(remaining === 0){
 
-                        done();
+        return (
+            text
+            .slice(
+                0,
+                max-1
+            )
+            .trim()
+            +"…"
+        );
 
+    }
+
+
+    /* =====================================================
+       QUESTION CARD
+    ===================================================== */
+
+    makeQuestionCard(
+        x,
+        y,
+        q
+    ){
+
+        const w=360;
+
+        const h=103;
+
+
+        const shadow=
+            this.add.rectangle(
+                x+3,
+                y+5,
+                w,
+                h,
+                0x15394a,
+                .10
+            );
+
+
+        const rect=
+            this.add.rectangle(
+                x,
+                y,
+                w,
+                h,
+                0xffffff,
+                1
+            );
+
+
+        rect.setStrokeStyle(
+            3,
+            0x86c8df,
+            1
+        );
+
+
+        const badge=
+            this.add.circle(
+                x-w/2+36,
+                y,
+                23,
+                0x278fb5,
+                1
+            );
+
+
+        const badgeText=
+            this.add.text(
+                badge.x,
+                badge.y,
+                ""+q.id,
+                {
+
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+
+                    fontSize:
+                        "18px",
+
+                    fontStyle:
+                        "bold",
+
+                    color:
+                        "#ffffff"
+
+                }
+
+            ).setOrigin(.5);
+
+
+        const txt=
+            this.add.text(
+                x-w/2+72,
+                y,
+                this.shortText(
+                    q.q
+                ),
+                {
+
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+
+                    fontSize:
+                        "18px",
+
+                    fontStyle:
+                        "bold",
+
+                    color:
+                        "#243f4e",
+
+                    lineSpacing:
+                        3,
+
+                    wordWrap:{
+                        width:263,
+                        useAdvancedWrap:true
                     }
 
                 }
 
-            });
+            ).setOrigin(
+                0,
+                .5
+            );
 
+
+        const dot=
+            this.add.circle(
+                x+w/2-10,
+                y,
+                8,
+                0x63b7d2,
+                1
+            );
+
+
+        rect.setInteractive({
+            useHandCursor:true
         });
+
+
+        rect.on(
+
+            "pointerdown",
+
+            ()=>{
+
+                this.selectQuestion(
+                    q.id
+                );
+
+            }
+
+        );
+
+
+        this.dynamic.addMultiple([
+
+            shadow,
+            rect,
+            badge,
+            badgeText,
+            txt,
+            dot
+
+        ]);
+
+
+        return{
+
+            q:q,
+
+            rect:rect,
+
+            shadow:shadow,
+
+            badge:badge,
+
+            badgeText:badgeText,
+
+            txt:txt,
+
+            dot:dot,
+
+            x:x,
+
+            y:y,
+
+            w:w,
+
+            h:h,
+
+            matched:false
+
+        };
 
     }
 
+
     /* =====================================================
-       CHOOSE / OPEN DOOR
+       ANSWER CARD
     ===================================================== */
 
-    choose(door){
+    makeAnswerCard(
+        x,
+        y,
+        q
+    ){
 
-        this.busy = true;
+        const w=360;
 
-        $("reveal").disabled = true;
+        const h=103;
 
-        door.opened = true;
 
-        AUDIO.tone(
-            235,
-            .12,
-            "triangle"
+        const shadow=
+            this.add.rectangle(
+                x+3,
+                y+5,
+                w,
+                h,
+                0x15394a,
+                .10
+            );
+
+
+        const rect=
+            this.add.rectangle(
+                x,
+                y,
+                w,
+                h,
+                0xfffbef,
+                1
+            );
+
+
+        rect.setStrokeStyle(
+            3,
+            0xe4c45e,
+            1
         );
+
+
+        const dot=
+            this.add.circle(
+                x-w/2+10,
+                y,
+                8,
+                0xdfb743,
+                1
+            );
+
+
+        const icon=
+            this.add.circle(
+                x-w/2+41,
+                y,
+                19,
+                0xf3cf65,
+                1
+            );
+
+
+        const iconText=
+            this.add.text(
+                icon.x,
+                icon.y,
+                "?",
+                {
+
+                    fontFamily:
+                        "Arial",
+
+                    fontSize:
+                        "19px",
+
+                    fontStyle:
+                        "bold",
+
+                    color:
+                        "#6e5712"
+
+                }
+
+            ).setOrigin(.5);
+
+
+        const txt=
+            this.add.text(
+                x-w/2+72,
+                y,
+                q.a,
+                {
+
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+
+                    fontSize:
+                        "19px",
+
+                    fontStyle:
+                        "bold",
+
+                    color:
+                        "#493f1c",
+
+                    lineSpacing:
+                        3,
+
+                    wordWrap:{
+                        width:265,
+                        useAdvancedWrap:true
+                    }
+
+                }
+
+            ).setOrigin(
+                0,
+                .5
+            );
+
+
+        rect.setInteractive({
+            useHandCursor:true
+        });
+
+
+        rect.on(
+
+            "pointerdown",
+
+            ()=>{
+
+                this.chooseAnswer(
+                    q.id
+                );
+
+            }
+
+        );
+
+
+        this.dynamic.addMultiple([
+
+            shadow,
+            rect,
+            dot,
+            icon,
+            iconText,
+            txt
+
+        ]);
+
+
+        return{
+
+            q:q,
+
+            rect:rect,
+
+            shadow:shadow,
+
+            dot:dot,
+
+            icon:icon,
+
+            iconText:iconText,
+
+            txt:txt,
+
+            x:x,
+
+            y:y,
+
+            w:w,
+
+            h:h,
+
+            matched:false
+
+        };
+
+    }
+
+
+    /* =====================================================
+       SELECT QUESTION
+    ===================================================== */
+
+    selectQuestion(id){
+
+        const card=
+            this.questionCards.get(
+                id
+            );
+
+
+        if(
+            !card ||
+            card.matched
+        ){
+
+            return;
+        }
+
+
+        /* RESET OLD SELECTED */
+
+        if(
+            this.selectedId!==null
+        ){
+
+            const old=
+                this.questionCards.get(
+                    this.selectedId
+                );
+
+
+            if(
+                old &&
+                !old.matched
+            ){
+
+                old.rect
+                .setFillStyle(
+                    0xffffff,
+                    1
+                )
+                .setStrokeStyle(
+                    3,
+                    0x86c8df,
+                    1
+                );
+
+
+                old.shadow.setAlpha(
+                    .10
+                );
+
+            }
+
+        }
+
+
+        this.selectedId=
+            id;
+
+
+        card.rect
+            .setFillStyle(
+                0xe8f8ff,
+                1
+            )
+            .setStrokeStyle(
+                5,
+                0x258db3,
+                1
+            );
+
+
+        card.shadow.setAlpha(
+            .20
+        );
+
+
+        this.setPanelQuestion(
+            card.q
+        );
+
+
+        this.pulse(
+            card.rect
+        );
+
+    }
+
+
+    /* =====================================================
+       CHOOSE ANSWER
+    ===================================================== */
+
+    chooseAnswer(answerId){
+
+        const aCard=
+            this.answerCards.get(
+                answerId
+            );
+
+
+        if(
+            !aCard ||
+            aCard.matched
+        ){
+
+            return;
+        }
+
+
+        if(
+            this.selectedId===null
+        ){
+
+            this.flashMessage(
+                "Pilih kad soalan dahulu.",
+                false
+            );
+
+
+            this.pulse(
+                aCard.rect
+            );
+
+            return;
+        }
+
+
+        const qCard=
+            this.questionCards.get(
+                this.selectedId
+            );
+
+
+        if(
+            !qCard ||
+            qCard.matched
+        ){
+
+            return;
+        }
+
+
+        /*
+            Compare ANSWER TEXT instead of question id.
+
+            This is important for Q21 and Q23.
+            Both correct answer = Forsep.
+
+            Therefore either Forsep card can be
+            paired with either question.
+        */
+
+        if(
+            qCard.q.a ===
+            aCard.q.a
+        ){
+
+            this.correctMatch(
+                qCard,
+                aCard
+            );
+
+        }
+
+        else{
+
+            this.wrongMatch(
+                qCard,
+                aCard
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       CORRECT
+    ===================================================== */
+
+    correctMatch(
+        qCard,
+        aCard
+    ){
+
+        qCard.matched=true;
+
+        aCard.matched=true;
+
+
+        qCard.rect.disableInteractive();
+
+        aCard.rect.disableInteractive();
+
+
+        /* GREEN QUESTION */
+
+        qCard.rect
+            .setFillStyle(
+                0xe6f7e9,
+                1
+            )
+            .setStrokeStyle(
+                4,
+                0x55a56a,
+                1
+            );
+
+
+        qCard.dot.setFillStyle(
+            0x55a56a,
+            1
+        );
+
+
+        qCard.badge.setFillStyle(
+            0x55a56a,
+            1
+        );
+
+
+        /* GREEN ANSWER */
+
+        aCard.rect
+            .setFillStyle(
+                0xe6f7e9,
+                1
+            )
+            .setStrokeStyle(
+                4,
+                0x55a56a,
+                1
+            );
+
+
+        aCard.dot.setFillStyle(
+            0x55a56a,
+            1
+        );
+
+
+        aCard.icon.setFillStyle(
+            0x72c486,
+            1
+        );
+
+
+        aCard.iconText
+            .setText("✓")
+            .setColor(
+                "#ffffff"
+            );
+
+
+        /* STORE MATCH */
+
+        this.matches.push({
+
+            q:qCard,
+
+            a:aCard
+
+        });
+
+
+        this.totalMatched++;
+
+
+        this.selectedId=null;
+
+
+        this.drawConnections();
+
+
+        this.setPanelQuestion(
+            null
+        );
+
+
+        this.flashMessage(
+            "Betul! Padanan berjaya.",
+            true
+        );
+
+
+        this.updateProgress();
+
+
+        if(
+            this.matches.length===5
+        ){
+
+            this.stageCompleted();
+
+        }
+
+    }
+
+
+    /* =====================================================
+       WRONG
+    ===================================================== */
+
+    wrongMatch(
+        qCard,
+        aCard
+    ){
+
+        this.mistakes++;
+
+
+        this.updateProgress();
+
+
+        this.flashMessage(
+            "Belum tepat. Cuba jawapan lain.",
+            false
+        );
+
+
+        aCard.rect
+            .setFillStyle(
+                0xffe4e4,
+                1
+            )
+            .setStrokeStyle(
+                4,
+                0xda5a5a,
+                1
+            );
+
+
+        aCard.icon.setFillStyle(
+            0xda5a5a,
+            1
+        );
+
+
+        aCard.iconText
+            .setText("×")
+            .setColor(
+                "#ffffff"
+            );
+
+
+        /* SHAKE ANSWER CARD */
+
+        const objects=[
+
+            aCard.rect,
+            aCard.txt,
+            aCard.icon,
+            aCard.iconText,
+            aCard.dot
+
+        ];
+
 
         this.tweens.add({
 
-            targets:
-                door.panel,
+            targets:objects,
 
-            scaleX:
-                .035,
+            x:"+=10",
 
-            duration:
-                300,
+            duration:55,
 
-            ease:
-                "Sine.InOut",
+            yoyo:true,
+
+            repeat:3,
+
 
             onComplete:()=>{
 
-                const correct =
-                    !door.choice.fake &&
-                    door.choice.answer ===
-                    QUESTIONS[this.index].correct;
+                if(
+                    !aCard.matched
+                ){
 
-                if(correct){
-
-                    this.correct(door);
-
-                }
-                else{
-
-                    this.wrong(door);
-
-                }
-
-            }
-
-        });
-
-    }
-
-    /* =====================================================
-       CORRECT ANSWER
-    ===================================================== */
-
-    correct(door){
-
-        this.memoryLeft = 0;
-
-        door.win = true;
-
-        door.drop.setVisible(true);
-        door.glow.setVisible(true);
-
-        AUDIO.correct();
-
-        this.score += 20;
-
-        $("score").textContent =
-            "★ " + this.score;
-
-        this.message(
-            "BETUL! +20 ★",
-            "Pintu jawapan berjaya dibuka.",
-            "good"
-        );
-
-        this.status(
-            "Bagus! Jawapan anda tepat."
-        );
-
-        this.sparkles(
-            door.container.x,
-            door.container.y
-        );
-
-        this.after(1100,()=>{
-
-            if(this.index === 24){
-
-                this.finish();
-                return;
-
-            }
-
-            const oldStage =
-                this.stage;
-
-            this.index++;
-
-            const newStage =
-                Math.floor(
-                    this.index/5
-                );
-
-            if(newStage !== oldStage){
-
-                this.message(
-                    "STAGE " +
-                    (oldStage+1) +
-                    " SELESAI!",
-
-                    "5 / 5 soalan selesai. Bersedia untuk cabaran seterusnya.",
-
-                    "good"
-                );
-
-                this.status(
-                    "Cabaran seterusnya akan bermula…"
-                );
-
-                this.after(1400,()=>{
-
-                    this.loadQuestion();
-
-                });
-
-            }
-            else{
-
-                this.loadQuestion();
-
-            }
-
-        });
-
-    }
-
-    /* =====================================================
-       WRONG / DUPLICATE EMPTY DOOR
-    ===================================================== */
-
-    wrong(door){
-
-        AUDIO.wrong();
-
-        this.message(
-
-            door.choice.fake
-                ? "PINTU KOSONG!"
-                : "BELUM TEPAT",
-
-            door.choice.fake
-                ? "Ini pintu pendua. Cuba pintu yang lain."
-                : "Pintu akan ditutup dan diacak semula.",
-
-            "bad"
-
-        );
-
-        /*
-        Bahagian dalam pintu salah / pendua
-        kekal kosong.
-        */
-
-        this.after(
-            door.choice.fake ? 900 : 650,
-            ()=>{
-
-                this.tweens.add({
-
-                    targets:
-                        door.panel,
-
-                    scaleX:
-                        1,
-
-                    duration:
-                        260,
-
-                    ease:
-                        "Sine.Out",
-
-                    onComplete:()=>{
-
-                        door.opened = false;
-
-                        this.status(
-                            "Semua pintu sedang bertukar tempat…"
+                    aCard.rect
+                        .setFillStyle(
+                            0xfffbef,
+                            1
+                        )
+                        .setStrokeStyle(
+                            3,
+                            0xe4c45e,
+                            1
                         );
 
-                        this.shuffleDoors(()=>{
 
-                            this.unlock();
+                    aCard.icon.setFillStyle(
+                        0xf3cf65,
+                        1
+                    );
 
-                            this.status(
-                                this.stage === 2 &&
-                                this.hiddenAnswers
 
-                                    ? "Cuba lagi. Ingat kedudukan jawapan tadi!"
-                                    : "Cuba lagi! Kedudukan pintu sudah berubah."
-                            );
-
-                            this.message(
-                                "Cuba sekali lagi",
-                                "Pilih pintu jawapan yang betul."
-                            );
-
-                        });
-
-                    }
-
-                });
-
-            }
-        );
-
-    }
-
-    /* =====================================================
-       STAR EFFECT
-    ===================================================== */
-
-    sparkles(x,y){
-
-        for(let i=0;i<12;i++){
-
-            const star =
-                this.text(
-                    x,
-                    y,
-                    "✦",
-                    12+Math.random()*12,
-                    "#ffe5a1"
-                );
-
-            const angle =
-                Math.random() *
-                Math.PI *
-                2;
-
-            this.effects.add(
-                star
-            );
-
-            this.tweens.add({
-
-                targets:
-                    star,
-
-                x:
-                    x+Math.cos(angle)*80,
-
-                y:
-                    y+Math.sin(angle)*85,
-
-                alpha:
-                    0,
-
-                angle:
-                    90,
-
-                duration:
-                    700+Math.random()*300,
-
-                onComplete:()=>{
-
-                    star.destroy();
+                    aCard.iconText
+                        .setText("?")
+                        .setColor(
+                            "#6e5712"
+                        );
 
                 }
 
-            });
+            }
+
+        });
+
+
+        this.cameras.main.shake(
+            90,
+            .0025
+        );
+
+    }
+
+
+    /* =====================================================
+       CONNECTION LINES
+    ===================================================== */
+
+    drawConnections(){
+
+        const g=
+            this.lines;
+
+
+        g.clear();
+
+
+        this.matches.forEach(
+
+            match=>{
+
+
+                const x1=
+                    match.q.x+
+                    match.q.w/2-
+                    2;
+
+
+                const y1=
+                    match.q.y;
+
+
+                const x2=
+                    match.a.x-
+                    match.a.w/2+
+                    2;
+
+
+                const y2=
+                    match.a.y;
+
+
+                const middleX=
+                    (x1+x2)/2;
+
+
+                /* WHITE OUTLINE */
+
+                g.lineStyle(
+                    12,
+                    0xffffff,
+                    .96
+                );
+
+
+                g.beginPath();
+
+                g.moveTo(
+                    x1,
+                    y1
+                );
+
+                g.lineTo(
+                    middleX,
+                    y1
+                );
+
+                g.lineTo(
+                    middleX,
+                    y2
+                );
+
+                g.lineTo(
+                    x2,
+                    y2
+                );
+
+                g.strokePath();
+
+
+                /* GREEN CONNECTION */
+
+                g.lineStyle(
+                    6,
+                    0x55a56a,
+                    1
+                );
+
+
+                g.beginPath();
+
+                g.moveTo(
+                    x1,
+                    y1
+                );
+
+                g.lineTo(
+                    middleX,
+                    y1
+                );
+
+                g.lineTo(
+                    middleX,
+                    y2
+                );
+
+                g.lineTo(
+                    x2,
+                    y2
+                );
+
+                g.strokePath();
+
+            }
+
+        );
+
+    }
+
+
+    /* =====================================================
+       MESSAGE
+    ===================================================== */
+
+    flashMessage(
+        text,
+        correct
+    ){
+
+        if(
+            this.toast &&
+            this.toast.active
+        ){
+
+            this.toast.destroy();
+
+        }
+
+
+        if(
+            this.toastBg &&
+            this.toastBg.active
+        ){
+
+            this.toastBg.destroy();
+
+        }
+
+
+        const bg=
+            this.add.rectangle(
+                450,
+                1080,
+                535,
+                58,
+                correct
+                    ? 0x318b53
+                    : 0xb94a4a,
+                .97
+            );
+
+
+        bg.setStrokeStyle(
+            2,
+            0xffffff,
+            .9
+        );
+
+
+        const txt=
+            this.add.text(
+                450,
+                1080,
+                text,
+                {
+
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+
+                    fontSize:
+                        "20px",
+
+                    fontStyle:
+                        "bold",
+
+                    color:
+                        "#ffffff"
+
+                }
+
+            ).setOrigin(.5);
+
+
+        this.dynamic.addMultiple([
+
+            bg,
+            txt
+
+        ]);
+
+
+        this.toastBg=bg;
+
+        this.toast=txt;
+
+
+        this.tweens.add({
+
+            targets:[
+                bg,
+                txt
+            ],
+
+            alpha:0,
+
+            delay:950,
+
+            duration:350
+
+        });
+
+    }
+
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+
+    makeFooter(){
+
+        this.footerBg=
+            this.add.rectangle(
+                450,
+                1150,
+                530,
+                66,
+                0x225f78,
+                1
+            );
+
+
+        this.footerBg.setStrokeStyle(
+            3,
+            0xffffff,
+            .9
+        );
+
+
+        this.footerText=
+            this.add.text(
+                450,
+                1150,
+                "PADANKAN 5 PASANGAN UNTUK TERUSKAN",
+                {
+
+                    fontFamily:
+                        "Trebuchet MS, Arial",
+
+                    fontSize:
+                        "18px",
+
+                    fontStyle:
+                        "bold",
+
+                    color:
+                        "#ffffff"
+
+                }
+
+            ).setOrigin(.5);
+
+
+        this.footerBg.setAlpha(
+            .34
+        );
+
+
+        this.footerText.setAlpha(
+            .72
+        );
+
+
+        this.dynamic.addMultiple([
+
+            this.footerBg,
+            this.footerText
+
+        ]);
+
+    }
+
+
+    /* =====================================================
+       COMPLETE STAGE
+    ===================================================== */
+
+    stageCompleted(){
+
+        const finalStage=
+            this.stageIndex===
+            STAGES.length-1;
+
+
+        this.footerBg
+            .setAlpha(1)
+            .setFillStyle(
+
+                finalStage
+                    ? 0x704f99
+                    : 0x225f78,
+
+                1
+
+            );
+
+
+        this.footerText
+            .setAlpha(1);
+
+
+        if(
+            finalStage
+        ){
+
+            this.footerText.setText(
+                "TAHNIAH! MAIN SEMULA"
+            );
+
+        }
+
+        else{
+
+            this.footerText.setText(
+                "STAGE SETERUSNYA  ▶"
+            );
+
+        }
+
+
+        this.footerBg.setInteractive({
+            useHandCursor:true
+        });
+
+
+        this.footerText.setInteractive({
+            useHandCursor:true
+        });
+
+
+        const goNext=()=>{
+
+
+            this.footerBg.disableInteractive();
+
+            this.footerText.disableInteractive();
+
+
+            if(
+                finalStage
+            ){
+
+                this.stageIndex=0;
+
+                this.totalMatched=0;
+
+                this.mistakes=0;
+
+            }
+
+            else{
+
+                this.stageIndex++;
+
+            }
+
+
+            this.buildStage();
+
+        };
+
+
+        this.footerBg.once(
+            "pointerdown",
+            goNext
+        );
+
+
+        this.footerText.once(
+            "pointerdown",
+            goNext
+        );
+
+
+        if(
+            finalStage
+        ){
+
+            this.flashMessage(
+                "Hebat! Semua 25 padanan telah selesai!",
+                true
+            );
+
+        }
+
+        else{
+
+            this.flashMessage(
+                "Stage lengkap! Tekan Stage Seterusnya.",
+                true
+            );
 
         }
 
     }
 
+
     /* =====================================================
-       FINAL RESULT
-       PINTU PERMAINAN KEKAL KELIHATAN
+       PROGRESS
     ===================================================== */
 
-    finish(){
+    updateProgress(){
 
-        this.finished = true;
-        this.busy = false;
-        this.memoryLeft = 0;
+        this.progressText.setText(
 
-        if(this.needsLayout){
+            "Padanan "+
+            this.totalMatched+
+            "/25  •  Silap "+
+            this.mistakes
 
-            this.layout();
-
-        }
-
-        $("finish").hidden = false;
-
-        $("finalScore").textContent =
-            "Skor anda: ★ " +
-            this.score;
-
-        $("progressLabel").textContent =
-            "PERJALANAN ANDA · 25 / 25";
-
-        $("dots").innerHTML =
-            '<i class="done"></i>'.repeat(5);
-
-        $("track").innerHTML =
-            '<span class="done"></span>'.repeat(5);
-
-        this.message(
-            "SEMUA CABARAN SELESAI!",
-            "Tahniah! Anda berjaya menjawab semua 25 soalan.",
-            "good"
         );
 
-        this.status(
-            "Hebat! Lima stage berjaya diselesaikan."
+    }
+
+
+    /* =====================================================
+       PULSE
+    ===================================================== */
+
+    pulse(target){
+
+        this.tweens.killTweensOf(
+            target
         );
 
-        AUDIO.correct();
+
+        this.tweens.add({
+
+            targets:target,
+
+            scaleX:1.025,
+
+            scaleY:1.025,
+
+            duration:90,
+
+            yoyo:true
+
+        });
 
     }
 
 }
 
-/* =========================================================
-   PHASER CONFIG
-========================================================= */
 
-const game = new Phaser.Game({
+/* =====================================================
+   PHASER CONFIG
+===================================================== */
+
+const config={
 
     type:
         Phaser.AUTO,
 
     parent:
-        "game",
+        "game-container",
 
     width:
-        $("game").clientWidth,
+        900,
 
     height:
-        500,
+        1200,
 
-    transparent:
-        true,
+    backgroundColor:
+        "#eaf8ff",
 
-    antialias:
-        true,
+    render:{
 
-    roundPixels:
-        false,
+        antialias:true,
+
+        pixelArt:false,
+
+        roundPixels:true
+
+    },
 
     scale:{
 
         mode:
-            Phaser.Scale.NONE
+            Phaser.Scale.FIT,
 
-    },
-
-    input:{
-
-        activePointers:
-            3
+        autoCenter:
+            Phaser.Scale.CENTER_BOTH
 
     },
 
     scene:[
-        MysteryDoorGame
+        MatchScene
     ]
 
-});
+};
 
-/* =========================================================
-   RESPONSIVE RESIZE
-========================================================= */
 
-let resizeFrame = 0;
+/* =====================================================
+   START GAME DIRECTLY
+   - TIADA LOADING OVERLAY
+   - TIADA FULLSCREEN OVERLAY
+   - TIADA BLOCK YANG TUTUP GAME
+===================================================== */
 
-const observer =
-    new ResizeObserver(()=>{
-
-        cancelAnimationFrame(
-            resizeFrame
-        );
-
-        resizeFrame =
-            requestAnimationFrame(()=>{
-
-                const scene =
-                    game.scene.getScene(
-                        "MysteryDoorGame"
-                    );
-
-                if(
-                    !scene ||
-                    !scene.layer
-                ){
-                    return;
-                }
-
-                if(scene.busy){
-
-                    scene.needsLayout = true;
-
-                }
-                else{
-
-                    scene.layout();
-
-                }
-
-            });
-
-    });
-
-observer.observe(
-    $("game")
+new Phaser.Game(
+    config
 );
 
 </script>
