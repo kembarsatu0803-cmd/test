@@ -26,6 +26,7 @@ html,
 body{
     margin:0;
     padding:0;
+
     width:100%;
     min-height:100%;
 
@@ -46,10 +47,12 @@ body{
 }
 
 body{
+
     min-height:100vh;
     min-height:100svh;
 
     display:flex;
+
     justify-content:center;
     align-items:flex-start;
 
@@ -74,7 +77,7 @@ body{
         1120px
     );
 
-    aspect-ratio:720/1120;
+    aspect-ratio:720 / 1120;
 
     position:relative;
 
@@ -95,6 +98,7 @@ body{
 }
 
 canvas{
+
     display:block !important;
 
     width:100% !important;
@@ -106,6 +110,7 @@ canvas{
 @media(max-width:500px){
 
     #game-shell{
+
         width:100vw;
 
         height:min(
@@ -133,368 +138,445 @@ canvas{
    MYSTERY DOORS CHALLENGE
    SET 4
 
-   STAGE 1 = NORMAL
-   STAGE 2 = AUTO SHUFFLE
-   STAGE 3 = MEMORY ANSWER
-   STAGE 4 = NORMAL
-   STAGE 5 = 4 ANSWER + 2 FAKE DOORS
+   STAGE 1
+   - Normal
 
-   SALAH = SEMUA PINTU SHUFFLE
+   STAGE 2
+   - Pintu shuffle sebelum pilih
+
+   STAGE 3
+   - Jawapan + A/B/C/D dipaparkan 10 saat
+   - Selepas 10 saat semuanya hilang
+   - Lihat semula sekali sahaja
+
+   STAGE 4
+   - Normal
+
+   STAGE 5
+   - 6 pintu
+   - 4 pintu sebenar
+   - 2 pintu pendua
+   - Pintu pendua meniru A/B/C/D + teks jawapan
+   - Pintu pendua sama warna
+   - Bila dibuka: kosong
+
+   SEMUA STAGE
+   - Salah = pintu tutup + semua pintu shuffle
 ========================================================= */
 
 
 /* =========================================================
-   QUESTIONS
+   QUESTION DATA
 ========================================================= */
 
 const QUESTIONS = [
 
-/* =======================
+/* =========================================================
    STAGE 1
-======================= */
+========================================================= */
 
 {
-q:"Meja kaca ialah objek yang ____ air.",
-answers:[
-"Menambah",
-"Menyerap",
-"Menghasilkan",
-"Tidak menyerap"
-],
-correct:3
+    q:"Meja kaca ialah objek yang ____ air.",
+
+    answers:[
+        "Menambah",
+        "Menyerap",
+        "Menghasilkan",
+        "Tidak menyerap"
+    ],
+
+    correct:3
 },
 
 {
-q:"Duit syiling dan klip kertas boleh diletakkan dalam kumpulan yang sama jika kedua-duanya ____.",
-answers:[
-"Tidak menyerap air",
-"Menyerap air",
-"Diperbuat daripada tisu",
-"Menghasilkan air"
-],
-correct:0
+    q:"Duit syiling dan klip kertas boleh diletakkan dalam kumpulan yang sama jika kedua-duanya ____.",
+
+    answers:[
+        "Tidak menyerap air",
+        "Menyerap air",
+        "Diperbuat daripada tisu",
+        "Menghasilkan air"
+    ],
+
+    correct:0
 },
 
 {
-q:"Murid menitis air pada kain lap dan gelas kaca. Titisan hilang pada kain lap tetapi kekal pada gelas. Apakah kesimpulan?",
-answers:[
-"Gelas menyerap air lebih baik daripada kain",
-"Kedua-duanya tidak menyerap air",
-"Kedua-duanya menyerap air",
-"Kain lap menyerap air, gelas kaca tidak menyerap air"
-],
-correct:3
+    q:"Murid menitis air pada kain lap dan gelas kaca. Titisan hilang pada kain lap tetapi kekal pada gelas. Apakah kesimpulan?",
+
+    answers:[
+        "Gelas menyerap air lebih baik daripada kain",
+        "Kedua-duanya tidak menyerap air",
+        "Kedua-duanya menyerap air",
+        "Kain lap menyerap air, gelas kaca tidak menyerap air"
+    ],
+
+    correct:3
 },
 
 {
-q:"Objek manakah yang menyerap air dan biasa digunakan untuk mengelap?",
-answers:[
-"Klip kertas",
-"Straw",
-"Tisu",
-"Pemadam"
-],
-correct:2
+    q:"Objek manakah yang menyerap air dan biasa digunakan untuk mengelap?",
+
+    answers:[
+        "Klip kertas",
+        "Straw",
+        "Tisu",
+        "Pemadam"
+    ],
+
+    correct:2
 },
 
 {
-q:"Antara pasangan berikut, yang manakah kedua-duanya menyerap air?",
-answers:[
-"Tisu dan sapu tangan",
-"Klip kertas dan pemadam",
-"Straw dan mainan plastik",
-"Sudu logam dan gelas kaca"
-],
-correct:0
+    q:"Antara pasangan berikut, yang manakah kedua-duanya menyerap air?",
+
+    answers:[
+        "Tisu dan sapu tangan",
+        "Klip kertas dan pemadam",
+        "Straw dan mainan plastik",
+        "Sudu logam dan gelas kaca"
+    ],
+
+    correct:0
 },
 
 
-/* =======================
+/* =========================================================
    STAGE 2
-======================= */
+========================================================= */
 
 {
-q:"Gelas kaca dikelaskan sebagai objek yang ____.",
-answers:[
-"Boleh menyerap air",
-"Tidak boleh menyerap air",
-"Menghasilkan air",
-"Menukar warna air"
-],
-correct:1
+    q:"Gelas kaca dikelaskan sebagai objek yang ____.",
+
+    answers:[
+        "Boleh menyerap air",
+        "Tidak boleh menyerap air",
+        "Menghasilkan air",
+        "Menukar warna air"
+    ],
+
+    correct:1
 },
 
 {
-q:"Apakah maksud objek tidak menyerap air?",
-answers:[
-"Objek yang menyimpan makanan",
-"Objek yang menghasilkan air",
-"Objek yang boleh menyerap air",
-"Objek yang tidak boleh menyerap air"
-],
-correct:3
+    q:"Apakah maksud objek tidak menyerap air?",
+
+    answers:[
+        "Objek yang menyimpan makanan",
+        "Objek yang menghasilkan air",
+        "Objek yang boleh menyerap air",
+        "Objek yang tidak boleh menyerap air"
+    ],
+
+    correct:3
 },
 
 {
-q:"Bebola kapas digunakan dalam ujian awal. Jika air hilang apabila dititiskan padanya, ini menunjukkan bebola kapas ____.",
-answers:[
-"Menghasilkan air",
-"Menyerap air",
-"Tidak menyerap air",
-"Menjadi plastik"
-],
-correct:1
+    q:"Bebola kapas digunakan dalam ujian awal. Jika air hilang apabila dititiskan padanya, ini menunjukkan bebola kapas ____.",
+
+    answers:[
+        "Menghasilkan air",
+        "Menyerap air",
+        "Tidak menyerap air",
+        "Menjadi plastik"
+    ],
+
+    correct:1
 },
 
 {
-q:"Alas kaki dan pinggan plastik diuji. Pengelasan yang betul ialah ____.",
-answers:[
-"Kedua-duanya menyerap air",
-"Kedua-duanya tidak menyerap air",
-"Alas kaki menyerap air, pinggan plastik tidak menyerap air",
-"Pinggan plastik menyerap air, alas kaki tidak menyerap air"
-],
-correct:2
+    q:"Alas kaki dan pinggan plastik diuji. Pengelasan yang betul ialah ____.",
+
+    answers:[
+        "Kedua-duanya menyerap air",
+        "Kedua-duanya tidak menyerap air",
+        "Alas kaki menyerap air, pinggan plastik tidak menyerap air",
+        "Pinggan plastik menyerap air, alas kaki tidak menyerap air"
+    ],
+
+    correct:2
 },
 
 {
-q:"Objek berbentuk tiub manakah yang tidak boleh menyerap air?",
-answers:[
-"Straw",
-"Tisu",
-"Kain lap",
-"Sapu tangan"
-],
-correct:0
+    q:"Objek berbentuk tiub manakah yang tidak boleh menyerap air?",
+
+    answers:[
+        "Straw",
+        "Tisu",
+        "Kain lap",
+        "Sapu tangan"
+    ],
+
+    correct:0
 },
 
 
-/* =======================
+/* =========================================================
    STAGE 3
-======================= */
+========================================================= */
 
 {
-q:"Dalam ujian titisan air, objek yang tiada lagi titisan air di atasnya ialah objek yang ____.",
-answers:[
-"Menolak air",
-"Menyerap air",
-"Menghasilkan air",
-"Tidak menyerap air"
-],
-correct:1
+    q:"Dalam ujian titisan air, objek yang tiada lagi titisan air di atasnya ialah objek yang ____.",
+
+    answers:[
+        "Menolak air",
+        "Menyerap air",
+        "Menghasilkan air",
+        "Tidak menyerap air"
+    ],
+
+    correct:1
 },
 
 {
-q:"Mengapakah ketebalan objek perlu dimalarkan dalam aktiviti perbandingan?",
-answers:[
-"Supaya semua objek tidak menyerap air",
-"Supaya air menjadi pepejal",
-"Supaya objek menghasilkan air",
-"Supaya perbandingan keupayaan menyerap air lebih adil"
-],
-correct:3
+    q:"Mengapakah ketebalan objek perlu dimalarkan dalam aktiviti perbandingan?",
+
+    answers:[
+        "Supaya semua objek tidak menyerap air",
+        "Supaya air menjadi pepejal",
+        "Supaya objek menghasilkan air",
+        "Supaya perbandingan keupayaan menyerap air lebih adil"
+    ],
+
+    correct:3
 },
 
 {
-q:"Dalam aktiviti mop mini, tali pengikat digunakan kerana perlu membantu mop ____.",
-answers:[
-"Menjadi logam",
-"Menghalang cahaya",
-"Menyerap air",
-"Menjadi kaca"
-],
-correct:2
+    q:"Dalam aktiviti mop mini, tali pengikat digunakan kerana perlu membantu mop ____.",
+
+    answers:[
+        "Menjadi logam",
+        "Menghalang cahaya",
+        "Menyerap air",
+        "Menjadi kaca"
+    ],
+
+    correct:2
 },
 
 {
-q:"Bebola kapas sesuai untuk mengelap luka kerana bebola kapas ____.",
-answers:[
-"Boleh menyerap cecair",
-"Diperbuat daripada logam",
-"Tidak boleh menyerap air",
-"Menghalang hujan"
-],
-correct:0
+    q:"Bebola kapas sesuai untuk mengelap luka kerana bebola kapas ____.",
+
+    answers:[
+        "Boleh menyerap cecair",
+        "Diperbuat daripada logam",
+        "Tidak boleh menyerap air",
+        "Menghalang hujan"
+    ],
+
+    correct:0
 },
 
 {
-q:"Tong besi perlu tidak menyerap air supaya ____.",
-answers:[
-"Tong menyerap semua air",
-"Tong mengeringkan badan",
-"Tong menjadi tisu",
-"Boleh menadah dan menyimpan air"
-],
-correct:3
+    q:"Tong besi perlu tidak menyerap air supaya ____.",
+
+    answers:[
+        "Tong menyerap semua air",
+        "Tong mengeringkan badan",
+        "Tong menjadi tisu",
+        "Boleh menadah dan menyimpan air"
+    ],
+
+    correct:3
 },
 
 
-/* =======================
+/* =========================================================
    STAGE 4
-======================= */
+========================================================= */
 
 {
-q:"Badan adik basah selepas mandi. Objek manakah paling sesuai digunakan?",
-answers:[
-"Pinggan plastik",
-"Tuala",
-"Sudu logam",
-"Gelas kaca"
-],
-correct:1
+    q:"Badan adik basah selepas mandi. Objek manakah paling sesuai digunakan?",
+
+    answers:[
+        "Pinggan plastik",
+        "Tuala",
+        "Sudu logam",
+        "Gelas kaca"
+    ],
+
+    correct:1
 },
 
 {
-q:"Imran berpeluh selepas bermain. Apakah objek yang sesuai digunakan?",
-answers:[
-"Tong besi",
-"Gelas kaca",
-"Sapu tangan",
-"Payung plastik"
-],
-correct:2
+    q:"Imran berpeluh selepas bermain. Apakah objek yang sesuai digunakan?",
+
+    answers:[
+        "Tong besi",
+        "Gelas kaca",
+        "Sapu tangan",
+        "Payung plastik"
+    ],
+
+    correct:2
 },
 
 {
-q:"Objek menyerap air penting untuk ____.",
-answers:[
-"Mengelap cecair",
-"Menghasilkan air",
-"Menukar air menjadi logam",
-"Menghalang semua cahaya"
-],
-correct:0
+    q:"Objek menyerap air penting untuk ____.",
+
+    answers:[
+        "Mengelap cecair",
+        "Menghasilkan air",
+        "Menukar air menjadi logam",
+        "Menghalang semua cahaya"
+    ],
+
+    correct:0
 },
 
 {
-q:"Tong besi penting kerana boleh ____.",
-answers:[
-"Mengelap peluh",
-"Menadah dan menyimpan air hujan",
-"Mengeringkan badan",
-"Menyerap semua air hujan"
-],
-correct:1
+    q:"Tong besi penting kerana boleh ____.",
+
+    answers:[
+        "Mengelap peluh",
+        "Menadah dan menyimpan air hujan",
+        "Mengeringkan badan",
+        "Menyerap semua air hujan"
+    ],
+
+    correct:1
 },
 
 {
-q:"Payung plastik penting kerana dapat ____.",
-answers:[
-"Mengelap peluh",
-"Mengeringkan badan",
-"Menyerap semua air hujan",
-"Menghalang diri daripada terkena air hujan"
-],
-correct:3
+    q:"Payung plastik penting kerana dapat ____.",
+
+    answers:[
+        "Mengelap peluh",
+        "Mengeringkan badan",
+        "Menyerap semua air hujan",
+        "Menghalang diri daripada terkena air hujan"
+    ],
+
+    correct:3
 },
 
 
-/* =======================
+/* =========================================================
    STAGE 5
-======================= */
+========================================================= */
 
 {
-q:"Mengapakah kasut getah sesuai digunakan ketika hujan?",
-answers:[
-"Kerana menyimpan air hujan",
-"Kerana menyerap air ke dalam kasut",
-"Kerana tidak menyerap air dan membantu kaki kekal kering",
-"Kerana digunakan untuk mengelap meja"
-],
-correct:2
+    q:"Mengapakah kasut getah sesuai digunakan ketika hujan?",
+
+    answers:[
+        "Kerana menyimpan air hujan",
+        "Kerana menyerap air ke dalam kasut",
+        "Kerana tidak menyerap air dan membantu kaki kekal kering",
+        "Kerana digunakan untuk mengelap meja"
+    ],
+
+    correct:2
 },
 
 {
-q:"Objek yang boleh menyerap air dan objek yang tidak boleh menyerap air adalah ____.",
-answers:[
-"Penting dalam kehidupan",
-"Hanya digunakan di sekolah",
-"Tidak berguna",
-"Hanya digunakan ketika malam"
-],
-correct:0
+    q:"Objek yang boleh menyerap air dan objek yang tidak boleh menyerap air adalah ____.",
+
+    answers:[
+        "Penting dalam kehidupan",
+        "Hanya digunakan di sekolah",
+        "Tidak berguna",
+        "Hanya digunakan ketika malam"
+    ],
+
+    correct:0
 },
 
 {
-q:"Seorang murid memilih tisu untuk mengelakkan hujan membasahi badannya. Mengapakah pilihan itu kurang sesuai?",
-answers:[
-"Tisu tidak menyerap air",
-"Tisu diperbuat daripada logam",
-"Tisu menyerap air",
-"Tisu sama seperti payung plastik"
-],
-correct:2
+    q:"Seorang murid memilih tisu untuk mengelakkan hujan membasahi badannya. Mengapakah pilihan itu kurang sesuai?",
+
+    answers:[
+        "Tisu tidak menyerap air",
+        "Tisu diperbuat daripada logam",
+        "Tisu menyerap air",
+        "Tisu sama seperti payung plastik"
+    ],
+
+    correct:2
 },
 
 {
-q:"Mengapakah tuala sesuai digunakan selepas mandi?",
-answers:[
-"Kerana diperbuat daripada kaca",
-"Kerana menyerap air pada badan",
-"Kerana menadah air hujan",
-"Kerana tidak menyerap air"
-],
-correct:1
+    q:"Mengapakah tuala sesuai digunakan selepas mandi?",
+
+    answers:[
+        "Kerana diperbuat daripada kaca",
+        "Kerana menyerap air pada badan",
+        "Kerana menadah air hujan",
+        "Kerana tidak menyerap air"
+    ],
+
+    correct:1
 },
 
 {
-q:"Mengapakah payung plastik sesuai digunakan ketika hujan?",
-answers:[
-"Kerana menyerap air dengan cepat",
-"Kerana mengeringkan lantai",
-"Kerana menyerap peluh",
-"Kerana tidak menyerap air dan menghalang hujan"
-],
-correct:3
+    q:"Mengapakah payung plastik sesuai digunakan ketika hujan?",
+
+    answers:[
+        "Kerana menyerap air dengan cepat",
+        "Kerana mengeringkan lantai",
+        "Kerana menyerap peluh",
+        "Kerana tidak menyerap air dan menghalang hujan"
+    ],
+
+    correct:3
 }
 
 ];
 
 
 /* =========================================================
-   STAGE THEME
+   STAGE THEMES
 ========================================================= */
 
 const STAGES = [
 
 {
-name:"STAGE 1",
-title:"MISTERI KACA",
-top:0x4169a8,
-bottom:0x82d5ef,
-door:0x526ca5
+    name:"STAGE 1",
+    title:"MISTERI KACA",
+
+    top:0x4169a8,
+    bottom:0x82d5ef,
+
+    door:0x526ca5
 },
 
 {
-name:"STAGE 2",
-title:"PINTU BERPINDAH",
-top:0x3d6799,
-bottom:0x72d9dd,
-door:0x447a91
+    name:"STAGE 2",
+    title:"PINTU BERPINDAH",
+
+    top:0x3d6799,
+    bottom:0x72d9dd,
+
+    door:0x447a91
 },
 
 {
-name:"STAGE 3",
-title:"UJIAN INGATAN",
-top:0x684d91,
-bottom:0xd1a2d9,
-door:0x78568f
+    name:"STAGE 3",
+    title:"UJIAN INGATAN",
+
+    top:0x684d91,
+    bottom:0xd1a2d9,
+
+    door:0x78568f
 },
 
 {
-name:"STAGE 4",
-title:"MISI HARIAN",
-top:0x397a68,
-bottom:0x9bd4ad,
-door:0x438566
+    name:"STAGE 4",
+    title:"MISI HARIAN",
+
+    top:0x397a68,
+    bottom:0x9bd4ad,
+
+    door:0x438566
 },
 
 {
-name:"STAGE 5",
-title:"PINTU PALSU",
-top:0x314e87,
-bottom:0x88bde8,
-door:0x3d619d
+    name:"STAGE 5",
+    title:"PINTU PENDUA",
+
+    top:0x314e87,
+    bottom:0x88bde8,
+
+    door:0x3d619d
 }
 
 ];
@@ -506,7 +588,10 @@ door:0x3d619d
 
 function shuffleArray(array){
 
-    const a=[...array];
+    const a=[
+        ...array
+    ];
+
 
     for(
         let i=a.length-1;
@@ -520,6 +605,7 @@ function shuffleArray(array){
             (i+1)
         );
 
+
         [
             a[i],
             a[j]
@@ -530,12 +616,13 @@ function shuffleArray(array){
 
     }
 
+
     return a;
 }
 
 
 /* =========================================================
-   AUDIO
+   AUDIO SYSTEM
 ========================================================= */
 
 class AudioSystem{
@@ -543,6 +630,7 @@ class AudioSystem{
     constructor(){
 
         this.ctx=null;
+
         this.enabled=true;
 
     }
@@ -569,7 +657,7 @@ class AudioSystem{
 
 
     tone(
-        freq=440,
+        frequency=440,
         duration=.1,
         volume=.04,
         type="sine"
@@ -583,7 +671,8 @@ class AudioSystem{
 
 
         if(
-            this.ctx.state==="suspended"
+            this.ctx.state===
+            "suspended"
         ){
 
             this.ctx.resume();
@@ -599,14 +688,22 @@ class AudioSystem{
         this.ctx.createGain();
 
 
-        osc.type=type;
-
-        osc.frequency.value=freq;
-
-        gain.gain.value=volume;
+        osc.type=
+        type;
 
 
-        osc.connect(gain);
+        osc.frequency.value=
+        frequency;
+
+
+        gain.gain.value=
+        volume;
+
+
+        osc.connect(
+            gain
+        );
+
 
         gain.connect(
             this.ctx.destination
@@ -629,7 +726,10 @@ class AudioSystem{
         );
 
 
-        osc.start(now);
+        osc.start(
+            now
+        );
+
 
         osc.stop(
             now+duration
@@ -652,9 +752,9 @@ class AudioSystem{
     shuffle(){
 
         this.tone(
-            310,
-            .07,
-            .025,
+            315,
+            .075,
+            .026,
             "triangle"
         );
 
@@ -664,7 +764,7 @@ class AudioSystem{
     door(){
 
         this.tone(
-            240,
+            235,
             .09,
             .03,
             "triangle"
@@ -677,18 +777,20 @@ class AudioSystem{
 
         this.tone(
             580,
-            .1,
+            .10,
             .05
         );
 
 
         setTimeout(
             ()=>{
+
                 this.tone(
                     760,
                     .11,
                     .05
                 );
+
             },
             80
         );
@@ -696,11 +798,13 @@ class AudioSystem{
 
         setTimeout(
             ()=>{
+
                 this.tone(
                     960,
                     .15,
                     .04
                 );
+
             },
             160
         );
@@ -720,12 +824,14 @@ class AudioSystem{
 
         setTimeout(
             ()=>{
+
                 this.tone(
                     130,
                     .12,
                     .03,
                     "square"
                 );
+
             },
             100
         );
@@ -742,17 +848,19 @@ class AudioSystem{
             870
         ]
         .forEach(
-            (f,i)=>{
+            (frequency,index)=>{
 
                 setTimeout(
                     ()=>{
+
                         this.tone(
-                            f,
+                            frequency,
                             .18,
                             .035
                         );
+
                     },
-                    i*90
+                    index*90
                 );
 
             }
@@ -786,6 +894,7 @@ extends Phaser.Scene{
     create(){
 
         this.questionIndex=0;
+
         this.stageIndex=0;
 
         this.score=0;
@@ -794,17 +903,18 @@ extends Phaser.Scene{
 
         this.doorObjects=[];
 
+
         this.answersHidden=false;
 
         this.revealUsed=false;
 
-        this.hideAnswerEvent=null;
-
         this.memoryTicker=null;
+
+        this.revealButton=null;
 
         this.statusText=null;
 
-        this.revealButton=null;
+        this.resultBox=null;
 
 
         this.backgroundLayer=
@@ -846,6 +956,8 @@ extends Phaser.Scene{
 
     createTopUI(){
 
+        /* HOME */
+
         const home=
         this.makeTopButton(
             70,
@@ -866,6 +978,8 @@ extends Phaser.Scene{
             }
         );
 
+
+        /* SCORE */
 
         const scoreBG=
         this.add.graphics();
@@ -915,6 +1029,8 @@ extends Phaser.Scene{
         );
 
 
+        /* SOUND */
+
         const sound=
         this.makeTopButton(
             665,
@@ -949,6 +1065,10 @@ extends Phaser.Scene{
 
     }
 
+
+/* =========================================================
+   TOP BUTTON
+========================================================= */
 
     makeTopButton(
         x,
@@ -1058,23 +1178,10 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   CLEAR TIMERS
+   CLEAR QUESTION TIMERS
 ========================================================= */
 
     clearQuestionTimers(){
-
-        if(
-            this.hideAnswerEvent
-        ){
-
-            this.hideAnswerEvent.remove(
-                false
-            );
-
-            this.hideAnswerEvent=null;
-
-        }
-
 
         if(
             this.memoryTicker
@@ -1083,6 +1190,7 @@ extends Phaser.Scene{
             this.memoryTicker.remove(
                 false
             );
+
 
             this.memoryTicker=null;
 
@@ -1109,6 +1217,8 @@ extends Phaser.Scene{
         this.revealUsed=false;
 
         this.revealButton=null;
+
+        this.resultBox=null;
 
 
         this.gameLayer
@@ -1138,10 +1248,10 @@ extends Phaser.Scene{
         this.createProgress();
 
 
-        /* =========================
+        /* =================================================
            STAGE 2
-           AUTO SHUFFLE
-        ========================= */
+           AUTO SHUFFLE SEBELUM PILIH
+        ================================================= */
 
         if(
             this.stageIndex===1
@@ -1165,10 +1275,10 @@ extends Phaser.Scene{
         }
 
 
-        /* =========================
+        /* =================================================
            STAGE 3
-           MEMORY MODE
-        ========================= */
+           MEMORY 10 SAAT
+        ================================================= */
 
         else if(
             this.stageIndex===2
@@ -1181,29 +1291,34 @@ extends Phaser.Scene{
         }
 
 
+        /* =================================================
+           STAGE 5
+        ================================================= */
+
+        else if(
+            this.stageIndex===4
+        ){
+
+            this.locked=false;
+
+
+            this.statusText
+            .setText(
+                "Awas! Ada 2 pintu pendua yang sebenarnya kosong."
+            );
+
+        }
+
+
         else{
 
             this.locked=false;
 
 
-            if(
-                this.stageIndex===4
-            ){
-
-                this.statusText
-                .setText(
-                    "Awas! Ada 2 pintu palsu bertanda ?"
-                );
-
-            }
-            else{
-
-                this.statusText
-                .setText(
-                    "Pilih pintu jawapan yang betul"
-                );
-
-            }
+            this.statusText
+            .setText(
+                "Pilih pintu jawapan yang betul"
+            );
 
         }
 
@@ -1247,6 +1362,8 @@ extends Phaser.Scene{
         );
 
 
+        /* LIGHT */
+
         bg.fillStyle(
             0xffffff,
             .10
@@ -1266,6 +1383,8 @@ extends Phaser.Scene{
             120
         );
 
+
+        /* MOUNTAINS */
 
         bg.fillStyle(
             0xffffff,
@@ -1293,6 +1412,8 @@ extends Phaser.Scene{
         );
 
 
+        /* GROUND */
+
         bg.fillStyle(
             0x101b38,
             .16
@@ -1306,6 +1427,8 @@ extends Phaser.Scene{
             280
         );
 
+
+        /* PARTICLES */
 
         for(
             let i=0;
@@ -1342,7 +1465,8 @@ extends Phaser.Scene{
         }
 
 
-        this.backgroundLayer.add(
+        this.backgroundLayer
+        .add(
             bg
         );
 
@@ -1552,20 +1676,29 @@ extends Phaser.Scene{
 
         if(
             data.q.length>75
-        )
+        ){
+
             size=22;
+
+        }
 
 
         if(
             data.q.length>115
-        )
+        ){
+
             size=19;
+
+        }
 
 
         if(
             data.q.length>160
-        )
+        ){
+
             size=17;
+
+        }
 
 
         const question=
@@ -1662,7 +1795,10 @@ extends Phaser.Scene{
 
     getDoorPositions(){
 
-        /* STAGE 5 = 6 pintu */
+        /* =================================================
+           STAGE 5
+           6 DOORS
+        ================================================= */
 
         if(
             this.stageIndex===4
@@ -1672,17 +1808,17 @@ extends Phaser.Scene{
 
                 {
                     x:130,
-                    y:605
+                    y:610
                 },
 
                 {
                     x:360,
-                    y:605
+                    y:610
                 },
 
                 {
                     x:590,
-                    y:605
+                    y:610
                 },
 
                 {
@@ -1705,7 +1841,9 @@ extends Phaser.Scene{
         }
 
 
-        /* STAGE 1 - 4 */
+        /* =================================================
+           NORMAL 4 DOORS
+        ================================================= */
 
         return[
 
@@ -1746,11 +1884,15 @@ extends Phaser.Scene{
         ];
 
 
+        /* =================================================
+           4 REAL DOORS
+        ================================================= */
+
         let choices=
         data.answers.map(
             (text,index)=>({
 
-                text,
+                text:text,
 
                 originalIndex:index,
 
@@ -1760,35 +1902,68 @@ extends Phaser.Scene{
         );
 
 
-        /* =========================
+        /* =================================================
            STAGE 5
-           TAMBAH 2 PINTU PALSU
-        ========================= */
+
+           TAMBAH 2 PINTU PENDUA.
+
+           Contoh:
+           A
+           B
+           C
+           D
+           B palsu
+           D palsu
+
+           Pintu B palsu kelihatan sama seperti B sebenar.
+           Pintu D palsu kelihatan sama seperti D sebenar.
+        ================================================= */
 
         if(
             this.stageIndex===4
         ){
 
-            choices.push({
+            const duplicateLetters=
+            shuffleArray(
+                [
+                    0,
+                    1,
+                    2,
+                    3
+                ]
+            )
+            .slice(
+                0,
+                2
+            );
 
-                text:"PINTU MISTERI",
 
-                originalIndex:null,
+            duplicateLetters
+            .forEach(
+                originalIndex=>{
 
-                fake:true
+                    choices.push({
 
-            });
+                        /*
+                        Teks di depan juga sama.
+                        Pemain tidak boleh bezakan
+                        mana real / fake.
+                        */
 
+                        text:
+                        data.answers[
+                            originalIndex
+                        ],
 
-            choices.push({
+                        originalIndex:
+                        originalIndex,
 
-                text:"PINTU MISTERI",
+                        fake:true
 
-                originalIndex:null,
+                    });
 
-                fake:true
-
-            });
+                }
+            );
 
         }
 
@@ -1813,7 +1988,8 @@ extends Phaser.Scene{
                 );
 
 
-                this.doorObjects.push(
+                this.doorObjects
+                .push(
                     door
                 );
 
@@ -1838,12 +2014,12 @@ extends Phaser.Scene{
         ];
 
 
-        const isStage5=
+        const stage5=
         this.stageIndex===4;
 
 
         const width=
-        isStage5
+        stage5
         ?
         205
         :
@@ -1851,7 +2027,7 @@ extends Phaser.Scene{
 
 
         const height=
-        isStage5
+        stage5
         ?
         205
         :
@@ -1873,6 +2049,10 @@ extends Phaser.Scene{
         );
 
 
+        /* =================================================
+           SHADOW
+        ================================================= */
+
         const shadow=
         this.add.graphics();
 
@@ -1891,6 +2071,10 @@ extends Phaser.Scene{
             22
         );
 
+
+        /* =================================================
+           DOOR FRAME
+        ================================================= */
 
         const frame=
         this.add.graphics();
@@ -1926,6 +2110,10 @@ extends Phaser.Scene{
         );
 
 
+        /* =================================================
+           DARK ROOM BEHIND DOOR
+        ================================================= */
+
         const inside=
         this.add.graphics();
 
@@ -1945,11 +2133,24 @@ extends Phaser.Scene{
         );
 
 
+        /*
+        Bahagian dalam kosong.
+
+        Hanya jawapan BETUL
+        akan tunjuk titisan.
+        Fake door kekal kosong.
+        */
+
+
+        /* =================================================
+           TREASURE / WATER DROP
+        ================================================= */
+
         const treasureGlow=
         this.add.circle(
             0,
             15,
-            isStage5
+            stage5
             ?
             31
             :
@@ -1967,7 +2168,7 @@ extends Phaser.Scene{
             "💧",
             {
                 fontSize:
-                isStage5
+                stage5
                 ?
                 "45px"
                 :
@@ -1978,25 +2179,9 @@ extends Phaser.Scene{
         .setVisible(false);
 
 
-        const fakeCloud=
-        this.add.text(
-            0,
-            15,
-            "☁",
-            {
-                fontSize:
-                isStage5
-                ?
-                "43px"
-                :
-                "54px",
-
-                color:"#ffffff"
-            }
-        )
-        .setOrigin(.5)
-        .setVisible(false);
-
+        /* =================================================
+           MOVING DOOR PANEL
+        ================================================= */
 
         const panel=
         this.add.container(
@@ -2009,16 +2194,14 @@ extends Phaser.Scene{
         this.add.graphics();
 
 
-        const doorColor=
-        choice.fake
-        ?
-        0x594e7b
-        :
-        stage.door;
-
+        /*
+        PENTING:
+        Fake door guna WARNA SAMA.
+        Tiada warna khas.
+        */
 
         doorBG.fillStyle(
-            doorColor,
+            stage.door,
             1
         );
 
@@ -2068,12 +2251,20 @@ extends Phaser.Scene{
         );
 
 
+        /* =================================================
+           A / B / C / D
+
+           FAKE DOOR PUN MENGGUNAKAN
+           A / B / C / D YANG SAMA.
+        ================================================= */
+
         const labelText=
-        choice.fake
-        ?
-        "?"
-        :
-        ["A","B","C","D"][
+        [
+            "A",
+            "B",
+            "C",
+            "D"
+        ][
             choice.originalIndex
         ];
 
@@ -2082,15 +2273,11 @@ extends Phaser.Scene{
         this.add.circle(
             0,
             -innerH/2+42,
-            isStage5
+            stage5
             ?
             22
             :
             27,
-            choice.fake
-            ?
-            0xffdd73
-            :
             0xffffff,
             .95
         );
@@ -2106,11 +2293,7 @@ extends Phaser.Scene{
                 "Trebuchet MS",
 
                 fontSize:
-                choice.fake
-                ?
-                "29px"
-                :
-                isStage5
+                stage5
                 ?
                 "24px"
                 :
@@ -2118,19 +2301,18 @@ extends Phaser.Scene{
 
                 fontStyle:"bold",
 
-                color:
-                choice.fake
-                ?
-                "#54486d"
-                :
-                "#354266"
+                color:"#354266"
             }
         )
         .setOrigin(.5);
 
 
+        /* =================================================
+           ANSWER TEXT
+        ================================================= */
+
         let fontSize=
-        isStage5
+        stage5
         ?
         14
         :
@@ -2142,7 +2324,7 @@ extends Phaser.Scene{
         ){
 
             fontSize=
-            isStage5
+            stage5
             ?
             12
             :
@@ -2156,7 +2338,7 @@ extends Phaser.Scene{
         ){
 
             fontSize=
-            isStage5
+            stage5
             ?
             10
             :
@@ -2170,7 +2352,7 @@ extends Phaser.Scene{
         ){
 
             fontSize=
-            isStage5
+            stage5
             ?
             9
             :
@@ -2199,7 +2381,7 @@ extends Phaser.Scene{
 
                 wordWrap:{
                     width:
-                    innerW-26
+                    innerW-24
                 },
 
                 lineSpacing:2
@@ -2208,11 +2390,15 @@ extends Phaser.Scene{
         .setOrigin(.5);
 
 
+        /* =================================================
+           DOOR KNOB
+        ================================================= */
+
         const knob=
         this.add.circle(
             innerW/2-18,
             12,
-            isStage5
+            stage5
             ?
             5
             :
@@ -2230,6 +2416,10 @@ extends Phaser.Scene{
             knob
         ]);
 
+
+        /* =================================================
+           HIT AREA
+        ================================================= */
 
         const hit=
         this.add.rectangle(
@@ -2253,7 +2443,6 @@ extends Phaser.Scene{
             inside,
             treasureGlow,
             treasure,
-            fakeCloud,
             panel,
             hit
         ]);
@@ -2284,8 +2473,6 @@ extends Phaser.Scene{
 
             treasureGlow,
 
-            fakeCloud,
-
             hit,
 
             choice,
@@ -2315,8 +2502,11 @@ extends Phaser.Scene{
                 if(
                     this.locked ||
                     object.opened
-                )
+                ){
+
                     return;
+
+                }
 
 
                 AUDIO.tap();
@@ -2347,7 +2537,7 @@ extends Phaser.Scene{
         let round=0;
 
 
-        const doRound=()=>{
+        const runShuffle=()=>{
 
             round++;
 
@@ -2369,8 +2559,8 @@ extends Phaser.Scene{
                     ){
 
                         this.time.delayedCall(
-                            80,
-                            doRound
+                            90,
+                            runShuffle
                         );
 
                     }
@@ -2393,7 +2583,7 @@ extends Phaser.Scene{
         };
 
 
-        doRound();
+        runShuffle();
 
     }
 
@@ -2403,7 +2593,7 @@ extends Phaser.Scene{
 ========================================================= */
 
     shuffleAllDoors(
-        duration=420,
+        duration=430,
         callback=null,
         controlLock=true
     ){
@@ -2430,10 +2620,10 @@ extends Phaser.Scene{
         );
 
 
-        /*
-        Elak semua pintu kekal
-        di lokasi sama.
-        */
+        /* =================================================
+           PASTIKAN BUKAN SEMUA KEKAL
+           DI TEMPAT SAMA
+        ================================================= */
 
         let allSame=true;
 
@@ -2444,18 +2634,20 @@ extends Phaser.Scene{
             i++
         ){
 
-            const d=
+            const door=
             this.doorObjects[i];
 
 
             if(
-                d.container.x!==
+                door.container.x!==
                 targets[i].x ||
-                d.container.y!==
+
+                door.container.y!==
                 targets[i].y
             ){
 
                 allSame=false;
+
                 break;
 
             }
@@ -2494,6 +2686,7 @@ extends Phaser.Scene{
                     y:
                     target.y,
 
+                    duration:
                     duration,
 
                     ease:
@@ -2547,6 +2740,7 @@ extends Phaser.Scene{
 
 /* =========================================================
    STAGE 3 MEMORY MODE
+   10 SAAT
 ========================================================= */
 
     startMemoryMode(){
@@ -2556,7 +2750,7 @@ extends Phaser.Scene{
         this.revealUsed=false;
 
 
-        let seconds=5;
+        let seconds=10;
 
 
         this.statusText
@@ -2570,12 +2764,17 @@ extends Phaser.Scene{
         this.createRevealButton();
 
 
+        /*
+        10 EXECUTIONS:
+        10 -> 9 -> 8 ... -> 1 -> 0
+        */
+
         this.memoryTicker=
         this.time.addEvent({
 
             delay:1000,
 
-            repeat:4,
+            repeat:9,
 
             callback:()=>{
 
@@ -2596,7 +2795,7 @@ extends Phaser.Scene{
                 }
                 else{
 
-                    this.hideStage3Answers();
+                    this.hideStage3DoorInformation();
 
                 }
 
@@ -2608,10 +2807,11 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   HIDE ANSWERS
+   STAGE 3
+   HIDE ANSWER + A/B/C/D
 ========================================================= */
 
-    hideStage3Answers(){
+    hideStage3DoorInformation(){
 
         this.answersHidden=true;
 
@@ -2620,14 +2820,24 @@ extends Phaser.Scene{
         .forEach(
             door=>{
 
-                if(
-                    !door.choice.fake
-                ){
+                /*
+                HILANGKAN AYAT JAWAPAN
+                */
 
-                    door.answerText
-                    .setVisible(false);
+                door.answerText
+                .setVisible(false);
 
-                }
+
+                /*
+                HILANGKAN A/B/C/D
+                */
+
+                door.letterCircle
+                .setVisible(false);
+
+
+                door.letterText
+                .setVisible(false);
 
             }
         );
@@ -2635,19 +2845,69 @@ extends Phaser.Scene{
 
         this.statusText
         .setText(
-            "Jawapan disorok! Ingat A / B / C / D"
+            "Semua jawapan sudah ditutup. Ingat kedudukan pintu!"
         );
 
 
-        if(
-            this.revealButton
-        ){
+        this.setRevealButtonEnabled(
+            true
+        );
 
-            this.setRevealButtonEnabled(
-                true
-            );
+    }
 
-        }
+
+/* =========================================================
+   STAGE 3
+   SHOW INFORMATION AGAIN
+========================================================= */
+
+    showStage3DoorInformation(){
+
+        this.doorObjects
+        .forEach(
+            door=>{
+
+                door.answerText
+                .setVisible(true);
+
+
+                door.letterCircle
+                .setVisible(true);
+
+
+                door.letterText
+                .setVisible(true);
+
+            }
+        );
+
+    }
+
+
+/* =========================================================
+   STAGE 3
+   HIDE AGAIN
+========================================================= */
+
+    hideStage3Again(){
+
+        this.doorObjects
+        .forEach(
+            door=>{
+
+                door.answerText
+                .setVisible(false);
+
+
+                door.letterCircle
+                .setVisible(false);
+
+
+                door.letterText
+                .setVisible(false);
+
+            }
+        );
 
     }
 
@@ -2666,42 +2926,12 @@ extends Phaser.Scene{
 
 
         const width=190;
+
         const height=43;
 
 
         const bg=
         this.add.graphics();
-
-
-        bg.fillStyle(
-            0x27375f,
-            .93
-        );
-
-
-        bg.fillRoundedRect(
-            -width/2,
-            -height/2,
-            width,
-            height,
-            18
-        );
-
-
-        bg.lineStyle(
-            2,
-            0xffffff,
-            .52
-        );
-
-
-        bg.strokeRoundedRect(
-            -width/2,
-            -height/2,
-            width,
-            height,
-            18
-        );
 
 
         const text=
@@ -2754,18 +2984,23 @@ extends Phaser.Scene{
         this.revealButton={
 
             container,
+
             bg,
+
             text,
+
             hit,
+
             width,
+
             height
 
         };
 
 
         /*
-        Belum boleh guna
-        sehingga jawapan hilang.
+        BELUM BOLEH DIGUNA
+        SEBELUM 10 SAAT HABIS
         */
 
         this.setRevealButtonEnabled(
@@ -2781,8 +3016,11 @@ extends Phaser.Scene{
                     !this.answersHidden ||
                     this.revealUsed ||
                     this.locked
-                )
+                ){
+
                     return;
+
+                }
 
 
                 AUDIO.tap();
@@ -2796,42 +3034,33 @@ extends Phaser.Scene{
                 );
 
 
-                this.doorObjects
-                .forEach(
-                    door=>{
-
-                        door.answerText
-                        .setVisible(true);
-
-                    }
-                );
+                this.showStage3DoorInformation();
 
 
                 this.statusText
                 .setText(
-                    "Cepat hafal! Jawapan muncul 2.5 saat"
+                    "LIHAT SEMULA • Hafal cepat! 3 saat"
                 );
 
 
+                /*
+                PAPAR SEMULA 3 SAAT
+                */
+
                 this.time.delayedCall(
-                    2500,
+                    3000,
                     ()=>{
 
                         if(
                             this.stageIndex!==2
-                        )
+                        ){
+
                             return;
 
+                        }
 
-                        this.doorObjects
-                        .forEach(
-                            door=>{
 
-                                door.answerText
-                                .setVisible(false);
-
-                            }
-                        );
+                        this.hideStage3Again();
 
 
                         this.statusText
@@ -2848,14 +3077,21 @@ extends Phaser.Scene{
     }
 
 
+/* =========================================================
+   REVEAL BUTTON STATE
+========================================================= */
+
     setRevealButtonEnabled(
         enabled
     ){
 
         if(
             !this.revealButton
-        )
+        ){
+
             return;
+
+        }
 
 
         this.revealButton.bg
@@ -2869,6 +3105,7 @@ extends Phaser.Scene{
             0x27375f
             :
             0x5e6476,
+
             enabled
             ?
             .95
@@ -2922,10 +3159,12 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   SELECT DOOR
+   CHOOSE DOOR
 ========================================================= */
 
-    chooseDoor(door){
+    chooseDoor(
+        door
+    ){
 
         this.locked=true;
 
@@ -2982,17 +3221,25 @@ extends Phaser.Scene{
    CHECK DOOR
 ========================================================= */
 
-    checkDoor(door){
+    checkDoor(
+        door
+    ){
 
-        /* FAKE DOOR */
+        /* =================================================
+           STAGE 5 FAKE / DUPLICATE DOOR
+
+           PINTU DIBUKA
+           BAHAGIAN DALAM KOSONG.
+        ================================================= */
 
         if(
             door.choice.fake
         ){
 
-            this.fakeDoor(
+            this.emptyDuplicateDoor(
                 door
             );
+
 
             return;
 
@@ -3005,6 +3252,10 @@ extends Phaser.Scene{
         ];
 
 
+        /* =================================================
+           REAL DOOR + CORRECT ANSWER
+        ================================================= */
+
         if(
             door.choice.originalIndex===
             data.correct
@@ -3015,6 +3266,12 @@ extends Phaser.Scene{
             );
 
         }
+
+
+        /* =================================================
+           REAL DOOR BUT WRONG ANSWER
+        ================================================= */
+
         else{
 
             this.wrongDoor(
@@ -3027,13 +3284,20 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   CORRECT
+   CORRECT DOOR
 ========================================================= */
 
-    correctDoor(door){
+    correctDoor(
+        door
+    ){
 
         AUDIO.correct();
 
+
+        /*
+        ONLY CORRECT DOOR
+        REVEALS WATER DROP
+        */
 
         door.treasure
         .setVisible(true);
@@ -3141,19 +3405,19 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   WRONG ANSWER
-   NO. 7:
-   SALAH -> TUTUP -> SHUFFLE SEMUA
+   WRONG NORMAL DOOR
 ========================================================= */
 
-    wrongDoor(door){
+    wrongDoor(
+        door
+    ){
 
         AUDIO.wrong();
 
 
         this.showMessage(
             "BELUM TEPAT",
-            "Pintu akan diacak semula!",
+            "Semua pintu akan diacak semula!",
             false
         );
 
@@ -3164,47 +3428,15 @@ extends Phaser.Scene{
         );
 
 
-        const red=
-        this.add.rectangle(
-            door.container.x,
-            door.container.y,
-            door.width-30,
-            door.height-35,
-            0xe74b58,
-            .38
-        );
+        /*
+        DOOR IS ALREADY OPEN.
 
-
-        red.setDepth(
-            500
-        );
-
-
-        this.fxLayer.add(
-            red
-        );
-
-
-        this.tweens.add({
-
-            targets:red,
-
-            alpha:0,
-
-            duration:480,
-
-            onComplete:
-            ()=>{
-
-                red.destroy();
-
-            }
-
-        });
+        INSIDE REMAINS DARK / EMPTY.
+        */
 
 
         this.time.delayedCall(
-            430,
+            600,
             ()=>{
 
                 this.closeWrongDoorAndShuffle(
@@ -3218,62 +3450,52 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   FAKE DOOR STAGE 5
+   STAGE 5
+   EMPTY DUPLICATE DOOR
 ========================================================= */
 
-    fakeDoor(door){
+    emptyDuplicateDoor(
+        door
+    ){
 
         AUDIO.wrong();
 
 
-        door.fakeCloud
-        .setVisible(true);
+        /*
+        PENTING:
 
+        TIADA CLOUD.
+        TIADA X.
+        TIADA ANSWER.
+        TIADA TREASURE.
 
-        door.fakeCloud
-        .setScale(.2);
-
-
-        door.fakeCloud
-        .setAlpha(0);
-
-
-        this.tweens.add({
-
-            targets:
-            door.fakeCloud,
-
-            scale:1.15,
-
-            alpha:1,
-
-            duration:280,
-
-            ease:"Back.Out"
-
-        });
+        BILA PINTU DIBUKA,
+        USER NAMPAK RUANG KOSONG SAHAJA.
+        */
 
 
         this.showMessage(
-            "PINTU PALSU!",
-            "Semua pintu akan bertukar tempat.",
+            "PINTU KOSONG!",
+            "Salah pilih. Pintu ini hanyalah pintu pendua.",
             false
         );
 
 
         this.cameras.main.shake(
-            150,
-            .005
+            120,
+            .003
         );
 
 
+        /*
+        BIAR TERBUKA SEKEJAP
+        SUPAYA USER NAMPAK
+        MEMANG KOSONG.
+        */
+
         this.time.delayedCall(
-            520,
+            900,
             ()=>{
-
-                door.fakeCloud
-                .setVisible(false);
-
 
                 this.closeWrongDoorAndShuffle(
                     door
@@ -3286,7 +3508,8 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   CLOSE WRONG DOOR THEN SHUFFLE
+   CLOSE WRONG DOOR
+   THEN SHUFFLE ALL
 ========================================================= */
 
     closeWrongDoorAndShuffle(
@@ -3314,7 +3537,7 @@ extends Phaser.Scene{
 
                 this.statusText
                 .setText(
-                    "Salah! Semua pintu sedang diacak..."
+                    "Semua pintu sedang bertukar tempat..."
                 );
 
 
@@ -3322,29 +3545,28 @@ extends Phaser.Scene{
                     480,
                     ()=>{
 
-                        /*
-                        Stage 3:
-                        selepas shuffle,
-                        jawapan kekal tersembunyi.
-                        */
+
+                        /* =================================================
+                           STAGE 3
+
+                           JIKA JAWAPAN SUDAH HILANG,
+                           IA MESTI KEKAL HILANG
+                           SELEPAS SHUFFLE.
+                        ================================================= */
 
                         if(
                             this.stageIndex===2 &&
                             this.answersHidden
                         ){
 
-                            this.doorObjects
-                            .forEach(
-                                d=>{
-
-                                    d.answerText
-                                    .setVisible(false);
-
-                                }
-                            );
+                            this.hideStage3Again();
 
                         }
 
+
+                        /* =================================================
+                           STATUS AFTER SHUFFLE
+                        ================================================= */
 
                         if(
                             this.stageIndex===4
@@ -3352,25 +3574,27 @@ extends Phaser.Scene{
 
                             this.statusText
                             .setText(
-                                "Cuba lagi — awas pintu ?"
+                                "Cuba lagi. Ingat, ada pintu pendua yang kosong!"
                             );
 
                         }
+
                         else if(
                             this.stageIndex===2
                         ){
 
                             this.statusText
                             .setText(
-                                "Cuba lagi — ingat jawapan tadi"
+                                "Cuba lagi. Ingat kedudukan jawapan tadi!"
                             );
 
                         }
+
                         else{
 
                             this.statusText
                             .setText(
-                                "Cuba lagi! Kedudukan sudah berubah"
+                                "Cuba lagi! Kedudukan pintu sudah berubah."
                             );
 
                         }
@@ -3386,7 +3610,7 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   RESULT MESSAGE
+   MESSAGE
 ========================================================= */
 
     showMessage(
@@ -3483,7 +3707,9 @@ extends Phaser.Scene{
 
                 fontStyle:"bold",
 
-                color:"#ffffff"
+                color:"#ffffff",
+
+                align:"center"
             }
         )
         .setOrigin(.5);
@@ -3505,9 +3731,14 @@ extends Phaser.Scene{
         container;
 
 
-        container.setScale(.8);
+        container.setScale(
+            .8
+        );
 
-        container.setAlpha(0);
+
+        container.setAlpha(
+            0
+        );
 
 
         this.tweens.add({
@@ -3529,13 +3760,16 @@ extends Phaser.Scene{
         if(!good){
 
             this.time.delayedCall(
-                850,
+                1050,
                 ()=>{
 
                     if(
                         !container.active
-                    )
+                    ){
+
                         return;
+
+                    }
 
 
                     this.tweens.add({
@@ -3545,7 +3779,7 @@ extends Phaser.Scene{
 
                         alpha:0,
 
-                        duration:150,
+                        duration:160,
 
                         onComplete:
                         ()=>{
@@ -3622,7 +3856,8 @@ extends Phaser.Scene{
 
             this.tweens.add({
 
-                targets:star,
+                targets:
+                star,
 
                 x:
                 x+
@@ -3642,7 +3877,8 @@ extends Phaser.Scene{
                 650+
                 Math.random()*300,
 
-                ease:"Cubic.Out",
+                ease:
+                "Cubic.Out",
 
                 onComplete:
                 ()=>{
@@ -3664,13 +3900,17 @@ extends Phaser.Scene{
 
     createProgress(){
 
-        const baseX=280;
+        const baseX=
+        280;
 
-        const y=1090;
+
+        const y=
+        1090;
 
 
         const local=
-        this.questionIndex%5;
+        this.questionIndex%
+        5;
 
 
         for(
@@ -3685,6 +3925,7 @@ extends Phaser.Scene{
                 i*40,
                 y,
                 10,
+
                 i<local
                 ?
                 0x75e3a1
@@ -3694,6 +3935,7 @@ extends Phaser.Scene{
                 0xffdd69
                 :
                 0xffffff,
+
                 i<=local
                 ?
                 1
@@ -3876,11 +4118,7 @@ extends Phaser.Scene{
         this.add.text(
             360,
             610,
-            oldStage<4
-            ?
-            "Cabaran seterusnya sedang menunggu..."
-            :
-            "",
+            "Cabaran seterusnya sedang menunggu...",
             {
                 fontFamily:
                 "Trebuchet MS",
@@ -3919,7 +4157,7 @@ extends Phaser.Scene{
 
 
 /* =========================================================
-   FINAL
+   FINAL SCREEN
 ========================================================= */
 
     showFinal(){
