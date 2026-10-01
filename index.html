@@ -11,7 +11,7 @@ maximum-scale=1,
 user-scalable=no,
 viewport-fit=cover">
 
-<title>Game Padankan - Unit 9 Set 1</title>
+<title>Drag & Match - Unit 9 Set 1</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
@@ -37,8 +37,8 @@ body{
     linear-gradient(
         135deg,
         #d8f3ff,
-        #f7fcff,
-        #dcefff
+        #f8fcff,
+        #dcecff
     );
 
     overscroll-behavior:none;
@@ -54,44 +54,47 @@ body{
 
     padding:
     max(5px,env(safe-area-inset-top))
-    5px
+    4px
     max(5px,env(safe-area-inset-bottom));
 }
 
 #game-shell{
     width:min(
-        96vw,
+        98vw,
         760px,
-        calc(94svh * 0.75)
+        calc(96svh * .75)
     );
 
-    aspect-ratio:3 / 4;
+    aspect-ratio:3/4;
 
     position:relative;
 
-    border-radius:24px;
     overflow:hidden;
+
+    border-radius:22px;
 
     background:#eaf8ff;
 
-    box-shadow:
-        0 18px 45px rgba(30,80,110,.20),
-        0 3px 10px rgba(30,80,110,.15);
-
     border:3px solid rgba(255,255,255,.95);
+
+    box-shadow:
+        0 14px 38px rgba(30,75,100,.18);
 }
 
 #game-container{
     position:absolute;
     inset:0;
+
     width:100%;
     height:100%;
 }
 
 #game-container canvas{
     display:block;
+
     width:100% !important;
     height:100% !important;
+
     touch-action:none;
 }
 </style>
@@ -104,208 +107,197 @@ body{
 </div>
 
 <script>
-const QUESTIONS = [
 
-    {
-        id:1,
-        q:"Berapakah bentuk muka bumi yang dinyatakan dalam Unit 9?",
-        a:"Lapan"
-    },
+const QUESTIONS=[
 
-    {
-        id:2,
-        q:"Pilih bentuk muka bumi yang berupa kawasan tinggi menjulang.",
-        a:"Gunung"
-    },
+{
+id:1,
+q:"Berapakah bentuk muka bumi yang dinyatakan dalam Unit 9?",
+a:"Lapan"
+},
 
-    {
-        id:3,
-        q:"Pilih bentuk muka bumi berupa tanah rendah berhampiran sungai atau kaki gunung/bukit.",
-        a:"Lembah"
-    },
+{
+id:2,
+q:"Pilih bentuk muka bumi yang berupa kawasan tinggi menjulang.",
+a:"Gunung"
+},
 
-    {
-        id:4,
-        q:"Lembah biasanya boleh dijumpai berhampiran ____.",
-        a:"Sungai atau kaki gunung/bukit"
-    },
+{
+id:3,
+q:"Pilih bentuk muka bumi berupa tanah rendah berhampiran sungai atau kaki gunung/bukit.",
+a:"Lembah"
+},
 
-    {
-        id:5,
-        q:"Dalam model bentuk muka bumi, label yang sesuai untuk kawasan air luas di daratan ialah ____.",
-        a:"Tasik"
-    },
+{
+id:4,
+q:"Lembah biasanya boleh dijumpai berhampiran ____.",
+a:"Sungai atau kaki gunung/bukit"
+},
 
-    {
-        id:6,
-        q:"Dalam sebuah gambar terdapat gunung, sungai dan kawasan tanah rendah di sebelah sungai. Kawasan tanah rendah itu ialah ____.",
-        a:"Lembah"
-    },
+{
+id:5,
+q:"Dalam model bentuk muka bumi, label yang sesuai untuk kawasan air luas di daratan ialah ____.",
+a:"Tasik"
+},
 
-    {
-        id:7,
-        q:"Bentuk muka bumi berair yang sangat luas ialah ____.",
-        a:"Laut"
-    },
+{
+id:6,
+q:"Dalam sebuah gambar terdapat gunung, sungai dan kawasan tanah rendah di sebelah sungai. Kawasan tanah rendah itu ialah ____.",
+a:"Lembah"
+},
 
-    {
-        id:8,
-        q:"Bentuk muka bumi yang terdapat di tepi laut ialah ____.",
-        a:"Pantai"
-    },
+{
+id:7,
+q:"Bentuk muka bumi berair yang sangat luas ialah ____.",
+a:"Laut"
+},
 
-    {
-        id:9,
-        q:"Gunung dan bukit mempunyai persamaan kerana kedua-duanya merupakan kawasan ____.",
-        a:"Tinggi"
-    },
+{
+id:8,
+q:"Bentuk muka bumi yang terdapat di tepi laut ialah ____.",
+a:"Pantai"
+},
 
-    {
-        id:10,
-        q:"Pilih satu jenis tanah yang dinyatakan dalam Unit 9.",
-        a:"Tanah kebun"
-    },
+{
+id:9,
+q:"Gunung dan bukit mempunyai persamaan kerana kedua-duanya merupakan kawasan ____.",
+a:"Tinggi"
+},
 
-    {
-        id:11,
-        q:"Mengapakah tanah kebun, tanah liat dan pasir diletakkan dalam satu kumpulan?",
-        a:"Ketiga-tiganya ialah jenis tanah"
-    },
+{
+id:10,
+q:"Pilih satu jenis tanah yang dinyatakan dalam Unit 9.",
+a:"Tanah kebun"
+},
 
-    {
-        id:12,
-        q:"Ciri utama butiran tanah liat dalam Unit 9 ialah sangat ____.",
-        a:"Halus"
-    },
+{
+id:11,
+q:"Mengapakah tanah kebun, tanah liat dan pasir diletakkan dalam satu kumpulan?",
+a:"Ketiga-tiganya ialah jenis tanah"
+},
 
-    {
-        id:13,
-        q:"Tanah kebun dan pasir disiasat dalam aktiviti kandungan tanah. Apakah persamaan kedua-duanya?",
-        a:"Kedua-duanya jenis tanah"
-    },
+{
+id:12,
+q:"Ciri utama butiran tanah liat dalam Unit 9 ialah sangat ____.",
+a:"Halus"
+},
 
-    {
-        id:14,
-        q:"Apakah tiga jenis tanah yang dinyatakan dalam Unit 9?",
-        a:"Tanah kebun, tanah liat dan pasir"
-    },
+{
+id:13,
+q:"Tanah kebun dan pasir disiasat dalam aktiviti kandungan tanah. Apakah persamaan kedua-duanya?",
+a:"Kedua-duanya jenis tanah"
+},
 
-    {
-        id:15,
-        q:"Jika satu kad tertulis 'tanah kebun', kad itu perlu diletakkan di bawah tajuk ____.",
-        a:"Jenis tanah"
-    },
+{
+id:14,
+q:"Apakah tiga jenis tanah yang dinyatakan dalam Unit 9?",
+a:"Tanah kebun, tanah liat dan pasir"
+},
 
-    {
-        id:16,
-        q:"Tanah kebun, tanah liat dan pasir ialah contoh ____.",
-        a:"Jenis tanah"
-    },
+{
+id:15,
+q:"Jika satu kad tertulis 'tanah kebun', kad itu perlu diletakkan di bawah tajuk ____.",
+a:"Jenis tanah"
+},
 
-    {
-        id:17,
-        q:"Jika murid tersalah menyenaraikan gunung sebagai jenis tanah, pembetulan yang betul ialah ____.",
-        a:"Gunung ialah bentuk muka bumi"
-    },
+{
+id:16,
+q:"Tanah kebun, tanah liat dan pasir ialah contoh ____.",
+a:"Jenis tanah"
+},
 
-    {
-        id:18,
-        q:"Yang manakah kandungan yang boleh terdapat pada tanah kebun tetapi tidak dinyatakan sebagai kandungan pasir?",
-        a:"Daun kering"
-    },
+{
+id:17,
+q:"Jika murid tersalah menyenaraikan gunung sebagai jenis tanah, pembetulan yang betul ialah ____.",
+a:"Gunung ialah bentuk muka bumi"
+},
 
-    {
-        id:19,
-        q:"Seorang murid mahu melihat butiran kecil dalam tanah dengan lebih jelas. Alat yang sesuai ialah ____.",
-        a:"Kanta pembesar"
-    },
+{
+id:18,
+q:"Yang manakah kandungan yang boleh terdapat pada tanah kebun tetapi tidak dinyatakan sebagai kandungan pasir?",
+a:"Daun kering"
+},
 
-    {
-        id:20,
-        q:"Yang manakah kandungan yang terdapat pada kedua-dua tanah kebun dan pasir?",
-        a:"Butir pasir"
-    },
+{
+id:19,
+q:"Seorang murid mahu melihat butiran kecil dalam tanah dengan lebih jelas. Alat yang sesuai ialah ____.",
+a:"Kanta pembesar"
+},
 
-    {
-        id:21,
-        q:"Selepas memerhati tanah kebun, kandungannya diasingkan menggunakan ____.",
-        a:"Forsep"
-    },
+{
+id:20,
+q:"Yang manakah kandungan yang terdapat pada kedua-dua tanah kebun dan pasir?",
+a:"Butir pasir"
+},
 
-    {
-        id:22,
-        q:"Tanah kebun mengandungi lebih pelbagai bahan berbanding ____.",
-        a:"Pasir"
-    },
+{
+id:21,
+q:"Selepas memerhati tanah kebun, kandungannya diasingkan menggunakan ____.",
+a:"Forsep"
+},
 
-    {
-        id:23,
-        q:"Alat yang digunakan untuk mengasingkan kandungan tanah ialah ____.",
-        a:"Forsep"
-    },
+{
+id:22,
+q:"Tanah kebun mengandungi lebih pelbagai bahan berbanding ____.",
+a:"Pasir"
+},
 
-    {
-        id:24,
-        q:"Mengapakah pemerhatian dicatat dalam jadual?",
-        a:"Untuk merekod kandungan yang diperhatikan"
-    },
+{
+id:23,
+q:"Alat yang digunakan untuk mengasingkan kandungan tanah ialah ____.",
+a:"Forsep"
+},
 
-    {
-        id:25,
-        q:"Pasir mengandungi butir pasir dan ____.",
-        a:"Batu-batu kecil"
-    }
+{
+id:24,
+q:"Mengapakah pemerhatian dicatat dalam jadual?",
+a:"Untuk merekod kandungan yang diperhatikan"
+},
 
-];
-
-
-/* =====================================================
-   STAGE
-===================================================== */
-
-const STAGES = [
-
-    {
-        title:"Bentuk Muka Bumi I",
-        ids:[1,2,3,4,5]
-    },
-
-    {
-        title:"Bentuk Muka Bumi II",
-        ids:[6,7,8,9,10]
-    },
-
-    {
-        title:"Jenis Tanah I",
-        ids:[11,12,13,14,15]
-    },
-
-    {
-        title:"Jenis Tanah II",
-        ids:[16,17,18,19,20]
-    },
-
-    {
-        title:"Kandungan Tanah",
-        ids:[21,22,23,24,25]
-    }
+{
+id:25,
+q:"Pasir mengandungi butir pasir dan ____.",
+a:"Batu-batu kecil"
+}
 
 ];
 
 
-/* =====================================================
-   SHUFFLE
-===================================================== */
+const STAGES=[
+
+{
+title:"Bentuk Muka Bumi I",
+ids:[1,2,3,4,5]
+},
+
+{
+title:"Bentuk Muka Bumi II",
+ids:[6,7,8,9,10]
+},
+
+{
+title:"Jenis Tanah I",
+ids:[11,12,13,14,15]
+},
+
+{
+title:"Jenis Tanah II",
+ids:[16,17,18,19,20]
+},
+
+{
+title:"Kandungan Tanah",
+ids:[21,22,23,24,25]
+}
+
+];
+
 
 function shuffle(array){
 
     const result=[...array];
 
-    for(
-        let i=result.length-1;
-        i>0;
-        i--
-    ){
+    for(let i=result.length-1;i>0;i--){
 
         const j=
             Math.floor(
@@ -319,357 +311,335 @@ function shuffle(array){
             result[j],
             result[i]
         ];
+
     }
 
     return result;
 }
 
 
+class MatchGame extends Phaser.Scene{
+
+constructor(){
+
+    super("MatchGame");
+
+}
+
+
+create(){
+
+    this.stageIndex=0;
+
+    this.totalCorrect=0;
+
+    this.mistakes=0;
+
+    this.locked=false;
+
+    this.questionCards=[];
+
+    this.answerCards=[];
+
+
+    this.bgGraphics=
+        this.add.graphics();
+
+
+    this.fxGraphics=
+        this.add.graphics();
+
+
+    this.drawBackground();
+
+    this.createHeader();
+
+    this.buildStage();
+
+}
+
+
 /* =====================================================
-   SCENE
+   BACKGROUND
 ===================================================== */
 
-class MatchScene extends Phaser.Scene{
+drawBackground(){
 
-    constructor(){
+    const g=this.bgGraphics;
 
-        super("MatchScene");
+
+    g.clear();
+
+
+    g.fillStyle(
+        0xeaf8ff,
+        1
+    );
+
+    g.fillRect(
+        0,
+        0,
+        900,
+        1200
+    );
+
+
+    /* SKY */
+
+    g.fillStyle(
+        0xdaf2ff,
+        1
+    );
+
+    g.fillRect(
+        0,
+        0,
+        900,
+        310
+    );
+
+
+    /* SUN */
+
+    g.fillStyle(
+        0xffdc72,
+        .75
+    );
+
+    g.fillCircle(
+        790,
+        110,
+        50
+    );
+
+
+    /* CLOUDS */
+
+    for(let i=0;i<5;i++){
+
+        const x=
+            70+i*185;
+
+        const y=
+            78+(i%2)*65;
+
+
+        g.fillStyle(
+            0xffffff,
+            .65
+        );
+
+
+        g.fillCircle(
+            x,
+            y,
+            28
+        );
+
+        g.fillCircle(
+            x+28,
+            y+5,
+            22
+        );
+
+        g.fillCircle(
+            x-25,
+            y+8,
+            19
+        );
 
     }
 
 
-    create(){
+    /* LOWER LAND */
+
+    g.fillStyle(
+        0xdbeed7,
+        1
+    );
+
+    g.fillRect(
+        0,
+        1025,
+        900,
+        175
+    );
 
-        this.stageIndex=0;
 
-        this.totalMatched=0;
+    /* MOUNTAINS */
 
-        this.mistakes=0;
+    g.fillStyle(
+        0xaed3b5,
+        1
+    );
 
-        this.selectedId=null;
+    g.fillTriangle(
+        0,
+        1100,
+        170,
+        900,
+        340,
+        1100
+    );
 
-        this.matches=[];
 
-        this.questionCards=
-            new Map();
+    g.fillStyle(
+        0x91c49d,
+        1
+    );
 
-        this.answerCards=
-            new Map();
+    g.fillTriangle(
+        210,
+        1100,
+        455,
+        825,
+        700,
+        1100
+    );
 
 
-        /* =========================
-           GRAPHICS
-        ========================= */
+    g.fillStyle(
+        0x7bb48b,
+        1
+    );
 
-        this.bg=
-            this.add.graphics();
+    g.fillTriangle(
+        570,
+        1100,
+        765,
+        900,
+        930,
+        1100
+    );
 
-        this.lines=
-            this.add.graphics();
 
-        this.dynamic=
-            this.add.group();
+    /* RIVER */
 
+    g.fillStyle(
+        0x86c7e6,
+        .9
+    );
 
-        this.drawBackground();
 
-        this.buildHeader();
+    g.beginPath();
 
-        this.buildStage();
+    g.moveTo(
+        0,
+        1120
+    );
 
-    }
+    g.lineTo(
+        230,
+        1080
+    );
 
+    g.lineTo(
+        450,
+        1150
+    );
 
-    /* =====================================================
-       BACKGROUND
-    ===================================================== */
+    g.lineTo(
+        900,
+        1090
+    );
 
-    drawBackground(){
+    g.lineTo(
+        900,
+        1200
+    );
 
-        const g=this.bg;
+    g.lineTo(
+        0,
+        1200
+    );
 
-        g.clear();
+    g.closePath();
 
+    g.fillPath();
 
-        /* SKY */
+}
 
-        g.fillStyle(
-            0xeaf8ff,
-            1
-        );
 
-        g.fillRect(
-            0,
-            0,
-            900,
-            1200
-        );
+/* =====================================================
+   HEADER
+===================================================== */
 
+createHeader(){
 
-        g.fillStyle(
-            0xdff4ff,
-            1
-        );
+    this.add.text(
+        450,
+        40,
+        "DRAG & PADANKAN",
+        {
 
-        g.fillRect(
-            0,
-            0,
-            900,
-            350
-        );
+            fontFamily:
+                "Trebuchet MS, Arial",
 
+            fontSize:
+                "42px",
 
-        /* GROUND */
+            fontStyle:
+                "bold",
 
-        g.fillStyle(
-            0xd9efdc,
-            1
-        );
-
-        g.fillRect(
-            0,
-            1010,
-            900,
-            190
-        );
-
-
-        /* MOUNTAINS */
-
-        g.fillStyle(
-            0xb9ddc2,
-            1
-        );
-
-        g.fillTriangle(
-            0,
-            1050,
-
-            185,
-            825,
-
-            370,
-            1050
-        );
-
-
-        g.fillStyle(
-            0xa7d2b3,
-            1
-        );
-
-        g.fillTriangle(
-            220,
-            1050,
-
-            455,
-            770,
-
-            700,
-            1050
-        );
-
-
-        g.fillStyle(
-            0x91c79f,
-            1
-        );
-
-        g.fillTriangle(
-            535,
-            1050,
-
-            735,
-            835,
-
-            900,
-            1050
-        );
-
-
-        /* RIVER */
-
-        g.fillStyle(
-            0x8ac8e8,
-            .88
-        );
-
-        g.beginPath();
-
-        g.moveTo(
-            0,
-            1120
-        );
-
-        g.lineTo(
-            220,
-            1080
-        );
-
-        g.lineTo(
-            480,
-            1145
-        );
-
-        g.lineTo(
-            900,
-            1090
-        );
-
-        g.lineTo(
-            900,
-            1200
-        );
-
-        g.lineTo(
-            0,
-            1200
-        );
-
-        g.closePath();
-
-        g.fillPath();
-
-
-        /* CLOUD DOTS */
-
-        for(
-            let i=0;
-            i<10;
-            i++
-        ){
-
-            const x=
-                38+
-                i*96;
-
-            const y=
-                72+
-                (i%2)*40;
-
-            g.fillStyle(
-                0xffffff,
-                .40
-            );
-
-            g.fillCircle(
-                x,
-                y,
-                17+
-                (i%3)*4
-            );
+            color:
+                "#17394c"
 
         }
 
-    }
+    ).setOrigin(.5);
 
 
-    /* =====================================================
-       HEADER
-    ===================================================== */
+    this.add.text(
+        450,
+        88,
+        "Unit 9 • Bentuk Muka Bumi & Tanah",
+        {
 
-    buildHeader(){
+            fontFamily:
+                "Trebuchet MS, Arial",
 
+            fontSize:
+                "22px",
+
+            fontStyle:
+                "bold",
+
+            color:
+                "#4c6c7c"
+
+        }
+
+    ).setOrigin(.5);
+
+
+    this.stageText=
         this.add.text(
-            450,
-            42,
-            "PADANKAN!",
+            45,
+            130,
+            "",
             {
 
                 fontFamily:
                     "Trebuchet MS, Arial",
 
                 fontSize:
-                    "44px",
+                    "20px",
 
                 fontStyle:
                     "bold",
 
                 color:
-                    "#15354a"
+                    "#21475b"
 
             }
+        );
 
-        ).setOrigin(.5);
 
-
+    this.scoreText=
         this.add.text(
-            450,
-            88,
-            "Unit 9 • Bentuk Muka Bumi & Tanah",
-            {
-
-                fontFamily:
-                    "Trebuchet MS, Arial",
-
-                fontSize:
-                    "22px",
-
-                fontStyle:
-                    "bold",
-
-                color:
-                    "#416274"
-
-            }
-
-        ).setOrigin(.5);
-
-
-        this.stageText=
-            this.add.text(
-                46,
-                128,
-                "",
-                {
-
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-
-                    fontSize:
-                        "21px",
-
-                    fontStyle:
-                        "bold",
-
-                    color:
-                        "#183b4f"
-
-                }
-            );
-
-
-        this.progressText=
-            this.add.text(
-                854,
-                128,
-                "",
-                {
-
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-
-                    fontSize:
-                        "19px",
-
-                    fontStyle:
-                        "bold",
-
-                    color:
-                        "#183b4f"
-
-                }
-
-            ).setOrigin(
-                1,
-                0
-            );
-
-
-        this.add.text(
-            450,
-            166,
-            "Pilih soalan → pilih jawapan yang sepadan",
+            855,
+            130,
+            "",
             {
 
                 fontFamily:
@@ -678,1589 +648,1709 @@ class MatchScene extends Phaser.Scene{
                 fontSize:
                     "18px",
 
+                fontStyle:
+                    "bold",
+
                 color:
-                    "#597584"
+                    "#21475b"
+
+            }
+
+        ).setOrigin(
+            1,
+            0
+        );
+
+
+    this.add.text(
+        450,
+        172,
+        "Seret kad jawapan → lepaskan pada ruang yang betul",
+        {
+
+            fontFamily:
+                "Trebuchet MS, Arial",
+
+            fontSize:
+                "18px",
+
+            color:
+                "#64818f"
+
+        }
+
+    ).setOrigin(.5);
+
+}
+
+
+/* =====================================================
+   BUILD STAGE
+===================================================== */
+
+buildStage(){
+
+    if(this.stageGroup){
+
+        this.stageGroup.clear(
+            true,
+            true
+        );
+
+    }
+
+
+    this.stageGroup=
+        this.add.group();
+
+
+    this.questionCards=[];
+
+    this.answerCards=[];
+
+
+    this.fxGraphics.clear();
+
+
+    const stage=
+        STAGES[
+            this.stageIndex
+        ];
+
+
+    const questions=
+        stage.ids.map(
+
+            id=>
+                QUESTIONS.find(
+                    q=>q.id===id
+                )
+
+        );
+
+
+    const answers=
+        shuffle(questions);
+
+
+    this.stageText.setText(
+
+        "STAGE "+
+        (this.stageIndex+1)+
+        "/5 • "+
+        stage.title
+
+    );
+
+
+    this.updateScore();
+
+
+    const rowStart=350;
+
+    const rowGap=132;
+
+
+    questions.forEach(
+        (question,index)=>{
+
+            const y=
+                rowStart+
+                index*rowGap;
+
+
+            const card=
+                this.createQuestionCard(
+
+                    question,
+                    y
+
+                );
+
+
+            this.questionCards.push(
+                card
+            );
+
+        }
+    );
+
+
+    answers.forEach(
+        (question,index)=>{
+
+            const y=
+                rowStart+
+                index*rowGap;
+
+
+            const card=
+                this.createAnswerCard(
+
+                    question,
+                    y
+
+                );
+
+
+            this.answerCards.push(
+                card
+            );
+
+        }
+    );
+
+
+    this.createInstructionPanel();
+
+    this.createFooter();
+
+}
+
+
+/* =====================================================
+   TOP PANEL
+===================================================== */
+
+createInstructionPanel(){
+
+    const shadow=
+        this.add.rectangle(
+            450,
+            250,
+            815,
+            110,
+            0x18394b,
+            .08
+        );
+
+
+    shadow.y+=5;
+
+
+    const panel=
+        this.add.rectangle(
+            450,
+            245,
+            815,
+            110,
+            0xffffff,
+            .96
+        );
+
+
+    panel.setStrokeStyle(
+        3,
+        0xa5d9e9,
+        1
+    );
+
+
+    const text=
+        this.add.text(
+            450,
+            245,
+            "Pegang kad jawapan di sebelah kanan.\nSeret masuk ke ruang PADANKAN yang sesuai.",
+            {
+
+                fontFamily:
+                    "Trebuchet MS, Arial",
+
+                fontSize:
+                    "21px",
+
+                fontStyle:
+                    "bold",
+
+                align:
+                    "center",
+
+                color:
+                    "#274b5d",
+
+                lineSpacing:
+                    7
 
             }
 
         ).setOrigin(.5);
 
-    }
+
+    this.stageGroup.addMultiple([
+
+        shadow,
+        panel,
+        text
+
+    ]);
+
+}
 
 
-    /* =====================================================
-       BUILD STAGE
-    ===================================================== */
+/* =====================================================
+   SHORT QUESTION
+===================================================== */
 
-    buildStage(){
+shortQuestion(
+    text,
+    max=70
+){
 
-        this.dynamic.clear(
-            true,
-            true
-        );
+    if(
+        text.length<=max
+    ){
 
-
-        this.lines.clear();
-
-
-        this.questionCards.clear();
-
-        this.answerCards.clear();
-
-
-        this.matches=[];
-
-        this.selectedId=null;
-
-        this.toast=null;
-
-        this.toastBg=null;
-
-
-        const stage=
-            STAGES[
-                this.stageIndex
-            ];
-
-
-        const items=
-            stage.ids.map(
-
-                id=>
-                    QUESTIONS.find(
-                        q=>q.id===id
-                    )
-
-            );
-
-
-        const answers=
-            shuffle(items);
-
-
-        this.stageText.setText(
-
-            "STAGE "+
-            (this.stageIndex+1)+
-            "/5  •  "+
-            stage.title
-
-        );
-
-
-        this.updateProgress();
-
-
-        this.makeQuestionPanel();
-
-
-        const leftX=218;
-
-        const rightX=682;
-
-        const startY=435;
-
-        const gapY=125;
-
-
-        /* QUESTION CARDS */
-
-        items.forEach(
-            (q,index)=>{
-
-                const card=
-                    this.makeQuestionCard(
-
-                        leftX,
-
-                        startY+
-                        index*gapY,
-
-                        q
-
-                    );
-
-                this.questionCards.set(
-                    q.id,
-                    card
-                );
-
-            }
-        );
-
-
-        /* ANSWER CARDS */
-
-        answers.forEach(
-            (q,index)=>{
-
-                const card=
-                    this.makeAnswerCard(
-
-                        rightX,
-
-                        startY+
-                        index*gapY,
-
-                        q
-
-                    );
-
-                this.answerCards.set(
-                    q.id,
-                    card
-                );
-
-            }
-        );
-
-
-        this.setPanelQuestion(
-            null
-        );
-
-
-        this.makeFooter();
+        return text;
 
     }
 
 
-    /* =====================================================
-       QUESTION DISPLAY PANEL
-    ===================================================== */
+    return (
+        text
+        .substring(
+            0,
+            max-1
+        )
+        .trim()
+        +"…"
+    );
 
-    makeQuestionPanel(){
-
-        const shadow=
-            this.add.rectangle(
-                450,
-                275,
-                820,
-                160,
-                0x15394a,
-                .10
-            );
-
-        shadow.y+=5;
+}
 
 
-        const panel=
-            this.add.rectangle(
-                450,
-                270,
-                820,
-                160,
-                0xffffff,
-                .97
-            );
+/* =====================================================
+   QUESTION CARD
+===================================================== */
 
-        panel.setStrokeStyle(
-            3,
-            0x9fd4e8,
+createQuestionCard(
+    question,
+    y
+){
+
+    const x=207;
+
+    const w=350;
+
+    const h=106;
+
+
+    const shadow=
+        this.add.rectangle(
+            x+3,
+            y+5,
+            w,
+            h,
+            0x18394b,
+            .10
+        );
+
+
+    const rect=
+        this.add.rectangle(
+            x,
+            y,
+            w,
+            h,
+            0xffffff,
             1
         );
 
 
-        const label=
-            this.add.text(
-                70,
-                207,
-                "SOALAN DIPILIH",
-                {
-
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-
-                    fontSize:
-                        "17px",
-
-                    fontStyle:
-                        "bold",
-
-                    color:
-                        "#2780a3"
-
-                }
-            );
+    rect.setStrokeStyle(
+        3,
+        0x8bcadd,
+        1
+    );
 
 
-        this.panelQuestion=
-            this.add.text(
-                70,
-                238,
-                "",
-                {
-
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-
-                    fontSize:
-                        "22px",
-
-                    fontStyle:
-                        "bold",
-
-                    color:
-                        "#193849",
-
-                    lineSpacing:
-                        5,
-
-                    wordWrap:{
-                        width:760,
-                        useAdvancedWrap:true
-                    }
-
-                }
-            );
-
-
-        this.panelHint=
-            this.add.text(
-                70,
-                337,
-                "",
-                {
-
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-
-                    fontSize:
-                        "17px",
-
-                    color:
-                        "#687e89"
-
-                }
-            );
-
-
-        this.dynamic.addMultiple([
-
-            shadow,
-            panel,
-            label,
-            this.panelQuestion,
-            this.panelHint
-
-        ]);
-
-    }
-
-
-    setPanelQuestion(q){
-
-        if(!q){
-
-            this.panelQuestion.setText(
-                "Pilih satu kad soalan di sebelah kiri."
-            );
-
-            this.panelHint.setText(
-                "Kemudian cari jawapan yang sepadan di sebelah kanan."
-            );
-
-            return;
-        }
-
-
-        this.panelQuestion.setText(
-
-            "Q"+
-            q.id+
-            ". "+
-            q.q
-
-        );
-
-
-        this.panelHint.setText(
-            "Sekarang pilih satu kad jawapan."
-        );
-
-    }
-
-
-    /* =====================================================
-       SHORT TEXT
-    ===================================================== */
-
-    shortText(
-        text,
-        max=68
-    ){
-
-        if(
-            text.length<=max
-        ){
-
-            return text;
-        }
-
-
-        return (
-            text
-            .slice(
-                0,
-                max-1
-            )
-            .trim()
-            +"…"
-        );
-
-    }
-
-
-    /* =====================================================
-       QUESTION CARD
-    ===================================================== */
-
-    makeQuestionCard(
-        x,
-        y,
-        q
-    ){
-
-        const w=360;
-
-        const h=103;
-
-
-        const shadow=
-            this.add.rectangle(
-                x+3,
-                y+5,
-                w,
-                h,
-                0x15394a,
-                .10
-            );
-
-
-        const rect=
-            this.add.rectangle(
-                x,
-                y,
-                w,
-                h,
-                0xffffff,
-                1
-            );
-
-
-        rect.setStrokeStyle(
-            3,
-            0x86c8df,
+    const numberCircle=
+        this.add.circle(
+            62,
+            y,
+            24,
+            0x308db0,
             1
         );
 
 
-        const badge=
-            this.add.circle(
-                x-w/2+36,
-                y,
-                23,
-                0x278fb5,
-                1
-            );
+    const numberText=
+        this.add.text(
+            62,
+            y,
+            ""+question.id,
+            {
 
+                fontFamily:
+                    "Trebuchet MS, Arial",
 
-        const badgeText=
-            this.add.text(
-                badge.x,
-                badge.y,
-                ""+q.id,
-                {
+                fontSize:
+                    "18px",
 
-                    fontFamily:
-                        "Trebuchet MS, Arial",
+                fontStyle:
+                    "bold",
 
-                    fontSize:
-                        "18px",
-
-                    fontStyle:
-                        "bold",
-
-                    color:
-                        "#ffffff"
-
-                }
-
-            ).setOrigin(.5);
-
-
-        const txt=
-            this.add.text(
-                x-w/2+72,
-                y,
-                this.shortText(
-                    q.q
-                ),
-                {
-
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-
-                    fontSize:
-                        "18px",
-
-                    fontStyle:
-                        "bold",
-
-                    color:
-                        "#243f4e",
-
-                    lineSpacing:
-                        3,
-
-                    wordWrap:{
-                        width:263,
-                        useAdvancedWrap:true
-                    }
-
-                }
-
-            ).setOrigin(
-                0,
-                .5
-            );
-
-
-        const dot=
-            this.add.circle(
-                x+w/2-10,
-                y,
-                8,
-                0x63b7d2,
-                1
-            );
-
-
-        rect.setInteractive({
-            useHandCursor:true
-        });
-
-
-        rect.on(
-
-            "pointerdown",
-
-            ()=>{
-
-                this.selectQuestion(
-                    q.id
-                );
+                color:
+                    "#ffffff"
 
             }
 
-        );
+        ).setOrigin(.5);
 
 
-        this.dynamic.addMultiple([
+    const text=
+        this.add.text(
+            96,
+            y,
+            this.shortQuestion(
+                question.q
+            ),
+            {
 
-            shadow,
-            rect,
-            badge,
-            badgeText,
-            txt,
-            dot
+                fontFamily:
+                    "Trebuchet MS, Arial",
 
-        ]);
+                fontSize:
+                    "17px",
 
+                fontStyle:
+                    "bold",
 
-        return{
+                color:
+                    "#294551",
 
-            q:q,
-
-            rect:rect,
-
-            shadow:shadow,
-
-            badge:badge,
-
-            badgeText:badgeText,
-
-            txt:txt,
-
-            dot:dot,
-
-            x:x,
-
-            y:y,
-
-            w:w,
-
-            h:h,
-
-            matched:false
-
-        };
-
-    }
-
-
-    /* =====================================================
-       ANSWER CARD
-    ===================================================== */
-
-    makeAnswerCard(
-        x,
-        y,
-        q
-    ){
-
-        const w=360;
-
-        const h=103;
-
-
-        const shadow=
-            this.add.rectangle(
-                x+3,
-                y+5,
-                w,
-                h,
-                0x15394a,
-                .10
-            );
-
-
-        const rect=
-            this.add.rectangle(
-                x,
-                y,
-                w,
-                h,
-                0xfffbef,
-                1
-            );
-
-
-        rect.setStrokeStyle(
-            3,
-            0xe4c45e,
-            1
-        );
-
-
-        const dot=
-            this.add.circle(
-                x-w/2+10,
-                y,
-                8,
-                0xdfb743,
-                1
-            );
-
-
-        const icon=
-            this.add.circle(
-                x-w/2+41,
-                y,
-                19,
-                0xf3cf65,
-                1
-            );
-
-
-        const iconText=
-            this.add.text(
-                icon.x,
-                icon.y,
-                "?",
-                {
-
-                    fontFamily:
-                        "Arial",
-
-                    fontSize:
-                        "19px",
-
-                    fontStyle:
-                        "bold",
-
-                    color:
-                        "#6e5712"
-
-                }
-
-            ).setOrigin(.5);
-
-
-        const txt=
-            this.add.text(
-                x-w/2+72,
-                y,
-                q.a,
-                {
-
-                    fontFamily:
-                        "Trebuchet MS, Arial",
-
-                    fontSize:
-                        "19px",
-
-                    fontStyle:
-                        "bold",
-
-                    color:
-                        "#493f1c",
-
-                    lineSpacing:
-                        3,
-
-                    wordWrap:{
-                        width:265,
-                        useAdvancedWrap:true
-                    }
-
-                }
-
-            ).setOrigin(
-                0,
-                .5
-            );
-
-
-        rect.setInteractive({
-            useHandCursor:true
-        });
-
-
-        rect.on(
-
-            "pointerdown",
-
-            ()=>{
-
-                this.chooseAnswer(
-                    q.id
-                );
-
-            }
-
-        );
-
-
-        this.dynamic.addMultiple([
-
-            shadow,
-            rect,
-            dot,
-            icon,
-            iconText,
-            txt
-
-        ]);
-
-
-        return{
-
-            q:q,
-
-            rect:rect,
-
-            shadow:shadow,
-
-            dot:dot,
-
-            icon:icon,
-
-            iconText:iconText,
-
-            txt:txt,
-
-            x:x,
-
-            y:y,
-
-            w:w,
-
-            h:h,
-
-            matched:false
-
-        };
-
-    }
-
-
-    /* =====================================================
-       SELECT QUESTION
-    ===================================================== */
-
-    selectQuestion(id){
-
-        const card=
-            this.questionCards.get(
-                id
-            );
-
-
-        if(
-            !card ||
-            card.matched
-        ){
-
-            return;
-        }
-
-
-        /* RESET OLD SELECTED */
-
-        if(
-            this.selectedId!==null
-        ){
-
-            const old=
-                this.questionCards.get(
-                    this.selectedId
-                );
-
-
-            if(
-                old &&
-                !old.matched
-            ){
-
-                old.rect
-                .setFillStyle(
-                    0xffffff,
-                    1
-                )
-                .setStrokeStyle(
+                lineSpacing:
                     3,
-                    0x86c8df,
-                    1
-                );
 
-
-                old.shadow.setAlpha(
-                    .10
-                );
-
-            }
-
-        }
-
-
-        this.selectedId=
-            id;
-
-
-        card.rect
-            .setFillStyle(
-                0xe8f8ff,
-                1
-            )
-            .setStrokeStyle(
-                5,
-                0x258db3,
-                1
-            );
-
-
-        card.shadow.setAlpha(
-            .20
-        );
-
-
-        this.setPanelQuestion(
-            card.q
-        );
-
-
-        this.pulse(
-            card.rect
-        );
-
-    }
-
-
-    /* =====================================================
-       CHOOSE ANSWER
-    ===================================================== */
-
-    chooseAnswer(answerId){
-
-        const aCard=
-            this.answerCards.get(
-                answerId
-            );
-
-
-        if(
-            !aCard ||
-            aCard.matched
-        ){
-
-            return;
-        }
-
-
-        if(
-            this.selectedId===null
-        ){
-
-            this.flashMessage(
-                "Pilih kad soalan dahulu.",
-                false
-            );
-
-
-            this.pulse(
-                aCard.rect
-            );
-
-            return;
-        }
-
-
-        const qCard=
-            this.questionCards.get(
-                this.selectedId
-            );
-
-
-        if(
-            !qCard ||
-            qCard.matched
-        ){
-
-            return;
-        }
-
-
-        /*
-            Compare ANSWER TEXT instead of question id.
-
-            This is important for Q21 and Q23.
-            Both correct answer = Forsep.
-
-            Therefore either Forsep card can be
-            paired with either question.
-        */
-
-        if(
-            qCard.q.a ===
-            aCard.q.a
-        ){
-
-            this.correctMatch(
-                qCard,
-                aCard
-            );
-
-        }
-
-        else{
-
-            this.wrongMatch(
-                qCard,
-                aCard
-            );
-
-        }
-
-    }
-
-
-    /* =====================================================
-       CORRECT
-    ===================================================== */
-
-    correctMatch(
-        qCard,
-        aCard
-    ){
-
-        qCard.matched=true;
-
-        aCard.matched=true;
-
-
-        qCard.rect.disableInteractive();
-
-        aCard.rect.disableInteractive();
-
-
-        /* GREEN QUESTION */
-
-        qCard.rect
-            .setFillStyle(
-                0xe6f7e9,
-                1
-            )
-            .setStrokeStyle(
-                4,
-                0x55a56a,
-                1
-            );
-
-
-        qCard.dot.setFillStyle(
-            0x55a56a,
-            1
-        );
-
-
-        qCard.badge.setFillStyle(
-            0x55a56a,
-            1
-        );
-
-
-        /* GREEN ANSWER */
-
-        aCard.rect
-            .setFillStyle(
-                0xe6f7e9,
-                1
-            )
-            .setStrokeStyle(
-                4,
-                0x55a56a,
-                1
-            );
-
-
-        aCard.dot.setFillStyle(
-            0x55a56a,
-            1
-        );
-
-
-        aCard.icon.setFillStyle(
-            0x72c486,
-            1
-        );
-
-
-        aCard.iconText
-            .setText("✓")
-            .setColor(
-                "#ffffff"
-            );
-
-
-        /* STORE MATCH */
-
-        this.matches.push({
-
-            q:qCard,
-
-            a:aCard
-
-        });
-
-
-        this.totalMatched++;
-
-
-        this.selectedId=null;
-
-
-        this.drawConnections();
-
-
-        this.setPanelQuestion(
-            null
-        );
-
-
-        this.flashMessage(
-            "Betul! Padanan berjaya.",
-            true
-        );
-
-
-        this.updateProgress();
-
-
-        if(
-            this.matches.length===5
-        ){
-
-            this.stageCompleted();
-
-        }
-
-    }
-
-
-    /* =====================================================
-       WRONG
-    ===================================================== */
-
-    wrongMatch(
-        qCard,
-        aCard
-    ){
-
-        this.mistakes++;
-
-
-        this.updateProgress();
-
-
-        this.flashMessage(
-            "Belum tepat. Cuba jawapan lain.",
-            false
-        );
-
-
-        aCard.rect
-            .setFillStyle(
-                0xffe4e4,
-                1
-            )
-            .setStrokeStyle(
-                4,
-                0xda5a5a,
-                1
-            );
-
-
-        aCard.icon.setFillStyle(
-            0xda5a5a,
-            1
-        );
-
-
-        aCard.iconText
-            .setText("×")
-            .setColor(
-                "#ffffff"
-            );
-
-
-        /* SHAKE ANSWER CARD */
-
-        const objects=[
-
-            aCard.rect,
-            aCard.txt,
-            aCard.icon,
-            aCard.iconText,
-            aCard.dot
-
-        ];
-
-
-        this.tweens.add({
-
-            targets:objects,
-
-            x:"+=10",
-
-            duration:55,
-
-            yoyo:true,
-
-            repeat:3,
-
-
-            onComplete:()=>{
-
-                if(
-                    !aCard.matched
-                ){
-
-                    aCard.rect
-                        .setFillStyle(
-                            0xfffbef,
-                            1
-                        )
-                        .setStrokeStyle(
-                            3,
-                            0xe4c45e,
-                            1
-                        );
-
-
-                    aCard.icon.setFillStyle(
-                        0xf3cf65,
-                        1
-                    );
-
-
-                    aCard.iconText
-                        .setText("?")
-                        .setColor(
-                            "#6e5712"
-                        );
-
+                wordWrap:{
+                    width:255,
+                    useAdvancedWrap:true
                 }
 
             }
 
-        });
-
-
-        this.cameras.main.shake(
-            90,
-            .0025
+        ).setOrigin(
+            0,
+            .5
         );
 
-    }
+
+    /* DROP ZONE */
+
+    const zoneX=476;
+
+    const zoneW=170;
 
 
-    /* =====================================================
-       CONNECTION LINES
-    ===================================================== */
-
-    drawConnections(){
-
-        const g=
-            this.lines;
-
-
-        g.clear();
+    const zoneShadow=
+        this.add.rectangle(
+            zoneX+2,
+            y+4,
+            zoneW,
+            h,
+            0x18394b,
+            .08
+        );
 
 
-        this.matches.forEach(
-
-            match=>{
-
-
-                const x1=
-                    match.q.x+
-                    match.q.w/2-
-                    2;
-
-
-                const y1=
-                    match.q.y;
+    const zoneRect=
+        this.add.rectangle(
+            zoneX,
+            y,
+            zoneW,
+            h,
+            0xf5fbfd,
+            1
+        );
 
 
-                const x2=
-                    match.a.x-
-                    match.a.w/2+
-                    2;
+    zoneRect.setStrokeStyle(
+        3,
+        0x91bdcb,
+        .8
+    );
 
 
-                const y2=
-                    match.a.y;
+    const zoneText=
+        this.add.text(
+            zoneX,
+            y,
+            "PADANKAN\nDI SINI",
+            {
 
+                fontFamily:
+                    "Trebuchet MS, Arial",
 
-                const middleX=
-                    (x1+x2)/2;
+                fontSize:
+                    "15px",
 
+                fontStyle:
+                    "bold",
 
-                /* WHITE OUTLINE */
+                align:
+                    "center",
 
-                g.lineStyle(
-                    12,
-                    0xffffff,
-                    .96
-                );
-
-
-                g.beginPath();
-
-                g.moveTo(
-                    x1,
-                    y1
-                );
-
-                g.lineTo(
-                    middleX,
-                    y1
-                );
-
-                g.lineTo(
-                    middleX,
-                    y2
-                );
-
-                g.lineTo(
-                    x2,
-                    y2
-                );
-
-                g.strokePath();
-
-
-                /* GREEN CONNECTION */
-
-                g.lineStyle(
-                    6,
-                    0x55a56a,
-                    1
-                );
-
-
-                g.beginPath();
-
-                g.moveTo(
-                    x1,
-                    y1
-                );
-
-                g.lineTo(
-                    middleX,
-                    y1
-                );
-
-                g.lineTo(
-                    middleX,
-                    y2
-                );
-
-                g.lineTo(
-                    x2,
-                    y2
-                );
-
-                g.strokePath();
+                color:
+                    "#70909c"
 
             }
 
-        );
-
-    }
+        ).setOrigin(.5);
 
 
-    /* =====================================================
-       MESSAGE
-    ===================================================== */
+    this.stageGroup.addMultiple([
 
-    flashMessage(
+        shadow,
+        rect,
+        numberCircle,
+        numberText,
         text,
-        correct
-    ){
+        zoneShadow,
+        zoneRect,
+        zoneText
 
-        if(
-            this.toast &&
-            this.toast.active
-        ){
-
-            this.toast.destroy();
-
-        }
+    ]);
 
 
-        if(
-            this.toastBg &&
-            this.toastBg.active
-        ){
+    return{
 
-            this.toastBg.destroy();
+        question,
 
-        }
+        y,
+
+        rect,
+
+        numberCircle,
+
+        zoneRect,
+
+        zoneText,
+
+        zoneX,
+
+        zoneY:y,
+
+        zoneW,
+
+        zoneH:h,
+
+        matched:false
+
+    };
+
+}
 
 
-        const bg=
-            this.add.rectangle(
-                450,
-                1080,
-                535,
-                58,
-                correct
-                    ? 0x318b53
-                    : 0xb94a4a,
-                .97
-            );
+/* =====================================================
+   ANSWER CARD
+===================================================== */
+
+createAnswerCard(
+    question,
+    y
+){
+
+    const x=738;
+
+    const w=285;
+
+    const h=96;
 
 
-        bg.setStrokeStyle(
-            2,
-            0xffffff,
-            .9
+    const container=
+        this.add.container(
+            x,
+            y
         );
 
 
-        const txt=
-            this.add.text(
-                450,
-                1080,
-                text,
-                {
+    const shadow=
+        this.add.rectangle(
+            4,
+            5,
+            w,
+            h,
+            0x18394b,
+            .13
+        );
 
-                    fontFamily:
-                        "Trebuchet MS, Arial",
 
-                    fontSize:
-                        "20px",
+    const rect=
+        this.add.rectangle(
+            0,
+            0,
+            w,
+            h,
+            0xfffae9,
+            1
+        );
 
-                    fontStyle:
-                        "bold",
 
-                    color:
-                        "#ffffff"
+    rect.setStrokeStyle(
+        3,
+        0xdfbd50,
+        1
+    );
 
+
+    const grip=
+        this.add.text(
+            -112,
+            0,
+            "⋮⋮",
+            {
+
+                fontFamily:
+                    "Arial",
+
+                fontSize:
+                    "24px",
+
+                fontStyle:
+                    "bold",
+
+                color:
+                    "#a18736"
+
+            }
+
+        ).setOrigin(.5);
+
+
+    const text=
+        this.add.text(
+            10,
+            0,
+            question.a,
+            {
+
+                fontFamily:
+                    "Trebuchet MS, Arial",
+
+                fontSize:
+                    "18px",
+
+                fontStyle:
+                    "bold",
+
+                align:
+                    "center",
+
+                color:
+                    "#493e1a",
+
+                lineSpacing:
+                    3,
+
+                wordWrap:{
+                    width:205,
+                    useAdvancedWrap:true
                 }
 
-            ).setOrigin(.5);
+            }
+
+        ).setOrigin(.5);
 
 
-        this.dynamic.addMultiple([
+    container.add([
 
-            bg,
-            txt
+        shadow,
+        rect,
+        grip,
+        text
 
-        ]);
-
-
-        this.toastBg=bg;
-
-        this.toast=txt;
+    ]);
 
 
-        this.tweens.add({
-
-            targets:[
-                bg,
-                txt
-            ],
-
-            alpha:0,
-
-            delay:950,
-
-            duration:350
-
-        });
-
-    }
+    container.setSize(
+        w,
+        h
+    );
 
 
-    /* =====================================================
-       FOOTER
-    ===================================================== */
+    container.setInteractive(
 
-    makeFooter(){
+        new Phaser.Geom.Rectangle(
+            -w/2,
+            -h/2,
+            w,
+            h
+        ),
 
-        this.footerBg=
-            this.add.rectangle(
-                450,
-                1150,
-                530,
-                66,
-                0x225f78,
-                1
-            );
+        Phaser.Geom.Rectangle.Contains
+
+    );
 
 
-        this.footerBg.setStrokeStyle(
-            3,
-            0xffffff,
-            .9
-        );
+    this.input.setDraggable(
+        container
+    );
 
 
-        this.footerText=
-            this.add.text(
-                450,
-                1150,
-                "PADANKAN 5 PASANGAN UNTUK TERUSKAN",
-                {
+    const card={
 
-                    fontFamily:
-                        "Trebuchet MS, Arial",
+        question,
 
-                    fontSize:
-                        "18px",
+        container,
 
-                    fontStyle:
-                        "bold",
+        rect,
 
-                    color:
-                        "#ffffff"
+        text,
 
-                }
+        grip,
 
-            ).setOrigin(.5);
+        startX:x,
+
+        startY:y,
+
+        matched:false
+
+    };
 
 
-        this.footerBg.setAlpha(
-            .34
-        );
+    container.on(
+        "pointerdown",
+        ()=>{
+
+            if(
+                card.matched
+            ){
+
+                return;
+
+            }
 
 
-        this.footerText.setAlpha(
-            .72
-        );
+            this.tweens.add({
 
+                targets:container,
 
-        this.dynamic.addMultiple([
+                scaleX:1.04,
 
-            this.footerBg,
-            this.footerText
+                scaleY:1.04,
 
-        ]);
+                duration:80
 
-    }
-
-
-    /* =====================================================
-       COMPLETE STAGE
-    ===================================================== */
-
-    stageCompleted(){
-
-        const finalStage=
-            this.stageIndex===
-            STAGES.length-1;
-
-
-        this.footerBg
-            .setAlpha(1)
-            .setFillStyle(
-
-                finalStage
-                    ? 0x704f99
-                    : 0x225f78,
-
-                1
-
-            );
-
-
-        this.footerText
-            .setAlpha(1);
-
-
-        if(
-            finalStage
-        ){
-
-            this.footerText.setText(
-                "TAHNIAH! MAIN SEMULA"
-            );
+            });
 
         }
-
-        else{
-
-            this.footerText.setText(
-                "STAGE SETERUSNYA  ▶"
-            );
-
-        }
+    );
 
 
-        this.footerBg.setInteractive({
-            useHandCursor:true
-        });
+    this.stageGroup.add(
+        container
+    );
 
 
-        this.footerText.setInteractive({
-            useHandCursor:true
-        });
+    return card;
+
+}
 
 
-        const goNext=()=>{
+/* =====================================================
+   DRAG EVENTS
+===================================================== */
+
+setupDragEvents(){
+
+}
 
 
-            this.footerBg.disableInteractive();
+/* =====================================================
+   CREATE
+===================================================== */
 
-            this.footerText.disableInteractive();
+createFooter(){
+
+    const bg=
+        this.add.rectangle(
+            450,
+            1080,
+            550,
+            68,
+            0x326c83,
+            .35
+        );
+
+
+    bg.setStrokeStyle(
+        3,
+        0xffffff,
+        .75
+    );
+
+
+    const text=
+        this.add.text(
+            450,
+            1080,
+            "PADANKAN SEMUA 5 JAWAPAN",
+            {
+
+                fontFamily:
+                    "Trebuchet MS, Arial",
+
+                fontSize:
+                    "19px",
+
+                fontStyle:
+                    "bold",
+
+                color:
+                    "#ffffff"
+
+            }
+
+        ).setOrigin(.5);
+
+
+    this.footerBg=bg;
+
+    this.footerText=text;
+
+
+    this.stageGroup.addMultiple([
+
+        bg,
+        text
+
+    ]);
+
+
+    /* REMOVE OLD GLOBAL DRAG LISTENERS */
+
+    this.input.off(
+        "dragstart"
+    );
+
+    this.input.off(
+        "drag"
+    );
+
+    this.input.off(
+        "dragend"
+    );
+
+
+    /* DRAG START */
+
+    this.input.on(
+
+        "dragstart",
+
+        (
+            pointer,
+            gameObject
+        )=>{
+
+            const card=
+                this.answerCards.find(
+                    a=>
+                        a.container===
+                        gameObject
+                );
 
 
             if(
-                finalStage
+                !card ||
+                card.matched
             ){
 
-                this.stageIndex=0;
+                return;
 
-                this.totalMatched=0;
+            }
 
-                this.mistakes=0;
+
+            gameObject.setDepth(
+                100
+            );
+
+
+            this.tweens.killTweensOf(
+                gameObject
+            );
+
+
+            this.tweens.add({
+
+                targets:gameObject,
+
+                scaleX:1.06,
+
+                scaleY:1.06,
+
+                duration:80
+
+            });
+
+        }
+
+    );
+
+
+    /* DRAG */
+
+    this.input.on(
+
+        "drag",
+
+        (
+            pointer,
+            gameObject,
+            dragX,
+            dragY
+        )=>{
+
+            const card=
+                this.answerCards.find(
+                    a=>
+                        a.container===
+                        gameObject
+                );
+
+
+            if(
+                !card ||
+                card.matched
+            ){
+
+                return;
+
+            }
+
+
+            gameObject.x=
+                Phaser.Math.Clamp(
+                    dragX,
+                    145,
+                    800
+                );
+
+
+            gameObject.y=
+                Phaser.Math.Clamp(
+                    dragY,
+                    315,
+                    1005
+                );
+
+
+            this.highlightDropZone(
+                gameObject
+            );
+
+        }
+
+    );
+
+
+    /* DRAG END */
+
+    this.input.on(
+
+        "dragend",
+
+        (
+            pointer,
+            gameObject
+        )=>{
+
+            const card=
+                this.answerCards.find(
+                    a=>
+                        a.container===
+                        gameObject
+                );
+
+
+            if(
+                !card ||
+                card.matched
+            ){
+
+                return;
+
+            }
+
+
+            const target=
+                this.findDropTarget(
+                    gameObject
+                );
+
+
+            this.clearDropHighlights();
+
+
+            if(
+                target
+            ){
+
+                this.checkMatch(
+                    card,
+                    target
+                );
 
             }
 
             else{
 
-                this.stageIndex++;
+                this.returnCard(
+                    card
+                );
+
+            }
+
+        }
+
+    );
+
+}
+
+
+/* =====================================================
+   FIND TARGET
+===================================================== */
+
+findDropTarget(
+    gameObject
+){
+
+    for(
+        const qCard of
+        this.questionCards
+    ){
+
+        if(
+            qCard.matched
+        ){
+
+            continue;
+
+        }
+
+
+        const dx=
+            Math.abs(
+                gameObject.x-
+                qCard.zoneX
+            );
+
+
+        const dy=
+            Math.abs(
+                gameObject.y-
+                qCard.zoneY
+            );
+
+
+        if(
+            dx<145 &&
+            dy<75
+        ){
+
+            return qCard;
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =====================================================
+   HIGHLIGHT DROP ZONE
+===================================================== */
+
+highlightDropZone(
+    gameObject
+){
+
+    this.clearDropHighlights();
+
+
+    const target=
+        this.findDropTarget(
+            gameObject
+        );
+
+
+    if(!target){
+
+        return;
+
+    }
+
+
+    target.zoneRect
+        .setFillStyle(
+            0xe6f6fb,
+            1
+        )
+        .setStrokeStyle(
+            5,
+            0x3c9bbc,
+            1
+        );
+
+}
+
+
+/* =====================================================
+   CLEAR DROP HIGHLIGHT
+===================================================== */
+
+clearDropHighlights(){
+
+    this.questionCards.forEach(
+        card=>{
+
+            if(
+                card.matched
+            ){
+
+                return;
 
             }
 
 
-            this.buildStage();
-
-        };
-
-
-        this.footerBg.once(
-            "pointerdown",
-            goNext
-        );
-
-
-        this.footerText.once(
-            "pointerdown",
-            goNext
-        );
-
-
-        if(
-            finalStage
-        ){
-
-            this.flashMessage(
-                "Hebat! Semua 25 padanan telah selesai!",
-                true
-            );
+            card.zoneRect
+                .setFillStyle(
+                    0xf5fbfd,
+                    1
+                )
+                .setStrokeStyle(
+                    3,
+                    0x91bdcb,
+                    .8
+                );
 
         }
+    );
 
-        else{
-
-            this.flashMessage(
-                "Stage lengkap! Tekan Stage Seterusnya.",
-                true
-            );
-
-        }
-
-    }
+}
 
 
-    /* =====================================================
-       PROGRESS
-    ===================================================== */
+/* =====================================================
+   MATCH CHECK
+===================================================== */
 
-    updateProgress(){
+checkMatch(
+    answerCard,
+    questionCard
+){
 
-        this.progressText.setText(
+    /*
+        Compare answer text.
 
-            "Padanan "+
-            this.totalMatched+
-            "/25  •  Silap "+
-            this.mistakes
+        Q21 & Q23 both use FORSEP,
+        therefore either Forsep card
+        can match either Forsep question.
+    */
 
+    const correct=
+
+        answerCard.question.a===
+        questionCard.question.a;
+
+
+    if(correct){
+
+        this.correctMatch(
+            answerCard,
+            questionCard
         );
 
     }
 
+    else{
 
-    /* =====================================================
-       PULSE
-    ===================================================== */
+        this.wrongMatch(
+            answerCard,
+            questionCard
+        );
 
-    pulse(target){
+    }
 
-        this.tweens.killTweensOf(
-            target
+}
+
+
+/* =====================================================
+   CORRECT MATCH
+===================================================== */
+
+correctMatch(
+    answerCard,
+    questionCard
+){
+
+    answerCard.matched=true;
+
+    questionCard.matched=true;
+
+
+    this.totalCorrect++;
+
+
+    answerCard.container.disableInteractive();
+
+
+    /* QUESTION GREEN */
+
+    questionCard.rect
+        .setFillStyle(
+            0xe7f7e9,
+            1
+        )
+        .setStrokeStyle(
+            4,
+            0x56a96c,
+            1
+        );
+
+
+    questionCard.numberCircle
+        .setFillStyle(
+            0x56a96c,
+            1
+        );
+
+
+    /* DROP ZONE GREEN */
+
+    questionCard.zoneRect
+        .setFillStyle(
+            0xe7f7e9,
+            1
+        )
+        .setStrokeStyle(
+            4,
+            0x56a96c,
+            1
+        );
+
+
+    questionCard.zoneText.setVisible(
+        false
+    );
+
+
+    answerCard.rect
+        .setFillStyle(
+            0xdff4e4,
+            1
+        )
+        .setStrokeStyle(
+            3,
+            0x56a96c,
+            1
+        );
+
+
+    answerCard.grip
+        .setText("✓")
+        .setColor(
+            "#3c8650"
+        );
+
+
+    this.tweens.add({
+
+        targets:
+            answerCard.container,
+
+        x:
+            questionCard.zoneX,
+
+        y:
+            questionCard.zoneY,
+
+        scaleX:
+            .58,
+
+        scaleY:
+            .58,
+
+        duration:
+            240,
+
+        ease:
+            "Back.easeOut",
+
+        onComplete:()=>{
+
+            answerCard.container.setDepth(
+                5
+            );
+
+        }
+
+    });
+
+
+    this.correctFX(
+        questionCard.zoneX,
+        questionCard.zoneY
+    );
+
+
+    this.showToast(
+        "Betul! Padanan berjaya.",
+        true
+    );
+
+
+    this.updateScore();
+
+
+    const stageDone=
+        this.questionCards.every(
+            q=>q.matched
+        );
+
+
+    if(stageDone){
+
+        this.completeStage();
+
+    }
+
+}
+
+
+/* =====================================================
+   WRONG MATCH
+===================================================== */
+
+wrongMatch(
+    answerCard,
+    questionCard
+){
+
+    this.mistakes++;
+
+
+    questionCard.zoneRect
+        .setFillStyle(
+            0xffe3e3,
+            1
+        )
+        .setStrokeStyle(
+            4,
+            0xd55a5a,
+            1
+        );
+
+
+    answerCard.rect
+        .setFillStyle(
+            0xffdddd,
+            1
+        )
+        .setStrokeStyle(
+            4,
+            0xd55a5a,
+            1
+        );
+
+
+    this.cameras.main.shake(
+        100,
+        .003
+    );
+
+
+    this.showToast(
+        "Belum tepat. Cuba ruang lain.",
+        false
+    );
+
+
+    this.updateScore();
+
+
+    this.time.delayedCall(
+        170,
+        ()=>{
+
+            questionCard.zoneRect
+                .setFillStyle(
+                    0xf5fbfd,
+                    1
+                )
+                .setStrokeStyle(
+                    3,
+                    0x91bdcb,
+                    .8
+                );
+
+
+            answerCard.rect
+                .setFillStyle(
+                    0xfffae9,
+                    1
+                )
+                .setStrokeStyle(
+                    3,
+                    0xdfbd50,
+                    1
+                );
+
+
+            this.returnCard(
+                answerCard
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   RETURN CARD
+===================================================== */
+
+returnCard(
+    card
+){
+
+    this.tweens.add({
+
+        targets:
+            card.container,
+
+        x:
+            card.startX,
+
+        y:
+            card.startY,
+
+        scaleX:
+            1,
+
+        scaleY:
+            1,
+
+        duration:
+            270,
+
+        ease:
+            "Back.easeOut",
+
+        onComplete:()=>{
+
+            card.container.setDepth(
+                0
+            );
+
+        }
+
+    });
+
+}
+
+
+/* =====================================================
+   CORRECT FX
+===================================================== */
+
+correctFX(
+    x,
+    y
+){
+
+    for(
+        let i=0;
+        i<8;
+        i++
+    ){
+
+        const angle=
+            Phaser.Math.FloatBetween(
+                0,
+                Math.PI*2
+            );
+
+
+        const distance=
+            Phaser.Math.Between(
+                35,
+                75
+            );
+
+
+        const dot=
+            this.add.circle(
+                x,
+                y,
+                Phaser.Math.Between(
+                    5,
+                    9
+                ),
+                0x67b77d,
+                1
+            );
+
+
+        this.stageGroup.add(
+            dot
         );
 
 
         this.tweens.add({
 
-            targets:target,
+            targets:dot,
 
-            scaleX:1.025,
+            x:
+                x+
+                Math.cos(angle)*
+                distance,
 
-            scaleY:1.025,
+            y:
+                y+
+                Math.sin(angle)*
+                distance,
 
-            duration:90,
+            alpha:
+                0,
 
-            yoyo:true
+            scaleX:
+                .3,
+
+            scaleY:
+                .3,
+
+            duration:
+                420,
+
+            onComplete:()=>{
+
+                dot.destroy();
+
+            }
 
         });
 
     }
+
+}
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+showToast(
+    text,
+    correct
+){
+
+    if(
+        this.toastBg
+    ){
+
+        this.toastBg.destroy();
+
+        this.toastBg=null;
+
+    }
+
+
+    if(
+        this.toastText
+    ){
+
+        this.toastText.destroy();
+
+        this.toastText=null;
+
+    }
+
+
+    this.toastBg=
+        this.add.rectangle(
+            450,
+            1008,
+            500,
+            55,
+            correct
+                ? 0x368a54
+                : 0xb54e4e,
+            .96
+        );
+
+
+    this.toastBg.setStrokeStyle(
+        2,
+        0xffffff,
+        .85
+    );
+
+
+    this.toastText=
+        this.add.text(
+            450,
+            1008,
+            text,
+            {
+
+                fontFamily:
+                    "Trebuchet MS, Arial",
+
+                fontSize:
+                    "19px",
+
+                fontStyle:
+                    "bold",
+
+                color:
+                    "#ffffff"
+
+            }
+
+        ).setOrigin(.5);
+
+
+    this.stageGroup.addMultiple([
+
+        this.toastBg,
+        this.toastText
+
+    ]);
+
+
+    this.tweens.add({
+
+        targets:[
+            this.toastBg,
+            this.toastText
+        ],
+
+        alpha:0,
+
+        delay:850,
+
+        duration:250
+
+    });
+
+}
+
+
+/* =====================================================
+   STAGE COMPLETE
+===================================================== */
+
+completeStage(){
+
+    const finalStage=
+        this.stageIndex===
+        STAGES.length-1;
+
+
+    this.footerBg
+        .setAlpha(1)
+        .setFillStyle(
+            finalStage
+                ? 0x76529b
+                : 0x286b83,
+            1
+        );
+
+
+    this.footerText
+        .setAlpha(1)
+        .setText(
+            finalStage
+                ? "TAHNIAH! MAIN SEMULA"
+                : "STAGE SETERUSNYA ▶"
+        );
+
+
+    this.footerBg.setInteractive({
+        useHandCursor:true
+    });
+
+
+    this.footerText.setInteractive({
+        useHandCursor:true
+    });
+
+
+    const next=()=>{
+
+
+        this.footerBg.disableInteractive();
+
+        this.footerText.disableInteractive();
+
+
+        if(finalStage){
+
+            this.stageIndex=0;
+
+            this.totalCorrect=0;
+
+            this.mistakes=0;
+
+        }
+
+        else{
+
+            this.stageIndex++;
+
+        }
+
+
+        this.buildStage();
+
+    };
+
+
+    this.footerBg.once(
+        "pointerdown",
+        next
+    );
+
+
+    this.footerText.once(
+        "pointerdown",
+        next
+    );
+
+
+    this.showToast(
+
+        finalStage
+            ? "Hebat! Semua 25 soalan selesai!"
+            : "Stage lengkap!",
+
+        true
+
+    );
+
+}
+
+
+/* =====================================================
+   SCORE
+===================================================== */
+
+updateScore(){
+
+    this.scoreText.setText(
+
+        "Betul "+
+        this.totalCorrect+
+        "/25 • Silap "+
+        this.mistakes
+
+    );
+
+}
 
 }
 
@@ -2307,18 +2397,11 @@ const config={
     },
 
     scene:[
-        MatchScene
+        MatchGame
     ]
 
 };
 
-
-/* =====================================================
-   START GAME DIRECTLY
-   - TIADA LOADING OVERLAY
-   - TIADA FULLSCREEN OVERLAY
-   - TIADA BLOCK YANG TUTUP GAME
-===================================================== */
 
 new Phaser.Game(
     config
