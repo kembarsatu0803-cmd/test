@@ -2,1972 +2,3719 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-<title>Feed The Frog • Set 3</title>
+<meta
+    name="viewport"
+    content="
+        width=device-width,
+        initial-scale=1,
+        maximum-scale=1,
+        user-scalable=no,
+        viewport-fit=cover
+    "
+>
+
+<title>Word Wonder Air - Set 4</title>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
 <style>
+
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
 }
 
-:root{
-    font-family:"Trebuchet MS",Arial,sans-serif;
-    color:#253c30;
-    background:#eaf2df;
+html,
+body{
+    margin:0;
+    padding:0;
+
+    width:100%;
+    min-height:100%;
+
+    font-family:
+    "Trebuchet MS",
+    Arial,
+    sans-serif;
+
+    background:
+    linear-gradient(
+        135deg,
+        #dceeff,
+        #f8fbff,
+        #e9ddff
+    );
+
+    overscroll-behavior:none;
 }
 
 body{
-    margin:0;
-    padding:clamp(8px,2vw,24px);
-    padding-bottom:max(12px,env(safe-area-inset-bottom));
-    background:
-        radial-gradient(
-            ellipse at 10% 0%,
-            #fff8d9,
-            transparent 55%
-        ),
-        linear-gradient(135deg,#edf5e1,#d8ece5);
+    min-height:100vh;
     min-height:100svh;
-}
 
-button{
-    font:inherit;
-    cursor:pointer;
-    touch-action:manipulation;
-}
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
 
-.shell{
-    width:100%;
-    max-width:1050px;
-    margin:auto;
-    background:#fffcf2;
-    border:1px solid #fff;
-    border-radius:26px;
+    padding:
+        max(5px, env(safe-area-inset-top))
+        4px
+        max(8px, env(safe-area-inset-bottom));
+
     overflow:hidden;
-    box-shadow:0 18px 55px #294e3521;
 }
 
-.header{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:16px 22px;
-    background:#254d3c;
-    color:white;
-}
+#game-shell{
 
-.brand{
-    flex:1;
-    min-width:0;
-}
+    width:min(
+        98vw,
+        720px,
+        calc(96svh * 0.6667)
+    );
 
-.brand h1{
-    font-size:clamp(19px,3vw,28px);
-    margin:0;
-    letter-spacing:-.6px;
-}
+    height:min(
+        96svh,
+        1080px
+    );
 
-.brand p{
-    margin:4px 0 0;
-    font-size:12px;
-    color:#d1e5b9;
-}
+    aspect-ratio:2 / 3;
 
-.icon{
-    display:grid;
-    place-items:center;
-    width:44px;
-    height:44px;
-    background:#ffffff16;
-    border:1px solid #ffffff30;
-    border-radius:14px;
-    color:white;
-    font-size:20px;
-}
-
-.counter{
-    font-size:15px;
-    white-space:nowrap;
-    background:#ffffff14;
-    border-radius:12px;
-    padding:10px 12px;
-    font-weight:bold;
-}
-
-.quiz{
-    padding:18px 22px 16px;
-}
-
-.eyebrow{
-    font-size:11px;
-    letter-spacing:1.3px;
-    font-weight:bold;
-    color:#70804c;
-    margin:0 0 8px;
-}
-
-.question{
-    font-size:clamp(16px,2vw,21px);
-    line-height:1.4;
-    margin:0 0 14px;
-    overflow-wrap:anywhere;
-}
-
-.options{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px 12px;
-}
-
-.option{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    background:#f0f3e8;
-    border:1px solid #e2e8d6;
-    border-radius:13px;
-    padding:10px 12px;
-    font-size:clamp(13px,1.5vw,16px);
-    line-height:1.35;
-    min-width:0;
-}
-
-.letter{
-    display:grid;
-    place-items:center;
-    flex:0 0 29px;
-    height:29px;
-    background:white;
-    border-radius:9px;
-    box-shadow:0 2px 0 #d9e1c8;
-    color:#365940;
-    font-weight:bold;
-}
-
-.option span:last-child{
-    overflow-wrap:anywhere;
-}
-
-.track{
-    height:6px;
-    background:#e5eadc;
-}
-
-.track div{
-    height:100%;
-    width:0;
-    background:linear-gradient(90deg,#a2ca56,#4b9969);
-    transition:width .3s;
-}
-
-#stage{
-    width:100%;
-    aspect-ratio:16/8;
     position:relative;
-    background:#f6d989;
+
     overflow:hidden;
+
+    border-radius:22px;
+
+    box-shadow:
+        0 12px 35px
+        rgba(30,40,80,.22);
+
+    background:#dfeaff;
+}
+
+#game{
+    width:100%;
+    height:100%;
 }
 
 canvas{
-    display:block;
+    display:block !important;
+
+    width:100% !important;
+    height:100% !important;
+
     touch-action:none;
 }
 
-.controls{
-    display:flex;
-    align-items:center;
-    gap:18px;
-    padding:16px 22px;
-    background:#fffaf0;
-    border-top:1px solid #e9dfc8;
+@media(max-width:500px){
+
+    #game-shell{
+        width:100vw;
+
+        height:min(
+            96svh,
+            1080px
+        );
+
+        border-radius:15px;
+    }
+
 }
 
-.info{
-    flex:1;
-    min-width:0;
-}
-
-.info strong{
-    display:block;
-    font-size:16px;
-    color:#36533c;
-}
-
-.info small{
-    display:block;
-    margin-top:5px;
-    font-size:12px;
-    line-height:1.5;
-    color:#7b806c;
-}
-
-#eat{
-    flex:0 0 205px;
-    min-height:64px;
-    border:0;
-    border-bottom:5px solid #bf611d;
-    border-radius:18px;
-    background:linear-gradient(#ffb649,#f78b2f);
-    box-shadow:0 5px 12px #db8a2929;
-    color:#492e18;
-    font-size:23px;
-    font-weight:900;
-    letter-spacing:1px;
-    transition:transform .08s;
-}
-
-#eat:active{
-    transform:translateY(3px);
-    border-bottom-width:2px;
-}
-
-#eat:focus-visible,
-.icon:focus-visible{
-    outline:3px solid #389cf1;
-    outline-offset:-4px;
-}
-
-#eat.busy{
-    background:linear-gradient(#ffd17b,#efae59);
-}
-
-@media(max-width:600px){
-    body{
-        padding:6px;
-    }
-
-    .shell{
-        border-radius:18px;
-    }
-
-    .header{
-        padding:12px;
-        gap:8px;
-    }
-
-    .brand p{
-        font-size:10px;
-    }
-
-    .icon{
-        width:37px;
-        height:37px;
-    }
-
-    .counter{
-        padding:9px;
-        font-size:13px;
-    }
-
-    .quiz{
-        padding:14px 12px;
-    }
-
-    .question{
-        font-size:16px;
-    }
-
-    .options{
-        gap:7px;
-        grid-template-columns:1fr;
-    }
-
-    .option{
-        padding:7px 9px;
-        font-size:13px;
-        gap:9px;
-    }
-
-    .letter{
-        flex-basis:25px;
-        height:25px;
-        border-radius:7px;
-    }
-
-    #stage{
-        aspect-ratio:1.15;
-        min-height:290px;
-    }
-
-    .controls{
-        padding:12px;
-        gap:10px;
-    }
-
-    .info strong{
-        font-size:13px;
-    }
-
-    .info small{
-        font-size:11px;
-    }
-
-    #eat{
-        flex-basis:43%;
-        min-height:62px;
-        font-size:21px;
-    }
-}
-
-@media(min-width:601px) and (max-width:900px){
-    #stage{
-        aspect-ratio:1.65;
-    }
-}
-
-@media(max-height:500px) and (orientation:landscape){
-    .shell{
-        max-width:850px;
-    }
-
-    #stage{
-        aspect-ratio:2;
-    }
-
-    .header{
-        padding:10px 16px;
-    }
-
-    .quiz{
-        padding:12px 16px;
-    }
-}
 </style>
 </head>
 
 <body>
 
-<main class="shell">
-
-    <header class="header">
-        <div class="brand">
-            <h1>Feed The Frog</h1>
-            <p>SAINS TAHUN 1 · SET 3</p>
-        </div>
-
-        <div class="counter" id="counter">
-            1 / 25
-        </div>
-
-        <button
-            class="icon"
-            id="sound"
-            aria-label="Matikan bunyi"
-            aria-pressed="true"
-        >♪</button>
-    </header>
-
-    <section class="quiz">
-        <p class="eyebrow">
-            OBJEK MENYERAP AIR
-        </p>
-
-        <h2 class="question" id="question"></h2>
-
-        <div class="options" id="options"></div>
-    </section>
-
-    <div
-        class="track"
-        role="progressbar"
-        aria-label="Soalan selesai"
-        aria-valuemin="0"
-        aria-valuemax="25"
-        aria-valuenow="0"
-        id="progress"
-    >
-        <div id="bar"></div>
-    </div>
-
-    <div
-        id="stage"
-        aria-label="Buah A hingga D bergerak dan jatuh ke arah katak"
-    ></div>
-
-    <footer class="controls">
-        <div class="info">
-            <strong id="status" role="status">
-                Tunggu buah pilihan jatuh
-            </strong>
-
-            <small id="hint">
-                Tekan TELAN atau katak untuk makan.<br>
-                Laptop: tekan Space.
-            </small>
-        </div>
-
-        <button id="eat">TELAN!</button>
-    </footer>
-
-</main>
+<div id="game-shell">
+    <div id="game"></div>
+</div>
 
 <script>
-'use strict';
 
-/* ======================================================
-   SOALAN
-   ====================================================== */
+/* =========================================================
+   WORD WONDER AIR
+   SET 4
+   5 STAGE
+   5 SOALAN SETIAP STAGE
+========================================================= */
+
+
+/* =========================================================
+   DATA SOALAN
+========================================================= */
 
 const QUESTIONS = [
-    [
-        "Air berwarna dititiskan pada duit syiling dan masih ada di permukaannya. Apakah kesimpulan yang betul?",
-        [
-            "Duit syiling menghasilkan air",
-            "Duit syiling berubah menjadi tisu",
-            "Duit syiling menyerap air",
-            "Duit syiling tidak menyerap air"
-        ],
-        "D"
-    ],
-    [
-        "Apakah cara paling mudah untuk menentukan sama ada sesuatu objek menyerap air?",
-        [
-            "Hidu objek",
-            "Lihat warna objek sahaja",
-            "Titiskan air dan perhatikan sama ada air diserap",
-            "Dengar bunyi objek"
-        ],
-        "C"
-    ],
-    [
-        "Objek kain manakah yang boleh menyerap air?",
-        [
-            "Kain lap",
-            "Straw",
-            "Pemadam",
-            "Klip kertas"
-        ],
-        "A"
-    ],
-    [
-        "Dalam ujian titisan air, objek yang masih mempunyai titisan air di atasnya ialah objek yang ____.",
-        [
-            "Menjadi lembut",
-            "Tidak menyerap air",
-            "Menghasilkan air",
-            "Menyerap air"
-        ],
-        "B"
-    ],
-    [
-        "Antara bahan yang diuji untuk keupayaan menyerap air ialah ____.",
-        [
-            "Kain",
-            "Sudu logam",
-            "Pinggan plastik",
-            "Gelas kaca"
-        ],
-        "A"
-    ],
-    [
-        "Antara pasangan berikut, yang manakah kedua-duanya tidak menyerap air?",
-        [
-            "Mop dan tisu dapur",
-            "Tisu dan kain lap",
-            "Klip kertas dan pemadam",
-            "Sapu tangan dan surat khabar"
-        ],
-        "C"
-    ],
-    [
-        "Pinggan plastik dikelaskan sebagai objek yang ____.",
-        [
-            "Menukar air menjadi pepejal",
-            "Tidak boleh menyerap air",
-            "Boleh menyerap air",
-            "Menghasilkan air"
-        ],
-        "B"
-    ],
-    [
-        "Jika titisan air hilang selepas dititiskan pada sapu tangan, sapu tangan ialah objek yang ____.",
-        [
-            "Menolak udara",
-            "Menghasilkan air",
-            "Tidak menyerap air",
-            "Menyerap air"
-        ],
-        "D"
-    ],
-    [
-        "Objek alat tulis manakah yang tidak boleh menyerap air?",
-        [
-            "Kertas surat khabar",
-            "Sapu tangan",
-            "Pemadam",
-            "Tisu"
-        ],
-        "C"
-    ],
-    [
-        "Tisu dapur menyerap lebih banyak air berbanding surat khabar dalam aktiviti buku. Apakah yang boleh dikatakan?",
-        [
-            "Kedua-duanya mempunyai keupayaan yang sama",
-            "Kedua-duanya tidak menyerap air",
-            "Keupayaan surat khabar lebih tinggi",
-            "Keupayaan tisu dapur menyerap air lebih tinggi"
-        ],
-        "D"
-    ],
-    [
-        "Kertas dan kain sama-sama boleh menyerap air. Apakah persamaan kedua-duanya?",
-        [
-            "Kedua-duanya objek menyerap air",
-            "Kedua-duanya plastik",
-            "Kedua-duanya logam",
-            "Kedua-duanya objek tidak menyerap air"
-        ],
-        "A"
-    ],
-    [
-        "Dalam aktiviti perbandingan, objek yang menyerap air paling rendah ialah ____.",
-        [
-            "Kain lap",
-            "Mop",
-            "Kertas surat khabar",
-            "Tisu dapur"
-        ],
-        "C"
-    ],
-    [
-        "Sapu tangan dan kertas surat khabar boleh diletakkan dalam kumpulan yang sama kerana kedua-duanya ____.",
-        [
-            "Tidak menyerap air",
-            "Menyerap air",
-            "Diperbuat daripada plastik",
-            "Diperbuat daripada logam"
-        ],
-        "B"
-    ],
-    [
-        "Mengapakah cermin kaca pada kereta berguna ketika hujan?",
-        [
-            "Kerana menyerap luka",
-            "Kerana menyerap air seperti tisu",
-            "Kerana mengelap peluh",
-            "Kerana membantu menghalang air hujan daripada terkena kita"
-        ],
-        "D"
-    ],
-    [
-        "Apakah ciri bahan yang baik untuk menghasilkan mop mini?",
-        [
-            "Tidak boleh menyerap air",
-            "Licin seperti logam",
-            "Boleh menyerap air",
-            "Keras seperti kaca"
-        ],
-        "C"
-    ],
-    [
-        "Sapu tangan membantu kita ketika berpeluh dengan cara ____.",
-        [
-            "Menyerap peluh",
-            "Menyimpan hujan",
-            "Menghalang angin",
-            "Menolak peluh"
-        ],
-        "A"
-    ],
-    [
-        "Tuala ialah contoh objek yang penting kerana boleh ____.",
-        [
-            "Menyimpan air hujan seperti tong",
-            "Menyerap air pada badan",
-            "Menjadi cermin kereta",
-            "Menghalang hujan seperti payung"
-        ],
-        "B"
-    ],
-    [
-        "Apakah kegunaan sapu tangan ketika berpeluh?",
-        [
-            "Mengelap peluh",
-            "Menadah air hujan",
-            "Melindungi kasut",
-            "Menyimpan air"
-        ],
-        "A"
-    ],
-    [
-        "Seseorang mahu memastikan kakinya tidak basah ketika berjalan dalam hujan. Apakah yang sesuai dipakai?",
-        [
-            "Sapu tangan",
-            "Tisu",
-            "Kasut getah",
-            "Kain lap"
-        ],
-        "C"
-    ],
-    [
-        "Jika objek digunakan untuk mengeringkan sesuatu yang basah, objek itu sebaiknya ____.",
-        [
-            "Diperbuat daripada logam",
-            "Menyerap air",
-            "Tidak menyerap air",
-            "Diperbuat daripada kaca"
-        ],
-        "B"
-    ],
-    [
-        "Mengapakah mop sesuai digunakan pada lantai basah?",
-        [
-            "Kerana mop dibuat daripada kaca",
-            "Kerana mop tidak menyerap air",
-            "Kerana mop menadah hujan",
-            "Kerana mop boleh menyerap air"
-        ],
-        "D"
-    ],
-    [
-        "Mengapakah tali pengikat sesuai digunakan pada mop mini?",
-        [
-            "Kerana boleh membantu menyerap air",
-            "Kerana sama seperti kaca",
-            "Kerana digunakan untuk menadah hujan",
-            "Kerana tidak boleh menyerap air"
-        ],
-        "A"
-    ],
-    [
-        "Apakah objek yang boleh digunakan untuk mengeringkan jag?",
-        [
-            "Sudu logam",
-            "Gelas kaca",
-            "Pinggan plastik",
-            "Kain lap"
-        ],
-        "D"
-    ],
-    [
-        "Mengapakah bebola kapas digunakan untuk mengelap luka?",
-        [
-            "Kerana tidak menyerap air",
-            "Kerana boleh menyerap cecair",
-            "Kerana menghalang hujan",
-            "Kerana diperbuat daripada logam"
-        ],
-        "B"
-    ],
-    [
-        "Cermin kaca kereta tidak menyerap air dan membantu ____.",
-        [
-            "Menyerap peluh",
-            "Mengelap luka",
-            "Melindungi penumpang daripada air hujan",
-            "Mengeringkan lantai"
-        ],
-        "C"
-    ]
+
+{
+    tp:"TP1",
+    question:"Meja kaca ialah objek yang ____ air.",
+    answer:"Tidak menyerap"
+},
+
+{
+    tp:"TP2",
+    question:"Duit syiling dan klip kertas boleh diletakkan dalam kumpulan yang sama jika kedua-duanya ____.",
+    answer:"Tidak menyerap air"
+},
+
+{
+    tp:"TP2",
+    question:"Murid menitis air pada kain lap dan gelas kaca. Titisan hilang pada kain lap tetapi kekal pada gelas. Apakah kesimpulan?",
+    answer:"Kain lap menyerap air gelas kaca tidak menyerap air"
+},
+
+{
+    tp:"TP1",
+    question:"Objek manakah yang menyerap air dan biasa digunakan untuk mengelap?",
+    answer:"Tisu"
+},
+
+{
+    tp:"TP2",
+    question:"Antara pasangan berikut, yang manakah kedua-duanya menyerap air?",
+    answer:"Tisu dan sapu tangan"
+},
+
+
+/* ================= STAGE 2 ================= */
+
+{
+    tp:"TP1",
+    question:"Gelas kaca dikelaskan sebagai objek yang ____.",
+    answer:"Tidak boleh menyerap air"
+},
+
+{
+    tp:"TP1",
+    question:"Apakah maksud objek tidak menyerap air?",
+    answer:"Objek yang tidak boleh menyerap air"
+},
+
+{
+    tp:"TP2",
+    question:"Bebola kapas digunakan dalam ujian awal. Jika air hilang apabila dititiskan padanya, ini menunjukkan bebola kapas ____.",
+    answer:"Menyerap air"
+},
+
+{
+    tp:"TP2",
+    question:"Alas kaki dan pinggan plastik diuji. Pengelasan yang betul ialah ____.",
+    answer:"Alas kaki menyerap air pinggan plastik tidak menyerap air"
+},
+
+{
+    tp:"TP1",
+    question:"Objek berbentuk tiub manakah yang tidak boleh menyerap air?",
+    answer:"Straw"
+},
+
+
+/* ================= STAGE 3 ================= */
+
+{
+    tp:"TP1",
+    question:"Dalam ujian titisan air, objek yang tiada lagi titisan air di atasnya ialah objek yang ____.",
+    answer:"Menyerap air"
+},
+
+{
+    tp:"TP2",
+    question:"Mengapakah ketebalan objek perlu dimalarkan dalam aktiviti perbandingan?",
+    answer:"Supaya perbandingan keupayaan menyerap air lebih adil"
+},
+
+{
+    tp:"TP1",
+    question:"Dalam aktiviti mop mini, tali pengikat digunakan kerana perlu membantu mop ____.",
+    answer:"Menyerap air"
+},
+
+{
+    tp:"TP1",
+    question:"Bebola kapas sesuai untuk mengelap luka kerana bebola kapas ____.",
+    answer:"Boleh menyerap cecair"
+},
+
+{
+    tp:"TP1",
+    question:"Tong besi perlu tidak menyerap air supaya ____.",
+    answer:"Boleh menadah dan menyimpan air"
+},
+
+
+/* ================= STAGE 4 ================= */
+
+{
+    tp:"TP2",
+    question:"Badan adik basah selepas mandi. Objek manakah paling sesuai digunakan?",
+    answer:"Tuala"
+},
+
+{
+    tp:"TP2",
+    question:"Imran berpeluh selepas bermain. Apakah objek yang sesuai digunakan?",
+    answer:"Sapu tangan"
+},
+
+{
+    tp:"TP1",
+    question:"Objek menyerap air penting untuk ____.",
+    answer:"Mengelap cecair"
+},
+
+{
+    tp:"TP1",
+    question:"Tong besi penting kerana boleh ____.",
+    answer:"Menadah dan menyimpan air hujan"
+},
+
+{
+    tp:"TP1",
+    question:"Payung plastik penting kerana dapat ____.",
+    answer:"Menghalang diri daripada terkena air hujan"
+},
+
+
+/* ================= STAGE 5 ================= */
+
+{
+    tp:"TP2",
+    question:"Mengapakah kasut getah sesuai digunakan ketika hujan?",
+    answer:"Tidak menyerap air dan membantu kaki kekal kering"
+},
+
+{
+    tp:"TP1",
+    question:"Objek yang boleh menyerap air dan objek yang tidak boleh menyerap air adalah ____.",
+    answer:"Penting dalam kehidupan"
+},
+
+{
+    tp:"TP2",
+    question:"Seorang murid memilih tisu untuk mengelakkan hujan membasahi badannya. Mengapakah pilihan itu kurang sesuai?",
+    answer:"Tisu menyerap air"
+},
+
+{
+    tp:"TP2",
+    question:"Mengapakah tuala sesuai digunakan selepas mandi?",
+    answer:"Menyerap air pada badan"
+},
+
+{
+    tp:"TP2",
+    question:"Mengapakah payung plastik sesuai digunakan ketika hujan?",
+    answer:"Tidak menyerap air dan menghalang hujan"
+}
+
 ];
 
-const $ = id => document.getElementById(id);
-const LABELS = ["A","B","C","D"];
 
-let audioCtx;
-let muted = false;
-let musicTimer;
-let musicStep = 0;
-let scene;
+/* =========================================================
+   STAGE
+========================================================= */
 
-/* ======================================================
+const STAGES = [
+
+{
+    name:"STAGE 1",
+    title:"MISTERI TITISAN",
+    top:0x344d91,
+    bottom:0x82d8ff,
+    accent:0xffd55a
+},
+
+{
+    name:"STAGE 2",
+    title:"PENGEMBARA AIR",
+    top:0x495ba8,
+    bottom:0x84efd5,
+    accent:0xffd35c
+},
+
+{
+    name:"STAGE 3",
+    title:"MAKMAL AIR",
+    top:0x6a50a7,
+    bottom:0xe2a6db,
+    accent:0xffdb69
+},
+
+{
+    name:"STAGE 4",
+    title:"MISI HARIAN",
+    top:0xd46d72,
+    bottom:0xffcf9c,
+    accent:0xffec76
+},
+
+{
+    name:"STAGE 5",
+    title:"PEMBURU HUJAN",
+    top:0x324b86,
+    bottom:0x8fc7f1,
+    accent:0xffdd65
+}
+
+];
+
+
+/* =========================================================
+   UTILITI
+========================================================= */
+
+function shuffleArray(array){
+
+    const a = [...array];
+
+    for(let i = a.length - 1; i > 0; i--){
+
+        const j =
+            Math.floor(
+                Math.random() * (i + 1)
+            );
+
+        [a[i], a[j]] =
+        [a[j], a[i]];
+    }
+
+    return a;
+}
+
+
+function cleanWord(word){
+
+    return word
+        .toUpperCase()
+        .replace(/[^A-Z]/g,"");
+
+}
+
+
+function splitAnswer(answer){
+
+    return answer
+        .toUpperCase()
+        .replace(/[.,!?]/g,"")
+        .split(/\s+/)
+        .filter(Boolean);
+
+}
+
+
+/* =========================================================
    AUDIO
-   ====================================================== */
+========================================================= */
 
-function tone(
-    frequency,
-    duration = .1,
-    type = "sine",
-    volume = .04
-){
-    if(
-        !audioCtx ||
-        muted ||
-        audioCtx.state !== "running"
-    ){
-        return;
-    }
+class MiniAudio{
 
-    const oscillator = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    const now = audioCtx.currentTime;
-
-    oscillator.type = type;
-    oscillator.frequency.setValueAtTime(frequency,now);
-
-    gain.gain.setValueAtTime(volume,now);
-    gain.gain.exponentialRampToValueAtTime(
-        .001,
-        now + duration
-    );
-
-    oscillator.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    oscillator.start(now);
-    oscillator.stop(now + duration);
-
-    oscillator.onended = () => {
-        oscillator.disconnect();
-        gain.disconnect();
-    };
-}
-
-function unlockAudio(){
-    try{
-        if(!audioCtx){
-            audioCtx = new (
-                window.AudioContext ||
-                window.webkitAudioContext
-            )();
-        }
-
-        if(audioCtx.state === "suspended"){
-            audioCtx.resume().catch(() => {});
-        }
-
-        if(!musicTimer){
-            musicTimer = setInterval(() => {
-                if(document.hidden) return;
-
-                const notes = [
-                    262,330,392,330,
-                    294,349,440,349
-                ];
-
-                tone(
-                    notes[musicStep++ % notes.length],
-                    .18,
-                    "triangle",
-                    .011
-                );
-            },420);
-        }
-    }catch(error){}
-}
-
-$("sound").onclick = () => {
-    muted = !muted;
-
-    unlockAudio();
-
-    $("sound").textContent = muted ? "♪ ×" : "♪";
-
-    $("sound").setAttribute(
-        "aria-pressed",
-        String(!muted)
-    );
-
-    $("sound").setAttribute(
-        "aria-label",
-        muted ? "Hidupkan bunyi" : "Matikan bunyi"
-    );
-};
-
-document.addEventListener("visibilitychange",() => {
-    if(!audioCtx) return;
-
-    if(document.hidden){
-        audioCtx.suspend().catch(() => {});
-    }else if(!muted){
-        audioCtx.resume().catch(() => {});
-    }
-});
-
-/* ======================================================
-   DRAW HELPER
-   ====================================================== */
-
-function round(g,x,y,w,h,r,color){
-    g.fillStyle(color,1);
-    g.fillRoundedRect(x,y,w,h,r);
-}
-
-/* ======================================================
-   GAME
-   ====================================================== */
-
-class FrogGame extends Phaser.Scene{
     constructor(){
-        super("FrogGame");
+
+        this.ctx = null;
+        this.enabled = true;
+        this.started = false;
+        this.musicTimer = null;
+
     }
 
-    create(){
-        scene = this;
 
-        this.index = 0;
-        this.items = [];
-        this.label = 0;
+    start(){
 
-        this.busy = false;
-        this.done = false;
+        if(this.started)
+            return;
 
-        this.clock = 0;
-        this.beltOffset = 0;
-        this.face = "normal";
+        try{
 
-        this.bg = this.add.graphics();
-        this.belt = this.add.graphics();
+            this.ctx =
+                new(
+                    window.AudioContext ||
+                    window.webkitAudioContext
+                )();
 
-        this.ring = this.add.graphics()
-            .setDepth(3);
+            this.started = true;
 
-        this.frog = this.add.container(0,0)
-            .setDepth(20);
+            this.startMusic();
 
-        this.body = this.add.graphics();
-        this.mouth = this.add.graphics();
+        }
+        catch(e){}
 
-        this.frog.add([
-            this.body,
-            this.mouth
-        ]);
+    }
 
-        this.tongue = this.add.graphics()
-            .setDepth(24);
 
-        this.bubble = this.add.text(
-            0,0,"",
-            {
-                fontFamily:"Trebuchet MS, Arial",
-                fontSize:"22px",
-                fontStyle:"bold",
-                color:"#ffffff",
-                stroke:"#294c35",
-                strokeThickness:5,
-                align:"center"
-            }
+    tone(
+        frequency = 440,
+        duration = .12,
+        volume = .05,
+        type = "sine"
+    ){
+
+        if(
+            !this.enabled ||
+            !this.ctx
         )
-        .setOrigin(.5)
-        .setDepth(40);
+            return;
 
-        this.sign = this.add.text(
-            0,0,
-            "DAPUR SI KATAK",
-            {
-                fontFamily:"Trebuchet MS, Arial",
-                fontSize:"12px",
-                fontStyle:"bold",
-                color:"#80602e",
-                letterSpacing:2
-            }
-        )
-        .setOrigin(.5);
 
-        this.frog.setInteractive(
-            new Phaser.Geom.Rectangle(
-                -105,-125,210,225
+        const oscillator =
+            this.ctx.createOscillator();
+
+        const gain =
+            this.ctx.createGain();
+
+
+        oscillator.type = type;
+
+        oscillator.frequency.value =
+            frequency;
+
+
+        gain.gain.value =
+            volume;
+
+
+        oscillator.connect(gain);
+
+        gain.connect(
+            this.ctx.destination
+        );
+
+
+        const now =
+            this.ctx.currentTime;
+
+
+        gain.gain.setValueAtTime(
+            volume,
+            now
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+            .0001,
+            now + duration
+        );
+
+
+        oscillator.start(now);
+
+        oscillator.stop(
+            now + duration
+        );
+
+    }
+
+
+    letter(){
+
+        this.tone(
+            520,
+            .055,
+            .022,
+            "sine"
+        );
+
+    }
+
+
+    correct(){
+
+        this.tone(
+            620,
+            .10,
+            .05,
+            "sine"
+        );
+
+        setTimeout(
+            () => this.tone(
+                820,
+                .13,
+                .05,
+                "sine"
             ),
-            Phaser.Geom.Rectangle.Contains
+            80
         );
 
-        this.frog.on("pointerdown",() => {
-            unlockAudio();
-            this.eat();
-        });
-
-        this.scale.on("resize",() => {
-            this.layout();
-        });
-
-        this.layout();
-        this.showQuestion();
-
-        this.spawn(this.W * .69);
-        this.spawn(this.W * .69 + this.gap);
-
-        this.input.keyboard.on(
-            "keydown-SPACE",
-            event => {
-                if(
-                    event.repeat ||
-                    event.target?.tagName === "BUTTON"
-                ){
-                    return;
-                }
-
-                event.preventDefault();
-
-                unlockAudio();
-                this.eat();
-            }
-        );
     }
 
-    /* ==================================================
-       RESPONSIVE LAYOUT
-       ================================================== */
 
-    layout(){
-        const oldW = this.W || this.scale.width;
-        const oldH = this.H || this.scale.height;
+    wrong(){
 
-        this.W = this.scale.width;
-        this.H = this.scale.height;
-
-        const W = this.W;
-        const H = this.H;
-
-        this.s = Math.min(
-            W / 520,
-            H / 420,
-            1.18
+        this.tone(
+            180,
+            .16,
+            .045,
+            "square"
         );
 
-        this.fs = Math.max(.52,this.s * .88);
-        this.gap = 95 * this.fs;
-
-        this.drop = W * .29;
-        this.beltY = H * .29;
-
-        this.fx = this.drop - 7 * this.s;
-        this.fy = H * .74;
-
-        this.frog
-            .setPosition(this.fx,this.fy)
-            .setScale(this.s);
-
-        this.sign
-            .setPosition(W * .66,H * .075)
-            .setFontSize(
-                Math.max(10,13 * this.s)
-            );
-
-        this.items.forEach(fruit => {
-            fruit.c.x *= W / oldW;
-
-            fruit.c.y = fruit.state === "belt"
-                ? this.beltY - 30 * this.fs
-                : fruit.c.y * H / oldH;
-
-            if(fruit.state !== "eating"){
-                fruit.c.setScale(this.fs);
-            }
-        });
-
-        this.drawRoom();
-        this.drawFrog();
-        this.drawBelt();
     }
 
-    /* ==================================================
-       ROOM
-       ================================================== */
 
-    drawRoom(){
-        const g = this.bg;
-        const W = this.W;
-        const H = this.H;
-        const s = this.s;
+    stage(){
 
-        g.clear();
+        [
+            440,
+            550,
+            660,
+            880
+        ].forEach(
+            (n,i) => {
 
-        g.fillStyle(0xf6d989);
-        g.fillRect(0,0,W,H);
-
-        g.fillStyle(0xffedb3,.55);
-
-        for(let x=0;x<W;x+=58){
-            g.fillRect(x,0,24,H * .77);
-        }
-
-        // Window frame
-        round(
-            g,
-            W * .045,
-            H * .07,
-            70 * s,
-            95 * s,
-            12 * s,
-            0xd4ae62
-        );
-
-        round(
-            g,
-            W * .045 + 5 * s,
-            H * .07 + 5 * s,
-            60 * s,
-            82 * s,
-            8 * s,
-            0xbde4d3
-        );
-
-        g.lineStyle(4 * s,0xfff4ce);
-
-        g.lineBetween(
-            W * .045 + 35 * s,
-            H * .07 + 6 * s,
-            W * .045 + 35 * s,
-            H * .07 + 86 * s
-        );
-
-        g.lineBetween(
-            W * .045 + 5 * s,
-            H * .07 + 44 * s,
-            W * .045 + 65 * s,
-            H * .07 + 44 * s
-        );
-
-        // Floor
-        g.fillStyle(0xc5965f);
-        g.fillRect(0,H * .77,W,H * .23);
-
-        g.fillStyle(0xe7b879);
-        g.fillRect(0,H * .77,W,10 * s);
-
-        g.lineStyle(2,0x996c42,.25);
-
-        for(let y=H*.8;y<H;y+=35*s){
-            g.lineBetween(0,y,W,y);
-        }
-
-        for(let x=0;x<W;x+=95*s){
-            g.lineBetween(
-                x,H * .79,
-                x - 35 * s,H
-            );
-        }
-
-        // Fruit crate
-        round(
-            g,
-            W * .69,
-            H * .52,
-            110 * s,
-            78 * s,
-            8 * s,
-            0xb98548
-        );
-
-        round(
-            g,
-            W * .69 + 5 * s,
-            H * .52 + 5 * s,
-            100 * s,
-            65 * s,
-            5 * s,
-            0xd7a05b
-        );
-
-        g.lineStyle(5 * s,0xb98548);
-
-        g.lineBetween(
-            W * .69 + 8 * s,
-            H * .52 + 27 * s,
-            W * .69 + 99 * s,
-            H * .52 + 27 * s
-        );
-
-        g.lineBetween(
-            W * .69 + 8 * s,
-            H * .52 + 49 * s,
-            W * .69 + 99 * s,
-            H * .52 + 49 * s
-        );
-
-        g.fillStyle(0xf19a35);
-        g.fillCircle(
-            W * .74,
-            H * .51,
-            17 * s
-        );
-
-        g.fillStyle(0xe96f53);
-        g.fillCircle(
-            W * .79,
-            H * .51,
-            18 * s
-        );
-
-        g.fillStyle(0x599b42);
-        g.fillEllipse(
-            W * .79,
-            H * .51 - 20 * s,
-            20 * s,
-            9 * s
-        );
-
-        // Frog shadow
-        g.fillStyle(0x624b32,.18);
-        g.fillEllipse(
-            this.fx,
-            this.fy + 83 * s,
-            210 * s,
-            30 * s
-        );
-    }
-
-    /* ==================================================
-       CONVEYOR
-       ================================================== */
-
-    drawBelt(){
-        const g = this.belt;
-        const W = this.W;
-        const s = this.s;
-        const x = this.drop;
-        const y = this.beltY;
-
-        g.clear();
-
-        round(
-            g,
-            x + 35 * s,
-            y + 27 * s,
-            15 * s,
-            this.H * .45,
-            5 * s,
-            0x658b7d
-        );
-
-        round(
-            g,
-            W * .87,
-            y + 27 * s,
-            15 * s,
-            this.H * .45,
-            5 * s,
-            0x658b7d
-        );
-
-        round(
-            g,
-            x - 15 * s,
-            y - 8 * s,
-            W - x + 40 * s,
-            67 * s,
-            24 * s,
-            0x385e54
-        );
-
-        round(
-            g,
-            x - 11 * s,
-            y - 10 * s,
-            W - x + 35 * s,
-            14 * s,
-            6 * s,
-            0xa5bfb0
-        );
-
-        round(
-            g,
-            x - 8 * s,
-            y + 10 * s,
-            W - x + 30 * s,
-            37 * s,
-            17 * s,
-            0x254b43
-        );
-
-        for(
-            let rx=x+15*s;
-            rx<W+30*s;
-            rx+=46*s
-        ){
-            g.fillStyle(0x85ad98);
-            g.fillCircle(
-                rx,
-                y + 29 * s,
-                13 * s
-            );
-
-            g.fillStyle(0x355e50);
-            g.fillCircle(
-                rx,
-                y + 29 * s,
-                6 * s
-            );
-
-            const angle = this.beltOffset / 15;
-
-            g.lineStyle(2 * s,0xc7ddbb);
-
-            g.lineBetween(
-                rx,
-                y + 29 * s,
-                rx + 10 * s * Math.cos(angle),
-                y + 29 * s + 10 * s * Math.sin(angle)
-            );
-        }
-    }
-
-    /* ==================================================
-       FROG GRAPHIC
-       ================================================== */
-
-    drawFrog(){
-        const g = this.body;
-        const sick = this.face === "sick";
-
-        g.clear();
-
-        // Feet
-        g.fillStyle(
-            sick ? 0x79ad48 : 0x4c9c48
-        );
-
-        g.fillEllipse(-68,65,76,38);
-        g.fillEllipse(68,65,76,38);
-
-        // Body
-        g.fillStyle(
-            sick ? 0xa3c94e : 0x7ec94c
-        );
-
-        g.fillEllipse(0,28,154,132);
-
-        // Belly
-        g.fillStyle(0xc9e988);
-        g.fillEllipse(0,46,104,83);
-
-        // Head
-        g.fillStyle(
-            sick ? 0xacc951 : 0x91d65b
-        );
-
-        g.fillEllipse(0,-35,155,102);
-
-        // Eyes
-        [-42,42].forEach(x => {
-            g.fillStyle(0x6db34a);
-            g.fillCircle(x,-82,33);
-
-            g.fillStyle(0xfffdf1);
-            g.fillCircle(x,-84,26);
-
-            if(sick){
-                g.lineStyle(5,0x30472e);
-
-                g.lineBetween(
-                    x-10,-93,
-                    x+10,-78
+                setTimeout(
+                    () =>
+                        this.tone(
+                            n,
+                            .2,
+                            .035
+                        ),
+                    i * 100
                 );
 
-                g.lineBetween(
-                    x+10,-93,
-                    x-10,-78
-                );
-            }else{
-                g.fillStyle(0x263f30);
-
-                g.fillEllipse(
-                    x+3,-84,17,23
-                );
-
-                g.fillStyle(0xffffff);
-                g.fillCircle(x+6,-90,4);
             }
-        });
-
-        // Cheeks
-        g.fillStyle(0xf49f86,.8);
-        g.fillEllipse(-54,-29,23,12);
-        g.fillEllipse(54,-29,23,12);
-
-        // Nose
-        g.fillStyle(0x598d3b);
-        g.fillCircle(-10,-47,3);
-        g.fillCircle(10,-47,3);
-
-        // Mouth
-        const m = this.mouth;
-        m.clear();
-
-        if(this.face === "happy"){
-            m.lineStyle(7,0x30462c);
-
-            m.beginPath();
-
-            m.arc(
-                0,-31,31,
-                .1,
-                Math.PI-.1
-            );
-
-            m.strokePath();
-        }else{
-            m.fillStyle(0x3b2827);
-
-            m.fillEllipse(
-                0,
-                -15,
-                this.face === "eating" ? 72 : 65,
-                this.face === "eating" ? 64 : 32
-            );
-
-            m.fillStyle(
-                sick ? 0x98ba36 : 0xed7c88
-            );
-
-            m.fillEllipse(0,-6,38,12);
-        }
-    }
-
-    /* ==================================================
-       QUESTION DISPLAY
-       ================================================== */
-
-    showQuestion(){
-        const question = QUESTIONS[this.index];
-
-        $("question").textContent =
-            (this.index+1) + ". " + question[0];
-
-        $("counter").textContent =
-            (this.index+1) + " / 25";
-
-        $("options").replaceChildren();
-
-        question[1].forEach((text,i) => {
-            const row = document.createElement("div");
-            row.className = "option";
-
-            const tag = document.createElement("span");
-            tag.className = "letter";
-            tag.textContent = LABELS[i];
-
-            const value = document.createElement("span");
-            value.textContent = text;
-
-            row.append(tag,value);
-            $("options").append(row);
-        });
-
-        $("bar").style.width =
-            (this.index / 25 * 100) + "%";
-
-        $("progress").setAttribute(
-            "aria-valuenow",
-            this.index
         );
+
     }
 
-    /* ==================================================
-       FRUIT
-       ================================================== */
 
-    spawn(x){
-        const label = LABELS[this.label++ % 4];
+    startMusic(){
 
-        const container = this.add.container(
-            x ?? this.W + 50 * this.fs,
-            this.beltY - 30 * this.fs
+        if(
+            !this.ctx ||
+            this.musicTimer
         )
-        .setScale(this.fs)
-        .setDepth(12);
+            return;
 
-        const g = this.add.graphics();
 
-        const type = Phaser.Math.Between(0,3);
-
-        const colors = [
-            0xe96952,
-            0xf6ab32,
-            0x8abd49,
-            0x9982cb
+        const notes = [
+            220,
+            247,
+            294,
+            330,
+            294,
+            247
         ];
 
-        g.fillStyle(0x345038,.12);
-        g.fillEllipse(1,34,60,12);
+        let i = 0;
 
-        g.fillStyle(colors[type]);
 
-        if(type === 0){
-            g.fillCircle(-12,0,25);
-            g.fillCircle(12,0,25);
-            g.fillEllipse(0,13,54,44);
-        }else{
-            g.fillEllipse(
-                0,2,
-                type === 2 ? 68 : 61,
-                62
+        this.musicTimer =
+            setInterval(
+                () => {
+
+                    if(
+                        !this.enabled
+                    )
+                        return;
+
+                    this.tone(
+                        notes[
+                            i %
+                            notes.length
+                        ],
+                        .55,
+                        .008,
+                        "sine"
+                    );
+
+                    i++;
+
+                },
+                900
             );
-        }
 
-        if(type === 2){
-            g.lineStyle(4,0x5a903a);
-            g.beginPath();
-            g.arc(0,2,25,-1.2,1.2);
-            g.strokePath();
-        }
-
-        g.fillStyle(0x6d5034);
-        g.fillRoundedRect(-3,-39,6,15,2);
-
-        g.fillStyle(0x4c944b);
-        g.fillEllipse(11,-32,23,10);
-
-        g.fillStyle(0xffffff,.3);
-        g.fillEllipse(-17,-12,9,16);
-
-        // Letter badge
-        g.fillStyle(0xfffdf0);
-        g.fillCircle(0,4,20);
-
-        g.lineStyle(2,0x344d37);
-        g.strokeCircle(0,4,20);
-
-        const text = this.add.text(
-            0,4,label,
-            {
-                fontFamily:"Arial",
-                fontSize:"27px",
-                fontStyle:"bold",
-                color:"#263c2c"
-            }
-        )
-        .setOrigin(.5);
-
-        container.add([g,text]);
-
-        this.items.push({
-            c:container,
-            label,
-            state:"belt",
-            vy:0
-        });
     }
 
-    /* ==================================================
-       UPDATE
-       ================================================== */
+}
 
-    update(time,delta){
-        const dt = Math.min(delta / 1000,.035);
 
-        if(this.done) return;
+const AUDIO =
+    new MiniAudio();
 
-        const speed =
-            (66 + this.index * 1.4) * this.s;
 
-        this.beltOffset -= speed * dt;
-        this.drawBelt();
+/* =========================================================
+   GAME SCENE
+========================================================= */
 
-        this.clock += dt;
+class WordWonderScene
+extends Phaser.Scene{
 
-        const last = this.items
-            .filter(fruit => fruit.state === "belt")
-            .reduce(
-                (maximum,fruit) =>
-                    Math.max(maximum,fruit.c.x),
+    constructor(){
+
+        super("WordWonderScene");
+
+    }
+
+
+    create(){
+
+        this.questionIndex = 0;
+
+        this.stageIndex = 0;
+
+        this.score = 0;
+
+        this.words = [];
+
+        this.currentWordIndex = 0;
+
+        this.hintCount = 0;
+
+        this.solvedWords = [];
+
+
+        this.dragging = false;
+
+        this.selectedLetters = [];
+
+        this.letterObjects = [];
+
+
+        this.backgroundLayer =
+            this.add.container(
+                0,
                 0
             );
 
-        if(
-            last <
-            this.W + 50 * this.fs - this.gap
-        ){
-            this.spawn();
-        }
 
-        for(let i=this.items.length-1;i>=0;i--){
-            const fruit = this.items[i];
-
-            if(fruit.state === "belt"){
-                fruit.c.x -= speed * dt;
-
-                if(fruit.c.x <= this.drop){
-                    fruit.c.x = this.drop;
-                    fruit.state = "falling";
-                    fruit.vy = 40 * this.s;
-                }
-            }else if(fruit.state === "falling"){
-                fruit.vy += 380 * this.s * dt;
-                fruit.c.y += fruit.vy * dt;
-                fruit.c.angle += 30 * dt;
-
-                if(fruit.c.y > this.H + 70){
-                    fruit.c.destroy();
-                    this.items.splice(i,1);
-                }
-            }
-        }
-
-        this.ring.clear();
-
-        const target = this.target();
-
-        if(target && !this.busy){
-            this.ring.lineStyle(
-                3,
-                0xfffff0,
-                .85
+        this.uiLayer =
+            this.add.container(
+                0,
+                0
             );
 
-            this.ring.strokeCircle(
-                target.c.x,
-                target.c.y,
-                43 * this.fs
+
+        this.boardLayer =
+            this.add.container(
+                0,
+                0
             );
-        }
+
+
+        this.wheelLayer =
+            this.add.container(
+                0,
+                0
+            );
+
+
+        this.feedbackLayer =
+            this.add.container(
+                0,
+                0
+            );
+
+
+        this.pathGraphics =
+            this.add.graphics();
+
+        this.pathGraphics
+            .setDepth(50);
+
+
+        this.createPermanentUI();
+
+        this.setupInput();
+
+        this.loadQuestion();
+
     }
 
-    /* ==================================================
-       FIND FRUIT NEAR MOUTH
-       ================================================== */
 
-    target(){
-        let chosen = null;
-        let best = Infinity;
 
-        const mouthY = this.fy - 15 * this.s;
+/* =========================================================
+   BACKGROUND
+========================================================= */
 
-        for(const fruit of this.items){
-            if(fruit.state !== "falling") continue;
+    drawBackground(){
 
-            const dy = fruit.c.y - mouthY;
+        this.backgroundLayer
+            .removeAll(true);
 
-            const distance = Math.hypot(
-                fruit.c.x - this.fx,
-                dy
-            );
 
-            if(
-                distance < 145 * this.s &&
-                dy < 65 * this.s &&
-                distance < best
-            ){
-                best = distance;
-                chosen = fruit;
-            }
-        }
+        const stage =
+            STAGES[
+                this.stageIndex
+            ];
 
-        return chosen;
+
+        const bg =
+            this.add.graphics();
+
+
+        bg.fillGradientStyle(
+            stage.top,
+            stage.top,
+            stage.bottom,
+            stage.bottom,
+            1
+        );
+
+
+        bg.fillRect(
+            0,
+            0,
+            720,
+            1080
+        );
+
+
+        /* decorative glow */
+
+        bg.fillStyle(
+            0xffffff,
+            .12
+        );
+
+        bg.fillCircle(
+            615,
+            155,
+            170
+        );
+
+
+        bg.fillCircle(
+            80,
+            590,
+            145
+        );
+
+
+        /* distant mountains */
+
+        bg.fillStyle(
+            0xffffff,
+            .10
+        );
+
+
+        bg.fillTriangle(
+            0,
+            570,
+            200,
+            260,
+            390,
+            570
+        );
+
+
+        bg.fillTriangle(
+            270,
+            570,
+            500,
+            330,
+            720,
+            570
+        );
+
+
+        /* bottom terrain */
+
+        bg.fillStyle(
+            0x17264b,
+            .13
+        );
+
+
+        bg.fillEllipse(
+            370,
+            1070,
+            920,
+            330
+        );
+
+
+        bg.fillStyle(
+            stage.accent,
+            .09
+        );
+
+
+        bg.fillCircle(
+            100,
+            970,
+            120
+        );
+
+
+        bg.fillCircle(
+            645,
+            900,
+            90
+        );
+
+
+        this.backgroundLayer
+            .add(bg);
+
     }
 
-    /* ==================================================
-       EAT
-       ================================================== */
 
-    eat(){
-        if(this.done){
-            this.restart();
-            return;
-        }
 
-        if(this.busy) return;
+/* =========================================================
+   PERMANENT UI
+========================================================= */
 
-        const fruit = this.target();
+    createPermanentUI(){
 
-        if(!fruit){
-            $("status").textContent =
-                "Tunggu buah dekat mulut katak";
+        /* HOME */
 
-            this.face = "eating";
-            this.drawFrog();
+        const home =
+            this.makeButton(
+                68,
+                45,
+                112,
+                55,
+                "⌂  HOME",
+                22,
+                0x34335b
+            );
 
-            this.time.delayedCall(140,() => {
-                if(!this.busy){
-                    this.face = "normal";
-                    this.drawFrog();
+
+        home.hit.on(
+            "pointerdown",
+            () => {
+
+                window.location.href =
+                    "index.html";
+
+            }
+        );
+
+
+        /* SOUND */
+
+        const sound =
+            this.makeButton(
+                659,
+                45,
+                70,
+                55,
+                "♪",
+                27,
+                0x34335b
+            );
+
+
+        sound.hit.on(
+            "pointerdown",
+            () => {
+
+                AUDIO.start();
+
+                AUDIO.enabled =
+                    !AUDIO.enabled;
+
+                sound.text.setText(
+                    AUDIO.enabled ?
+                    "♪" :
+                    "×"
+                );
+
+            }
+        );
+
+
+        /* SCORE PILL */
+
+        const scoreBG =
+            this.add.graphics();
+
+
+        scoreBG.fillStyle(
+            0x1d2447,
+            .78
+        );
+
+
+        scoreBG.fillRoundedRect(
+            245,
+            17,
+            230,
+            58,
+            29
+        );
+
+
+        this.scoreText =
+            this.add.text(
+                360,
+                45,
+                "◆ 0",
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:"26px",
+
+                    fontStyle:"bold",
+
+                    color:"#ffffff"
                 }
-            });
+            )
+            .setOrigin(.5);
 
-            tone(260,.06,"triangle");
-            return;
-        }
 
-        this.busy = true;
-        fruit.state = "eating";
+        this.uiLayer.add(
+            scoreBG
+        );
 
-        $("eat").classList.add("busy");
-        $("status").textContent = "Nyam…";
+        this.uiLayer.add(
+            this.scoreText
+        );
 
-        this.face = "eating";
-        this.drawFrog();
+    }
 
-        tone(360,.08,"square",.02);
 
-        const start = {
-            x:fruit.c.x,
-            y:fruit.c.y,
-            scale:fruit.c.scaleX
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+    makeButton(
+        x,
+        y,
+        width,
+        height,
+        label,
+        fontSize,
+        color
+    ){
+
+        const container =
+            this.add.container(
+                x,
+                y
+            );
+
+
+        const bg =
+            this.add.graphics();
+
+
+        bg.fillStyle(
+            color,
+            .91
+        );
+
+
+        bg.fillRoundedRect(
+            -width / 2,
+            -height / 2,
+            width,
+            height,
+            height / 2
+        );
+
+
+        bg.lineStyle(
+            2,
+            0xffffff,
+            .7
+        );
+
+
+        bg.strokeRoundedRect(
+            -width / 2,
+            -height / 2,
+            width,
+            height,
+            height / 2
+        );
+
+
+        const text =
+            this.add.text(
+                0,
+                0,
+                label,
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:
+                        fontSize +
+                        "px",
+
+                    fontStyle:"bold",
+
+                    color:"#ffffff"
+                }
+            )
+            .setOrigin(.5);
+
+
+        const hit =
+            this.add.rectangle(
+                0,
+                0,
+                width,
+                height,
+                0xffffff,
+                .001
+            );
+
+
+        hit.setInteractive({
+            useHandCursor:true
+        });
+
+
+        container.add([
+            bg,
+            text,
+            hit
+        ]);
+
+
+        this.uiLayer.add(
+            container
+        );
+
+
+        return{
+            container,
+            bg,
+            text,
+            hit
         };
 
-        const motion = {p:0};
-
-        this.tweens.add({
-            targets:motion,
-            p:1,
-            duration:260,
-            ease:"Quad.easeIn",
-
-            onUpdate:() => {
-                const p = motion.p;
-                const mouthX = this.fx;
-                const mouthY = this.fy - 15 * this.s;
-
-                fruit.c.setPosition(
-                    Phaser.Math.Linear(
-                        start.x,mouthX,p
-                    ),
-                    Phaser.Math.Linear(
-                        start.y,mouthY,p
-                    )
-                );
-
-                fruit.c.setScale(
-                    start.scale * (1-p) + .035 * p
-                );
-
-                this.tongue.clear();
-
-                this.tongue.lineStyle(
-                    12 * this.s,
-                    0xed8193
-                );
-
-                this.tongue.lineBetween(
-                    mouthX,mouthY,
-                    fruit.c.x,fruit.c.y
-                );
-            },
-
-            onComplete:() => {
-                this.tongue.clear();
-
-                fruit.c.destroy();
-
-                this.items = this.items.filter(
-                    item => item !== fruit
-                );
-
-                this.resolve(fruit.label);
-            }
-        });
     }
 
-    /* ==================================================
-       ANSWER FEEDBACK
-       ================================================== */
 
-    resolve(label){
-        const correct =
-            label === QUESTIONS[this.index][2];
 
-        this.face = correct ? "happy" : "sick";
-        this.drawFrog();
+/* =========================================================
+   LOAD QUESTION
+========================================================= */
 
-        this.bubble
-            .setPosition(
-                this.W * .60,
-                this.H * .68
-            )
-            .setFontSize(
-                Math.max(18,26 * this.s)
-            )
-            .setText(
-                correct ? "SEDAP! ✓" : "BLEKK! ✕"
-            )
-            .setVisible(true);
+    loadQuestion(){
 
-        $("status").textContent = correct
-            ? "Betul! Bagus sekali."
-            : label + " salah. Cuba buah lain.";
+        this.clearQuestionObjects();
 
-        if(correct){
-            tone(523,.12);
-
-            this.time.delayedCall(
-                110,
-                () => tone(659,.12)
+        this.stageIndex =
+            Math.floor(
+                this.questionIndex /
+                5
             );
 
-            this.time.delayedCall(
-                220,
-                () => tone(784,.18)
+
+        this.drawBackground();
+
+
+        const data =
+            QUESTIONS[
+                this.questionIndex
+            ];
+
+
+        this.words =
+            splitAnswer(
+                data.answer
             );
 
-            const pulse = {p:0};
 
-            this.tweens.add({
-                targets:pulse,
-                p:1,
-                duration:130,
-                yoyo:true,
-                repeat:1,
+        this.solvedWords =
+            new Array(
+                this.words.length
+            ).fill(false);
 
-                onUpdate:() => {
-                    this.frog.setScale(
-                        this.s * (1 + .07 * pulse.p),
-                        this.s * (1 - .05 * pulse.p)
-                    );
-                },
 
-                onComplete:() => {
-                    this.frog.setScale(this.s);
+        this.currentWordIndex =
+            0;
+
+
+        this.hintCount =
+            0;
+
+
+        this.createStageHeader();
+
+        this.createQuestionCard(
+            data
+        );
+
+        this.renderAnswerBoard();
+
+        this.createWordInfo();
+
+        this.buildWheel();
+
+        this.createBottomControls();
+
+    }
+
+
+
+/* =========================================================
+   CLEAR
+========================================================= */
+
+    clearQuestionObjects(){
+
+        this.boardLayer
+            .removeAll(true);
+
+
+        this.wheelLayer
+            .removeAll(true);
+
+
+        this.feedbackLayer
+            .removeAll(true);
+
+
+        this.pathGraphics
+            .clear();
+
+
+        this.letterObjects = [];
+
+        this.selectedLetters = [];
+
+        this.dragging = false;
+
+    }
+
+
+
+/* =========================================================
+   STAGE HEADER
+========================================================= */
+
+    createStageHeader(){
+
+        const stage =
+            STAGES[
+                this.stageIndex
+            ];
+
+
+        const panel =
+            this.add.graphics();
+
+
+        panel.fillStyle(
+            0xffffff,
+            .20
+        );
+
+
+        panel.fillRoundedRect(
+            56,
+            94,
+            608,
+            70,
+            28
+        );
+
+
+        panel.lineStyle(
+            2,
+            0xffffff,
+            .34
+        );
+
+
+        panel.strokeRoundedRect(
+            56,
+            94,
+            608,
+            70,
+            28
+        );
+
+
+        const stageText =
+            this.add.text(
+                80,
+                113,
+                stage.name,
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:"19px",
+
+                    fontStyle:"bold",
+
+                    color:"#ffffff"
                 }
-            });
+            );
 
-            for(let i=0;i<8;i++){
-                const star = this.add.star(
-                    this.fx,
-                    this.fy - 25 * this.s,
-                    5,
-                    3 * this.s,
-                    8 * this.s,
-                    0xffe997
-                )
-                .setDepth(35);
 
-                this.tweens.add({
-                    targets:star,
+        const titleText =
+            this.add.text(
+                80,
+                137,
+                stage.title,
+                {
+                    fontFamily:
+                        "Trebuchet MS",
 
-                    x:this.fx +
-                        Phaser.Math.Between(-110,110) *
-                        this.s,
+                    fontSize:"24px",
 
-                    y:this.fy -
-                        Phaser.Math.Between(85,160) *
-                        this.s,
+                    fontStyle:"bold",
 
-                    alpha:0,
-                    angle:90,
-                    duration:650,
+                    color:"#ffffff"
+                }
+            );
 
-                    onComplete:() => {
-                        star.destroy();
+
+        const localQ =
+            (
+                this.questionIndex %
+                5
+            ) + 1;
+
+
+        const progress =
+            this.add.text(
+                635,
+                129,
+                localQ + "/5",
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:"27px",
+
+                    fontStyle:"bold",
+
+                    color:"#ffffff"
+                }
+            )
+            .setOrigin(1,.5);
+
+
+        this.boardLayer.add([
+            panel,
+            stageText,
+            titleText,
+            progress
+        ]);
+
+    }
+
+
+
+/* =========================================================
+   QUESTION
+========================================================= */
+
+    createQuestionCard(
+        data
+    ){
+
+        const card =
+            this.add.graphics();
+
+
+        card.fillStyle(
+            0xffffff,
+            .93
+        );
+
+
+        card.fillRoundedRect(
+            48,
+            180,
+            624,
+            190,
+            28
+        );
+
+
+        card.lineStyle(
+            3,
+            0xffffff,
+            .75
+        );
+
+
+        card.strokeRoundedRect(
+            48,
+            180,
+            624,
+            190,
+            28
+        );
+
+
+        const tp =
+            this.add.text(
+                75,
+                204,
+                data.tp,
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:"18px",
+
+                    fontStyle:"bold",
+
+                    color:"#ffffff",
+
+                    backgroundColor:
+                        "#5863a8",
+
+                    padding:{
+                        x:12,
+                        y:6
                     }
-                });
-            }
-        }else{
-            tone(180,.2,"sawtooth",.025);
-            this.vomit();
+                }
+            );
+
+
+        let size = 25;
+
+
+        if(
+            data.question.length >
+            120
+        )
+            size = 21;
+
+
+        if(
+            data.question.length >
+            165
+        )
+            size = 19;
+
+
+        const question =
+            this.add.text(
+                75,
+                250,
+                data.question,
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:
+                        size +
+                        "px",
+
+                    fontStyle:"bold",
+
+                    color:"#283154",
+
+                    wordWrap:{
+                        width:570
+                    },
+
+                    lineSpacing:5
+                }
+            );
+
+
+        this.boardLayer.add([
+            card,
+            tp,
+            question
+        ]);
+
+    }
+
+
+
+/* =========================================================
+   ANSWER BOARD
+========================================================= */
+
+    renderAnswerBoard(){
+
+        if(
+            this.answerBoardGroup
+        ){
+
+            this.answerBoardGroup
+                .destroy(true);
+
         }
+
+
+        this.answerBoardGroup =
+            this.add.container(
+                0,
+                0
+            );
+
+
+        this.boardLayer.add(
+            this.answerBoardGroup
+        );
+
+
+        const startX = 65;
+
+        const maxX = 655;
+
+        let x = startX;
+
+        let y = 395;
+
+
+        this.words.forEach(
+            (word,index) => {
+
+                const length =
+                    cleanWord(
+                        word
+                    ).length;
+
+
+                let w =
+                    Math.max(
+                        70,
+                        length * 19 +
+                        32
+                    );
+
+
+                w =
+                    Math.min(
+                        w,
+                        230
+                    );
+
+
+                if(
+                    x + w >
+                    maxX
+                ){
+
+                    x =
+                        startX;
+
+                    y += 57;
+
+                }
+
+
+                const solved =
+                    this.solvedWords[
+                        index
+                    ];
+
+
+                const current =
+                    index ===
+                    this.currentWordIndex;
+
+
+                const bg =
+                    this.add.graphics();
+
+
+                let fill =
+                    0xffffff;
+
+                let alpha =
+                    .86;
+
+
+                if(solved){
+
+                    fill =
+                        0x59cf89;
+
+                    alpha =
+                        .95;
+
+                }
+                else if(current){
+
+                    fill =
+                        0xffe887;
+
+                    alpha =
+                        .98;
+
+                }
+
+
+                bg.fillStyle(
+                    fill,
+                    alpha
+                );
+
+
+                bg.fillRoundedRect(
+                    x,
+                    y,
+                    w,
+                    45,
+                    13
+                );
+
+
+                bg.lineStyle(
+                    current ?
+                    3 :
+                    1.5,
+
+                    current ?
+                    0xd29b22 :
+                    0xffffff,
+
+                    .9
+                );
+
+
+                bg.strokeRoundedRect(
+                    x,
+                    y,
+                    w,
+                    45,
+                    13
+                );
+
+
+                let display = "";
+
+
+                if(solved){
+
+                    display =
+                        word;
+
+                }
+                else{
+
+                    const letters =
+                        cleanWord(
+                            word
+                        );
+
+
+                    for(
+                        let i=0;
+                        i<
+                        letters.length;
+                        i++
+                    ){
+
+                        if(
+                            current &&
+                            i <
+                            this.hintCount
+                        ){
+
+                            display +=
+                                letters[i];
+
+                        }
+                        else{
+
+                            display +=
+                                "_";
+
+                        }
+
+
+                        if(
+                            i <
+                            letters.length - 1
+                        )
+                            display +=
+                                " ";
+
+                    }
+
+                }
+
+
+                const label =
+                    this.add.text(
+                        x + w/2,
+                        y + 22.5,
+                        display,
+                        {
+                            fontFamily:
+                                "Trebuchet MS",
+
+                            fontSize:
+                                length > 9 ?
+                                "15px" :
+                                "17px",
+
+                            fontStyle:"bold",
+
+                            color:
+                                solved ?
+                                "#ffffff" :
+                                "#343b61"
+                        }
+                    )
+                    .setOrigin(.5);
+
+
+                this.answerBoardGroup
+                    .add(bg);
+
+                this.answerBoardGroup
+                    .add(label);
+
+
+                x +=
+                    w + 10;
+
+            }
+        );
+
+    }
+
+
+
+/* =========================================================
+   CURRENT WORD
+========================================================= */
+
+    createWordInfo(){
+
+        this.wordInfo =
+            this.add.text(
+                360,
+                606,
+                "",
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:"21px",
+
+                    fontStyle:"bold",
+
+                    color:"#ffffff",
+
+                    align:"center"
+                }
+            )
+            .setOrigin(.5);
+
+
+        this.wheelLayer
+            .add(
+                this.wordInfo
+            );
+
+
+        this.updateWordInfo();
+
+    }
+
+
+    updateWordInfo(){
+
+        const current =
+            this.words[
+                this.currentWordIndex
+            ];
+
+
+        if(!current)
+            return;
+
+
+        this.wordInfo.setText(
+            "BINA PERKATAAN  •  " +
+            cleanWord(
+                current
+            ).length +
+            " HURUF"
+        );
+
+    }
+
+
+
+/* =========================================================
+   LETTER WHEEL
+========================================================= */
+
+    buildWheel(){
+
+        this.removeWheelLetters();
+
+
+        this.pathGraphics
+            .clear();
+
+
+        this.selectedLetters =
+            [];
+
+
+        const currentWord =
+            cleanWord(
+                this.words[
+                    this.currentWordIndex
+                ]
+            );
+
+
+        const letters =
+            [...currentWord];
+
+
+        const alphabet =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+
+        let minimumLetters =
+            Math.max(
+                5,
+                letters.length
+            );
+
+
+        if(
+            letters.length <= 4
+        ){
+
+            minimumLetters =
+                6;
+
+        }
+        else if(
+            letters.length <= 6
+        ){
+
+            minimumLetters =
+                letters.length + 1;
+
+        }
+
+
+        while(
+            letters.length <
+            minimumLetters
+        ){
+
+            let char =
+                alphabet[
+                    Math.floor(
+                        Math.random() *
+                        alphabet.length
+                    )
+                ];
+
+
+            letters.push(char);
+
+        }
+
+
+        const shuffled =
+            shuffleArray(
+                letters
+            );
+
+
+        /* wheel base */
+
+        this.wheelBase =
+            this.add.graphics();
+
+
+        this.wheelBase.fillStyle(
+            0xffffff,
+            .22
+        );
+
+
+        this.wheelBase.fillCircle(
+            360,
+            825,
+            184
+        );
+
+
+        this.wheelBase.lineStyle(
+            4,
+            0xffffff,
+            .36
+        );
+
+
+        this.wheelBase.strokeCircle(
+            360,
+            825,
+            184
+        );
+
+
+        this.wheelLayer.add(
+            this.wheelBase
+        );
+
+
+        /* shuffle center */
+
+        const centerBG =
+            this.add.circle(
+                360,
+                825,
+                48,
+                0xffffff,
+                .82
+            );
+
+
+        centerBG.setStrokeStyle(
+            3,
+            0xd8dbea,
+            1
+        );
+
+
+        centerBG.setInteractive({
+            useHandCursor:true
+        });
+
+
+        const centerText =
+            this.add.text(
+                360,
+                825,
+                "↻",
+                {
+                    fontFamily:
+                        "Arial",
+
+                    fontSize:"40px",
+
+                    fontStyle:"bold",
+
+                    color:"#60698e"
+                }
+            )
+            .setOrigin(.5);
+
+
+        centerBG.on(
+            "pointerdown",
+            () => {
+
+                AUDIO.start();
+
+                this.shuffleWheel();
+
+            }
+        );
+
+
+        this.wheelLayer.add([
+            centerBG,
+            centerText
+        ]);
+
+
+        const count =
+            shuffled.length;
+
+
+        let radius = 128;
+
+        let tileRadius = 34;
+
+
+        if(
+            count >= 8
+        ){
+
+            radius = 132;
+
+            tileRadius = 31;
+
+        }
+
+
+        if(
+            count >= 10
+        ){
+
+            radius = 137;
+
+            tileRadius = 27;
+
+        }
+
+
+        if(
+            count >= 12
+        ){
+
+            radius = 142;
+
+            tileRadius = 24;
+
+        }
+
+
+        shuffled.forEach(
+            (letter,index) => {
+
+                const angle =
+                    -Math.PI/2 +
+                    (
+                        index /
+                        count
+                    ) *
+                    Math.PI *
+                    2;
+
+
+                const x =
+                    360 +
+                    Math.cos(angle) *
+                    radius;
+
+
+                const y =
+                    825 +
+                    Math.sin(angle) *
+                    radius;
+
+
+                const circle =
+                    this.add.circle(
+                        x,
+                        y,
+                        tileRadius,
+                        0xffffff,
+                        .98
+                    );
+
+
+                circle.setStrokeStyle(
+                    3,
+                    0xffffff,
+                    .55
+                );
+
+
+                const fontSize =
+                    count >= 11 ?
+                    23 :
+                    count >= 8 ?
+                    27 :
+                    31;
+
+
+                const text =
+                    this.add.text(
+                        x,
+                        y,
+                        letter,
+                        {
+                            fontFamily:
+                                "Trebuchet MS",
+
+                            fontSize:
+                                fontSize +
+                                "px",
+
+                            fontStyle:"bold",
+
+                            color:"#39416f"
+                        }
+                    )
+                    .setOrigin(.5);
+
+
+                const item = {
+
+                    letter,
+
+                    circle,
+
+                    text,
+
+                    x,
+
+                    y,
+
+                    radius:
+                        tileRadius + 9,
+
+                    selected:false
+
+                };
+
+
+                this.letterObjects
+                    .push(item);
+
+
+                this.wheelLayer.add(
+                    circle
+                );
+
+                this.wheelLayer.add(
+                    text
+                );
+
+            }
+        );
+
+
+        /* selection display */
+
+        this.selectionBG =
+            this.add.graphics();
+
+
+        this.selectionBG.fillStyle(
+            0x1c284f,
+            .72
+        );
+
+
+        this.selectionBG.fillRoundedRect(
+            165,
+            631,
+            390,
+            58,
+            29
+        );
+
+
+        this.selectionText =
+            this.add.text(
+                360,
+                660,
+                "SERET HURUF",
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:"25px",
+
+                    fontStyle:"bold",
+
+                    color:"#ffffff"
+                }
+            )
+            .setOrigin(.5);
+
+
+        this.wheelLayer.add(
+            this.selectionBG
+        );
+
+        this.wheelLayer.add(
+            this.selectionText
+        );
+
+    }
+
+
+
+/* =========================================================
+   REMOVE WHEEL
+========================================================= */
+
+    removeWheelLetters(){
+
+        this.letterObjects
+            .forEach(
+                item => {
+
+                    item.circle
+                        .destroy();
+
+                    item.text
+                        .destroy();
+
+                }
+            );
+
+
+        this.letterObjects =
+            [];
+
+
+        if(
+            this.wheelBase
+        ){
+
+            this.wheelBase
+                .destroy();
+
+            this.wheelBase =
+                null;
+
+        }
+
+
+        if(
+            this.selectionBG
+        ){
+
+            this.selectionBG
+                .destroy();
+
+            this.selectionBG =
+                null;
+
+        }
+
+
+        if(
+            this.selectionText
+        ){
+
+            this.selectionText
+                .destroy();
+
+            this.selectionText =
+                null;
+
+        }
+
+    }
+
+
+
+/* =========================================================
+   SHUFFLE
+========================================================= */
+
+    shuffleWheel(){
+
+        if(
+            this.dragging
+        )
+            return;
+
+
+        this.resetSelection();
+
+        this.buildWheel();
+
+
+        AUDIO.tone(
+            380,
+            .08,
+            .025
+        );
+
+    }
+
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+    setupInput(){
+
+        this.input.on(
+            "pointerdown",
+            pointer => {
+
+                AUDIO.start();
+
+
+                const letter =
+                    this.findLetterAt(
+                        pointer.x,
+                        pointer.y
+                    );
+
+
+                if(!letter)
+                    return;
+
+
+                this.dragging = true;
+
+                this.resetSelection();
+
+                this.addLetterToSelection(
+                    letter
+                );
+
+            }
+        );
+
+
+        this.input.on(
+            "pointermove",
+            pointer => {
+
+                if(
+                    !this.dragging
+                )
+                    return;
+
+
+                const letter =
+                    this.findLetterAt(
+                        pointer.x,
+                        pointer.y
+                    );
+
+
+                if(
+                    letter &&
+                    !letter.selected
+                ){
+
+                    this.addLetterToSelection(
+                        letter
+                    );
+
+                }
+
+
+                this.drawSelectionPath(
+                    pointer
+                );
+
+            }
+        );
+
+
+        this.input.on(
+            "pointerup",
+            () => {
+
+                if(
+                    !this.dragging
+                )
+                    return;
+
+
+                this.dragging = false;
+
+                this.checkSelection();
+
+            }
+        );
+
+
+        this.input.on(
+            "pointerupoutside",
+            () => {
+
+                if(
+                    !this.dragging
+                )
+                    return;
+
+
+                this.dragging = false;
+
+                this.checkSelection();
+
+            }
+        );
+
+    }
+
+
+
+/* =========================================================
+   FIND LETTER
+========================================================= */
+
+    findLetterAt(
+        x,
+        y
+    ){
+
+        for(
+            let i =
+                this.letterObjects.length -
+                1;
+
+            i >= 0;
+
+            i--
+        ){
+
+            const item =
+                this.letterObjects[i];
+
+
+            const d =
+                Phaser.Math.Distance.Between(
+                    x,
+                    y,
+                    item.x,
+                    item.y
+                );
+
+
+            if(
+                d <=
+                item.radius
+            ){
+
+                return item;
+
+            }
+
+        }
+
+
+        return null;
+
+    }
+
+
+
+/* =========================================================
+   ADD LETTER
+========================================================= */
+
+    addLetterToSelection(
+        item
+    ){
+
+        if(
+            item.selected
+        )
+            return;
+
+
+        item.selected =
+            true;
+
+
+        item.circle.setFillStyle(
+            0xffe078,
+            1
+        );
+
+
+        item.text.setColor(
+            "#283154"
+        );
+
+
+        this.selectedLetters
+            .push(item);
+
+
+        AUDIO.letter();
+
+
+        const text =
+            this.selectedLetters
+                .map(
+                    x =>
+                        x.letter
+                )
+                .join("");
+
+
+        this.selectionText
+            .setText(text);
+
+
+        this.drawSelectionPath();
+
+    }
+
+
+
+/* =========================================================
+   DRAW PATH
+========================================================= */
+
+    drawSelectionPath(
+        pointer = null
+    ){
+
+        this.pathGraphics
+            .clear();
+
+
+        if(
+            this.selectedLetters
+                .length === 0
+        )
+            return;
+
+
+        this.pathGraphics.lineStyle(
+            13,
+            0xffd85e,
+            .76
+        );
+
+
+        this.pathGraphics
+            .beginPath();
+
+
+        const first =
+            this.selectedLetters[0];
+
+
+        this.pathGraphics
+            .moveTo(
+                first.x,
+                first.y
+            );
+
+
+        for(
+            let i=1;
+            i<
+            this.selectedLetters.length;
+            i++
+        ){
+
+            this.pathGraphics.lineTo(
+                this.selectedLetters[i].x,
+                this.selectedLetters[i].y
+            );
+
+        }
+
+
+        if(
+            pointer
+        ){
+
+            this.pathGraphics.lineTo(
+                pointer.x,
+                pointer.y
+            );
+
+        }
+
+
+        this.pathGraphics
+            .strokePath();
+
+    }
+
+
+
+/* =========================================================
+   CHECK WORD
+========================================================= */
+
+    checkSelection(){
+
+        const selected =
+            this.selectedLetters
+                .map(
+                    x =>
+                        x.letter
+                )
+                .join("");
+
+
+        const correct =
+            cleanWord(
+                this.words[
+                    this.currentWordIndex
+                ]
+            );
+
+
+        if(
+            selected === correct
+        ){
+
+            this.correctWord();
+
+        }
+        else{
+
+            this.wrongWord();
+
+        }
+
+    }
+
+
+
+/* =========================================================
+   CORRECT
+========================================================= */
+
+    correctWord(){
+
+        AUDIO.correct();
+
+
+        this.selectedLetters
+            .forEach(
+                item => {
+
+                    item.circle
+                        .setFillStyle(
+                            0x58d58c,
+                            1
+                        );
+
+
+                    item.text
+                        .setColor(
+                            "#ffffff"
+                        );
+
+                }
+            );
+
+
+        this.selectionText
+            .setText(
+                "BETUL! ✓"
+            );
+
+
+        this.score +=
+            10;
+
+
+        this.updateScore();
+
 
         this.time.delayedCall(
-            correct ? 800 : 1000,
+            420,
             () => {
-                this.bubble.setVisible(false);
 
-                this.face = "normal";
-                this.drawFrog();
+                this.solvedWords[
+                    this.currentWordIndex
+                ] = true;
 
-                this.busy = false;
-                $("eat").classList.remove("busy");
 
-                if(correct){
-                    this.index++;
+                this.renderAnswerBoard();
 
-                    if(this.index === 25){
-                        this.finish();
-                        return;
-                    }
 
-                    this.showQuestion();
+                this.currentWordIndex++;
 
-                    $("status").textContent =
-                        "Tunggu buah pilihan jatuh";
+
+                this.hintCount =
+                    0;
+
+
+                if(
+                    this.currentWordIndex >=
+                    this.words.length
+                ){
+
+                    this.completeQuestion();
+
                 }
+                else{
+
+                    this.resetSelection();
+
+                    this.updateWordInfo();
+
+                    this.buildWheel();
+
+                    this.renderAnswerBoard();
+
+                }
+
             }
         );
+
     }
 
-    /* ==================================================
-       VOMIT
-       ================================================== */
 
-    vomit(){
-        for(let i=0;i<11;i++){
-            const particle = this.add.circle(
-                this.fx,
-                this.fy - 9 * this.s,
-                Phaser.Math.Between(4,9) * this.s,
-                i % 2 ? 0xa0bf45 : 0xdbcb57
-            )
-            .setDepth(30);
 
-            const motion = {t:0};
+/* =========================================================
+   WRONG
+========================================================= */
 
-            const vx =
-                Phaser.Math.Between(55,120) *
-                this.s;
+    wrongWord(){
 
-            const vy =
-                Phaser.Math.Between(20,60) *
-                this.s;
+        AUDIO.wrong();
 
-            this.tweens.add({
-                targets:motion,
-                t:1,
-                duration:600,
 
-                onUpdate:() => {
-                    particle.x =
-                        this.fx + vx * motion.t;
+        this.selectionText
+            .setText(
+                "CUBA LAGI"
+            );
 
-                    particle.y =
-                        this.fy -
-                        9 * this.s -
-                        vy * motion.t +
-                        110 * this.s *
-                        motion.t * motion.t;
 
-                    particle.alpha = 1 - motion.t;
-                },
+        this.selectedLetters
+            .forEach(
+                item => {
 
-                onComplete:() => {
-                    particle.destroy();
+                    item.circle
+                        .setFillStyle(
+                            0xef5f66,
+                            1
+                        );
+
+
+                    item.text
+                        .setColor(
+                            "#ffffff"
+                        );
+
                 }
-            });
-        }
-    }
+            );
 
-    /* ==================================================
-       FINISH
-       ================================================== */
 
-    finish(){
-        this.done = true;
-        this.face = "happy";
-
-        this.drawFrog();
-
-        this.items.forEach(fruit => {
-            fruit.c.destroy();
-        });
-
-        this.items = [];
-        this.ring.clear();
-
-        $("question").textContent =
-            "Tahniah! Semua 25 soalan telah dijawab.";
-
-        $("options").replaceChildren();
-
-        $("counter").textContent = "25 / 25";
-        $("bar").style.width = "100%";
-
-        $("progress").setAttribute(
-            "aria-valuenow",
-            "25"
+        this.cameras.main.shake(
+            120,
+            .004
         );
 
-        $("status").textContent =
-            "Hebat! Misi selesai.";
 
-        $("hint").textContent =
-            "Tekan MAIN LAGI untuk bermain semula.";
+        this.time.delayedCall(
+            500,
+            () => {
 
-        $("eat").textContent = "MAIN LAGI";
+                this.resetSelection();
 
-        this.bubble
-            .setPosition(
-                this.W * .63,
-                this.H * .62
+            }
+        );
+
+    }
+
+
+
+/* =========================================================
+   RESET SELECTION
+========================================================= */
+
+    resetSelection(){
+
+        this.pathGraphics
+            .clear();
+
+
+        this.letterObjects
+            .forEach(
+                item => {
+
+                    item.selected =
+                        false;
+
+
+                    item.circle
+                        .setFillStyle(
+                            0xffffff,
+                            .98
+                        );
+
+
+                    item.text
+                        .setColor(
+                            "#39416f"
+                        );
+
+                }
+            );
+
+
+        this.selectedLetters =
+            [];
+
+
+        if(
+            this.selectionText
+        ){
+
+            this.selectionText
+                .setText(
+                    "SERET HURUF"
+                );
+
+        }
+
+    }
+
+
+
+/* =========================================================
+   SCORE
+========================================================= */
+
+    updateScore(){
+
+        this.scoreText
+            .setText(
+                "◆ " +
+                this.score
+            );
+
+    }
+
+
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+    createBottomControls(){
+
+        const hint =
+            this.makeLocalButton(
+                120,
+                1025,
+                175,
+                62,
+                "💡 HINT",
+                0x56547e
+            );
+
+
+        hint.on(
+            "pointerdown",
+            () => {
+
+                AUDIO.start();
+
+                this.useHint();
+
+            }
+        );
+
+
+        const shuffle =
+            this.makeLocalButton(
+                600,
+                1025,
+                175,
+                62,
+                "↻ SUSUN",
+                0x56547e
+            );
+
+
+        shuffle.on(
+            "pointerdown",
+            () => {
+
+                AUDIO.start();
+
+                this.shuffleWheel();
+
+            }
+        );
+
+
+        const guide =
+            this.add.text(
+                360,
+                979,
+                "Seret dari satu huruf ke huruf seterusnya",
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:"18px",
+
+                    fontStyle:"bold",
+
+                    color:"#ffffff"
+                }
             )
-            .setText("TAHNIAH!\n25 / 25 ★")
-            .setVisible(true);
+            .setOrigin(.5);
+
+
+        this.wheelLayer.add(
+            guide
+        );
+
     }
 
-    /* ==================================================
-       RESTART
-       ================================================== */
 
-    restart(){
-        this.index = 0;
-        this.label = 0;
 
-        this.done = false;
-        this.busy = false;
+    makeLocalButton(
+        x,
+        y,
+        width,
+        height,
+        label,
+        color
+    ){
 
-        this.face = "normal";
-        this.bubble.setVisible(false);
+        const bg =
+            this.add.graphics();
 
-        this.drawFrog();
-        this.showQuestion();
 
-        $("eat").textContent = "TELAN!";
+        bg.fillStyle(
+            color,
+            .88
+        );
 
-        $("status").textContent =
-            "Tunggu buah pilihan jatuh";
 
-        $("hint").textContent =
-            "Tekan TELAN atau katak. Laptop: tekan Space.";
+        bg.fillRoundedRect(
+            x - width/2,
+            y - height/2,
+            width,
+            height,
+            height/2
+        );
 
-        this.spawn(this.W * .69);
-        this.spawn(this.W * .69 + this.gap);
+
+        bg.lineStyle(
+            2,
+            0xffffff,
+            .65
+        );
+
+
+        bg.strokeRoundedRect(
+            x - width/2,
+            y - height/2,
+            width,
+            height,
+            height/2
+        );
+
+
+        const text =
+            this.add.text(
+                x,
+                y,
+                label,
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:"21px",
+
+                    fontStyle:"bold",
+
+                    color:"#ffffff"
+                }
+            )
+            .setOrigin(.5);
+
+
+        const hit =
+            this.add.rectangle(
+                x,
+                y,
+                width,
+                height,
+                0xffffff,
+                .001
+            );
+
+
+        hit.setInteractive({
+            useHandCursor:true
+        });
+
+
+        this.wheelLayer.add([
+            bg,
+            text,
+            hit
+        ]);
+
+
+        return hit;
+
     }
+
+
+
+/* =========================================================
+   HINT
+========================================================= */
+
+    useHint(){
+
+        const word =
+            cleanWord(
+                this.words[
+                    this.currentWordIndex
+                ]
+            );
+
+
+        if(
+            this.hintCount <
+            word.length
+        ){
+
+            this.hintCount++;
+
+
+            if(
+                this.score >= 2
+            ){
+
+                this.score -=
+                    2;
+
+                this.updateScore();
+
+            }
+
+
+            this.renderAnswerBoard();
+
+
+            AUDIO.tone(
+                700,
+                .12,
+                .035
+            );
+
+
+            const targetLetter =
+                word[
+                    this.hintCount - 1
+                ];
+
+
+            const candidates =
+                this.letterObjects
+                    .filter(
+                        item =>
+                            item.letter ===
+                            targetLetter
+                    );
+
+
+            if(
+                candidates.length
+            ){
+
+                const chosen =
+                    candidates[
+                        Math.floor(
+                            Math.random() *
+                            candidates.length
+                        )
+                    ];
+
+
+                this.tweens.add({
+
+                    targets:[
+                        chosen.circle,
+                        chosen.text
+                    ],
+
+                    scale:1.22,
+
+                    duration:160,
+
+                    yoyo:true,
+
+                    repeat:2
+
+                });
+
+            }
+
+        }
+
+    }
+
+
+
+/* =========================================================
+   COMPLETE QUESTION
+========================================================= */
+
+    completeQuestion(){
+
+        this.score +=
+            25;
+
+
+        this.updateScore();
+
+
+        const panel =
+            this.add.container(
+                360,
+                620
+            );
+
+
+        const bg =
+            this.add.graphics();
+
+
+        bg.fillStyle(
+            0x15254a,
+            .95
+        );
+
+
+        bg.fillRoundedRect(
+            -235,
+            -80,
+            470,
+            160,
+            34
+        );
+
+
+        bg.lineStyle(
+            4,
+            0xffffff,
+            .75
+        );
+
+
+        bg.strokeRoundedRect(
+            -235,
+            -80,
+            470,
+            160,
+            34
+        );
+
+
+        const tick =
+            this.add.text(
+                0,
+                -28,
+                "✓",
+                {
+                    fontFamily:"Arial",
+                    fontSize:"48px",
+                    fontStyle:"bold",
+                    color:"#76e5a5"
+                }
+            )
+            .setOrigin(.5);
+
+
+        const text =
+            this.add.text(
+                0,
+                35,
+                "SOALAN SELESAI!",
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:"27px",
+
+                    fontStyle:"bold",
+
+                    color:"#ffffff"
+                }
+            )
+            .setOrigin(.5);
+
+
+        panel.add([
+            bg,
+            tick,
+            text
+        ]);
+
+
+        this.feedbackLayer
+            .add(panel);
+
+
+        panel.setScale(.8);
+
+        panel.setAlpha(0);
+
+
+        this.tweens.add({
+
+            targets:panel,
+
+            alpha:1,
+
+            scale:1,
+
+            duration:250,
+
+            ease:"Back.Out"
+
+        });
+
+
+        this.time.delayedCall(
+            1100,
+            () => {
+
+                panel.destroy();
+
+
+                const finishedStage =
+                    (
+                        (
+                            this.questionIndex +
+                            1
+                        ) %
+                        5
+                    ) === 0;
+
+
+                this.questionIndex++;
+
+
+                if(
+                    this.questionIndex >=
+                    QUESTIONS.length
+                ){
+
+                    this.showFinalScreen();
+
+                    return;
+
+                }
+
+
+                if(
+                    finishedStage
+                ){
+
+                    this.showStageComplete();
+
+                }
+                else{
+
+                    this.loadQuestion();
+
+                }
+
+            }
+        );
+
+    }
+
+
+
+/* =========================================================
+   STAGE COMPLETE
+========================================================= */
+
+    showStageComplete(){
+
+        const oldStage =
+            Math.floor(
+                (
+                    this.questionIndex -
+                    1
+                ) /
+                5
+            );
+
+
+        const nextStage =
+            Math.floor(
+                this.questionIndex /
+                5
+            );
+
+
+        AUDIO.stage();
+
+
+        const banner =
+            this.add.container(
+                360,
+                560
+            );
+
+
+        const glow =
+            this.add.circle(
+                0,
+                0,
+                170,
+                0xffffff,
+                .16
+            );
+
+
+        const bg =
+            this.add.graphics();
+
+
+        bg.fillStyle(
+            0x202c57,
+            .96
+        );
+
+
+        bg.fillRoundedRect(
+            -270,
+            -125,
+            540,
+            250,
+            38
+        );
+
+
+        bg.lineStyle(
+            4,
+            0xffe27a,
+            .9
+        );
+
+
+        bg.strokeRoundedRect(
+            -270,
+            -125,
+            540,
+            250,
+            38
+        );
+
+
+        const star =
+            this.add.text(
+                0,
+                -67,
+                "★",
+                {
+                    fontSize:"58px",
+                    color:"#ffe26e"
+                }
+            )
+            .setOrigin(.5);
+
+
+        const title =
+            this.add.text(
+                0,
+                5,
+                "STAGE " +
+                (oldStage + 1) +
+                " SELESAI!",
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:"31px",
+
+                    fontStyle:"bold",
+
+                    color:"#ffffff"
+                }
+            )
+            .setOrigin(.5);
+
+
+        const next =
+            this.add.text(
+                0,
+                61,
+                "Seterusnya: " +
+                STAGES[
+                    nextStage
+                ].title,
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:"21px",
+
+                    fontStyle:"bold",
+
+                    color:"#d9e8ff"
+                }
+            )
+            .setOrigin(.5);
+
+
+        banner.add([
+            glow,
+            bg,
+            star,
+            title,
+            next
+        ]);
+
+
+        this.feedbackLayer
+            .add(banner);
+
+
+        banner.setScale(.65);
+
+        banner.setAlpha(0);
+
+
+        this.tweens.add({
+
+            targets:banner,
+
+            scale:1,
+
+            alpha:1,
+
+            duration:430,
+
+            ease:"Back.Out"
+
+        });
+
+
+        this.time.delayedCall(
+            1800,
+            () => {
+
+                banner.destroy();
+
+                this.loadQuestion();
+
+            }
+        );
+
+    }
+
+
+
+/* =========================================================
+   FINAL
+========================================================= */
+
+    showFinalScreen(){
+
+        this.wheelLayer
+            .removeAll(true);
+
+
+        this.boardLayer
+            .removeAll(true);
+
+
+        this.pathGraphics
+            .clear();
+
+
+        this.drawBackground();
+
+
+        AUDIO.stage();
+
+
+        const top =
+            this.add.text(
+                360,
+                145,
+                "★ ★ ★",
+                {
+                    fontSize:"55px",
+                    color:"#ffe376"
+                }
+            )
+            .setOrigin(.5);
+
+
+        const title =
+            this.add.text(
+                360,
+                235,
+                "TAHNIAH!",
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:"52px",
+
+                    fontStyle:"bold",
+
+                    color:"#ffffff"
+                }
+            )
+            .setOrigin(.5);
+
+
+        const subtitle =
+            this.add.text(
+                360,
+                295,
+                "Semua 5 stage telah diselesaikan.",
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:"24px",
+
+                    fontStyle:"bold",
+
+                    color:"#ffffff",
+
+                    align:"center"
+                }
+            )
+            .setOrigin(.5);
+
+
+        const card =
+            this.add.graphics();
+
+
+        card.fillStyle(
+            0xffffff,
+            .91
+        );
+
+
+        card.fillRoundedRect(
+            95,
+            370,
+            530,
+            270,
+            40
+        );
+
+
+        const complete =
+            this.add.text(
+                360,
+                430,
+                "25 / 25",
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:"52px",
+
+                    fontStyle:"bold",
+
+                    color:"#374273"
+                }
+            )
+            .setOrigin(.5);
+
+
+        const label =
+            this.add.text(
+                360,
+                485,
+                "SOALAN SELESAI",
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:"21px",
+
+                    fontStyle:"bold",
+
+                    color:"#66709c"
+                }
+            )
+            .setOrigin(.5);
+
+
+        const finalScore =
+            this.add.text(
+                360,
+                560,
+                "◆ " +
+                this.score,
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:"36px",
+
+                    fontStyle:"bold",
+
+                    color:"#e3a62d"
+                }
+            )
+            .setOrigin(.5);
+
+
+        const scoreLabel =
+            this.add.text(
+                360,
+                605,
+                "SKOR AKHIR",
+                {
+                    fontFamily:
+                        "Trebuchet MS",
+
+                    fontSize:"18px",
+
+                    fontStyle:"bold",
+
+                    color:"#6f789b"
+                }
+            )
+            .setOrigin(.5);
+
+
+        this.boardLayer.add([
+            top,
+            title,
+            subtitle,
+            card,
+            complete,
+            label,
+            finalScore,
+            scoreLabel
+        ]);
+
+
+        const replay =
+            this.makeLocalButton(
+                360,
+                745,
+                320,
+                75,
+                "↻  MAIN SEMULA",
+                0x48558d
+            );
+
+
+        replay.on(
+            "pointerdown",
+            () => {
+
+                this.questionIndex =
+                    0;
+
+                this.stageIndex =
+                    0;
+
+                this.score =
+                    0;
+
+
+                this.updateScore();
+
+                this.loadQuestion();
+
+            }
+        );
+
+
+        const home =
+            this.makeLocalButton(
+                360,
+                845,
+                320,
+                75,
+                "⌂  MENU UTAMA",
+                0x31375e
+            );
+
+
+        home.on(
+            "pointerdown",
+            () => {
+
+                window.location.href =
+                    "index.html";
+
+            }
+        );
+
+    }
+
 }
 
-/* ======================================================
-   BUTTON INPUT
-   ====================================================== */
 
-$("eat").addEventListener("pointerdown",event => {
-    if(event.button !== 0) return;
+/* =========================================================
+   PHASER CONFIG
+========================================================= */
 
-    event.preventDefault();
+const config = {
 
-    unlockAudio();
-    scene?.eat();
-});
+    type:
+        Phaser.AUTO,
 
-// Keyboard / accessibility click
-$("eat").addEventListener("click",event => {
-    if(event.detail === 0){
-        unlockAudio();
-        scene?.eat();
-    }
-});
+    width:
+        720,
 
-/* ======================================================
-   START PHASER
-   ====================================================== */
+    height:
+        1080,
 
-const stage = $("stage");
+    parent:
+        "game",
 
-const game = new Phaser.Game({
-    type:Phaser.AUTO,
+    transparent:
+        true,
 
-    parent:"stage",
+    backgroundColor:
+        "rgba(0,0,0,0)",
 
-    width:stage.clientWidth,
-    height:stage.clientHeight,
+    antialias:
+        true,
 
-    backgroundColor:"#f6d989",
+    roundPixels:
+        true,
 
-    antialias:true,
+    render:{
 
-    resolution:Math.min(
-        window.devicePixelRatio || 1,
-        2
-    ),
+        antialias:true,
 
-    scale:{
-        mode:Phaser.Scale.RESIZE,
-        autoCenter:Phaser.Scale.CENTER_BOTH
+        pixelArt:false,
+
+        powerPreference:
+            "high-performance"
+
     },
 
-    scene:FrogGame
-});
+    scale:{
 
-/* ======================================================
-   CONTAINER RESIZE
-   ====================================================== */
+        mode:
+            Phaser.Scale.FIT,
 
-const observer = new ResizeObserver(() => {
-    const width = stage.clientWidth;
-    const height = stage.clientHeight;
+        autoCenter:
+            Phaser.Scale.CENTER_BOTH,
 
-    if(
-        width &&
-        height &&
-        (
-            game.scale.width !== width ||
-            game.scale.height !== height
-        )
-    ){
-        game.scale.resize(width,height);
+        width:
+            720,
+
+        height:
+            1080
+
+    },
+
+    input:{
+
+        activePointers:
+            3
+
+    },
+
+    scene:[
+        WordWonderScene
+    ]
+
+};
+
+
+const game =
+    new Phaser.Game(
+        config
+    );
+
+
+/* Prevent accidental page drag while playing */
+
+document.addEventListener(
+    "touchmove",
+    function(e){
+
+        if(
+            e.target &&
+            e.target.tagName ===
+            "CANVAS"
+        ){
+
+            e.preventDefault();
+
+        }
+
+    },
+    {
+        passive:false
     }
-});
+);
 
-observer.observe(stage);
 </script>
 
 </body>
