@@ -158,7 +158,6 @@ a:focus-visible{
 .content{
     display:grid;
     grid-template-columns:320px minmax(0,1fr);
-
     gap:20px;
     padding:24px;
 }
@@ -454,9 +453,8 @@ canvas{
     color:#294568;
 }
 
-/* TABLET / IPAD PORTRAIT / PHONE */
-
 @media(max-width:800px){
+
     body{
         padding:8px;
     }
@@ -512,11 +510,11 @@ canvas{
     .footer{
         padding:0 18px 18px;
     }
+
 }
 
-/* SMALL PHONE */
-
 @media(max-width:420px){
+
     body{
         padding:5px;
     }
@@ -586,9 +584,11 @@ canvas{
     #game{
         height:430px;
     }
+
 }
 
 @media(min-width:801px) and (max-height:700px){
+
     body{
         padding:8px;
     }
@@ -605,13 +605,16 @@ canvas{
     .topbar{
         padding:10px 18px;
     }
+
 }
 
 @media(prefers-reduced-motion:reduce){
+
     *{
         scroll-behavior:auto!important;
         transition:none!important;
     }
+
 }
 </style>
 </head>
@@ -787,7 +790,7 @@ canvas{
 
 <script>
 /* =========================================================
-   QUESTION DATA — SEMUA 25 SOALAN DIKEKALKAN
+   SOALAN
 ========================================================= */
 
 const QUESTIONS = [
@@ -1070,7 +1073,7 @@ const QUESTIONS = [
 ];
 
 /* =========================================================
-   STAGE THEMES
+   TEMA STAGE
 ========================================================= */
 
 const STAGES = [
@@ -1118,29 +1121,37 @@ const STAGES = [
 ];
 
 /* =========================================================
-   HELPERS
+   UTILITIES
 ========================================================= */
 
 const $ = id => document.getElementById(id);
 
-const shuffle = array => {
+function shuffle(array){
 
-    const a = [...array];
+    const result = [...array];
 
-    for(let i=a.length-1;i>0;i--){
+    for(let i=result.length-1;i>0;i--){
 
-        const j = Math.floor(Math.random()*(i+1));
+        const j = Math.floor(
+            Math.random()*(i+1)
+        );
 
-        [a[i],a[j]] = [a[j],a[i]];
+        [
+            result[i],
+            result[j]
+        ] = [
+            result[j],
+            result[i]
+        ];
 
     }
 
-    return a;
+    return result;
 
-};
+}
 
 /* =========================================================
-   GENERATED SOUND EFFECTS
+   AUDIO
 ========================================================= */
 
 const AUDIO = {
@@ -1158,11 +1169,13 @@ const AUDIO = {
             )();
 
             if(this.ctx.state === "suspended"){
+
                 this.ctx.resume().catch(()=>{});
+
             }
 
         }
-        catch(e){}
+        catch(error){}
 
     },
 
@@ -1177,34 +1190,43 @@ const AUDIO = {
             return;
         }
 
-        const ctx = this.ctx;
-        const oscillator = ctx.createOscillator();
-        const gain = ctx.createGain();
-        const time = ctx.currentTime + offset;
+        const context = this.ctx;
+
+        const oscillator =
+            context.createOscillator();
+
+        const gain =
+            context.createGain();
+
+        const startTime =
+            context.currentTime + offset;
 
         oscillator.type = type;
         oscillator.frequency.value = frequency;
 
         gain.gain.setValueAtTime(
             .0001,
-            time
+            startTime
         );
 
         gain.gain.exponentialRampToValueAtTime(
             .035,
-            time+.01
+            startTime+.01
         );
 
         gain.gain.exponentialRampToValueAtTime(
             .0001,
-            time+duration
+            startTime+duration
         );
 
         oscillator.connect(gain);
-        gain.connect(ctx.destination);
+        gain.connect(context.destination);
 
-        oscillator.start(time);
-        oscillator.stop(time+duration+.02);
+        oscillator.start(startTime);
+
+        oscillator.stop(
+            startTime+duration+.02
+        );
 
         oscillator.onended = ()=>{
 
@@ -1250,13 +1272,15 @@ const AUDIO = {
 };
 
 /* =========================================================
-   MAIN GAME
+   MAIN SCENE
 ========================================================= */
 
 class MysteryDoorGame extends Phaser.Scene{
 
     constructor(){
+
         super("MysteryDoorGame");
+
     }
 
     create(){
@@ -1265,6 +1289,7 @@ class MysteryDoorGame extends Phaser.Scene{
         this.score = 0;
 
         this.version = 0;
+
         this.busy = false;
         this.finished = false;
 
@@ -1273,22 +1298,31 @@ class MysteryDoorGame extends Phaser.Scene{
         this.memoryLeft = 0;
         this.memoryTotal = 0;
 
-        this.layer = this.add.container();
-        this.effects = this.add.container();
+        this.layer =
+            this.add.container();
+
+        this.effects =
+            this.add.container();
 
         this.scale.on("resize",()=>{
 
             if(this.busy){
+
                 this.needsLayout = true;
+
             }
             else{
+
                 this.layout();
+
             }
 
         });
 
         $("reveal").onclick = ()=>{
+
             this.reveal();
+
         };
 
         $("restart").onclick = ()=>{
@@ -1299,7 +1333,7 @@ class MysteryDoorGame extends Phaser.Scene{
             this.score = 0;
             this.finished = false;
 
-            this.load();
+            this.loadQuestion();
 
         };
 
@@ -1307,7 +1341,8 @@ class MysteryDoorGame extends Phaser.Scene{
 
             AUDIO.init();
 
-            AUDIO.enabled = !AUDIO.enabled;
+            AUDIO.enabled =
+                !AUDIO.enabled;
 
             $("sound").textContent =
                 AUDIO.enabled ? "♪" : "×";
@@ -1326,30 +1361,50 @@ class MysteryDoorGame extends Phaser.Scene{
 
         };
 
-        this.load();
+        /*
+        PENTING:
+        Guna loadQuestion(), BUKAN load().
+        this.load ialah LoaderPlugin milik Phaser.
+        */
+
+        this.loadQuestion();
 
     }
 
-    /* Timer dilindungi daripada callback soalan lama. */
+    /* =====================================================
+       SAFE TIMER
+    ===================================================== */
 
     after(milliseconds,callback){
 
         const version = this.version;
 
-        this.time.delayedCall(milliseconds,()=>{
+        this.time.delayedCall(
+            milliseconds,
+            ()=>{
 
-            if(version === this.version){
-                callback();
+                if(version === this.version){
+
+                    callback();
+
+                }
+
             }
-
-        });
+        );
 
     }
 
-    message(title,subtitle="",type=""){
+    message(
+        title,
+        subtitle="",
+        type=""
+    ){
 
-        $("message").textContent = title;
-        $("submessage").textContent = subtitle;
+        $("message").textContent =
+            title;
+
+        $("submessage").textContent =
+            subtitle;
 
         $("feedback").className =
             "feedback " + type;
@@ -1357,14 +1412,16 @@ class MysteryDoorGame extends Phaser.Scene{
     }
 
     status(text){
+
         $("status").textContent = text;
+
     }
 
     /* =====================================================
-       LOAD QUESTION
+       LOAD QUESTION — NAMA SUDAH DIBETULKAN
     ===================================================== */
 
-    load(){
+    loadQuestion(){
 
         this.version++;
 
@@ -1381,10 +1438,15 @@ class MysteryDoorGame extends Phaser.Scene{
 
         this.memoryLeft = 0;
 
-        this.stage = Math.floor(this.index/5);
+        this.stage = Math.floor(
+            this.index/5
+        );
 
-        const stage = STAGES[this.stage];
-        const question = QUESTIONS[this.index];
+        const stage =
+            STAGES[this.stage];
+
+        const question =
+            QUESTIONS[this.index];
 
         $("shell").style.setProperty(
             "--top",
@@ -1397,73 +1459,98 @@ class MysteryDoorGame extends Phaser.Scene{
         );
 
         $("stage").textContent =
-            "STAGE " + (this.stage+1) + " / 5";
+            "STAGE " +
+            (this.stage+1) +
+            " / 5";
 
-        $("title").textContent = stage.title;
+        $("title").textContent =
+            stage.title;
 
         $("local").textContent =
-            (this.index%5+1) + " / 5";
+            (this.index%5+1) +
+            " / 5";
 
         $("qtag").textContent =
             "SOALAN " +
             String(this.index+1).padStart(2,"0");
 
         $("total").textContent =
-            (this.index+1) + " / 25";
+            (this.index+1) +
+            " / 25";
 
-        $("question").textContent = question.q;
-        $("hint").textContent = stage.hint;
+        $("question").textContent =
+            question.q;
 
-        $("score").textContent = "★ " + this.score;
+        $("hint").textContent =
+            stage.hint;
+
+        $("score").textContent =
+            "★ " + this.score;
 
         $("finish").hidden = true;
 
-        $("memory").hidden = this.stage !== 2;
+        $("memory").hidden =
+            this.stage !== 2;
 
         $("reveal").disabled = true;
-        $("reveal").textContent = "Lihat semula";
 
-        $("track").innerHTML = STAGES.map((_,index)=>{
+        $("reveal").textContent =
+            "Lihat semula";
 
-            const className =
-                index < this.stage
-                    ? "done"
-                    : index === this.stage
-                        ? "now"
-                        : "";
-
-            return '<span class="'+className+'"></span>';
-
-        }).join("");
-
-        $("dots").innerHTML = Array.from(
-            {length:5},
-            (_,index)=>{
+        $("track").innerHTML =
+            STAGES.map((_,index)=>{
 
                 const className =
-                    index < this.index%5
+                    index < this.stage
                         ? "done"
-                        : index === this.index%5
+                        : index === this.stage
                             ? "now"
                             : "";
 
-                return '<i class="'+className+'"></i>';
+                return (
+                    '<span class="' +
+                    className +
+                    '"></span>'
+                );
 
-            }
-        ).join("");
+            }).join("");
+
+        $("dots").innerHTML =
+            Array.from(
+                {length:5},
+                (_,index)=>{
+
+                    const className =
+                        index < this.index%5
+                            ? "done"
+                            : index === this.index%5
+                                ? "now"
+                                : "";
+
+                    return (
+                        '<i class="' +
+                        className +
+                        '"></i>'
+                    );
+
+                }
+            ).join("");
 
         $("progressLabel").textContent =
-            "PERJALANAN ANDA · " + this.index + " / 25";
+            "PERJALANAN ANDA · " +
+            this.index +
+            " / 25";
 
-        let choices = question.answers.map((text,index)=>({
+        let choices =
+            question.answers.map((text,index)=>({
 
-            text,
-            answer:index,
-            fake:false
+                text,
+                answer:index,
+                fake:false
 
-        }));
+            }));
 
-        /* Stage 5: dua pintu pendua dengan warna dan teks sama. */
+        /* Stage 5: tambah dua pintu pendua. */
 
         if(this.stage === 4){
 
@@ -1473,8 +1560,11 @@ class MysteryDoorGame extends Phaser.Scene{
 
                     choices.push({
 
-                        text:question.answers[index],
+                        text:
+                            question.answers[index],
+
                         answer:index,
+
                         fake:true
 
                     });
@@ -1483,14 +1573,16 @@ class MysteryDoorGame extends Phaser.Scene{
 
         }
 
-        this.doors = shuffle(choices).map((choice,slot)=>({
+        this.doors =
+            shuffle(choices).map((choice,slot)=>({
 
-            choice,
-            slot,
-            opened:false,
-            win:false
+                choice,
+                slot,
 
-        }));
+                opened:false,
+                win:false
+
+            }));
 
         this.layout();
 
@@ -1503,6 +1595,8 @@ class MysteryDoorGame extends Phaser.Scene{
             "Pilih pintu jawapan yang betul."
         );
 
+        /* Stage 2 */
+
         if(this.stage === 1){
 
             this.busy = true;
@@ -1512,10 +1606,14 @@ class MysteryDoorGame extends Phaser.Scene{
             );
 
             this.after(400,()=>{
+
                 this.autoShuffle(1);
+
             });
 
         }
+
+        /* Stage 3 */
 
         if(this.stage === 2){
 
@@ -1530,6 +1628,8 @@ class MysteryDoorGame extends Phaser.Scene{
 
         }
 
+        /* Stage 5 */
+
         if(this.stage === 4){
 
             this.status(
@@ -1542,15 +1642,6 @@ class MysteryDoorGame extends Phaser.Scene{
 
     /* =====================================================
        RESPONSIVE LAYOUT
-
-       Telefon:
-       - 2 lajur
-       - Stage 5 menjadi 3 baris
-
-       Skrin lebih lebar:
-       - Stage 5 boleh menggunakan 3 lajur
-
-       Resize tidak menukar soalan / pilihan / kedudukan slot.
     ===================================================== */
 
     layout(){
@@ -1569,7 +1660,8 @@ class MysteryDoorGame extends Phaser.Scene{
         );
 
         const columns =
-            this.doors.length === 6 && width >= 480
+            this.doors.length === 6 &&
+            width >= 480
                 ? 3
                 : 2;
 
@@ -1584,8 +1676,14 @@ class MysteryDoorGame extends Phaser.Scene{
                     ? 440
                     : 500;
 
-        if(host.style.height !== height+"px"){
-            host.style.height = height+"px";
+        if(
+            host.style.height !==
+            height+"px"
+        ){
+
+            host.style.height =
+                height+"px";
+
         }
 
         if(
@@ -1593,14 +1691,20 @@ class MysteryDoorGame extends Phaser.Scene{
             this.scale.height !== height
         ){
 
-            this.scale.resize(width,height);
+            this.scale.resize(
+                width,
+                height
+            );
+
             return;
 
         }
 
         this.layer.removeAll(true);
 
-        const gap = width < 420 ? 12 : 18;
+        const gap =
+            width < 420 ? 12 : 18;
+
         const padding = 12;
 
         const cellWidth =
@@ -1617,22 +1721,25 @@ class MysteryDoorGame extends Phaser.Scene{
                 gap*(rows-1)
             ) / rows;
 
-        this.slots = Array.from(
-            {length:this.doors.length},
-            (_,index)=>({
+        this.slots =
+            Array.from(
+                {length:this.doors.length},
+                (_,index)=>({
 
-                x:
-                    padding +
-                    cellWidth/2 +
-                    (index%columns)*(cellWidth+gap),
+                    x:
+                        padding +
+                        cellWidth/2 +
+                        (index%columns) *
+                        (cellWidth+gap),
 
-                y:
-                    padding +
-                    cellHeight/2 +
-                    Math.floor(index/columns)*(cellHeight+gap)
+                    y:
+                        padding +
+                        cellHeight/2 +
+                        Math.floor(index/columns) *
+                        (cellHeight+gap)
 
-            })
-        );
+                })
+            );
 
         this.doors.forEach(door=>{
 
@@ -1646,6 +1753,10 @@ class MysteryDoorGame extends Phaser.Scene{
 
     }
 
+    /* =====================================================
+       GRAPHIC HELPERS
+    ===================================================== */
+
     rect(
         graphics,
         color,
@@ -1657,7 +1768,10 @@ class MysteryDoorGame extends Phaser.Scene{
         alpha=1
     ){
 
-        graphics.fillStyle(color,alpha);
+        graphics.fillStyle(
+            color,
+            alpha
+        );
 
         graphics.fillRoundedRect(
             x,
@@ -1682,10 +1796,16 @@ class MysteryDoorGame extends Phaser.Scene{
             y,
             value,
             {
-                fontFamily:"Trebuchet MS, Arial, sans-serif",
-                fontSize:size+"px",
+                fontFamily:
+                    "Trebuchet MS, Arial, sans-serif",
+
+                fontSize:
+                    size+"px",
+
                 fontStyle:"bold",
+
                 color,
+
                 align:"center"
             }
         )
@@ -1703,19 +1823,29 @@ class MysteryDoorGame extends Phaser.Scene{
        DRAW DOOR
     ===================================================== */
 
-    drawDoor(door,width,height){
+    drawDoor(
+        door,
+        width,
+        height
+    ){
 
-        const position = this.slots[door.slot];
+        const position =
+            this.slots[door.slot];
 
-        const container = this.add.container(
-            position.x,
-            position.y
-        );
+        const container =
+            this.add.container(
+                position.x,
+                position.y
+            );
 
-        const frame = this.add.graphics();
+        const frame =
+            this.add.graphics();
 
-        const innerWidth = width-18;
-        const innerHeight = height-20;
+        const innerWidth =
+            width-18;
+
+        const innerHeight =
+            height-20;
 
         /* Shadow */
 
@@ -1755,7 +1885,7 @@ class MysteryDoorGame extends Phaser.Scene{
             .35
         );
 
-        /* Empty room */
+        /* Dark empty room */
 
         this.rect(
             frame,
@@ -1767,21 +1897,26 @@ class MysteryDoorGame extends Phaser.Scene{
             11
         );
 
-        const glow = this.add.circle(
-            0,
-            8,
-            31,
-            0x71dafa,
-            .16
-        )
-        .setVisible(door.win);
-
-        /* Water drop drawn with graphics. */
-
-        const drop = this.add.graphics()
+        const glow =
+            this.add.circle(
+                0,
+                8,
+                31,
+                0x71dafa,
+                .16
+            )
             .setVisible(door.win);
 
-        drop.fillStyle(0x7be8ff,1);
+        /* Water drop */
+
+        const drop =
+            this.add.graphics()
+                .setVisible(door.win);
+
+        drop.fillStyle(
+            0x7be8ff,
+            1
+        );
 
         drop.fillTriangle(
             0,-26,
@@ -1807,14 +1942,22 @@ class MysteryDoorGame extends Phaser.Scene{
             13
         );
 
-        /* Left hinge */
+        /* Panel berpusing pada engsel kiri. */
 
-        const panel = this.add.container(
-            -innerWidth/2,
-            0
-        );
+        const panel =
+            this.add.container(
+                -innerWidth/2,
+                0
+            );
 
-        const face = this.add.graphics();
+        const face =
+            this.add.graphics();
+
+        /*
+        Semua pintu stage yang sama
+        menggunakan warna sama,
+        termasuk pintu pendua.
+        */
 
         this.rect(
             face,
@@ -1865,27 +2008,34 @@ class MysteryDoorGame extends Phaser.Scene{
             6
         );
 
-        const badge = this.add.circle(
-            innerWidth/2,
-            -innerHeight/2+35,
-            19,
-            0xffe7ac
-        );
+        /* A / B / C / D */
 
-        const letter = this.text(
-            innerWidth/2,
-            -innerHeight/2+35,
-            "ABCD"[door.choice.answer],
-            22,
-            "#2c405f"
-        );
+        const badge =
+            this.add.circle(
+                innerWidth/2,
+                -innerHeight/2+35,
+                19,
+                0xffe7ac
+            );
 
-        const answer = this.text(
-            innerWidth/2,
-            25,
-            door.choice.text,
-            width < 170 ? 13 : 15
-        );
+        const letter =
+            this.text(
+                innerWidth/2,
+                -innerHeight/2+35,
+                "ABCD"[door.choice.answer],
+                22,
+                "#2c405f"
+            );
+
+        /* Answer */
+
+        const answer =
+            this.text(
+                innerWidth/2,
+                25,
+                door.choice.text,
+                width < 170 ? 13 : 15
+            );
 
         answer.setWordWrapWidth(
             innerWidth-30
@@ -1893,7 +2043,8 @@ class MysteryDoorGame extends Phaser.Scene{
 
         answer.setLineSpacing(3);
 
-        let fontSize = width < 170 ? 13 : 15;
+        let fontSize =
+            width < 170 ? 13 : 15;
 
         while(
             answer.height > innerHeight-91 &&
@@ -1901,20 +2052,26 @@ class MysteryDoorGame extends Phaser.Scene{
         ){
 
             fontSize -= .5;
-            answer.setFontSize(fontSize);
+
+            answer.setFontSize(
+                fontSize
+            );
 
         }
 
-        const knob = this.add.circle(
-            innerWidth-12,
-            innerHeight/2-21,
-            4,
-            0xffdd81
-        )
-        .setStrokeStyle(
-            1,
-            0xfff0bd
-        );
+        /* Door knob */
+
+        const knob =
+            this.add.circle(
+                innerWidth-12,
+                innerHeight/2-21,
+                4,
+                0xffdd81
+            )
+            .setStrokeStyle(
+                1,
+                0xfff0bd
+            );
 
         panel.add([
             face,
@@ -1924,15 +2081,18 @@ class MysteryDoorGame extends Phaser.Scene{
             knob
         ]);
 
-        const hit = this.add.zone(
-            0,
-            0,
-            width,
-            height
-        )
-        .setInteractive({
-            useHandCursor:true
-        });
+        /* Full door tap area */
+
+        const hit =
+            this.add.zone(
+                0,
+                0,
+                width,
+                height
+            )
+            .setInteractive({
+                useHandCursor:true
+            });
 
         hit.on("pointerdown",()=>{
 
@@ -1958,7 +2118,9 @@ class MysteryDoorGame extends Phaser.Scene{
             hit
         ]);
 
-        this.layer.add(container);
+        this.layer.add(
+            container
+        );
 
         Object.assign(door,{
 
@@ -1969,6 +2131,7 @@ class MysteryDoorGame extends Phaser.Scene{
             answer,
             glow,
             drop,
+
             iw:innerWidth
 
         });
@@ -1976,7 +2139,12 @@ class MysteryDoorGame extends Phaser.Scene{
         panel.scaleX =
             door.opened ? .035 : 1;
 
-        [badge,letter,answer].forEach(object=>{
+        [
+            badge,
+            letter,
+            answer
+        ]
+        .forEach(object=>{
 
             object.setVisible(
                 !this.hiddenAnswers
@@ -1987,7 +2155,7 @@ class MysteryDoorGame extends Phaser.Scene{
     }
 
     /* =====================================================
-       MEMORY MODE
+       MEMORY: HIDE TEXT + LETTER
     ===================================================== */
 
     setHidden(value){
@@ -2003,7 +2171,9 @@ class MysteryDoorGame extends Phaser.Scene{
             ]
             .forEach(object=>{
 
-                object.setVisible(!value);
+                object.setVisible(
+                    !value
+                );
 
             });
 
@@ -2013,18 +2183,23 @@ class MysteryDoorGame extends Phaser.Scene{
 
     updateClock(){
 
-        const seconds = Math.ceil(
-            this.memoryLeft/1000
-        );
+        const seconds =
+            Math.ceil(
+                this.memoryLeft/1000
+            );
 
         $("clock").textContent =
-            "00:" + String(seconds).padStart(2,"0");
+            "00:" +
+            String(seconds).padStart(2,"0");
 
-        $("timeFill").style.width = (
+        const percentage =
             this.memoryTotal
-                ? this.memoryLeft/this.memoryTotal*100
-                : 0
-        ) + "%";
+                ? this.memoryLeft /
+                  this.memoryTotal * 100
+                : 0;
+
+        $("timeFill").style.width =
+            percentage+"%";
 
         $("memoryLabel").textContent =
             this.memoryLeft > 0
@@ -2045,10 +2220,11 @@ class MysteryDoorGame extends Phaser.Scene{
             return;
         }
 
-        this.memoryLeft = Math.max(
-            0,
-            this.memoryLeft-delta
-        );
+        this.memoryLeft =
+            Math.max(
+                0,
+                this.memoryLeft-delta
+            );
 
         this.updateClock();
 
@@ -2057,7 +2233,8 @@ class MysteryDoorGame extends Phaser.Scene{
             this.setHidden(true);
 
             $("reveal").disabled =
-                this.revealUsed || this.busy;
+                this.revealUsed ||
+                this.busy;
 
             if(!this.busy){
 
@@ -2070,6 +2247,10 @@ class MysteryDoorGame extends Phaser.Scene{
         }
 
     }
+
+    /* =====================================================
+       REVEAL ONCE — 3 SECONDS
+    ===================================================== */
 
     reveal(){
 
@@ -2094,7 +2275,9 @@ class MysteryDoorGame extends Phaser.Scene{
         this.memoryTotal = 3000;
 
         $("reveal").disabled = true;
-        $("reveal").textContent = "Sudah digunakan";
+
+        $("reveal").textContent =
+            "Sudah digunakan";
 
         this.status(
             "Lihat semula selama 3 saat. Hafal cepat!"
@@ -2105,7 +2288,7 @@ class MysteryDoorGame extends Phaser.Scene{
     }
 
     /* =====================================================
-       INPUT / RESIZE STATE
+       UNLOCK INPUT
     ===================================================== */
 
     unlock(){
@@ -2113,7 +2296,9 @@ class MysteryDoorGame extends Phaser.Scene{
         this.busy = false;
 
         if(this.needsLayout){
+
             this.layout();
+
         }
 
         $("reveal").disabled =
@@ -2125,13 +2310,15 @@ class MysteryDoorGame extends Phaser.Scene{
     }
 
     /* =====================================================
-       STAGE 2 SHUFFLE
+       STAGE 2 AUTO SHUFFLE
     ===================================================== */
 
     autoShuffle(round){
 
         this.status(
-            "Pintu sedang berpindah · " + round + " / 4"
+            "Pintu sedang berpindah · " +
+            round +
+            " / 4"
         );
 
         this.shuffleDoors(()=>{
@@ -2139,7 +2326,11 @@ class MysteryDoorGame extends Phaser.Scene{
             if(round < 4){
 
                 this.after(100,()=>{
-                    this.autoShuffle(round+1);
+
+                    this.autoShuffle(
+                        round+1
+                    );
+
                 });
 
             }
@@ -2171,42 +2362,63 @@ class MysteryDoorGame extends Phaser.Scene{
             "triangle"
         );
 
-        let slots = shuffle(
-            this.doors.map(door=>door.slot)
-        );
+        let slots =
+            shuffle(
+                this.doors.map(
+                    door=>door.slot
+                )
+            );
 
-        const allSame = this.doors.every(
-            (door,index)=>door.slot === slots[index]
-        );
+        const allSame =
+            this.doors.every(
+                (door,index)=>
+                    door.slot === slots[index]
+            );
 
         if(allSame){
-            slots.push(slots.shift());
+
+            slots.push(
+                slots.shift()
+            );
+
         }
 
-        let remaining = this.doors.length;
+        let remaining =
+            this.doors.length;
 
         this.doors.forEach((door,index)=>{
 
-            door.slot = slots[index];
+            door.slot =
+                slots[index];
 
-            const position = this.slots[door.slot];
+            const position =
+                this.slots[door.slot];
 
             this.tweens.add({
 
-                targets:door.container,
+                targets:
+                    door.container,
 
-                x:position.x,
-                y:position.y,
+                x:
+                    position.x,
 
-                duration:470,
-                ease:"Sine.InOut",
+                y:
+                    position.y,
+
+                duration:
+                    470,
+
+                ease:
+                    "Sine.InOut",
 
                 onComplete:()=>{
 
                     remaining--;
 
                     if(remaining === 0){
+
                         done();
+
                     }
 
                 }
@@ -2218,7 +2430,7 @@ class MysteryDoorGame extends Phaser.Scene{
     }
 
     /* =====================================================
-       OPEN DOOR
+       CHOOSE / OPEN DOOR
     ===================================================== */
 
     choose(door){
@@ -2237,25 +2449,34 @@ class MysteryDoorGame extends Phaser.Scene{
 
         this.tweens.add({
 
-            targets:door.panel,
+            targets:
+                door.panel,
 
-            scaleX:.035,
+            scaleX:
+                .035,
 
-            duration:300,
-            ease:"Sine.InOut",
+            duration:
+                300,
+
+            ease:
+                "Sine.InOut",
 
             onComplete:()=>{
 
-                const isCorrect =
+                const correct =
                     !door.choice.fake &&
                     door.choice.answer ===
                     QUESTIONS[this.index].correct;
 
-                if(isCorrect){
+                if(correct){
+
                     this.correct(door);
+
                 }
                 else{
+
                     this.wrong(door);
+
                 }
 
             }
@@ -2265,7 +2486,7 @@ class MysteryDoorGame extends Phaser.Scene{
     }
 
     /* =====================================================
-       CORRECT
+       CORRECT ANSWER
     ===================================================== */
 
     correct(door){
@@ -2273,6 +2494,7 @@ class MysteryDoorGame extends Phaser.Scene{
         this.memoryLeft = 0;
 
         door.win = true;
+
         door.drop.setVisible(true);
         door.glow.setVisible(true);
 
@@ -2307,19 +2529,25 @@ class MysteryDoorGame extends Phaser.Scene{
 
             }
 
-            const oldStage = this.stage;
+            const oldStage =
+                this.stage;
 
             this.index++;
 
-            const newStage = Math.floor(
-                this.index/5
-            );
+            const newStage =
+                Math.floor(
+                    this.index/5
+                );
 
             if(newStage !== oldStage){
 
                 this.message(
-                    "STAGE " + (oldStage+1) + " SELESAI!",
+                    "STAGE " +
+                    (oldStage+1) +
+                    " SELESAI!",
+
                     "5 / 5 soalan selesai. Bersedia untuk cabaran seterusnya.",
+
                     "good"
                 );
 
@@ -2328,13 +2556,15 @@ class MysteryDoorGame extends Phaser.Scene{
                 );
 
                 this.after(1400,()=>{
-                    this.load();
+
+                    this.loadQuestion();
+
                 });
 
             }
             else{
 
-                this.load();
+                this.loadQuestion();
 
             }
 
@@ -2343,7 +2573,7 @@ class MysteryDoorGame extends Phaser.Scene{
     }
 
     /* =====================================================
-       WRONG / EMPTY DUPLICATE
+       WRONG / DUPLICATE EMPTY DOOR
     ===================================================== */
 
     wrong(door){
@@ -2365,8 +2595,8 @@ class MysteryDoorGame extends Phaser.Scene{
         );
 
         /*
-        Ruang dalam kekal kosong.
-        Tiada X / jawapan / harta untuk pintu salah.
+        Bahagian dalam pintu salah / pendua
+        kekal kosong.
         */
 
         this.after(
@@ -2375,12 +2605,17 @@ class MysteryDoorGame extends Phaser.Scene{
 
                 this.tweens.add({
 
-                    targets:door.panel,
+                    targets:
+                        door.panel,
 
-                    scaleX:1,
+                    scaleX:
+                        1,
 
-                    duration:260,
-                    ease:"Sine.Out",
+                    duration:
+                        260,
+
+                    ease:
+                        "Sine.Out",
 
                     onComplete:()=>{
 
@@ -2419,41 +2654,55 @@ class MysteryDoorGame extends Phaser.Scene{
     }
 
     /* =====================================================
-       PARTICLES
+       STAR EFFECT
     ===================================================== */
 
     sparkles(x,y){
 
         for(let i=0;i<12;i++){
 
-            const star = this.text(
-                x,
-                y,
-                "✦",
-                12+Math.random()*12,
-                "#ffe5a1"
-            );
+            const star =
+                this.text(
+                    x,
+                    y,
+                    "✦",
+                    12+Math.random()*12,
+                    "#ffe5a1"
+                );
 
             const angle =
-                Math.random()*Math.PI*2;
+                Math.random() *
+                Math.PI *
+                2;
 
-            this.effects.add(star);
+            this.effects.add(
+                star
+            );
 
             this.tweens.add({
 
-                targets:star,
+                targets:
+                    star,
 
-                x:x+Math.cos(angle)*80,
-                y:y+Math.sin(angle)*85,
+                x:
+                    x+Math.cos(angle)*80,
 
-                alpha:0,
-                angle:90,
+                y:
+                    y+Math.sin(angle)*85,
+
+                alpha:
+                    0,
+
+                angle:
+                    90,
 
                 duration:
                     700+Math.random()*300,
 
                 onComplete:()=>{
+
                     star.destroy();
+
                 }
 
             });
@@ -2463,10 +2712,8 @@ class MysteryDoorGame extends Phaser.Scene{
     }
 
     /* =====================================================
-       FINISH
-
-       Keputusan dipaparkan dalam panel.
-       Pintu permainan masih kelihatan.
+       FINAL RESULT
+       PINTU PERMAINAN KEKAL KELIHATAN
     ===================================================== */
 
     finish(){
@@ -2476,13 +2723,16 @@ class MysteryDoorGame extends Phaser.Scene{
         this.memoryLeft = 0;
 
         if(this.needsLayout){
+
             this.layout();
+
         }
 
         $("finish").hidden = false;
 
         $("finalScore").textContent =
-            "Skor anda: ★ " + this.score;
+            "Skor anda: ★ " +
+            this.score;
 
         $("progressLabel").textContent =
             "PERJALANAN ANDA · 25 / 25";
@@ -2515,23 +2765,39 @@ class MysteryDoorGame extends Phaser.Scene{
 
 const game = new Phaser.Game({
 
-    type:Phaser.AUTO,
+    type:
+        Phaser.AUTO,
 
-    parent:"game",
+    parent:
+        "game",
 
-    width:$("game").clientWidth,
-    height:500,
+    width:
+        $("game").clientWidth,
 
-    transparent:true,
-    antialias:true,
-    roundPixels:false,
+    height:
+        500,
+
+    transparent:
+        true,
+
+    antialias:
+        true,
+
+    roundPixels:
+        false,
 
     scale:{
-        mode:Phaser.Scale.NONE
+
+        mode:
+            Phaser.Scale.NONE
+
     },
 
     input:{
-        activePointers:3
+
+        activePointers:
+            3
+
     },
 
     scene:[
@@ -2542,41 +2808,51 @@ const game = new Phaser.Game({
 
 /* =========================================================
    RESPONSIVE RESIZE
-
-   Layout dikira semula selepas animasi selesai.
-   Soalan, skor, timer dan pilihan tidak direset.
 ========================================================= */
 
 let resizeFrame = 0;
 
-const observer = new ResizeObserver(()=>{
+const observer =
+    new ResizeObserver(()=>{
 
-    cancelAnimationFrame(resizeFrame);
-
-    resizeFrame = requestAnimationFrame(()=>{
-
-        const scene = game.scene.getScene(
-            "MysteryDoorGame"
+        cancelAnimationFrame(
+            resizeFrame
         );
 
-        if(!scene || !scene.layer){
-            return;
-        }
+        resizeFrame =
+            requestAnimationFrame(()=>{
 
-        if(scene.busy){
-            scene.needsLayout = true;
-        }
-        else{
-            scene.layout();
-        }
+                const scene =
+                    game.scene.getScene(
+                        "MysteryDoorGame"
+                    );
+
+                if(
+                    !scene ||
+                    !scene.layer
+                ){
+                    return;
+                }
+
+                if(scene.busy){
+
+                    scene.needsLayout = true;
+
+                }
+                else{
+
+                    scene.layout();
+
+                }
+
+            });
 
     });
-
-});
 
 observer.observe(
     $("game")
 );
+
 </script>
 
 </body>
